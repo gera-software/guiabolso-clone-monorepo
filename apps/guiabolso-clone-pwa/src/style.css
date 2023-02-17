@@ -1,0 +1,174 @@
+/* @font-face {
+  font-family: 'Axiforma';
+  src: url('./assets/fonts/Kastelov\ -\ Axiforma\ Regular.otf');
+} */
+
+@font-face {
+  font-family: "Axiforma";
+  font-weight: 400;
+  font-style: normal;
+  font-display: auto;
+  src: local("Axiforma"), url("/fonts/axiforma/AxiformaRegular.otf") format("otf");
+}
+
+
+*, ::before, ::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: sans-serif;
+  background-color: #FAFAFA;
+  font-family: 'Open Sans', sans-serif;
+  overflow: hidden;
+  /* background-color: aquamarine; */
+  height: 100dvh;
+  width: 100dvw;
+}
+
+#app {
+  height: 100dvh;
+  width: 100dvw;
+  overflow: hidden;
+}
+
+/**
+Dialogs
+*/
+body.overflow--hidden {
+  overflow-y: hidden;
+}
+
+
+/**
+Animations on transitions
+
+*/
+
+.slideup-enter-active,
+.slideup-leave-active {
+  /* transition: opacity 3s ease; */
+  transition: transform .3s ease;
+  transform: translateY(0%);
+}
+
+.slideup-enter-from,
+.slideup-leave-to {
+  transform: translateY(100%);
+  /* opacity: 0; */
+}
+
+
+/* skeleton pulse animation */
+
+@keyframes pulse-bg {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: .6;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.page {
+  background-color: #FAFAFA;
+  height: 100dvh;
+  position: absolute;
+  width: 100dvw;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/** Page transitions */
+
+.fade-enter-active,
+.fade-leave-active {
+  position: absolute;
+  width: 100%;
+  transition: opacity .5s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  position: absolute;
+  width: 100%;
+  opacity: 0;
+}
+
+
+.slide-left-enter-from {
+  transform: translateX(100%);
+
+}
+.slide-left-enter-active {
+  /* position: absolute;
+  width: 100%; */
+  transition: transform .5s ease-out;
+}
+
+.slide-left-enter-to {
+  /* position: absolute;
+  width: 100%; */
+  z-index: 10;
+  transform: translateX(0%);
+}
+
+.slide-left-leave-from {
+  /* transform: translateX(100%); */
+  z-index: 0;
+
+}
+.slide-left-leave-active {
+  /* position: absolute;
+  width: 100%; */
+  transition: transform .5s ease;
+}
+
+.slide-left-leave-to {
+  z-index: 0;
+  /* z-index: 0; */
+  /* opacity: 0; */
+  /* position: absolute; */
+  /* width: 100%; */
+  /* transform: translateX(0); */
+}
+
+
+
+
+.slide-right-enter-from {
+  /* opacity: .3; */
+  z-index: 0
+}
+/* .slide-right-enter-active {
+  transition: transform .5s ease-in;
+  opacity: .3;
+  
+} */
+
+.slide-right-enter-to {
+  /* opacity: .3; */
+  z-index: 0
+
+}
+
+.slide-right-leave-from {
+  transform: translateX(0%);
+  z-index: 10
+}
+
+.slide-right-leave-active {
+  transition: transform .5s ease-in;
+}
+
+.slide-right-leave-to {
+  transform: translateX(100%);
+  z-index: 10
+}
+
+
+
