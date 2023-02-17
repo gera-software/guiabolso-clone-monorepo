@@ -1,6 +1,9 @@
 {
   "name": "@gera-software/guiabolso-clone-pwa",
   "private": false,
+  "publishConfig": {
+    "access": "public"
+  },
   "version": "0.8.9",
   "type": "module",
   "scripts": {
