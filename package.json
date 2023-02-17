@@ -1,5 +1,5 @@
 {
-  "name": "guiabolso-clone-monorepo",
+  "name": "@gera-software/guiabolso-clone-monorepo",
   "private": true,
   "workspaces": [
     "packages/*",

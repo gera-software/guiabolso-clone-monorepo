@@ -1,5 +1,11 @@
 # guiabolso-clone-pwa
 
+## 0.8.9
+
+### Patch Changes
+
+- add scope gera-software to npm
+
 ## 0.8.8
 
 ### Patch Changes
