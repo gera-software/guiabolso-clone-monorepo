@@ -7,6 +7,7 @@ import hello from './api/hello'
 import pluggy from './api/pluggy'
 import getInstitutions from './api/getInstitutions'
 import syncTransactions from './api/syncTransactions'
+import { hello as testandoHello } from '@gera-software/guiabolso-clone-core'
 
 const app = express()
 const port = 3333
@@ -37,4 +38,4 @@ route.post('/sync', syncTransactions)
 app.use(route)
 
 
-app.listen(port, () => console.log(`server running on port ${port}`))
+app.listen(port, () => console.log(`server running on port ${port} ${testandoHello}`))

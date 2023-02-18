@@ -15,6 +15,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "@gera-software/guiabolso-clone-core": "*",
     "@types/express": "^4.17.17",
     "@types/mongoose": "^5.11.97",
     "cors": "^2.8.5",
