@@ -4,10 +4,10 @@ import cors from 'cors'
 import express from 'express'
 import { Router, Request, Response } from 'express'
 import hello from './api/hello'
-import pluggy from './api/pluggy'
-import getInstitutions from './api/getInstitutions'
+// import pluggy from './api/pluggy'
+// import getInstitutions from './api/getInstitutions'
 import syncTransactions from './api/syncTransactions'
-import { hello as testandoHello } from '@gera-software/guiabolso-clone-core'
+import {hello2} from '@gera-software/guiabolso-clone-core'
 
 const app = express()
 const port = 3333
@@ -23,19 +23,19 @@ route.get('/', async (req: Request, res: Response) => {
   res.json(result)
 })
 
-route.get('/accounts', async (req: Request, res: Response) => {
-  const result = await pluggy(req.query.itemId as string)
-  res.json(result)
-})
+// route.get('/accounts', async (req: Request, res: Response) => {
+//   const result = await pluggy(req.query.itemId as string)
+//   res.json(result)
+// })
 
-route.get('/institutions', async (req: Request, res: Response) => {
-  const result = await getInstitutions()
-  res.json(result)
-})
+// route.get('/institutions', async (req: Request, res: Response) => {
+//   const result = await getInstitutions()
+//   res.json(result)
+// })
 
 route.post('/sync', syncTransactions)
 
 app.use(route)
 
 
-app.listen(port, () => console.log(`server running on port ${port} ${testandoHello}`))
+app.listen(port, () => console.log(`server running on port ${port} ${hello2}`))

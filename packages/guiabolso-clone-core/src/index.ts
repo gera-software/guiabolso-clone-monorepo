@@ -1,4 +1,5 @@
+export { importTransactions } from "./services/synchronizationService"
 
-export const hello = 'Hello from @gera-software/guiabolso-clone-core !'
+export const hello2 = 'Hello from @gera-software/guiabolso-clone-core !'
 
-console.log(hello)
+console.log(hello2)

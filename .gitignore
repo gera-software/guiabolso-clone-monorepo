@@ -6,3 +6,5 @@ dist/**
 .next/**
 # Local Netlify folder
 .netlify
+
+.env
