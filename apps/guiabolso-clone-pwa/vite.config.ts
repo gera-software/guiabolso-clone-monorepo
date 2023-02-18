@@ -77,6 +77,6 @@ export default defineConfig({
     },
   },
   define: {
-    '__APP_VERSION__': '"' + version + '"'
+    '__APP_VERSION__': '"' + version +  '"'
   }
 })

@@ -15,7 +15,7 @@
             <CalendarBillsCard></CalendarBillsCard>
     
             <button class="button button-outline" @click="handleLogout">Logout</button>
-            v{{ version }}
+            v{{ version }} - {{ node_env }}
         </div>
     </div>
 </template>
@@ -51,6 +51,8 @@ function handleLogout() {
 
 // @ts-ignore
 const version: string = __APP_VERSION__;
+// @ts-ignore
+const node_env: string = import.meta.env.MODE
 
 </script>
 
