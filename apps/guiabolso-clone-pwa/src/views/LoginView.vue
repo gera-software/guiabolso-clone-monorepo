@@ -20,7 +20,7 @@ const userStore = useUserStore()
 
 // @ts-ignore
 const version: string = __APP_VERSION__;
-const node_env: string = import.meta.env.MODE
+const node_env: string = import.meta.env.VITE_APP_MODE
 
 userStore.$subscribe((mutation, state) => {
   console.log('MUTATED STATE', state)
