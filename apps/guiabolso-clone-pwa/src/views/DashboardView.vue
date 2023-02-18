@@ -51,7 +51,6 @@ function handleLogout() {
 
 // @ts-ignore
 const version: string = __APP_VERSION__;
-// @ts-ignore
 const node_env: string = import.meta.env.MODE
 
 </script>

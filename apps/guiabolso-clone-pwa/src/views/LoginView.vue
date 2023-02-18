@@ -5,7 +5,7 @@
     </div>
     <div class="container">
       <button class="button" @click="openNetlifyModal">Começar</button>
-      v{{ version }}
+      v{{ version }} - {{ node_env }}
     </div>
   </div>
 </template>
@@ -20,6 +20,7 @@ const userStore = useUserStore()
 
 // @ts-ignore
 const version: string = __APP_VERSION__;
+const node_env: string = import.meta.env.MODE
 
 userStore.$subscribe((mutation, state) => {
   console.log('MUTATED STATE', state)
