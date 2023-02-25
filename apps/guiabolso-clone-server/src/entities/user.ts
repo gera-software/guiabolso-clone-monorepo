@@ -1,5 +1,5 @@
-import { Either, left } from "@/shared"
-import { InvalidNameError } from "@/entities/errors"
+import { Either, left, right } from "@/shared"
+import { InvalidEmailError, InvalidNameError } from "@/entities/errors"
 
 export interface UserData {
     name: string,
@@ -15,7 +15,16 @@ export class User {
         this.email = email
     }
 
-    static create(userData: UserData): Either<InvalidNameError, UserData> {
-        return left(new InvalidNameError(userData.name))
+    public static create(userData: UserData): Either<InvalidNameError | InvalidEmailError, User> {
+        if(!userData.name) {
+            return left(new InvalidNameError(userData.name))
+        }
+        if(!userData.email) {
+            return left(new InvalidEmailError(userData.email))
+        }
+
+        return right(new User(userData.name, userData.email))
     }
+
+
 }
