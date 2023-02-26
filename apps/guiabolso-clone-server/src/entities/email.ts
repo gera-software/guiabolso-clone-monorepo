@@ -10,7 +10,14 @@ export class Email {
 
     public static create(email: string) {
         if(!email) {
-            return left(new InvalidEmailError('Email required'))
+            return left(new InvalidEmailError())
+        }
+
+        const emailRegex =
+        /^[-!#$%&'*+/0-9=?A-Z^_a-z`{|}~](\.?[-!#$%&'*+/0-9=?A-Z^_a-z`{|}~])*@[a-zA-Z0-9](-*\.?[a-zA-Z0-9])*\.[a-zA-Z](-?[a-zA-Z0-9])+$/
+    
+        if(!emailRegex.test(email)) {
+            return left(new InvalidEmailError())
         }
 
         return right(new Email(email))
