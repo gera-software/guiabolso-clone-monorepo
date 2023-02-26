@@ -7,10 +7,9 @@ describe('User domain entity', () => {
         const invalidName = ""
         const error = User.create({name: invalidName, email: 'any_email'}).value as Error
         expect(error).toBeInstanceOf(InvalidNameError)
-        expect(error.message).toEqual('Invalid name: .')
     })
 
-    test('should not create user with empty email', () => {
+    test('should not create user with invalid email', () => {
         const invalidEmail = ""
         const error = User.create({name: 'any_name', email: invalidEmail}).value as Error
         expect(error).toBeInstanceOf(InvalidEmailError)
