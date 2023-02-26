@@ -27,6 +27,8 @@ export class SignUp {
             return left(new ExistingUserError())
         }
 
+        await this.userRepository.add(request)
+
         return right(request)
 
     }
