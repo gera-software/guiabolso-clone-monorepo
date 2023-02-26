@@ -1,22 +1,25 @@
 import { Either, left, right } from "@/shared"
-import { InvalidEmailError, InvalidNameError } from "@/entities/errors"
-import { Email } from "@/entities"
+import { InvalidEmailError, InvalidNameError, InvalidPasswordError } from "@/entities/errors"
+import { Email, Password } from "@/entities"
 
 export interface UserData {
     name: string,
     email: string,
+    password: string,
 }
 
 export class User {
     public readonly name: string
     public readonly email: Email
+    public readonly password: Password
 
-    private constructor(name: string, email: Email) {
+    private constructor(name: string, email: Email, password: Password) {
         this.name = name
         this.email = email
+        this.password = password
     }
 
-    public static create(userData: UserData): Either<InvalidNameError | InvalidEmailError, User> {
+    public static create(userData: UserData): Either<InvalidNameError | InvalidEmailError | InvalidPasswordError, User> {
         if(!userData.name) {
             return left(new InvalidNameError(userData.name))
         }
@@ -26,9 +29,15 @@ export class User {
             return left(emailOrError.value)
         }
 
-        const emailObject: Email = emailOrError.value as Email
+        const passwordOrError = Password.create(userData.password)
+        if(passwordOrError.isLeft()) {
+            return left(passwordOrError.value)
+        }
 
-        return right(new User(userData.name, emailObject))
+        const emailObject: Email = emailOrError.value as Email
+        const passwordObject: Password = passwordOrError.value
+
+        return right(new User(userData.name, emailObject, passwordObject))
     }
 
 
