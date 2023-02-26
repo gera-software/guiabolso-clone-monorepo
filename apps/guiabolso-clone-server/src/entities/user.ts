@@ -1,12 +1,7 @@
 import { Either, left, right } from "@/shared"
 import { InvalidEmailError, InvalidNameError, InvalidPasswordError } from "@/entities/errors"
 import { Email, Password } from "@/entities"
-
-export interface UserData {
-    name: string,
-    email: string,
-    password: string,
-}
+import { UserData } from "@/usecases/ports"
 
 export class User {
     public readonly name: string
