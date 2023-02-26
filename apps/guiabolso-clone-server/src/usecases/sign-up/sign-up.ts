@@ -41,7 +41,6 @@ export class SignUp implements UseCase {
         })
 
         const response = (await this.authenticationService.auth(request as AuthenticationParams)).value as AuthenticationResult
-
         return right(response)
 
     }

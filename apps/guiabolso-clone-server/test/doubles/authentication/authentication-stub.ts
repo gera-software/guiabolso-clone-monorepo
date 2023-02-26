@@ -5,8 +5,8 @@ import { AuthenticationParams, AuthenticationResult, AuthenticationService } fro
 export class AuthenticationServiceStub implements AuthenticationService {
     async auth (authenticationParams: AuthenticationParams): Promise<Either<UserNotFoundError | WrongPasswordError, AuthenticationResult>> {
       return right({
-        accessToken: 'accessToken',
-        id: '6057e9885c94f99b6dc1410a'
+        accessToken: 'valid_access_token',
+        id: 'valid_id'
       })
     }
 }
