@@ -1,4 +1,4 @@
-import { left, right } from "@/shared"
+import { Either, left, right } from "@/shared"
 import { InvalidEmailError } from "@/entities/errors"
 
 export class Email {
@@ -8,7 +8,7 @@ export class Email {
         this.value = email
     }
 
-    public static create(email: string) {
+    public static create(email: string): Either<InvalidEmailError, Email> {
         if(!email) {
             return left(new InvalidEmailError())
         }

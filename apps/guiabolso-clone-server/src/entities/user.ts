@@ -1,5 +1,6 @@
 import { Either, left, right } from "@/shared"
 import { InvalidEmailError, InvalidNameError } from "@/entities/errors"
+import { Email } from "@/entities"
 
 export interface UserData {
     name: string,
@@ -8,9 +9,9 @@ export interface UserData {
 
 export class User {
     public readonly name: string
-    public readonly email: string
+    public readonly email: Email
 
-    private constructor(name: string, email: string) {
+    private constructor(name: string, email: Email) {
         this.name = name
         this.email = email
     }
@@ -19,11 +20,15 @@ export class User {
         if(!userData.name) {
             return left(new InvalidNameError(userData.name))
         }
-        if(!userData.email) {
-            return left(new InvalidEmailError(userData.email))
+
+        const emailOrError = Email.create(userData.email)
+        if(emailOrError.isLeft()) {
+            return left(emailOrError.value)
         }
 
-        return right(new User(userData.name, userData.email))
+        const emailObject: Email = emailOrError.value as Email
+
+        return right(new User(userData.name, emailObject))
     }
 
 
