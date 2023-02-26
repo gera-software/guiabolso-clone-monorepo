@@ -1,7 +1,9 @@
 import { InvalidEmailError, InvalidNameError, InvalidPasswordError } from "@/entities/errors"
+import { AuthenticationResult } from "@/usecases/authentication/ports"
 import { Encoder, UserData } from "@/usecases/ports"
 import { SignUp } from "@/usecases/sign-up"
 import { ExistingUserError } from "@/usecases/sign-up/errors"
+import { AuthenticationServiceStub } from "@test/doubles/authentication"
 import { FakeEncoder } from "@test/doubles/encoder"
 import { InMemoryUserRepository } from "@test/doubles/repositories"
 
@@ -9,8 +11,8 @@ describe("Sing up use case", () => {
     test("should sign up user with valid data", async () => {
         const emptyUserRepository = new InMemoryUserRepository([])
         const encoder: Encoder = new FakeEncoder()
-        // const sut: SignUp = new SigUp(emptyUserRepository, encoder, authenticationStub)
-        const sut: SignUp = new SignUp(emptyUserRepository, encoder)
+        const authenticationStub = new AuthenticationServiceStub()
+        const sut: SignUp = new SignUp(emptyUserRepository, encoder, authenticationStub)
 
         const validUserSignUpRequest: UserData = {
             name: 'any name',
@@ -18,9 +20,9 @@ describe("Sing up use case", () => {
             password: 'validpassword',
         }
         const userSignUpResponse = await sut.perform(validUserSignUpRequest)
-        // expect((userSignUpResponse.value as AuthenticationResult).id).toBeDefined()
-        // expect((userSignUpResponse.value as AuthenticationResult).accessToken).toBeDefined()
-        expect((await emptyUserRepository.findAll()).length).toEqual(1)
+        const authenticationResponse = userSignUpResponse.value as AuthenticationResult
+        expect(authenticationResponse.id).toBeDefined()
+        expect(authenticationResponse.accessToken).toBeDefined()
         expect((await emptyUserRepository.findByEmail(validUserSignUpRequest.email))?.password).toEqual(validUserSignUpRequest.password + 'ENCRYPTED')
     })
 
@@ -33,7 +35,8 @@ describe("Sing up use case", () => {
         const userDataArray: UserData[] = [ validUser ]
         const userRepository = new InMemoryUserRepository(userDataArray)
         const encoder: Encoder = new FakeEncoder()
-        const sut: SignUp = new SignUp(userRepository, encoder)
+        const authenticationStub = new AuthenticationServiceStub()
+        const sut: SignUp = new SignUp(userRepository, encoder, authenticationStub)
 
         const validUserSignUpRequest: UserData = {
             name: 'any name',
@@ -56,7 +59,8 @@ describe("Sing up use case", () => {
     
             const emptyUserRepository = new InMemoryUserRepository([])
             const encoder: Encoder = new FakeEncoder()
-            const sut: SignUp = new SignUp(emptyUserRepository, encoder)
+            const authenticationStub = new AuthenticationServiceStub()
+            const sut: SignUp = new SignUp(emptyUserRepository, encoder, authenticationStub)
             const error = await sut.perform(invalidUserSignUpRequest)
             expect(error.value).toBeInstanceOf(InvalidEmailError)
         })
@@ -70,7 +74,8 @@ describe("Sing up use case", () => {
     
             const emptyUserRepository = new InMemoryUserRepository([])
             const encoder: Encoder = new FakeEncoder()
-            const sut: SignUp = new SignUp(emptyUserRepository, encoder)
+            const authenticationStub = new AuthenticationServiceStub()
+            const sut: SignUp = new SignUp(emptyUserRepository, encoder, authenticationStub)
             const error = await sut.perform(invalidUserSignUpRequest)
             expect(error.value).toBeInstanceOf(InvalidPasswordError)
         })
@@ -84,7 +89,8 @@ describe("Sing up use case", () => {
     
             const emptyUserRepository = new InMemoryUserRepository([])
             const encoder: Encoder = new FakeEncoder()
-            const sut: SignUp = new SignUp(emptyUserRepository, encoder)
+            const authenticationStub = new AuthenticationServiceStub()
+            const sut: SignUp = new SignUp(emptyUserRepository, encoder, authenticationStub)
             const error = await sut.perform(invalidUserSignUpRequest)
             expect(error.value).toBeInstanceOf(InvalidNameError)
         })

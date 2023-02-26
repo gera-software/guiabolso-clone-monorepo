@@ -4,6 +4,7 @@ import { InvalidEmailError, InvalidNameError, InvalidPasswordError } from "@/ent
 import { Either, left, right } from "@/shared"
 import { User } from "@/entities"
 import { ExistingUserError } from "./errors"
+import { AuthenticationParams, AuthenticationResult, AuthenticationService } from "@/usecases/authentication/ports"
 
 /**
  * Cadastro de novo usuário
@@ -11,13 +12,15 @@ import { ExistingUserError } from "./errors"
 export class SignUp {
     private readonly userRepository: InMemoryUserRepository
     private readonly encoder: Encoder
+    private readonly authenticationService: AuthenticationService
 
-    constructor(userRepository: InMemoryUserRepository, encoder: Encoder) {
+    constructor(userRepository: InMemoryUserRepository, encoder: Encoder, authenticationService: AuthenticationService) {
         this.userRepository = userRepository
         this.encoder = encoder
+        this.authenticationService = authenticationService
     }
 
-    public async perform(request: UserData): Promise<Either<InvalidNameError | InvalidEmailError | InvalidPasswordError | ExistingUserError, UserData>> {
+    public async perform(request: UserData): Promise<Either<InvalidNameError | InvalidEmailError | InvalidPasswordError | ExistingUserError, AuthenticationResult>> {
         const userOrError = User.create(request)
 
         if(userOrError.isLeft()) {
@@ -38,7 +41,9 @@ export class SignUp {
             password: encodedPassword,
         })
 
-        return right(request)
+        const response = (await this.authenticationService.auth(request as AuthenticationParams)).value as AuthenticationResult
+
+        return right(response)
 
     }
 }
