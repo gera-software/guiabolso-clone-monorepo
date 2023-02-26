@@ -10,9 +10,11 @@ import { ExistingUserError } from "./errors"
  */
 export class SignUp {
     private readonly userRepository: InMemoryUserRepository
+    private readonly encoder: Encoder
 
     constructor(userRepository: InMemoryUserRepository, encoder: Encoder) {
         this.userRepository = userRepository
+        this.encoder = encoder
     }
 
     public async perform(request: UserData): Promise<Either<InvalidNameError | InvalidEmailError | InvalidPasswordError | ExistingUserError, UserData>> {
@@ -22,12 +24,19 @@ export class SignUp {
             return left(userOrError.value)
         }
 
-        const user = await this.userRepository.findByEmail(request.email)
-        if(user) {
+        const found = await this.userRepository.findByEmail(request.email)
+        if(found) {
             return left(new ExistingUserError())
         }
 
-        await this.userRepository.add(request)
+        const newUser: User = userOrError.value as User
+
+        const encodedPassword = await this.encoder.encode(newUser.password.value)
+        await this.userRepository.add({
+            name: newUser.name,
+            email: newUser.email.value,
+            password: encodedPassword,
+        })
 
         return right(request)
 
