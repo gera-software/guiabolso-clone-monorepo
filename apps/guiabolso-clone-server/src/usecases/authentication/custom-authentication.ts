@@ -1,16 +1,18 @@
 import { left, right } from "@/shared";
 import { InMemoryUserRepository } from "@test/doubles/repositories";
 import { UserNotFoundError, WrongPasswordError } from "@/usecases/authentication/errors";
-import { SignInData } from "./ports";
+import { SignInData, TokenManager } from "./ports";
 import { Encoder } from "../ports";
 
 export class CustomAuthentication {
     private readonly userRepository: InMemoryUserRepository
     private readonly encoder: Encoder
-
-    constructor(userRepository: InMemoryUserRepository, encoder: Encoder) {
+    private readonly tokenManager: TokenManager
+    
+    constructor(userRepository: InMemoryUserRepository, encoder: Encoder, tokenManager: TokenManager) {
         this.userRepository = userRepository
         this.encoder = encoder
+        this.tokenManager = tokenManager
     }
 
     public async auth(request: SignInData) {

@@ -2,6 +2,7 @@ import { CustomAuthentication } from "@/usecases/authentication"
 import { UserNotFoundError, WrongPasswordError } from "@/usecases/authentication/errors"
 import { SignInData } from "@/usecases/authentication/ports"
 import { Encoder, UserData } from "@/usecases/ports"
+import { FakeTokenManager } from "@test/doubles/authentication"
 import { FakeEncoder } from "@test/doubles/encoder"
 import { InMemoryUserRepository } from "@test/doubles/repositories"
 
@@ -23,7 +24,8 @@ describe('Custom authentication', () => {
         }
 
         const encoder: Encoder = new FakeEncoder()
-        const authentication = new CustomAuthentication(userUserRepository, encoder)
+        const fakeTokenManager = new FakeTokenManager()
+        const authentication = new CustomAuthentication(userUserRepository, encoder, fakeTokenManager)
         const result = (await authentication.auth(validSignInRequest)).value as UserData
         expect(result.id).toBeDefined()
 
@@ -44,7 +46,8 @@ describe('Custom authentication', () => {
             password: 'invalid',
         }
         const encoder: Encoder = new FakeEncoder()
-        const authentication = new CustomAuthentication(userUserRepository, encoder)
+        const fakeTokenManager = new FakeTokenManager()
+        const authentication = new CustomAuthentication(userUserRepository, encoder, fakeTokenManager)
         const response = (await (authentication.auth(invalidSignInRequest))).value as Error
         expect(response).toBeInstanceOf(WrongPasswordError)
     })
@@ -64,7 +67,8 @@ describe('Custom authentication', () => {
             password: 'valid',
         }
         const encoder: Encoder = new FakeEncoder()
-        const authentication = new CustomAuthentication(userUserRepository, encoder)
+        const fakeTokenManager = new FakeTokenManager()
+        const authentication = new CustomAuthentication(userUserRepository, encoder, fakeTokenManager)
         const response = (await (authentication.auth(invalidSignInRequest))).value as Error
         expect(response).toBeInstanceOf(UserNotFoundError)
     })

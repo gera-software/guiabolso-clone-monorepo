@@ -1,1 +1,2 @@
-export * from './SingInData'
+export * from './sing-in-data'
+export * from './token-manager'
