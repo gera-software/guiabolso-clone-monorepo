@@ -1,6 +1,6 @@
 
 import { InvalidEmailError, InvalidNameError } from "@/entities/errors"
-import { User } from "@/entities/user"
+import { User } from "@/entities"
 
 describe('User domain entity', () => {
     test('should not create user with empty name', () => {
