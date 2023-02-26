@@ -1,1 +1,1 @@
-export * from './register-user-controller'
+export * from './sign-up-controller'

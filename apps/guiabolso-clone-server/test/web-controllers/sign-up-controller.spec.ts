@@ -1,7 +1,7 @@
 import { Encoder, UseCase } from "@/usecases/ports"
 import { SignUp } from "@/usecases/sign-up"
 import { HttpRequest, HttpResponse } from "@/web-controllers/ports"
-import { RegisterUserController } from '@/web-controllers/register-user-controller'
+import { SignUpController } from '@/web-controllers/sign-up-controller'
 import { AuthenticationServiceStub } from "@test/doubles/authentication"
 import { FakeEncoder } from "@test/doubles/encoder"
 import { InMemoryUserRepository } from "@test/doubles/repositories"
@@ -9,13 +9,13 @@ import { InvalidEmailError } from "@/entities/errors"
 import { MissingParamError } from "@/web-controllers/errors"
 import { ErrorThrowingUseCaseStub } from "@test/doubles/usecases"
 
-describe('Register user web controller', () => {
+describe('Sign Up web controller', () => {
     test('should return status code ok when request contains valid user data', async () => {
         const emptyUserRepository = new InMemoryUserRepository([])
         const encoder: Encoder = new FakeEncoder()
         const authenticationStub = new AuthenticationServiceStub()
         const usecase: SignUp = new SignUp(emptyUserRepository, encoder, authenticationStub)
-        const sut: RegisterUserController = new RegisterUserController(usecase) 
+        const sut: SignUpController = new SignUpController(usecase) 
 
         const request: HttpRequest = {
             body: {
@@ -36,7 +36,7 @@ describe('Register user web controller', () => {
         const encoder: Encoder = new FakeEncoder()
         const authenticationStub = new AuthenticationServiceStub()
         const usecase: SignUp = new SignUp(emptyUserRepository, encoder, authenticationStub)
-        const sut: RegisterUserController = new RegisterUserController(usecase) 
+        const sut: SignUpController = new SignUpController(usecase) 
 
         const invalidRequest: HttpRequest = {
             body: {
@@ -59,7 +59,7 @@ describe('Register user web controller', () => {
         const encoder: Encoder = new FakeEncoder()
         const authenticationStub = new AuthenticationServiceStub()
         const usecase: SignUp = new SignUp(emptyUserRepository, encoder, authenticationStub)
-        const sut: RegisterUserController = new RegisterUserController(usecase) 
+        const sut: SignUpController = new SignUpController(usecase) 
 
         const invalidRequest: HttpRequest = {
             body: {
@@ -79,7 +79,7 @@ describe('Register user web controller', () => {
         const encoder: Encoder = new FakeEncoder()
         const authenticationStub = new AuthenticationServiceStub()
         const usecase: SignUp = new SignUp(emptyUserRepository, encoder, authenticationStub)
-        const sut: RegisterUserController = new RegisterUserController(usecase) 
+        const sut: SignUpController = new SignUpController(usecase) 
 
         const invalidRequest: HttpRequest = {
             body: {
@@ -101,7 +101,7 @@ describe('Register user web controller', () => {
         const encoder: Encoder = new FakeEncoder()
         const authenticationStub = new AuthenticationServiceStub()
         const usecase: SignUp = new SignUp(emptyUserRepository, encoder, authenticationStub)
-        const sut: RegisterUserController = new RegisterUserController(usecase) 
+        const sut: SignUpController = new SignUpController(usecase) 
 
         const invalidRequest: HttpRequest = {
             body: {
@@ -121,7 +121,7 @@ describe('Register user web controller', () => {
         const encoder: Encoder = new FakeEncoder()
         const authenticationStub = new AuthenticationServiceStub()
         const usecase: SignUp = new SignUp(emptyUserRepository, encoder, authenticationStub)
-        const sut: RegisterUserController = new RegisterUserController(usecase) 
+        const sut: SignUpController = new SignUpController(usecase) 
 
         const invalidRequest: HttpRequest = {
             body: {
@@ -137,10 +137,10 @@ describe('Register user web controller', () => {
 
 
 
-    
+
     test('should return status code 500 when server raises', async () => {
         const errorThrowingUseCaseStub: UseCase = new ErrorThrowingUseCaseStub()
-        const sut: RegisterUserController = new RegisterUserController(errorThrowingUseCaseStub) 
+        const sut: SignUpController = new SignUpController(errorThrowingUseCaseStub) 
 
         const request: HttpRequest = {
             body: {
