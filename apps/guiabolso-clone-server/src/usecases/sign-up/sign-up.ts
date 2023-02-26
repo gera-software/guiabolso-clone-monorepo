@@ -1,5 +1,4 @@
-import { InMemoryUserRepository } from "@test/doubles/repositories"
-import { Encoder, UseCase, UserData } from "@/usecases/ports"
+import { Encoder, UseCase, UserData, UserRepository } from "@/usecases/ports"
 import { InvalidEmailError, InvalidNameError, InvalidPasswordError } from "@/entities/errors"
 import { Either, left, right } from "@/shared"
 import { User } from "@/entities"
@@ -10,11 +9,11 @@ import { AuthenticationParams, AuthenticationResult, AuthenticationService } fro
  * Cadastro de novo usuário
  */
 export class SignUp implements UseCase {
-    private readonly userRepository: InMemoryUserRepository
+    private readonly userRepository: UserRepository
     private readonly encoder: Encoder
     private readonly authenticationService: AuthenticationService
 
-    constructor(userRepository: InMemoryUserRepository, encoder: Encoder, authenticationService: AuthenticationService) {
+    constructor(userRepository: UserRepository, encoder: Encoder, authenticationService: AuthenticationService) {
         this.userRepository = userRepository
         this.encoder = encoder
         this.authenticationService = authenticationService
@@ -27,7 +26,7 @@ export class SignUp implements UseCase {
             return left(userOrError.value)
         }
 
-        const found = await this.userRepository.findByEmail(request.email)
+        const found = await this.userRepository.findUserByEmail(request.email)
         if(found) {
             return left(new ExistingUserError())
         }

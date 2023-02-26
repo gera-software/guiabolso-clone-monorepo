@@ -23,7 +23,7 @@ describe("Sing up use case", () => {
         const authenticationResponse = userSignUpResponse.value as AuthenticationResult
         expect(authenticationResponse.id).toBeDefined()
         expect(authenticationResponse.accessToken).toBeDefined()
-        expect((await emptyUserRepository.findByEmail(validUserSignUpRequest.email))?.password).toEqual(validUserSignUpRequest.password + 'ENCRYPTED')
+        expect((await emptyUserRepository.findUserByEmail(validUserSignUpRequest.email))?.password).toEqual(validUserSignUpRequest.password + 'ENCRYPTED')
     })
 
     test("should not sign up existing user", async () => {

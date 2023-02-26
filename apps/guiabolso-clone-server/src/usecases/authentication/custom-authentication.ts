@@ -1,16 +1,15 @@
 import { Either, left, right } from "@/shared";
-import { InMemoryUserRepository } from "@test/doubles/repositories";
 import { UserNotFoundError, WrongPasswordError } from "@/usecases/authentication/errors";
 import { AuthenticationParams, AuthenticationResult, TokenManager } from "@/usecases/authentication/ports";
-import { Encoder } from "@/usecases/ports";
+import { Encoder, UserRepository } from "@/usecases/ports";
 import { AuthenticationService } from "@/usecases/authentication/ports";
 
 export class CustomAuthentication implements AuthenticationService {
-    private readonly userRepository: InMemoryUserRepository
+    private readonly userRepository: UserRepository
     private readonly encoder: Encoder
     private readonly tokenManager: TokenManager
 
-    constructor(userRepository: InMemoryUserRepository, encoder: Encoder, tokenManager: TokenManager) {
+    constructor(userRepository: UserRepository, encoder: Encoder, tokenManager: TokenManager) {
         this.userRepository = userRepository
         this.encoder = encoder
         this.tokenManager = tokenManager
@@ -18,7 +17,7 @@ export class CustomAuthentication implements AuthenticationService {
 
     public async auth(request: AuthenticationParams): Promise<Either<UserNotFoundError | WrongPasswordError, AuthenticationResult>>{
 
-        const userFound = await this.userRepository.findByEmail(request.email)
+        const userFound = await this.userRepository.findUserByEmail(request.email)
 
         if(!userFound) {
             return left(new UserNotFoundError())

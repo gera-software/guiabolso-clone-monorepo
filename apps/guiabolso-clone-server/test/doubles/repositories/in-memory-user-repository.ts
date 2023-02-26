@@ -1,6 +1,6 @@
-import { UserData } from "@/usecases/ports";
+import { UserData, UserRepository } from "@/usecases/ports";
 
-export class InMemoryUserRepository {
+export class InMemoryUserRepository implements UserRepository {
     private readonly _data: UserData[]
     private idCounter: number = 0
 
@@ -12,11 +12,11 @@ export class InMemoryUserRepository {
         return this._data
     }
 
-    public async findAll(): Promise<UserData[]> {
-        return this.data
-    }
+    // public async findAllUsers(): Promise<UserData[]> {
+    //     return this.data
+    // }
 
-    public async findByEmail(email: string): Promise<UserData | null> {
+    public async findUserByEmail(email: string): Promise<UserData | null> {
         const user = this.data.find(user => user.email == email)
         return user || null
     }
