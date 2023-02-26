@@ -1,12 +1,13 @@
-import { Encoder } from "@/usecases/ports"
+import { Encoder, UseCase } from "@/usecases/ports"
 import { SignUp } from "@/usecases/sign-up"
 import { HttpRequest, HttpResponse } from "@/web-controllers/ports"
 import { RegisterUserController } from '@/web-controllers/register-user-controller'
 import { AuthenticationServiceStub } from "@test/doubles/authentication"
 import { FakeEncoder } from "@test/doubles/encoder"
 import { InMemoryUserRepository } from "@test/doubles/repositories"
-import { InvalidEmailError, InvalidNameError, InvalidPasswordError } from "@/entities/errors"
+import { InvalidEmailError } from "@/entities/errors"
 import { MissingParamError } from "@/web-controllers/errors"
+import { ErrorThrowingUseCaseStub } from "@test/doubles/usecases"
 
 describe('Register user web controller', () => {
     test('should return status code ok when request contains valid user data', async () => {
@@ -132,5 +133,25 @@ describe('Register user web controller', () => {
         expect(response.statusCode).toEqual(400)
         expect(response.body as Error).toBeInstanceOf(MissingParamError)
         expect((response.body as Error).message).toEqual('Missing parameters from request: email, password.')
+    })
+
+
+
+    
+    test('should return status code 500 when server raises', async () => {
+        const errorThrowingUseCaseStub: UseCase = new ErrorThrowingUseCaseStub()
+        const sut: RegisterUserController = new RegisterUserController(errorThrowingUseCaseStub) 
+
+        const request: HttpRequest = {
+            body: {
+              name: 'Any name',
+              email: 'any@email.com',
+              password: 'valid'
+            }
+        }
+
+        const response: HttpResponse = await sut.handle(request)
+        expect(response.statusCode).toEqual(500)
+        expect(response.body).toBeInstanceOf(Error)
     })
 })
