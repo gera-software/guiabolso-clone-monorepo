@@ -1,5 +1,5 @@
 import { InMemoryUserRepository } from "@test/doubles/repositories"
-import { Encoder, UserData } from "@/usecases/ports"
+import { Encoder, UseCase, UserData } from "@/usecases/ports"
 import { InvalidEmailError, InvalidNameError, InvalidPasswordError } from "@/entities/errors"
 import { Either, left, right } from "@/shared"
 import { User } from "@/entities"
@@ -9,7 +9,7 @@ import { AuthenticationParams, AuthenticationResult, AuthenticationService } fro
 /**
  * Cadastro de novo usuário
  */
-export class SignUp {
+export class SignUp implements UseCase {
     private readonly userRepository: InMemoryUserRepository
     private readonly encoder: Encoder
     private readonly authenticationService: AuthenticationService
