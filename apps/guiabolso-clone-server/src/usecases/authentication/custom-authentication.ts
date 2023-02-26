@@ -1,21 +1,22 @@
-import { left, right } from "@/shared";
+import { Either, left, right } from "@/shared";
 import { InMemoryUserRepository } from "@test/doubles/repositories";
 import { UserNotFoundError, WrongPasswordError } from "@/usecases/authentication/errors";
-import { SignInData, TokenManager } from "./ports";
-import { Encoder } from "../ports";
+import { AuthenticationParams, AuthenticationResult, TokenManager } from "@/usecases/authentication/ports";
+import { Encoder } from "@/usecases/ports";
+import { AuthenticationService } from "@/usecases/authentication/ports";
 
-export class CustomAuthentication {
+export class CustomAuthentication implements AuthenticationService {
     private readonly userRepository: InMemoryUserRepository
     private readonly encoder: Encoder
     private readonly tokenManager: TokenManager
-    
+
     constructor(userRepository: InMemoryUserRepository, encoder: Encoder, tokenManager: TokenManager) {
         this.userRepository = userRepository
         this.encoder = encoder
         this.tokenManager = tokenManager
     }
 
-    public async auth(request: SignInData) {
+    public async auth(request: AuthenticationParams): Promise<Either<UserNotFoundError | WrongPasswordError, AuthenticationResult>>{
 
         const userFound = await this.userRepository.findByEmail(request.email)
 
@@ -25,7 +26,11 @@ export class CustomAuthentication {
 
         const matches = await this.encoder.compare(request.password, userFound.password)
         if(matches) {
-            return right(userFound)
+            const accessToken = await this.tokenManager.sign({ id: userFound.id ?? ''})
+            return right({
+                id: userFound.id ?? '',
+                accessToken,
+            })
         }
 
         return left(new WrongPasswordError())

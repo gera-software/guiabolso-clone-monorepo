@@ -1,7 +1,7 @@
 import { CustomAuthentication } from "@/usecases/authentication"
 import { UserNotFoundError, WrongPasswordError } from "@/usecases/authentication/errors"
-import { SignInData } from "@/usecases/authentication/ports"
-import { Encoder, UserData } from "@/usecases/ports"
+import { AuthenticationResult, AuthenticationParams } from "@/usecases/authentication/ports"
+import { Encoder } from "@/usecases/ports"
 import { FakeTokenManager } from "@test/doubles/authentication"
 import { FakeEncoder } from "@test/doubles/encoder"
 import { InMemoryUserRepository } from "@test/doubles/repositories"
@@ -18,7 +18,7 @@ describe('Custom authentication', () => {
             }
         ])
 
-        const validSignInRequest: SignInData = {
+        const validSignInRequest: AuthenticationParams = {
             email: 'valid@email.com',
             password: 'valid',
         }
@@ -26,8 +26,9 @@ describe('Custom authentication', () => {
         const encoder: Encoder = new FakeEncoder()
         const fakeTokenManager = new FakeTokenManager()
         const authentication = new CustomAuthentication(userUserRepository, encoder, fakeTokenManager)
-        const result = (await authentication.auth(validSignInRequest)).value as UserData
-        expect(result.id).toBeDefined()
+        const result = (await authentication.auth(validSignInRequest)).value as AuthenticationResult
+        expect(result.id).toBe('6057e9885c94f99b6dc1410a')
+        expect((await fakeTokenManager.verify(result.accessToken)).value).toEqual({ id: '6057e9885c94f99b6dc1410a' })
 
     })
 
@@ -41,7 +42,7 @@ describe('Custom authentication', () => {
             }
         ])
 
-        const invalidSignInRequest: SignInData = {
+        const invalidSignInRequest: AuthenticationParams = {
             email: 'valid@email.com',
             password: 'invalid',
         }
@@ -62,7 +63,7 @@ describe('Custom authentication', () => {
             }
         ])
 
-        const invalidSignInRequest: SignInData = {
+        const invalidSignInRequest: AuthenticationParams = {
             email: 'invalid@email.com',
             password: 'valid',
         }

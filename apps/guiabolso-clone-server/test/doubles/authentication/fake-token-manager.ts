@@ -1,13 +1,17 @@
-import { Either } from "@/shared";
+import { Either, left, right } from "@/shared";
 import { Payload, TokenManager } from "@/usecases/authentication/ports";
 
 export class FakeTokenManager implements TokenManager {
 
-    async sign(info: Payload, expiresIn?: string | undefined): Promise<string> {
-        throw new Error("Method not implemented.");
+    async sign(info: Payload): Promise<string> {
+        return info.id + 'TOKEN'
     }
     async verify(token: string): Promise<Either<Error, Payload>> {
-        throw new Error("Method not implemented.");
+        if (token.endsWith('TOKEN')) {
+            return right({ id: token.substring(0, token.indexOf('TOKEN')) })
+        }
+
+        return left(new Error('Invalid token.'))
     }
 
 }
