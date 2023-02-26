@@ -1,17 +1,17 @@
-import { InMemoryUserRepository } from "@test/doubles"
-import { UserData } from "@/usecases/ports"
+import { InMemoryUserRepository } from "@test/doubles/repositories"
+import { Encoder, UserData } from "@/usecases/ports"
 import { InvalidEmailError, InvalidNameError, InvalidPasswordError } from "@/entities/errors"
 import { Either, left, right } from "@/shared"
 import { User } from "@/entities"
 import { ExistingUserError } from "./errors"
 
 /**
- * Cadstro de novo usuário
+ * Cadastro de novo usuário
  */
 export class SignUp {
     private readonly userRepository: InMemoryUserRepository
 
-    constructor(userRepository: InMemoryUserRepository) {
+    constructor(userRepository: InMemoryUserRepository, encoder: Encoder) {
         this.userRepository = userRepository
     }
 
