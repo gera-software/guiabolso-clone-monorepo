@@ -1,9 +1,33 @@
 import { CustomAuthentication } from "@/usecases/authentication"
 import { UserNotFoundError, WrongPasswordError } from "@/usecases/authentication/errors"
 import { SignInData } from "@/usecases/authentication/ports"
+import { Encoder, UserData } from "@/usecases/ports"
+import { FakeEncoder } from "@test/doubles/encoder"
 import { InMemoryUserRepository } from "@test/doubles/repositories"
 
 describe('Custom authentication', () => {
+
+    test('should correctly authenticate if user email and password is correct', async () => {
+        const userUserRepository = new InMemoryUserRepository([
+            {
+                name: 'valid name',
+                email: 'valid@email.com',
+                password: 'validENCRYPTED',
+                id: '6057e9885c94f99b6dc1410a',
+            }
+        ])
+
+        const validSignInRequest: SignInData = {
+            email: 'valid@email.com',
+            password: 'valid',
+        }
+
+        const encoder: Encoder = new FakeEncoder()
+        const authentication = new CustomAuthentication(userUserRepository, encoder)
+        const result = (await authentication.auth(validSignInRequest)).value as UserData
+        expect(result.id).toBeDefined()
+
+    })
 
     test('should not authenticate if password is incorrect', async () => {
         const userUserRepository = new InMemoryUserRepository([
@@ -19,7 +43,8 @@ describe('Custom authentication', () => {
             email: 'valid@email.com',
             password: 'invalid',
         }
-        const authentication = new CustomAuthentication(userUserRepository)
+        const encoder: Encoder = new FakeEncoder()
+        const authentication = new CustomAuthentication(userUserRepository, encoder)
         const response = (await (authentication.auth(invalidSignInRequest))).value as Error
         expect(response).toBeInstanceOf(WrongPasswordError)
     })
@@ -38,7 +63,8 @@ describe('Custom authentication', () => {
             email: 'invalid@email.com',
             password: 'valid',
         }
-        const authentication = new CustomAuthentication(userUserRepository)
+        const encoder: Encoder = new FakeEncoder()
+        const authentication = new CustomAuthentication(userUserRepository, encoder)
         const response = (await (authentication.auth(invalidSignInRequest))).value as Error
         expect(response).toBeInstanceOf(UserNotFoundError)
     })
