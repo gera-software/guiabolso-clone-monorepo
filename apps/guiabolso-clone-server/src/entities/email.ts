@@ -1,14 +1,18 @@
-import { left } from "@/shared"
-import { InvalidEmailError } from "./errors"
+import { left, right } from "@/shared"
+import { InvalidEmailError } from "@/entities/errors"
 
 export class Email {
-    private readonly value: string
+    public readonly value: string
     
     private constructor(email: string) {
         this.value = email
     }
 
     public static create(email: string) {
-        return left(new InvalidEmailError('Email é obrigatório'))
+        if(!email) {
+            return left(new InvalidEmailError('Email required'))
+        }
+
+        return right(new Email(email))
     } 
 }
