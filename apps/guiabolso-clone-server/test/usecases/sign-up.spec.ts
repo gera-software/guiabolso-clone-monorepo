@@ -1,6 +1,7 @@
 import { InvalidEmailError, InvalidNameError, InvalidPasswordError } from "@/entities/errors"
 import { UserData } from "@/usecases/ports"
 import { SignUp } from "@/usecases/sign-up"
+import { ExistingUserError } from "@/usecases/sign-up/errors"
 import { InMemoryUserRepository } from "@test/doubles"
 
 describe("Sing up use case", () => {
@@ -19,6 +20,27 @@ describe("Sing up use case", () => {
         // expect((userSignUpResponse.value as AuthenticationResult).accessToken).toBeDefined()
         expect((await emptyUserRepository.findAll()).length).toEqual(1)
         expect((await emptyUserRepository.findByEmail(validUserSignUpRequest.email)).password).toEqual(validUserSignUpRequest.password)
+    })
+
+    test("should not sign up existing user", async () => {
+        const validUser: UserData = {
+            name: 'any name',
+            email: 'any@mail.com',
+            password: 'validpassword',
+        }
+        const userDataArray: UserData[] = [ validUser ]
+        const userRepository = new InMemoryUserRepository(userDataArray)
+        const sut: SignUp = new SignUp(userRepository)
+
+        const validUserSignUpRequest: UserData = {
+            name: 'any name',
+            email: 'any@mail.com',
+            password: 'validpassword',
+        }
+        const error = await sut.perform(validUserSignUpRequest)
+        expect(error.value).toBeInstanceOf(ExistingUserError)
+
+
     })
 
     describe("should not sing up user with invalid data", () => {
