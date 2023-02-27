@@ -1,7 +1,7 @@
 import { CustomAuthentication } from "@/usecases/authentication"
 import { UserNotFoundError, WrongPasswordError } from "@/usecases/authentication/errors"
 import { AuthenticationResult } from "@/usecases/authentication/ports"
-import { UserData } from "@/usecases/ports"
+import { UseCase, UserData } from "@/usecases/ports"
 import { SignIn } from "@/usecases/sign-in"
 import { MissingParamError } from "@/web-controllers/errors"
 import { HttpRequest, HttpResponse } from "@/web-controllers/ports"
@@ -9,6 +9,7 @@ import { SignInController } from "@/web-controllers/sign-in-controller"
 import { FakeTokenManager } from "@test/doubles/authentication"
 import { FakeEncoder } from "@test/doubles/encoder"
 import { InMemoryUserRepository } from "@test/doubles/repositories"
+import { ErrorThrowingUseCaseStub } from "@test/doubles/usecases"
 
 describe('Sign In web controller', () => {
     test('should return 200 if valid credentials are provided', async () => {
@@ -81,7 +82,7 @@ describe('Sign In web controller', () => {
 
         const validRequest: HttpRequest = {
             body: {
-              email: 'other@email.com',
+              email: 'any@email.com',
               password: 'valid'
             }
         }
@@ -89,5 +90,22 @@ describe('Sign In web controller', () => {
         expect(response.statusCode).toEqual(400)
         expect(response.body).toBeInstanceOf(UserNotFoundError)
 
+    })
+
+    test('should return 500 if an error is raised internally', async () => {
+        const errorThrowingUseCaseStub: UseCase = new ErrorThrowingUseCaseStub()
+
+        const sut: SignInController = new SignInController(errorThrowingUseCaseStub) 
+
+        const validRequest: HttpRequest = {
+            body: {
+              email: 'any@email.com',
+              password: 'valid'
+            }
+        }
+
+        const response: HttpResponse = await sut.handle(validRequest)
+        expect(response.statusCode).toEqual(500)
+        expect(response.body).toBeInstanceOf(Error)
     })
 })

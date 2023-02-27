@@ -16,31 +16,32 @@ export class SignInController implements Controller {
     }
 
     public async handle(request: HttpRequest): Promise<HttpResponse> {
-        const requiredParamNames = ['email', 'password']
-
-        const missingParams = requiredParamNames.filter(paramName => {
-            return (!request.body[paramName]) ? true : false
-        })
-
-        if(missingParams.length > 0) {
-            return badRequest(new MissingParamError(`Missing parameters from request: ${missingParams.join(', ')}.`))
-        }
-
-        const userData: UserData = request.body
-        const response = await this.usecase.perform(userData)
-
-        if(response.isRight()) {
-            return ok({
-                id: 'valid_id',
-                accessToken: 'valid_access_token'
+        try {
+            const requiredParamNames = ['email', 'password']
+    
+            const missingParams = requiredParamNames.filter(paramName => {
+                return (!request.body[paramName]) ? true : false
             })
+    
+            if(missingParams.length > 0) {
+                return badRequest(new MissingParamError(`Missing parameters from request: ${missingParams.join(', ')}.`))
+            }
+    
+            const userData: UserData = request.body
+            const response = await this.usecase.perform(userData)
+    
+            if(response.isRight()) {
+                return ok(response.value)
+            }
+            
+            if(response.value instanceof WrongPasswordError) {
+                return forbiden(response.value)
+            }
+    
+            return badRequest(response.value)
+        } catch(error) {
+            return serverError(error)
         }
-        
-        if(response.value instanceof WrongPasswordError) {
-            return forbiden(response.value)
-        }
-
-        return badRequest(response.value)
     }
 
 }
