@@ -1,3 +1,4 @@
+import 'module-alias/register'
 require('dotenv').config()
 import { MongoHelper } from '@/external/repositories/mongodb/helper'
 
