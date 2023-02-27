@@ -12,7 +12,7 @@ export class MongodbUserRepository implements UserRepository {
         email: user.email,
         password: user.password
       }
-      const result = await userCollection.insertOne(userClone)
+      await userCollection.insertOne(userClone)
     }
   }
 
