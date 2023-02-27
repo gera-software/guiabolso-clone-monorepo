@@ -1,5 +1,6 @@
 import { MongodbUserRepository } from "@/external/repositories/mongodb"
 import { MongoHelper } from "@/external/repositories/mongodb/helper"
+import { UserData } from "@/usecases/ports"
 
 describe('Mongodb User repository', () => {
     beforeAll(async () => {
@@ -23,5 +24,29 @@ describe('Mongodb User repository', () => {
         }
         await sut.add(user)
         expect(await sut.exists(user)).toBeTruthy()
-      })
+    })
+
+    test('when a user is not find by email, should return null', async () => {
+        const sut = new MongodbUserRepository()
+        const result = await sut.findUserByEmail('any@mail.com')
+        expect(result).toBeNull()
+    })
+
+    test('if a user is find by email, should return the user', async () => {
+        const sut = new MongodbUserRepository()
+        const user = {
+          name: 'any_name',
+          email: 'any@mail.com',
+          password: '123',
+        }
+        await sut.add(user)
+
+        const result: UserData = await sut.findUserByEmail('any@mail.com') as UserData
+        expect(result).not.toBeNull()
+        expect(result.name).toBe(user.name)
+        expect(result.email).toBe('any@mail.com')
+        expect(result.password).toBe('123')
+        expect(result.id).toBeDefined()
+    })
+
 })
