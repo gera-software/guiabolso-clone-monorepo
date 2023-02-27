@@ -15,7 +15,7 @@ export const badRequest = (data: any): HttpResponse => ({
   body: data
 })
 
-export const forbiden = (data: any): HttpResponse => ({
+export const forbidden = (data: any): HttpResponse => ({
   statusCode: 403,
   body: data
 })

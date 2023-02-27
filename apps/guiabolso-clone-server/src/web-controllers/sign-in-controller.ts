@@ -1,8 +1,7 @@
 import { UseCase, UserData } from "@/usecases/ports";
 import { Controller, HttpRequest, HttpResponse } from "@/web-controllers/ports";
-import { badRequest, forbiden, ok, serverError } from "@/web-controllers/util";
+import { badRequest, forbidden, ok, serverError } from "@/web-controllers/util";
 import { MissingParamError } from "@/web-controllers/errors";
-import { left } from "@/shared";
 import { WrongPasswordError } from "@/usecases/authentication/errors";
 
 /**
@@ -35,7 +34,7 @@ export class SignInController implements Controller {
             }
             
             if(response.value instanceof WrongPasswordError) {
-                return forbiden(response.value)
+                return forbidden(response.value)
             }
     
             return badRequest(response.value)
