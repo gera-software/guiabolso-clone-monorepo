@@ -1,5 +1,11 @@
 # @gera-software/guiabolso-clone-server
 
+## 1.0.0
+
+### Major Changes
+
+- Using clean architecture to manage users
+
 ## 0.3.0
 
 ### Minor Changes
