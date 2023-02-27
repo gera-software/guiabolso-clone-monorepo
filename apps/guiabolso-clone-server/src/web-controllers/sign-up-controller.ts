@@ -1,6 +1,6 @@
 import { UseCase, UserData } from "@/usecases/ports";
 import { Controller, HttpRequest, HttpResponse } from "@/web-controllers/ports";
-import { badRequest, ok, serverError } from "@/web-controllers/util";
+import { badRequest, created, ok, serverError } from "@/web-controllers/util";
 import { MissingParamError } from "@/web-controllers/errors";
 
 /**
@@ -33,7 +33,7 @@ export class SignUpController implements Controller {
                 return badRequest(response.value)
             }
 
-            return ok(response.value)
+            return created(response.value)
         } catch(error) {
             return serverError(error)
         }

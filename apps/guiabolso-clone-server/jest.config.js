@@ -17,4 +17,5 @@ module.exports = {
 		"^@test/(.*)$": "<rootDir>/test/$1"
 	},
 	watchPathIgnorePatterns: ['globalConfig'],
+	setupFiles: ['dotenv/config']
 }

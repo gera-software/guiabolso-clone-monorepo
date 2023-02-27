@@ -10,7 +10,7 @@ import { MissingParamError } from "@/web-controllers/errors"
 import { ErrorThrowingUseCaseStub } from "@test/doubles/usecases"
 
 describe('Sign Up web controller', () => {
-    test('should return status code ok when request contains valid user data', async () => {
+    test('should return status code 201 created when request contains valid user data', async () => {
         const emptyUserRepository = new InMemoryUserRepository([])
         const encoder: Encoder = new FakeEncoder()
         const authenticationStub = new AuthenticationServiceStub()
@@ -26,7 +26,7 @@ describe('Sign Up web controller', () => {
         }
 
         const response: HttpResponse = await sut.handle(request)
-        expect(response.statusCode).toEqual(200)
+        expect(response.statusCode).toEqual(201)
         expect(response.body.id).toBeDefined()
         expect(response.body.accessToken).toBeDefined()
     })
