@@ -2,7 +2,7 @@ import { Encoder } from "@/usecases/ports";
 import * as bcrypt from 'bcrypt'
 
 export class BcryptEncoder implements Encoder {
-    private rounds: number
+    private readonly rounds: number
 
     constructor(rounds: number) {
         this.rounds = rounds
