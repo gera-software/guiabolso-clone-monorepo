@@ -8,6 +8,8 @@
   "description": "Servidor para execução de tarefas de longa duração que não podem ser colocada em serveless functions",
   "scripts": {
     "test": "jest --passWithNoTests --silent --noStackTrace --runInBand",
+    "test-verbose": "jest --passWithNoTests --runInBand",
+    "test-unit": "npm test -- --watch -c jest-unit.config.js",
     "build": "npm install && npx tsc",
     "start": "node ./dist/server.js",
     "dev": "nodemon --exec ts-node ./src/server.ts"
