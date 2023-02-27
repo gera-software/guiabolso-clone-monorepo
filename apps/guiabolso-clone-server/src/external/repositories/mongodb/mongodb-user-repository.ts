@@ -11,18 +11,17 @@ export type MongodbUser = {
 }
 
 export class MongodbUserRepository implements UserRepository {
+    
   async add (user: UserData): Promise<void> {
     const userCollection = MongoHelper.getCollection('users')
-    // TODO eu acho que não precisava ter essa checagem por existência aqui
-    const exists = await this.exists(user)
-    if (!exists) {
-      const userClone: UserData = {
+
+    const userClone: UserData = {
         name: user.name,
         email: user.email,
         password: user.password
-      }
-      await userCollection.insertOne(userClone)
     }
+    await userCollection.insertOne(userClone)
+    
   }
 
   async findUserByEmail (email: string): Promise<UserData | null> {
