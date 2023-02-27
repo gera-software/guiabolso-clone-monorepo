@@ -12,9 +12,14 @@ export class InMemoryUserRepository implements UserRepository {
         return this._data
     }
 
-    // public async findAllUsers(): Promise<UserData[]> {
-    //     return this.data
-    // }
+    public async exists(user: UserData): Promise<boolean> {
+        const found = await this.findUserByEmail(user.email)
+        if(found) {
+            return true
+        }
+
+        return false
+    }
 
     public async findUserByEmail(email: string): Promise<UserData | null> {
         const user = this.data.find(user => user.email == email)
