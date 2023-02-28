@@ -8,16 +8,25 @@ export class InMemoryAccountRepository implements AccountRepository {
         this._data = data
     }
 
-    async add(account: AccountData): Promise<void> {
-        throw new Error("Method not implemented.");
+    async add(account: AccountData): Promise<AccountData> {
+        account.id = this.idCounter.toString()
+        this.idCounter++
+        this.data.push(account)
+        return account
     }
 
-    async find(id: string): Promise<AccountData> {
-        throw new Error("Method not implemented.");
+    async findById(id: string): Promise<AccountData> {
+        const account = this.data.find(account => account.id == id)
+        return account || null
     }
-    
+
     async exists(id: string): Promise<boolean> {
-        throw new Error("Method not implemented.");
+        const found = await this.findById(id)
+        if(found) {
+            return true
+        }
+
+        return false
     }
 
     public get data() {

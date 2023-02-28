@@ -1,8 +1,8 @@
-import { Amount, User } from "@/entities";
+import { Amount, User, WalletAccount } from "@/entities";
 import { InvalidBalanceError, InvalidNameError } from "@/entities/errors";
 import { left, right } from "@/shared";
-import { AccountData, AccountRepository, UseCase, UserRepository, WalletAccountData } from "@/usecases/ports";
-import { InvalidUserError } from "../errors";
+import { AccountRepository, UseCase, UserRepository, WalletAccountData } from "@/usecases/ports";
+import { UnregisteredUserError } from "@/usecases/errors";
 
 export class CreateManualWalletAccount implements UseCase {
     private readonly accountRepo: AccountRepository
@@ -15,18 +15,31 @@ export class CreateManualWalletAccount implements UseCase {
 
     async perform(accountData: WalletAccountData): Promise<any> {
 
-        if(!accountData.name) {
-            return left(new InvalidNameError())
+        const foundUserData = await this.userRepo.findUserById(accountData.userId)
+        if(!foundUserData) {
+            return left(new UnregisteredUserError())
         }
 
-        const balanceOrError = Amount.create(accountData.balance)
-        if(balanceOrError.isLeft()){
-            return left(new InvalidBalanceError())
+        const userOrError = User.create(foundUserData)
+        if(userOrError.isLeft()) {
+            return left(userOrError.value)
         }
 
-        // const userOrError = await this.userRepo.findUserById(accountData.userId)
-        return left(new InvalidUserError())
+        const user = userOrError.value as User
 
-        // return right()
+        const walletOrError = WalletAccount.create({
+            name: accountData.name,
+            balance: accountData.balance,
+            imageUrl: accountData.imageUrl,
+            user,
+        }) 
+
+        if(walletOrError.isLeft()) {
+            return left(walletOrError.value)
+        }
+
+        const addedAccount = await this.accountRepo.add(accountData)
+
+        return right(addedAccount)
     }
 }

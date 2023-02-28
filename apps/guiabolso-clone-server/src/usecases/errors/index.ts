@@ -1,1 +1,1 @@
-export * from './invalid-user-error'
+export * from './unregistered-user-error'
