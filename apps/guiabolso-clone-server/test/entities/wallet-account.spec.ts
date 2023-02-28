@@ -40,7 +40,7 @@ describe("Wallet Account entity", () => {
         }).value as User
         const account = WalletAccount.create({name, balance, imageUrl, user}).value as WalletAccount
         expect(account.name).toBe(name)
-        expect(account.balance).toBe(balance)
+        expect(account.balance.value).toBe(balance)
         expect(account.imageUrl).toBe(imageUrl)
         expect(account.user.name).toBe(user.name)
         expect(account.user.email).toBe(user.email)

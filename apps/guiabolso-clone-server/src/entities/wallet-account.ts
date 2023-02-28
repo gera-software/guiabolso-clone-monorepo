@@ -1,14 +1,14 @@
 import { left, right } from "@/shared"
 import { InvalidBalanceError, InvalidNameError } from "./errors"
-import { User } from "@/entities"
+import { Amount, User } from "@/entities"
 
 export class WalletAccount {
     public readonly name: string
-    public readonly balance: number
+    public readonly balance: Amount
     public readonly imageUrl?: string
     public readonly user: User
 
-    private constructor(wallet: {name: string, balance: number, imageUrl?: string, user: User}) {
+    private constructor(wallet: {name: string, balance: Amount, imageUrl?: string, user: User}) {
         this.name = wallet.name
         this.balance = wallet.balance
         this.imageUrl = wallet.imageUrl
@@ -19,13 +19,16 @@ export class WalletAccount {
         const { name, balance, imageUrl, user } = wallet
 
         if(!name) {
-            return left(new InvalidNameError)
+            return left(new InvalidNameError())
         }
 
-        if(!Number.isInteger(balance)) {
-            return left(new InvalidBalanceError)
+        const balanceOrError = Amount.create(balance) 
+        if(balanceOrError.isLeft()) {
+            return left(new InvalidBalanceError())
         }
 
-        return right(new WalletAccount({name, balance, imageUrl, user}))
+        const amount = balanceOrError.value as Amount
+
+        return right(new WalletAccount({name, balance: amount, imageUrl, user}))
     }
 }
