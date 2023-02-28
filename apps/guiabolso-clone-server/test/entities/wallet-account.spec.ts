@@ -1,37 +1,48 @@
-import { WalletAccount } from "@/entities"
+import { User, WalletAccount } from "@/entities"
 import { InvalidBalanceError, InvalidNameError } from "@/entities/errors"
-import { WalletAccountData } from "@/usecases/ports"
 
 describe("Wallet Account entity", () => {
     test("should not create an account with empty name", () => {
-        const accountData: WalletAccountData = {
-            name: '',
-            balance: 0,
-            imageUrl: 'valid image url',
-        }
-        const error = WalletAccount.create(accountData).value as Error
+        const name = ''
+        const balance = 0
+        const imageUrl = 'valid image url'
+        const user = User.create({
+            name: 'user name',
+            email: 'user email',
+            password: 'user password',
+        }).value as User
+   
+        const error = WalletAccount.create({name, balance, imageUrl, user}).value as Error
         expect(error).toBeInstanceOf(InvalidNameError)
     })
 
     test("should not create an account with not integer balance", () => {
-        const accountData: WalletAccountData = {
-            name: 'valid name',
-            balance: 4.5,
-            imageUrl: 'valid image url',
-        }
-        const error = WalletAccount.create(accountData).value as Error
+        const name = 'valid name'
+        const balance = 4.6
+        const imageUrl = 'valid image url'
+        const user = User.create({
+            name: 'user name',
+            email: 'user email',
+            password: 'user password',
+        }).value as User
+        const error = WalletAccount.create({name, balance, imageUrl, user}).value as Error
         expect(error).toBeInstanceOf(InvalidBalanceError)
     })
 
     test("should create an account with valid params", () => {
-        const accountData: WalletAccountData = {
-            name: 'valid name',
-            balance: 300,
-            imageUrl: 'valid image url',
-        }
-        const account = WalletAccount.create(accountData).value as WalletAccountData
-        expect(account.name).toBe(accountData.name)
-        expect(account.balance).toBe(accountData.balance)
-        expect(account.imageUrl).toBe(accountData.imageUrl)
+        const name = 'valid name'
+        const balance = 300
+        const imageUrl = 'valid image url'
+        const user = User.create({
+            name: 'user name',
+            email: 'user email',
+            password: 'user password',
+        }).value as User
+        const account = WalletAccount.create({name, balance, imageUrl, user}).value as WalletAccount
+        expect(account.name).toBe(name)
+        expect(account.balance).toBe(balance)
+        expect(account.imageUrl).toBe(imageUrl)
+        expect(account.user.name).toBe(user.name)
+        expect(account.user.email).toBe(user.email)
     })
 })
