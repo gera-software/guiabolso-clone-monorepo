@@ -1,6 +1,6 @@
 import { Express, Router } from 'express'
 import { adaptRoute } from '@/main/adapters'
-import { makeSignInController, makeSignUpController } from '@/main/factories'
+import { makeCreateManualWalletAccountController, makeSignInController, makeSignUpController } from '@/main/factories'
 
 export default (app: Express): void => {
     const router = Router()
@@ -10,4 +10,6 @@ export default (app: Express): void => {
     router.post('/signup', adaptRoute(makeSignUpController()))
     /** Login */
     router.post('/signin', adaptRoute(makeSignInController()))
+
+    router.post('/create/manual-wallet', adaptRoute(makeCreateManualWalletAccountController()))
 }

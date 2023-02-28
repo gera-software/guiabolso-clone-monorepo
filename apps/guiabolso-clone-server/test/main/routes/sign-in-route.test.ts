@@ -13,7 +13,7 @@ describe('Signin route', () => {
     }
 
     beforeAll(async () => {
-        await MongoHelper.connect(process.env.MONGO_URL ?? '')
+        await MongoHelper.connect(process.env.MONGO_URL)
         await MongoHelper.clearCollection('users')
         const userRepo = makeUserRepository()
         const encoder = makeEncoder()
