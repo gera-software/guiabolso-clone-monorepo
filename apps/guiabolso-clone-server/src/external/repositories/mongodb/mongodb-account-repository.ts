@@ -16,11 +16,11 @@ export class MongodbAccountRepository implements AccountRepository {
     async add(account: AccountData): Promise<AccountData> {
         const accountCollection = MongoHelper.getCollection('accounts')
 
-        const acountClone: AccountData = {
+        const acountClone = {
             name: account.name,
             balance: account.balance,
             imageUrl: account.imageUrl,
-            userId: account.userId
+            userId: new ObjectId(account.userId)
         }
     
         const { insertedId } = await accountCollection.insertOne(acountClone)
