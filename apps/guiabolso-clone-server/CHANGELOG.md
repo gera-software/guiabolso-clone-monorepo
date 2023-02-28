@@ -1,5 +1,11 @@
 # @gera-software/guiabolso-clone-server
 
+## 1.1.0
+
+### Minor Changes
+
+- Create manual wallet account
+
 ## 1.0.0
 
 ### Major Changes
