@@ -33,4 +33,8 @@ export class Institution {
 
         return right(new Institution(institutionData))
     }
+
+    public static isInstitutionType(str: string): str is InstitutionType {
+        return str === 'INVESTMENT' || str === 'PERSONAL_BANK' || str === 'BUSINESS_BANK'
+    }
 }
