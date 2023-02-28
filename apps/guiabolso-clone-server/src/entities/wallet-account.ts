@@ -1,8 +1,9 @@
 import { left, right } from "@/shared"
 import { InvalidBalanceError, InvalidNameError } from "./errors"
 import { Amount, User } from "@/entities"
+import { Account } from "@/entities"
 
-export class WalletAccount {
+export class WalletAccount implements Account {
     public readonly name: string
     public readonly balance: Amount
     public readonly imageUrl?: string
