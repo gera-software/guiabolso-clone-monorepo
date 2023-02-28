@@ -49,4 +49,27 @@ describe('Mongodb User repository', () => {
         expect(result.id).toBeDefined()
     })
 
+    test('when a user is not find by id, should return null', async () => {
+      const sut = new MongodbUserRepository()
+      const result = await sut.findUserById('62f95f4a93d61d8fff971668')
+      expect(result).toBeNull()
+    })
+
+    test('if a user is find by id, should return the user', async () => {
+      const sut = new MongodbUserRepository()
+      const user = {
+        name: 'any_name',
+        email: 'any@mail.com',
+        password: '123',
+      }
+      const addedUser = await sut.add(user)
+
+      const result: UserData = await sut.findUserById(addedUser.id) as UserData
+      expect(result).not.toBeNull()
+      expect(result.name).toBe(user.name)
+      expect(result.email).toBe('any@mail.com')
+      expect(result.password).toBe('123')
+      expect(result.id).toBe(addedUser.id)
+  })
+
 })

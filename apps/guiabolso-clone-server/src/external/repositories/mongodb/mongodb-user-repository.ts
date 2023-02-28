@@ -12,7 +12,7 @@ export type MongodbUser = {
 
 export class MongodbUserRepository implements UserRepository {
     
-  async add (user: UserData): Promise<void> {
+  async add (user: UserData): Promise<UserData> {
     const userCollection = MongoHelper.getCollection('users')
 
     const userClone: UserData = {
@@ -20,13 +20,26 @@ export class MongodbUserRepository implements UserRepository {
         email: user.email,
         password: user.password
     }
-    await userCollection.insertOne(userClone)
+
+    const { insertedId } = await userCollection.insertOne(userClone)
+
+    return this.findUserById(insertedId.toString())
     
   }
 
   async findUserByEmail (email: string): Promise<UserData | null> {
     const userCollection = MongoHelper.getCollection('users')
     const user = await userCollection.findOne<MongodbUser>({ email: email })
+    if(user) {
+        return this.withApplicationId(user)
+    }
+
+    return null
+  }
+
+  async findUserById (id: string): Promise<UserData | null> {
+    const userCollection = MongoHelper.getCollection('users')
+    const user = await userCollection.findOne<MongodbUser>({ _id: new ObjectId(id) })
     if(user) {
         return this.withApplicationId(user)
     }

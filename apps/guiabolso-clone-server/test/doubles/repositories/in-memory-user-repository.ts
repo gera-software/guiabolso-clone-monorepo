@@ -26,10 +26,16 @@ export class InMemoryUserRepository implements UserRepository {
         return user || null
     }
 
-    public async add(userData: UserData): Promise<void> {
+    public async findUserById(id: string): Promise<UserData | null> {
+        const user = this.data.find(user => user.id == id)
+        return user || null
+    }
+
+    public async add(userData: UserData): Promise<UserData> {
         userData.id = this.idCounter.toString()
         this.idCounter++
         this.data.push(userData)
+        return userData
     }
 
 }
