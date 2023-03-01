@@ -7,7 +7,7 @@ describe('Mongodb Account repository', () => {
     let validUser: UserData
 
     beforeAll(async () => {
-        await MongoHelper.connect(process.env.MONGO_URL ?? '')
+        await MongoHelper.connect(process.env.MONGO_URL)
         const user = {
             name: 'any_name',
             email: 'any@mail.com',
