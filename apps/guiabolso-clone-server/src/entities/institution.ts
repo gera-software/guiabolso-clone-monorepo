@@ -11,16 +11,16 @@ export class Institution {
     public readonly primaryColor?: string
     public readonly providerConnectorId?: string
 
-    private constructor(institutionData: {id: string, name: string, type: InstitutionType, imageUrl?: string, primaryColor?: string, providerConnectorId?: string}) {
+    private constructor(institutionData: {id: string, name: string, type: string, imageUrl?: string, primaryColor?: string, providerConnectorId?: string}) {
         this.id = institutionData.id
         this.name = institutionData.name
-        this.type = institutionData.type
+        this.type = institutionData.type as InstitutionType
         this.imageUrl = institutionData.imageUrl
         this.primaryColor = institutionData.primaryColor
         this.providerConnectorId = institutionData.providerConnectorId
     }
 
-    public static create(institutionData: {id: string, name: string, type: InstitutionType, imageUrl?: string, primaryColor?: string, providerConnectorId?: string}) {
+    public static create(institutionData: {id: string, name: string, type: string, imageUrl?: string, primaryColor?: string, providerConnectorId?: string}) {
         const { name, type } = institutionData
 
         if(!name) {
@@ -28,6 +28,10 @@ export class Institution {
         }
 
         if(!type) {
+            return left(new InvalidTypeError())
+        }
+
+        if(!Institution.isInstitutionType(type)) {
             return left(new InvalidTypeError())
         }
 

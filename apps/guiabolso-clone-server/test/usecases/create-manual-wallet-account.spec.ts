@@ -5,6 +5,26 @@ import { AccountData, WalletAccountData } from "@/usecases/ports"
 import { InMemoryAccountRepository, InMemoryUserRepository } from "@test/doubles/repositories"
 
 describe('Create manual wallet account use case', () => {
+    test('should not create account if user is invalid', async () => {
+        const name = 'valid account'
+        const balance = 245
+        const imageUrl = 'valid image url'
+        const userId = 'invalid user'
+
+        const createManualWalletRequest: WalletAccountData = {
+            name,
+            balance,
+            imageUrl,
+            userId,
+        }
+
+        const accountRepository = new InMemoryAccountRepository([])
+        const userRepository = new InMemoryUserRepository([])
+        const sut = new CreateManualWalletAccount(accountRepository, userRepository)
+        const response = (await sut.perform(createManualWalletRequest)).value as Error
+        expect(response).toBeInstanceOf(UnregisteredUserError)
+    })
+    
     test('should not create account if name is invalid', async () => {
         const name = ''
         const balance = 0
@@ -43,26 +63,6 @@ describe('Create manual wallet account use case', () => {
         const sut = new CreateManualWalletAccount(accountRepository, userRepository)
         const response = (await sut.perform(createManualWalletRequest)).value as Error
         expect(response).toBeInstanceOf(InvalidBalanceError)
-    })
-
-    test('should not create account if user is invalid', async () => {
-        const name = 'valid account'
-        const balance = 245
-        const imageUrl = 'valid image url'
-        const userId = 'invalid user'
-
-        const createManualWalletRequest: WalletAccountData = {
-            name,
-            balance,
-            imageUrl,
-            userId,
-        }
-
-        const accountRepository = new InMemoryAccountRepository([])
-        const userRepository = new InMemoryUserRepository([])
-        const sut = new CreateManualWalletAccount(accountRepository, userRepository)
-        const response = (await sut.perform(createManualWalletRequest)).value as Error
-        expect(response).toBeInstanceOf(UnregisteredUserError)
     })
 
     test('should create account if all params are valid', async () => {

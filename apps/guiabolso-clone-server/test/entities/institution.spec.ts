@@ -5,7 +5,7 @@ describe("Institution entity", () => {
     test("should not create an institution with empty name", () => {
         const id = 'valid id'
         const name = ''
-        const type = "PERSONAL_BANK" as InstitutionType
+        const type = "PERSONAL_BANK"
         const error = Institution.create({id, name, type}).value as Error
         expect(error).toBeInstanceOf(InvalidNameError)
     })
@@ -17,10 +17,18 @@ describe("Institution entity", () => {
         expect(error).toBeInstanceOf(InvalidTypeError)
     })
 
+    test("should not create an institution with invalid type", () => {
+        const id = 'valid id'
+        const name = 'valid name'
+        const type = "invalid"
+        const error = Institution.create({id, name, type}).value as Error
+        expect(error).toBeInstanceOf(InvalidTypeError)
+    })
+
     test("should create an institution with valid data", () => {
         const id = 'valid id'
         const name = 'valid name'
-        const type: InstitutionType = "PERSONAL_BANK"
+        const type = "PERSONAL_BANK"
         const imageUrl = 'valid url'
         const primaryColor = 'valid color'
         const providerConnectorId = 'valid id'
