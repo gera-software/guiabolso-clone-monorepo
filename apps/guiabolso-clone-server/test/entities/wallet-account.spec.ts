@@ -8,7 +8,7 @@ describe("Wallet Account entity", () => {
         const imageUrl = 'valid image url'
         const user = User.create({
             name: 'user name',
-            email: 'user email',
+            email: 'user@email',
             password: 'user password',
         }).value as User
    
@@ -22,7 +22,7 @@ describe("Wallet Account entity", () => {
         const imageUrl = 'valid image url'
         const user = User.create({
             name: 'user name',
-            email: 'user email',
+            email: 'user@email',
             password: 'user password',
         }).value as User
         const error = WalletAccount.create({name, balance, imageUrl, user}).value as Error
@@ -35,7 +35,7 @@ describe("Wallet Account entity", () => {
         const imageUrl = 'valid image url'
         const user = User.create({
             name: 'user name',
-            email: 'user email',
+            email: 'user@email',
             password: 'user password',
         }).value as User
         const account = WalletAccount.create({name, balance, imageUrl, user}).value as WalletAccount

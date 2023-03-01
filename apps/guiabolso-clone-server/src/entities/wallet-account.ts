@@ -16,7 +16,7 @@ export class WalletAccount implements Account {
         this.user = wallet.user
     }
 
-    public static create(wallet : { name: string, balance: number, imageUrl: string, user: User }) {
+    public static create(wallet: { name: string, balance: number, imageUrl?: string, user: User }) {
         const { name, balance, imageUrl, user } = wallet
 
         if(!name) {
