@@ -3,7 +3,7 @@ import { MongoHelper } from "@/external/repositories/mongodb/helper"
 import { InstitutionData } from "@/usecases/ports"
 
 describe('Mongodb Institution repository', () => {
-    const institutionsArray : MongodbInstitution[] = []
+    const institutionsArray: MongodbInstitution[] = []
     institutionsArray.push({
         _id: null,
         name: 'institution 0', 
