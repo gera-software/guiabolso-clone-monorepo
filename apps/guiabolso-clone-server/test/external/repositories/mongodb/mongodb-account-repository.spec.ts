@@ -29,6 +29,7 @@ describe('Mongodb Account repository', () => {
     test('when account is added, it should exist', async () => {
         const sut = new MongodbAccountRepository()
         const account: AccountData = {
+            type: 'WALLET',
             name: 'any name',
             balance: 789,
             userId: validUser.id
@@ -49,6 +50,7 @@ describe('Mongodb Account repository', () => {
     test('when an account is find by id, should return the account', async () => {
         const sut = new MongodbAccountRepository()
         const account: AccountData = {
+            type: 'WALLET',
             name: 'any name',
             balance: 789,
             userId: validUser.id
@@ -58,8 +60,9 @@ describe('Mongodb Account repository', () => {
         const result: AccountData = await sut.findById(addedAccount.id) as AccountData
         expect(result).not.toBeNull()
         expect(result.id).toBe(addedAccount.id)
-        expect(result.name).toBe(addedAccount.name)
-        expect(result.balance).toBe(addedAccount.balance)
-        expect(result.userId).toBe(addedAccount.userId)
+        expect(result.type).toBe(account.type)
+        expect(result.name).toBe(account.name)
+        expect(result.balance).toBe(account.balance)
+        expect(result.userId).toBe(account.userId)
     })
 })

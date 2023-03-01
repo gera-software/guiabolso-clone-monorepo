@@ -3,6 +3,7 @@ import { ObjectId } from "mongodb"
 import { MongoHelper } from "@/external/repositories/mongodb/helper"
 
 export type MongodbAccount = {
+    type: string,
     name: string,
     balance: number,
     imageUrl?: string,
@@ -17,6 +18,7 @@ export class MongodbAccountRepository implements AccountRepository {
         const accountCollection = MongoHelper.getCollection('accounts')
 
         const acountClone = {
+            type: account.type,
             name: account.name,
             balance: account.balance,
             imageUrl: account.imageUrl,
@@ -47,6 +49,7 @@ export class MongodbAccountRepository implements AccountRepository {
 
     private withApplicationId (dbAccount: MongodbAccount): AccountData {
         return {
+            type: dbAccount.type,
             name: dbAccount.name,
             balance: dbAccount.balance,
             imageUrl: dbAccount.imageUrl,

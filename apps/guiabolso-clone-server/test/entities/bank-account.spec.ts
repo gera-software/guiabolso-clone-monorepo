@@ -65,6 +65,7 @@ describe("Bank Account entity", () => {
         }).value as Institution
 
         const account = BankAccount.create({name, balance, imageUrl, user, institution}).value as BankAccount
+        expect(account.type).toBe('BANK')
         expect(account.name).toBe(name)
         expect(account.balance.value).toBe(balance)
         expect(account.imageUrl).toBe(imageUrl)
@@ -84,6 +85,7 @@ describe("Bank Account entity", () => {
         }).value as User
 
         const account = BankAccount.create({name, balance, imageUrl, user}).value as BankAccount
+        expect(account.type).toBe('BANK')
         expect(account.name).toBe(name)
         expect(account.balance.value).toBe(balance)
         expect(account.imageUrl).toBe(imageUrl)

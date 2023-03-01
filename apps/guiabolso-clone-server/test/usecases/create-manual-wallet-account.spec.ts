@@ -6,12 +6,14 @@ import { InMemoryAccountRepository, InMemoryUserRepository } from "@test/doubles
 
 describe('Create manual wallet account use case', () => {
     test('should not create account if user is invalid', async () => {
+        const type = 'WALLET'
         const name = 'valid account'
         const balance = 245
         const imageUrl = 'valid image url'
         const userId = 'invalid user'
 
         const createManualWalletRequest: WalletAccountData = {
+            type,
             name,
             balance,
             imageUrl,
@@ -26,12 +28,14 @@ describe('Create manual wallet account use case', () => {
     })
     
     test('should not create account if name is invalid', async () => {
+        const type = 'WALLET'
         const name = ''
         const balance = 0
         const imageUrl = 'valid image url'
         const userId = 'valid user id'
 
         const createManualWalletRequest: WalletAccountData = {
+            type,
             name,
             balance,
             imageUrl,
@@ -46,12 +50,14 @@ describe('Create manual wallet account use case', () => {
     })
 
     test('should not create account if balance is invalid', async () => {
+        const type = 'WALLET'
         const name = 'valid account'
         const balance = 0.67
         const imageUrl = 'valid image url'
         const userId = 'valid user id'
 
         const createManualWalletRequest: WalletAccountData = {
+            type,
             name,
             balance,
             imageUrl,
@@ -66,12 +72,14 @@ describe('Create manual wallet account use case', () => {
     })
 
     test('should create account if all params are valid', async () => {
+        const type = 'WALLET'
         const name = 'valid account'
         const balance = 678
         const imageUrl = 'valid image url'
         const userId = 'valid user id'
 
         const createManualWalletRequest: WalletAccountData = {
+            type,
             name,
             balance,
             imageUrl,

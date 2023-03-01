@@ -1,4 +1,4 @@
-import { Account, Amount, Institution, User } from "@/entities";
+import { Account, AccountType, Amount, Institution, User } from "@/entities";
 import { left, right } from "@/shared";
 import { InvalidBalanceError, InvalidNameError } from "./errors";
 
@@ -7,7 +7,9 @@ export class BankAccount implements Account {
     public readonly balance: Amount
     public readonly imageUrl?: string
     public readonly user: User
+    public readonly type: AccountType = 'BANK'
     public readonly institution: Institution
+
     
     private constructor(wallet: {name: string, balance: Amount, imageUrl?: string, user: User, institution?: Institution}) {
         this.name = wallet.name

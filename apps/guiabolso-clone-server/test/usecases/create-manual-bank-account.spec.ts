@@ -6,6 +6,7 @@ import { InMemoryAccountRepository, InMemoryInstitutionRepository, InMemoryUserR
 
 describe('Create manual bank account use case', () => {
     test('should not create account if user is invalid', async () => {
+        const type = 'BANK'
         const name = 'valid account'
         const balance = 245
         const imageUrl = 'valid image url'
@@ -20,6 +21,7 @@ describe('Create manual bank account use case', () => {
         }
 
         const createManualBankRequest: BankAccountData = {
+            type,
             name,
             balance,
             userId,
@@ -36,6 +38,7 @@ describe('Create manual bank account use case', () => {
     })
 
     test('should not create account if name is invalid', async () => {
+        const type = 'BANK'
         const name = ''
         const balance = 0
         const imageUrl = 'valid image url'
@@ -51,6 +54,7 @@ describe('Create manual bank account use case', () => {
 
 
         const createManualBankRequest: BankAccountData = {
+            type,
             name,
             balance,
             userId,
@@ -67,6 +71,7 @@ describe('Create manual bank account use case', () => {
     })
 
     test('should not create account if balance is invalid', async () => {
+        const type = 'BANK'
         const name = 'valid account'
         const balance = 0.67
         const imageUrl = 'valid image url'
@@ -81,6 +86,7 @@ describe('Create manual bank account use case', () => {
         }
 
         const createManualBankRequest: BankAccountData = {
+            type,
             name,
             balance,
             userId,
@@ -97,6 +103,7 @@ describe('Create manual bank account use case', () => {
     })
 
     test('should not create account if institution is invalid', async () => {
+        const type = 'BANK'
         const name = 'valid account'
         const balance = 67
         const imageUrl = 'valid image url'
@@ -111,6 +118,7 @@ describe('Create manual bank account use case', () => {
         }
 
         const createManualBankRequest: BankAccountData = {
+            type,
             name,
             balance,
             userId,
@@ -127,6 +135,7 @@ describe('Create manual bank account use case', () => {
     })
 
     test('should create account if all params are valid', async () => {
+        const type = 'BANK'
         const name = 'valid account'
         const balance = 670
         const imageUrl = 'valid image url'
@@ -141,6 +150,7 @@ describe('Create manual bank account use case', () => {
         }
 
         const createManualBankRequest: BankAccountData = {
+            type,
             name,
             balance,
             userId,
@@ -161,6 +171,7 @@ describe('Create manual bank account use case', () => {
     })
 
     test('should create account with empty institution', async () => {
+        const type = 'BANK'
         const name = 'valid account'
         const balance = 670
         const imageUrl = 'valid image url'
@@ -175,6 +186,7 @@ describe('Create manual bank account use case', () => {
         }
 
         const createManualBankRequest: BankAccountData = {
+            type,
             name,
             balance,
             userId,

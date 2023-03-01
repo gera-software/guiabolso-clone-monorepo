@@ -1,4 +1,5 @@
 export interface WalletAccountData {
+    type: string,
     name: string,
     balance: number,
     imageUrl?: string,
