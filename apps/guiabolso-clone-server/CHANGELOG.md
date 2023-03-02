@@ -1,5 +1,11 @@
 # @gera-software/guiabolso-clone-server
 
+## 1.3.0
+
+### Minor Changes
+
+- Create manual bank account
+
 ## 1.2.0
 
 ### Minor Changes
