@@ -1,6 +1,6 @@
 import { Express, Router } from 'express'
 import { adaptRoute } from '@/main/adapters'
-import { makeCreateManualBankAccountController, makeCreateManualWalletAccountController, makeListInstitutionsByTypeController, makeSignInController, makeSignUpController } from '@/main/factories'
+import { makeCreateManualBankAccountController, makeCreateManualCreditCardAccountController, makeCreateManualWalletAccountController, makeListInstitutionsByTypeController, makeSignInController, makeSignUpController } from '@/main/factories'
 
 export default (app: Express): void => {
     const router = Router()
@@ -14,5 +14,6 @@ export default (app: Express): void => {
     // TODO faltam as verificações de segurança se o usuario não estiver autenticado!
     router.post('/create/manual-wallet', adaptRoute(makeCreateManualWalletAccountController()))
     router.post('/create/manual-bank', adaptRoute(makeCreateManualBankAccountController()))
+    router.post('/create/manual-credit-card', adaptRoute(makeCreateManualCreditCardAccountController()))
     router.get('/institution', adaptRoute(makeListInstitutionsByTypeController()))
 }

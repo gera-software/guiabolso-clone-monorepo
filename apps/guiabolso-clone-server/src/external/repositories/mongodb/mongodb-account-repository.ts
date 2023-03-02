@@ -1,7 +1,15 @@
-import { AccountData, AccountRepository, InstitutionData } from "@/usecases/ports"
+import { AccountData, AccountRepository, CreditCardInfoData, InstitutionData } from "@/usecases/ports"
 import { ObjectId } from "mongodb"
 import { MongoHelper } from "@/external/repositories/mongodb/helper"
 import { MongodbInstitution } from "@/external/repositories/mongodb"
+
+export type MongodbCreditCardInfo = {
+    brand: string,
+    creditLimit: number,
+    availableCreditLimit: number,
+    closeDay: number,
+    dueDay: number,
+}
 
 export type MongodbAccount = {
     type: string,
@@ -10,7 +18,8 @@ export type MongodbAccount = {
     imageUrl?: string,
     userId: ObjectId,
     _id?: ObjectId,
-    institution?: MongodbInstitution
+    institution?: MongodbInstitution,
+    creditCardInfo?: MongodbCreditCardInfo,
 }
 
 
@@ -26,6 +35,7 @@ export class MongodbAccountRepository implements AccountRepository {
             imageUrl: account.imageUrl,
             userId: new ObjectId(account.userId),
             institution: null as any,
+            creditCardInfo: null as any,
         }
 
         if(account.institution) {
@@ -39,6 +49,10 @@ export class MongodbAccountRepository implements AccountRepository {
             }
 
             accountClone.institution = institutionClone
+        }
+
+        if(account.creditCardInfo) {
+            accountClone.creditCardInfo = account.creditCardInfo
         }
     
         const { insertedId } = await accountCollection.insertOne(accountClone)
@@ -77,6 +91,12 @@ export class MongodbAccountRepository implements AccountRepository {
             }
         }
 
+        let creditCardInfo: CreditCardInfoData = null
+
+        if(dbAccount.creditCardInfo) {
+            creditCardInfo = dbAccount.creditCardInfo
+        }
+
         return {
             type: dbAccount.type,
             name: dbAccount.name,
@@ -85,6 +105,7 @@ export class MongodbAccountRepository implements AccountRepository {
             userId: dbAccount.userId.toString(),
             id: dbAccount._id.toString(),
             institution,
+            creditCardInfo,
         }
     }
 
