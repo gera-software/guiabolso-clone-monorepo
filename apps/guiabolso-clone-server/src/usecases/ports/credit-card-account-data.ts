@@ -1,6 +1,6 @@
-import { InstitutionData } from "@/usecases/ports";
+import { CreditCardInfoData, InstitutionData } from "@/usecases/ports";
 
-export interface BankAccountData {
+export interface CreditCardAccountData {
     type: string,
     name: string,
     balance: number,
@@ -8,4 +8,5 @@ export interface BankAccountData {
     userId: string,
     institution?: InstitutionData,
     id?: string,
+    creditCardInfo: CreditCardInfoData,
 }
