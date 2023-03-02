@@ -34,6 +34,7 @@ export class CreateManualBankAccount implements UseCase {
             if(!foundInstitutionData) {
                 return left(new UnregisteredInstitutionError())
             }
+            accountData.institution = foundInstitutionData
 
             const institutionOrError = Institution.create(foundInstitutionData)
             if(institutionOrError.isLeft()) {
