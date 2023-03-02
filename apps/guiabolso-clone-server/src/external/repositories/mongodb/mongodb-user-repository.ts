@@ -1,13 +1,13 @@
 
 import { UserData, UserRepository } from '@/usecases/ports'
 import { ObjectId } from 'mongodb'
-import { MongoHelper } from './helper'
+import { MongoHelper } from '@/external/repositories/mongodb/helper'
 
 export type MongodbUser = {
     name: string,
     email: string,
     password: string,
-    _id: ObjectId
+    _id?: ObjectId
 }
 
 export class MongodbUserRepository implements UserRepository {
@@ -15,7 +15,7 @@ export class MongodbUserRepository implements UserRepository {
   async add (user: UserData): Promise<UserData> {
     const userCollection = MongoHelper.getCollection('users')
 
-    const userClone: UserData = {
+    const userClone: MongodbUser = {
         name: user.name,
         email: user.email,
         password: user.password

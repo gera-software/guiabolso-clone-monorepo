@@ -33,6 +33,7 @@ describe('create manual wallet account route', () => {
         await request(app)
             .post('/api/create/manual-wallet')
             .send({
+                type: 'WALLET',
                 name: 'valid name',
                 balance: 897,
                 imageUrl: 'url',
@@ -40,7 +41,8 @@ describe('create manual wallet account route', () => {
             })
             .expect(201)
             .then((res) => {
-                expect(res.body.id).toBeDefined()
+                expect(res.body.id).toBeTruthy()
+                expect(res.body.type).toBe('WALLET')
             })
     })
 })

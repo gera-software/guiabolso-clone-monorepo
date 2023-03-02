@@ -166,7 +166,7 @@ describe('Create manual bank account use case', () => {
 
         const addedAccount = await accountRepository.exists(response.id)
         expect(addedAccount).toBeTruthy()
-        expect(response.id).toBeDefined()
+        expect(response.id).toBeTruthy()
         expect(response.institution).toEqual(institution)
     })
 
@@ -202,7 +202,7 @@ describe('Create manual bank account use case', () => {
 
         const addedAccount = await accountRepository.exists(response.id)
         expect(addedAccount).toBeTruthy()
-        expect(response.id).toBeDefined()
-        expect(response.institution).toBeUndefined()
+        expect(response.id).toBeTruthy()
+        expect(response.institution).toBeFalsy()
     })
 })

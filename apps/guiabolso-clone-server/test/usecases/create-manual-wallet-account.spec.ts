@@ -93,6 +93,6 @@ describe('Create manual wallet account use case', () => {
 
         const addedAccount = await accountRepository.exists(response.id)
         expect(addedAccount).toBeTruthy()
-        expect(response.id).toBeDefined()
+        expect(response.id).toBeTruthy()
     })
 })

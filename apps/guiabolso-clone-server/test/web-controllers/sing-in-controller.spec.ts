@@ -33,7 +33,7 @@ describe('Sign In web controller', () => {
         const authResult = response.body as AuthenticationResult
         expect(response.statusCode).toEqual(200)
         expect(authResult.id).toEqual(validUser.id)
-        expect(authResult.accessToken).toBeDefined()
+        expect(authResult.accessToken).toBeTruthy()
     })
 
     test('should return 400 if password and email are missing in the request', async () => {

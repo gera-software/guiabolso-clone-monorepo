@@ -91,6 +91,6 @@ describe("Bank Account entity", () => {
         expect(account.imageUrl).toBe(imageUrl)
         expect(account.user.name).toBe(user.name)
         expect(account.user.email).toBe(user.email)
-        expect(account.institution).toBeUndefined()
+        expect(account.institution).toBeFalsy()
     })
 })

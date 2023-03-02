@@ -46,7 +46,7 @@ describe('Mongodb User repository', () => {
         expect(result.name).toBe(user.name)
         expect(result.email).toBe('any@mail.com')
         expect(result.password).toBe('123')
-        expect(result.id).toBeDefined()
+        expect(result.id).toBeTruthy()
     })
 
     test('when a user is not find by id, should return null', async () => {

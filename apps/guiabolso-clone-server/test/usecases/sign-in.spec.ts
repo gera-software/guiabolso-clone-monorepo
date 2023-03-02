@@ -27,7 +27,7 @@ describe('Sign in use case', () => {
         const sut = new SignIn(autenticationService)
         const userResponse = (await sut.perform(singInRequest)).value as AuthenticationResult
         expect(userResponse.id).toEqual(validUser.id)
-        expect(userResponse.accessToken).toBeDefined()
+        expect(userResponse.accessToken).toBeTruthy()
 
     })
 

@@ -53,7 +53,7 @@ describe('Create manual wallet account web controller', () => {
 
         const response: HttpResponse = await sut.handle(validRequest)
         expect(response.statusCode).toEqual(201)
-        expect(response.body.id).toBeDefined()
+        expect(response.body.id).toBeTruthy()
     })
 
     test('should return status code 400 bad request when user is not found', async () => {

@@ -16,7 +16,6 @@ export class CreateManualBankAccount implements UseCase {
     }
 
     async perform(accountData: BankAccountData): Promise<any> {
-
         const foundUserData = await this.userRepo.findUserById(accountData.userId)
         if(!foundUserData) {
             return left(new UnregisteredUserError())

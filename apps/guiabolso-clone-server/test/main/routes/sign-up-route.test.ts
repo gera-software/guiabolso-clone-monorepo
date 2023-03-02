@@ -23,8 +23,8 @@ describe('Signup route', () => {
           })
           .expect(201)
           .then((res) => {
-            expect(res.body.accessToken).toBeDefined()
-            expect(res.body.id).toBeDefined()
+            expect(res.body.accessToken).toBeTruthy()
+            expect(res.body.id).toBeTruthy()
           })
       })
 })

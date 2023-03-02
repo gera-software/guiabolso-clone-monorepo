@@ -27,8 +27,8 @@ describe('Sign Up web controller', () => {
 
         const response: HttpResponse = await sut.handle(request)
         expect(response.statusCode).toEqual(201)
-        expect(response.body.id).toBeDefined()
-        expect(response.body.accessToken).toBeDefined()
+        expect(response.body.id).toBeTruthy()
+        expect(response.body.accessToken).toBeTruthy()
     })
 
     test('should return status code 400 when request contains invalid name', async () => {

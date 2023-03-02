@@ -72,7 +72,7 @@ describe('Create manual bank account web controller', () => {
 
         const response: HttpResponse = await sut.handle(validRequest)
         expect(response.statusCode).toEqual(201)
-        expect(response.body.id).toBeDefined()
+        expect(response.body.id).toBeTruthy()
         expect(response.body.institution).toEqual(validInstitution)
     })
 
