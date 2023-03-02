@@ -1,6 +1,6 @@
-import { Account, AccountType, Amount, Institution, User } from "@/entities";
-import { left, right } from "@/shared";
-import { InvalidBalanceError, InvalidNameError } from "./errors";
+import { Account, AccountType, Amount, Institution, User } from "@/entities"
+import { left, right } from "@/shared"
+import { InvalidBalanceError, InvalidNameError } from "@/entities/errors"
 
 export class BankAccount implements Account {
     public readonly name: string

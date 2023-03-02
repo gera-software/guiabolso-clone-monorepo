@@ -4,7 +4,7 @@ import { InvalidAmountError } from "./errors";
 export class Amount {
     public readonly value: number
 
-    constructor(value: number) {
+    private constructor(value: number) {
         this.value = value
     }
 
