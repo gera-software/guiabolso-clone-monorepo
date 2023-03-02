@@ -1,5 +1,11 @@
 # @gera-software/guiabolso-clone-server
 
+## 1.4.0
+
+### Minor Changes
+
+- Create manual credit card account
+
 ## 1.3.0
 
 ### Minor Changes
