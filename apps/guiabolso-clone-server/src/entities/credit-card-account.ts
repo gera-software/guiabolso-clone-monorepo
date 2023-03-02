@@ -1,18 +1,7 @@
-import { Account, AccountType, Amount, Institution, User } from "@/entities"
+import { Account, AccountType, Amount, CreditCardInfo, Institution, User } from "@/entities"
 import { left, right } from "@/shared"
-import { CreditCardInfoData, InvalidBalanceError, InvalidCreditCardError, InvalidNameError } from "@/entities/errors"
-
-
-
-
-export interface CreditCardInfo {
-    brand: string,
-    creditLimit: Amount,
-    availableCreditLimit: Amount,
-    closeDay: number,
-    dueDay: number,
-}
-
+import { InvalidBalanceError, InvalidNameError } from "@/entities/errors"
+import { CreditCardInfoData } from "@/usecases/ports"
 
 export class CreditCardAccount implements Account {
     public readonly name: string
@@ -47,7 +36,7 @@ export class CreditCardAccount implements Account {
 
         const amount = balanceOrError.value as Amount
 
-        const creditCardInfoOrError = validateCreditCardInfo(creditCardInfo)
+        const creditCardInfoOrError = CreditCardInfo.create(creditCardInfo)
         if(creditCardInfoOrError.isLeft()) {
             return left(creditCardInfoOrError.value)
         }
@@ -57,44 +46,4 @@ export class CreditCardAccount implements Account {
         return right(new CreditCardAccount({name, balance: amount, imageUrl, user, institution, creditCardInfo: creditCard}))
     }
 
-}
-
-function validateCreditCardInfo(creditCardInfoData: CreditCardInfoData) {
-
-    const invalidParams = []
-    if(!creditCardInfoData.brand) {
-        invalidParams.push('brand')
-    }
-
-    if(creditCardInfoData.closeDay < 1 || creditCardInfoData.closeDay > 31) {
-        invalidParams.push('closeDay')
-    }
-
-    if(creditCardInfoData.dueDay < 1 || creditCardInfoData.dueDay > 31) {
-        invalidParams.push('dueDay')
-    }
-
-    const creditLimitOrError = Amount.create(creditCardInfoData.creditLimit)
-    if(creditLimitOrError.isLeft()) {
-        invalidParams.push('creditLimit')
-    }
-
-    const availableCreditLimitOrError = Amount.create(creditCardInfoData.availableCreditLimit)
-    if(availableCreditLimitOrError.isLeft()) {
-        invalidParams.push('availableCreditLimit')
-    }
-
-    if(invalidParams.length) {
-        return left(new InvalidCreditCardError(`Invalid credit card params: ${invalidParams.join(', ')}`))
-    }
-
-    const creditCardInfo: CreditCardInfo = {
-        brand: creditCardInfoData.brand,
-        creditLimit: creditLimitOrError.value as Amount,
-        availableCreditLimit: availableCreditLimitOrError.value as Amount,
-        closeDay: creditCardInfoData.closeDay,
-        dueDay: creditCardInfoData.dueDay,
-    }
-
-    return right(creditCardInfo)
 }
