@@ -117,6 +117,7 @@ describe("Credit Card Account entity", () => {
 
         const account = CreditCardAccount.create({name, balance, imageUrl, user, institution, creditCardInfo}).value as CreditCardAccount
         expect(account.type).toBe('CREDIT_CARD')
+        expect(account.syncType).toBe('MANUAL')
         expect(account.name).toBe(name)
         expect(account.balance.value).toBe(balance)
         expect(account.imageUrl).toBe(imageUrl)
@@ -149,6 +150,7 @@ describe("Credit Card Account entity", () => {
 
         const account = CreditCardAccount.create({name, balance, imageUrl, user, creditCardInfo}).value as CreditCardAccount
         expect(account.type).toBe('CREDIT_CARD')
+        expect(account.syncType).toBe('MANUAL')
         expect(account.name).toBe(name)
         expect(account.balance.value).toBe(balance)
         expect(account.imageUrl).toBe(imageUrl)

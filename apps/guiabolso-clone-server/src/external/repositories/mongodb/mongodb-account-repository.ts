@@ -13,6 +13,7 @@ export type MongodbCreditCardInfo = {
 
 export type MongodbAccount = {
     type: string,
+    syncType: string,
     name: string,
     balance: number,
     imageUrl?: string,
@@ -30,6 +31,7 @@ export class MongodbAccountRepository implements AccountRepository {
 
         const accountClone: MongodbAccount = {
             type: account.type,
+            syncType: account.syncType,
             name: account.name,
             balance: account.balance,
             imageUrl: account.imageUrl,
@@ -99,6 +101,7 @@ export class MongodbAccountRepository implements AccountRepository {
 
         return {
             type: dbAccount.type,
+            syncType: dbAccount.syncType,
             name: dbAccount.name,
             balance: dbAccount.balance,
             imageUrl: dbAccount.imageUrl,

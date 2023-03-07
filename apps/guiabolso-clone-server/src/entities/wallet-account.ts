@@ -1,6 +1,6 @@
 import { left, right } from "@/shared"
 import { InvalidBalanceError, InvalidNameError } from "./errors"
-import { AccountType, Amount, User } from "@/entities"
+import { AccountType, Amount, SyncType, User } from "@/entities"
 import { Account } from "@/entities"
 
 export class WalletAccount implements Account {
@@ -9,6 +9,7 @@ export class WalletAccount implements Account {
     public readonly imageUrl?: string
     public readonly user: User
     public readonly type: AccountType = 'WALLET'
+    public readonly syncType: SyncType = 'MANUAL'
 
     private constructor(wallet: {name: string, balance: Amount, imageUrl?: string, user: User}) {
         this.name = wallet.name

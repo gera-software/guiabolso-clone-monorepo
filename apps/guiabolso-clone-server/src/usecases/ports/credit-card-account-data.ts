@@ -2,6 +2,7 @@ import { CreditCardInfoData, InstitutionData } from "@/usecases/ports";
 
 export interface CreditCardAccountData {
     type: string,
+    syncType: string,
     name: string,
     balance: number,
     imageUrl?: string,

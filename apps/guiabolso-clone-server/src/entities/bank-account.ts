@@ -1,4 +1,4 @@
-import { Account, AccountType, Amount, Institution, User } from "@/entities"
+import { Account, AccountType, Amount, Institution, SyncType, User } from "@/entities"
 import { left, right } from "@/shared"
 import { InvalidBalanceError, InvalidNameError } from "@/entities/errors"
 
@@ -8,6 +8,7 @@ export class BankAccount implements Account {
     public readonly imageUrl?: string
     public readonly user: User
     public readonly type: AccountType = 'BANK'
+    public readonly syncType: SyncType = 'MANUAL'
     public readonly institution: Institution
 
     

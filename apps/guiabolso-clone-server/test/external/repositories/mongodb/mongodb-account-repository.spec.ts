@@ -55,6 +55,7 @@ describe('Mongodb Account repository', () => {
         const sut = new MongodbAccountRepository()
         const account: AccountData = {
             type: 'WALLET',
+            syncType: 'MANUAL',
             name: 'any name',
             balance: 789,
             userId: validUser.id
@@ -76,6 +77,7 @@ describe('Mongodb Account repository', () => {
         const sut = new MongodbAccountRepository()
         const account: AccountData = {
             type: 'WALLET',
+            syncType: 'MANUAL',
             name: 'any name',
             balance: 789,
             userId: validUser.id
@@ -86,6 +88,7 @@ describe('Mongodb Account repository', () => {
         expect(result).not.toBeNull()
         expect(result.id).toBe(addedAccount.id)
         expect(result.type).toBe(account.type)
+        expect(result.syncType).toBe(account.syncType)
         expect(result.name).toBe(account.name)
         expect(result.balance).toBe(account.balance)
         expect(result.userId).toBe(account.userId)
@@ -96,6 +99,7 @@ describe('Mongodb Account repository', () => {
         const sut = new MongodbAccountRepository()
         const account: AccountData = {
             type: 'BANK',
+            syncType: 'MANUAL',
             name: 'any name',
             balance: 789,
             userId: validUser.id,
@@ -107,6 +111,7 @@ describe('Mongodb Account repository', () => {
         expect(result).not.toBeNull()
         expect(result.id).toBe(addedAccount.id)
         expect(result.type).toBe(account.type)
+        expect(result.syncType).toBe(account.syncType)
         expect(result.name).toBe(account.name)
         expect(result.balance).toBe(account.balance)
         expect(result.userId).toBe(account.userId)
@@ -117,6 +122,7 @@ describe('Mongodb Account repository', () => {
         const sut = new MongodbAccountRepository()
         const account: AccountData = {
             type: 'CREDIT_CARD',
+            syncType: 'MANUAL',
             name: 'any name',
             balance: 789,
             userId: validUser.id,
@@ -129,6 +135,7 @@ describe('Mongodb Account repository', () => {
         expect(result).not.toBeNull()
         expect(result.id).toBe(addedAccount.id)
         expect(result.type).toBe(account.type)
+        expect(result.syncType).toBe(account.syncType)
         expect(result.name).toBe(account.name)
         expect(result.balance).toBe(account.balance)
         expect(result.userId).toBe(account.userId)

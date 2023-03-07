@@ -1,4 +1,4 @@
-import { Account, AccountType, Amount, CreditCardInfo, Institution, User } from "@/entities"
+import { Account, AccountType, Amount, CreditCardInfo, Institution, SyncType, User } from "@/entities"
 import { left, right } from "@/shared"
 import { InvalidBalanceError, InvalidNameError } from "@/entities/errors"
 import { CreditCardInfoData } from "@/usecases/ports"
@@ -9,6 +9,7 @@ export class CreditCardAccount implements Account {
     public readonly imageUrl?: string
     public readonly user: User
     public readonly type: AccountType = 'CREDIT_CARD'
+    public readonly syncType: SyncType = 'MANUAL'
     public readonly institution: Institution
     public readonly creditCardInfo: CreditCardInfo
 

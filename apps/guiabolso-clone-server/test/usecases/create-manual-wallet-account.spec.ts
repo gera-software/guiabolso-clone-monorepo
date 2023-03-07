@@ -7,6 +7,7 @@ import { InMemoryAccountRepository, InMemoryUserRepository } from "@test/doubles
 describe('Create manual wallet account use case', () => {
     test('should not create account if user is invalid', async () => {
         const type = 'WALLET'
+        const syncType = 'MANUAL'
         const name = 'valid account'
         const balance = 245
         const imageUrl = 'valid image url'
@@ -14,6 +15,7 @@ describe('Create manual wallet account use case', () => {
 
         const createManualWalletRequest: WalletAccountData = {
             type,
+            syncType,
             name,
             balance,
             imageUrl,
@@ -29,6 +31,7 @@ describe('Create manual wallet account use case', () => {
     
     test('should not create account if name is invalid', async () => {
         const type = 'WALLET'
+        const syncType = 'MANUAL'
         const name = ''
         const balance = 0
         const imageUrl = 'valid image url'
@@ -36,6 +39,7 @@ describe('Create manual wallet account use case', () => {
 
         const createManualWalletRequest: WalletAccountData = {
             type,
+            syncType,
             name,
             balance,
             imageUrl,
@@ -51,6 +55,7 @@ describe('Create manual wallet account use case', () => {
 
     test('should not create account if balance is invalid', async () => {
         const type = 'WALLET'
+        const syncType = 'MANUAL'
         const name = 'valid account'
         const balance = 0.67
         const imageUrl = 'valid image url'
@@ -58,6 +63,7 @@ describe('Create manual wallet account use case', () => {
 
         const createManualWalletRequest: WalletAccountData = {
             type,
+            syncType,
             name,
             balance,
             imageUrl,
@@ -73,6 +79,7 @@ describe('Create manual wallet account use case', () => {
 
     test('should create account if all params are valid', async () => {
         const type = 'WALLET'
+        const syncType = 'MANUAL'
         const name = 'valid account'
         const balance = 678
         const imageUrl = 'valid image url'
@@ -80,6 +87,7 @@ describe('Create manual wallet account use case', () => {
 
         const createManualWalletRequest: WalletAccountData = {
             type,
+            syncType,
             name,
             balance,
             imageUrl,

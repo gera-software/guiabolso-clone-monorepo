@@ -7,6 +7,7 @@ import { InMemoryAccountRepository, InMemoryInstitutionRepository, InMemoryUserR
 describe('Create manual credit card account use case', () => {
     test('should not create account if user is invalid', async () => {
         const type = 'CREDIT_CARD'
+        const syncType = 'MANUAL'
         const name = 'valid account'
         const balance = 245
         const imageUrl = 'valid image url'
@@ -29,6 +30,7 @@ describe('Create manual credit card account use case', () => {
 
         const createManualCreditCardRequest: CreditCardAccountData = {
             type,
+            syncType,
             name,
             balance,
             userId,
@@ -47,6 +49,7 @@ describe('Create manual credit card account use case', () => {
 
     test('should not create account if credit card info is invalid', async () => {
         const type = 'CREDIT_CARD'
+        const syncType = 'MANUAL'
         const name = 'valid account'
         const balance = 0
         const imageUrl = 'valid image url'
@@ -70,6 +73,7 @@ describe('Create manual credit card account use case', () => {
 
         const createManualCreditCardRequest: CreditCardAccountData = {
             type,
+            syncType,
             name,
             balance,
             userId,
@@ -88,6 +92,7 @@ describe('Create manual credit card account use case', () => {
 
     test('should not create account if name is invalid', async () => {
         const type = 'CREDIT_CARD'
+        const syncType = 'MANUAL'
         const name = ''
         const balance = 0
         const imageUrl = 'valid image url'
@@ -111,6 +116,7 @@ describe('Create manual credit card account use case', () => {
 
         const createManualCreditCardRequest: CreditCardAccountData = {
             type,
+            syncType,
             name,
             balance,
             userId,
@@ -129,6 +135,7 @@ describe('Create manual credit card account use case', () => {
 
     test('should not create account if balance is invalid', async () => {
         const type = 'CREDIT_CARD'
+        const syncType = 'MANUAL'
         const name = 'valid account'
         const balance = 0.67
         const imageUrl = 'valid image url'
@@ -151,6 +158,7 @@ describe('Create manual credit card account use case', () => {
 
         const createManualCreditCardRequest: CreditCardAccountData = {
             type,
+            syncType,
             name,
             balance,
             userId,
@@ -169,6 +177,7 @@ describe('Create manual credit card account use case', () => {
 
     test('should not create account if institution is invalid', async () => {
         const type = 'CREDIT_CARD'
+        const syncType = 'MANUAL'
         const name = 'valid account'
         const balance = 67
         const imageUrl = 'valid image url'
@@ -191,6 +200,7 @@ describe('Create manual credit card account use case', () => {
 
         const createManualCreditCardRequest: CreditCardAccountData = {
             type,
+            syncType,
             name,
             balance,
             userId,
@@ -209,6 +219,7 @@ describe('Create manual credit card account use case', () => {
 
     test('should create account if all params are valid', async () => {
         const type = 'CREDIT_CARD'
+        const syncType = 'MANUAL'
         const name = 'valid account'
         const balance = 670
         const imageUrl = 'valid image url'
@@ -231,6 +242,7 @@ describe('Create manual credit card account use case', () => {
 
         const createManualCreditCardRequest: CreditCardAccountData = {
             type,
+            syncType,
             name,
             balance,
             userId,
@@ -254,6 +266,7 @@ describe('Create manual credit card account use case', () => {
 
     test('should create account with empty institution', async () => {
         const type = 'CREDIT_CARD'
+        const syncType = 'MANUAL'
         const name = 'valid account'
         const balance = 670
         const imageUrl = 'valid image url'
@@ -276,6 +289,7 @@ describe('Create manual credit card account use case', () => {
 
         const createManualCreditCardRequest: CreditCardAccountData = {
             type,
+            syncType,
             name,
             balance,
             userId,
