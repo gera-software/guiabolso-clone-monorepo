@@ -1,5 +1,11 @@
 # @gera-software/guiabolso-clone-server
 
+## 1.5.0
+
+### Minor Changes
+
+- List all categories
+
 ## 1.4.0
 
 ### Minor Changes
