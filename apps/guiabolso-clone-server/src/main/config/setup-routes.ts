@@ -1,6 +1,6 @@
 import { Express, Router } from 'express'
 import { adaptRoute } from '@/main/adapters'
-import { makeCreateManualBankAccountController, makeCreateManualCreditCardAccountController, makeCreateManualWalletAccountController, makeListInstitutionsByTypeController, makeSignInController, makeSignUpController } from '@/main/factories'
+import { makeCreateManualBankAccountController, makeCreateManualCreditCardAccountController, makeCreateManualWalletAccountController, makeListAllCategoriesController, makeListInstitutionsByTypeController, makeSignInController, makeSignUpController } from '@/main/factories'
 
 export default (app: Express): void => {
     const router = Router()
@@ -16,4 +16,5 @@ export default (app: Express): void => {
     router.post('/create/manual-bank', adaptRoute(makeCreateManualBankAccountController()))
     router.post('/create/manual-credit-card', adaptRoute(makeCreateManualCreditCardAccountController()))
     router.get('/institution', adaptRoute(makeListInstitutionsByTypeController()))
+    router.get('/category', adaptRoute(makeListAllCategoriesController()))
 }
