@@ -1,12 +1,6 @@
 import { left, right } from "@/shared"
 import { InvalidGroupNameError, InvalidIconColorError, InvalidIconNameError, InvalidNameError } from "@/entities/errors"
-
-export interface CategoryData {
-    name: string,
-    group: string,
-    iconName: string,
-    primaryColor: string,
-}
+import { CategoryData } from "@/usecases/ports"
 
 export class Category {
     public readonly name: string
