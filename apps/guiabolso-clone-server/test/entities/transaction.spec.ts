@@ -1,4 +1,4 @@
-import { Account, Category, Transaction, User, WalletAccount } from "@/entities"
+import { Account, AccountType, Category, Transaction, TransactionType, User, WalletAccount } from "@/entities"
 import { InvalidTransactionError } from "@/entities/errors"
 
 describe("Transaction entity", () => {
@@ -21,56 +21,114 @@ describe("Transaction entity", () => {
     }).value as Category
 
     test("should not create transaction with empty account", () => {
-        const amount = 1900
+        const amount = -1900
         const description = 'transaction description'
-        const error = Transaction.create({ account: null, amount, description }).value as Error
+        const date = new Date('2023-01-23')
+        const type: TransactionType = 'EXPENSE'
+        const error = Transaction.create({ account: null, amount, description, date, type }).value as Error
         expect(error).toBeInstanceOf(InvalidTransactionError)
         expect(error.message).toBe('Invalid account')
     })
 
+    test("should not create transaction without description or descriptionOriginal", () => {
+        const amount = -1900
+        const date = new Date('2023-01-23')
+        const type: TransactionType = 'EXPENSE'
+        const error = Transaction.create({ account: walletAccount, amount, category, date, type }).value as Error
+        expect(error).toBeInstanceOf(InvalidTransactionError)
+        expect(error.message).toBe('Required some description')
+    })
+
     test("should not create transaction with zero amount", () => {
+        const amount = 0
         const description = 'transaction description'
-        const error = Transaction.create({ account: walletAccount, amount: 0, description }).value as Error
+        const date = new Date('2023-01-23')
+        const type: TransactionType = 'EXPENSE'
+        const error = Transaction.create({ account: walletAccount, amount, description, date, type }).value as Error
         expect(error).toBeInstanceOf(InvalidTransactionError)
         expect(error.message).toBe('Invalid amount')
     })
 
-    test("should create transaction with valid account", () => {
-        const amount = 1900
+    test("should not create transaction type EXPENSE if amount is positive", () => {
+        const amount = 3459
         const description = 'transaction description'
-        const transaction = Transaction.create({ account: walletAccount, amount, description }).value as Transaction
+        const date = new Date('2023-01-23')
+        const type: TransactionType = 'EXPENSE'
+        const error = Transaction.create({ account: walletAccount, amount, description, date, type }).value as Error
+        expect(error).toBeInstanceOf(InvalidTransactionError)
+        expect(error.message).toBe('An expense should have a negative amount')
+    })
+
+    test("should not create transaction type INCOME if amount is negative", () => {
+        const amount = -3459
+        const description = 'transaction description'
+        const date = new Date('2023-01-23')
+        const type: TransactionType = 'INCOME'
+        const error = Transaction.create({ account: walletAccount, amount, description, date, type }).value as Error
+        expect(error).toBeInstanceOf(InvalidTransactionError)
+        expect(error.message).toBe('An income should have a positive amount')
+    })
+
+    test("should create transaction type expense", () => {
+        const amount = -1900
+        const description = 'transaction description'
+        const date = new Date('2023-01-23')
+        const type: TransactionType = 'EXPENSE'
+        const comment = 'comentario válido'
+        const ignored = true
+        const transaction = Transaction.create({ account: walletAccount, amount, description, date, type, comment, ignored }).value as Transaction
         expect(transaction.account).toEqual(walletAccount)
         expect(transaction.category).toEqual(null)
         expect(transaction.amount.value).toEqual(amount)
         expect(transaction.description).toEqual(description)
         expect(transaction.descriptionOriginal).toEqual('')
+        expect(transaction.date.toISOString()).toEqual('2023-01-23T00:00:00.000Z')
+        expect(transaction.type).toEqual(type)
+        expect(transaction.comment).toEqual(comment)
+        expect(transaction.ignored).toEqual(ignored)
+    })
+
+    test("should create transaction type income", () => {
+        const amount = 1900
+        const description = 'transaction description'
+        const date = new Date('2023-01-23')
+        const type: TransactionType = 'INCOME'
+        const comment = 'comentario válido'
+        const ignored = true
+        const transaction = Transaction.create({ account: walletAccount, amount, description, date, type, comment, ignored }).value as Transaction
+        expect(transaction.account).toEqual(walletAccount)
+        expect(transaction.category).toEqual(null)
+        expect(transaction.amount.value).toEqual(amount)
+        expect(transaction.description).toEqual(description)
+        expect(transaction.descriptionOriginal).toEqual('')
+        expect(transaction.date.toISOString()).toEqual('2023-01-23T00:00:00.000Z')
+        expect(transaction.type).toEqual(type)
+        expect(transaction.comment).toEqual(comment)
+        expect(transaction.ignored).toEqual(ignored)
     })
 
     test("should create transaction with optional category", () => {
-        const amount = 1900
+        const amount = -1900
         const description = 'transaction description'
-        const transaction = Transaction.create({ account: walletAccount, amount, category, description }).value as Transaction
+        const date = new Date('2023-01-23')
+        const type: TransactionType = 'EXPENSE'
+        const transaction = Transaction.create({ account: walletAccount, amount, category, description, date, type }).value as Transaction
         expect(transaction.account).toEqual(walletAccount)
         expect(transaction.category).toEqual(category)
         expect(transaction.amount.value).toEqual(amount)
         expect(transaction.description).toEqual(description)
         expect(transaction.descriptionOriginal).toEqual('')
+        expect(transaction.type).toEqual(type)
+        expect(transaction.comment).toEqual('')
+        expect(transaction.ignored).toEqual(false)
     })
 
-    test("should not create transaction without description or descriptionOriginal", () => {
-        const amount = 1900
-        const error = Transaction.create({ account: walletAccount, amount, category }).value as Error
-        expect(error).toBeInstanceOf(InvalidTransactionError)
-        expect(error.message).toBe('Required some description')
-    })
-
-    test("should create transaction with descriptionOriginal", () => {
-        const amount = 1900
+    test("should create transaction with only descriptionOriginal", () => {
+        const amount = -1900
         const description = 'transaction description'
-        const transaction = Transaction.create({ account: walletAccount, amount, descriptionOriginal: description }).value as Transaction
-        expect(transaction.account).toEqual(walletAccount)
-        expect(transaction.category).toEqual(null)
-        expect(transaction.amount.value).toEqual(amount)
+        const date = new Date('2023-01-23')
+        const type: TransactionType = 'EXPENSE'
+        const transaction = Transaction.create({ account: walletAccount, amount, descriptionOriginal: description, date, type }).value as Transaction
         expect(transaction.descriptionOriginal).toEqual(description)
         expect(transaction.description).toEqual('')
     })
