@@ -12,6 +12,7 @@ categoriesArray.push({
     group: "group 0",
     iconName: "icon 0",
     primaryColor: "color 0",
+    ignored: true,
     id: "0",
 })
 categoriesArray.push({
@@ -19,6 +20,7 @@ categoriesArray.push({
     group: "group 1",
     iconName: "icon 1",
     primaryColor: "color 1",
+    ignored: false,
     id: "1",
 })
 

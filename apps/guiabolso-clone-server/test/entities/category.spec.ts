@@ -71,17 +71,20 @@ describe("Category entity", () => {
         const group = 'GROUPNAME'
         const iconName = 'icon name'
         const primaryColor = 'color'
+        const ignored = true
         
         const category = Category.create({
             name,
             group,
             iconName,
             primaryColor,
+            ignored,
         }).value as Category
 
         expect(category.name).toBe(name)
         expect(category.group).toBe(group)
         expect(category.iconName).toBe(iconName)
         expect(category.primaryColor).toBe(primaryColor)
+        expect(category.ignored).toBe(ignored)
     })
 })

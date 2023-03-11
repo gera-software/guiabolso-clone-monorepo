@@ -8,6 +8,7 @@ export type MongodbCategory = {
     group: string, 
     iconName: string, 
     primaryColor: string,
+    ignored: boolean,
 }
 
 export class MongodbCategoryRepository implements CategoryRepository {
@@ -44,6 +45,7 @@ export class MongodbCategoryRepository implements CategoryRepository {
             group: dbCategory.group, 
             iconName: dbCategory.iconName, 
             primaryColor: dbCategory.primaryColor,
+            ignored: dbCategory.ignored,
         }
     }
     

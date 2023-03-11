@@ -3,5 +3,6 @@ export interface CategoryData {
     group: string,
     iconName: string,
     primaryColor: string,
+    ignored?: boolean,
     id?: string,
 }

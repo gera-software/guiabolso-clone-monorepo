@@ -7,12 +7,14 @@ export class Category {
     public readonly group: string
     public readonly iconName: string
     public readonly primaryColor: string
+    public readonly ignored: boolean
 
     private constructor(categoryData : CategoryData) {
         this.name = categoryData.name
         this.group = categoryData.group
         this.iconName = categoryData.iconName
         this.primaryColor = categoryData.primaryColor
+        this.ignored = categoryData.ignored
     }
 
     public static create(categoryData : CategoryData) {
