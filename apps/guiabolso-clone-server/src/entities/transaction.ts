@@ -1,6 +1,6 @@
 import { TransactionData } from "@/usecases/ports"
-import { InvalidTransactionError } from "@/entities/errors"
-import { left, right } from "@/shared"
+import { InvalidAmountError, InvalidTransactionError } from "@/entities/errors"
+import { Either, left, right } from "@/shared"
 import { Account, Amount, Category, User } from "@/entities"
 
 export type TransactionType = 'EXPENSE' | 'INCOME'
@@ -28,7 +28,7 @@ export class Transaction {
         this.ignored = !!transaction.ignored
     }
 
-    public static create(transaction: { account: Account, category?: Category, amount: number, description?: string, descriptionOriginal?: string, date: Date, type: TransactionType, comment?: string, ignored?: boolean }) {
+    public static create(transaction: { account: Account, category?: Category, amount: number, description?: string, descriptionOriginal?: string, date: Date, type: string, comment?: string, ignored?: boolean }): Either<InvalidTransactionError | InvalidAmountError, Transaction> {
 
         if(!transaction.account) {
             return left(new InvalidTransactionError('Invalid account'))
@@ -65,7 +65,7 @@ export class Transaction {
             description: transaction.description,
             descriptionOriginal: transaction.descriptionOriginal,
             date: transaction.date,
-            type: transaction.type,
+            type: transaction.type as TransactionType,
             comment: transaction.comment,
             ignored: transaction.ignored,
         }))

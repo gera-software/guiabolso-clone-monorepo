@@ -1,4 +1,4 @@
-import { left, right } from "@/shared";
+import { Either, left, right } from "@/shared";
 import { InvalidAmountError } from "./errors";
 
 export class Amount {
@@ -8,7 +8,7 @@ export class Amount {
         this.value = value
     }
 
-    public static create(value: number) {
+    public static create(value: number): Either<InvalidAmountError, Amount> {
         if(!Number.isInteger(value)) {
             return left(new InvalidAmountError)
         }
