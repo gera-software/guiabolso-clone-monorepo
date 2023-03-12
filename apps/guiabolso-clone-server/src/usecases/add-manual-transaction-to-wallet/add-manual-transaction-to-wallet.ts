@@ -58,7 +58,6 @@ export class AddManualTransactionToWallet implements UseCase {
 
 
         const transactionOrError = Transaction.create({
-            account: walletAccount,
             amount: request.amount,
             description: request.description,
             descriptionOriginal: request.descriptionOriginal,

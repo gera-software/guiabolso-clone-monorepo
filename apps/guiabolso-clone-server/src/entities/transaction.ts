@@ -1,11 +1,10 @@
 import { InvalidAmountError, InvalidTransactionError } from "@/entities/errors"
 import { Either, left, right } from "@/shared"
-import { Account, Amount, Category, User } from "@/entities"
+import { Amount, Category } from "@/entities"
 
 export type TransactionType = 'EXPENSE' | 'INCOME'
 
 export class Transaction {
-    public readonly account: Account
     public readonly category: Category
     public readonly amount: Amount
     public readonly description: string
@@ -15,8 +14,7 @@ export class Transaction {
     public readonly comment: string
     public readonly ignored: boolean
 
-    private constructor(transaction: { account: Account, category: Category, amount: Amount, description?: string, descriptionOriginal?: string, date: Date, type: TransactionType, comment?: string, ignored?: boolean }) {
-        this.account = transaction.account
+    private constructor(transaction: { category: Category, amount: Amount, description?: string, descriptionOriginal?: string, date: Date, type: TransactionType, comment?: string, ignored?: boolean }) {
         this.amount = transaction.amount
         this.category = transaction.category ?? null
         this.description = transaction.description ?? ''
@@ -27,11 +25,7 @@ export class Transaction {
         this.ignored = !!transaction.ignored
     }
 
-    public static create(transaction: { account: Account, category?: Category, amount: number, description?: string, descriptionOriginal?: string, date: Date, type: string, comment?: string, ignored?: boolean }): Either<InvalidTransactionError | InvalidAmountError, Transaction> {
-
-        if(!transaction.account) {
-            return left(new InvalidTransactionError('Invalid account'))
-        }
+    public static create(transaction: { category?: Category, amount: number, description?: string, descriptionOriginal?: string, date: Date, type: string, comment?: string, ignored?: boolean }): Either<InvalidTransactionError | InvalidAmountError, Transaction> {
 
         if(!transaction.description && !transaction.descriptionOriginal) {
             return left(new InvalidTransactionError('Required some description'))
@@ -58,7 +52,6 @@ export class Transaction {
         const amount = amountOrError.value as Amount
 
         return right(new Transaction({ 
-            account: transaction.account, 
             amount, 
             category: transaction.category,
             description: transaction.description,

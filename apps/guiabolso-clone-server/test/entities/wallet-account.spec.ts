@@ -62,9 +62,7 @@ describe("Wallet Account entity", () => {
             }).value as User
             const account = WalletAccount.create({name, balance, imageUrl, user}).value as WalletAccount
 
-            // TODO transaction doesn't need an account object!
             const transaction = Transaction.create({ 
-                account: account, 
                 amount: 2567, 
                 category: null, 
                 description: 'valid description', 
@@ -72,7 +70,7 @@ describe("Wallet Account entity", () => {
                 type: 'INCOME'
             }).value as Transaction
 
-            const result = account.addTransaction(transaction)
+            account.addTransaction(transaction)
             expect(account.balance.value).toBe(balance + transaction.amount.value)
         })
     })

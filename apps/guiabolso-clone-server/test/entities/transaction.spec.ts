@@ -1,16 +1,16 @@
-import { Account, AccountType, Category, Transaction, TransactionType, User, WalletAccount } from "@/entities"
+import { Category, Transaction, TransactionType } from "@/entities"
 import { InvalidTransactionError } from "@/entities/errors"
 
 describe("Transaction entity", () => {
-    const name = 'valid name'
-    const balance = 300
-    const imageUrl = 'valid image url'
-    const user = User.create({
-        name: 'user name',
-        email: 'user@email.com',
-        password: 'user password',
-    }).value as User
-    const walletAccount = WalletAccount.create({name, balance, imageUrl, user}).value as WalletAccount
+    // const name = 'valid name'
+    // const balance = 300
+    // const imageUrl = 'valid image url'
+    // const user = User.create({
+    //     name: 'user name',
+    //     email: 'user@email.com',
+    //     password: 'user password',
+    // }).value as User
+    // const walletAccount = WalletAccount.create({name, balance, imageUrl, user}).value as WalletAccount
     
     const category = Category.create({
         name: 'valid name',
@@ -20,21 +20,11 @@ describe("Transaction entity", () => {
         ignored: false,
     }).value as Category
 
-    test("should not create transaction with empty account", () => {
-        const amount = -1900
-        const description = 'transaction description'
-        const date = new Date('2023-01-23')
-        const type: TransactionType = 'EXPENSE'
-        const error = Transaction.create({ account: null, amount, description, date, type }).value as Error
-        expect(error).toBeInstanceOf(InvalidTransactionError)
-        expect(error.message).toBe('Invalid account')
-    })
-
     test("should not create transaction without description or descriptionOriginal", () => {
         const amount = -1900
         const date = new Date('2023-01-23')
         const type: TransactionType = 'EXPENSE'
-        const error = Transaction.create({ account: walletAccount, amount, category, date, type }).value as Error
+        const error = Transaction.create({ amount, category, date, type }).value as Error
         expect(error).toBeInstanceOf(InvalidTransactionError)
         expect(error.message).toBe('Required some description')
     })
@@ -44,7 +34,7 @@ describe("Transaction entity", () => {
         const description = 'transaction description'
         const date = new Date('2023-01-23')
         const type: TransactionType = 'EXPENSE'
-        const error = Transaction.create({ account: walletAccount, amount, description, date, type }).value as Error
+        const error = Transaction.create({ amount, description, date, type }).value as Error
         expect(error).toBeInstanceOf(InvalidTransactionError)
         expect(error.message).toBe('Invalid amount')
     })
@@ -54,7 +44,7 @@ describe("Transaction entity", () => {
         const description = 'transaction description'
         const date = new Date('2023-01-23')
         const type: TransactionType = 'EXPENSE'
-        const error = Transaction.create({ account: walletAccount, amount, description, date, type }).value as Error
+        const error = Transaction.create({ amount, description, date, type }).value as Error
         expect(error).toBeInstanceOf(InvalidTransactionError)
         expect(error.message).toBe('An expense should have a negative amount')
     })
@@ -64,7 +54,7 @@ describe("Transaction entity", () => {
         const description = 'transaction description'
         const date = new Date('2023-01-23')
         const type: TransactionType = 'INCOME'
-        const error = Transaction.create({ account: walletAccount, amount, description, date, type }).value as Error
+        const error = Transaction.create({ amount, description, date, type }).value as Error
         expect(error).toBeInstanceOf(InvalidTransactionError)
         expect(error.message).toBe('An income should have a positive amount')
     })
@@ -76,8 +66,7 @@ describe("Transaction entity", () => {
         const type: TransactionType = 'EXPENSE'
         const comment = 'comentario válido'
         const ignored = true
-        const transaction = Transaction.create({ account: walletAccount, amount, description, date, type, comment, ignored }).value as Transaction
-        expect(transaction.account).toEqual(walletAccount)
+        const transaction = Transaction.create({ amount, description, date, type, comment, ignored }).value as Transaction
         expect(transaction.category).toEqual(null)
         expect(transaction.amount.value).toEqual(amount)
         expect(transaction.description).toEqual(description)
@@ -95,8 +84,7 @@ describe("Transaction entity", () => {
         const type: TransactionType = 'INCOME'
         const comment = 'comentario válido'
         const ignored = true
-        const transaction = Transaction.create({ account: walletAccount, amount, description, date, type, comment, ignored }).value as Transaction
-        expect(transaction.account).toEqual(walletAccount)
+        const transaction = Transaction.create({ amount, description, date, type, comment, ignored }).value as Transaction
         expect(transaction.category).toEqual(null)
         expect(transaction.amount.value).toEqual(amount)
         expect(transaction.description).toEqual(description)
@@ -112,8 +100,7 @@ describe("Transaction entity", () => {
         const description = 'transaction description'
         const date = new Date('2023-01-23')
         const type: TransactionType = 'EXPENSE'
-        const transaction = Transaction.create({ account: walletAccount, amount, category, description, date, type }).value as Transaction
-        expect(transaction.account).toEqual(walletAccount)
+        const transaction = Transaction.create({ amount, category, description, date, type }).value as Transaction
         expect(transaction.category).toEqual(category)
         expect(transaction.amount.value).toEqual(amount)
         expect(transaction.description).toEqual(description)
@@ -128,7 +115,7 @@ describe("Transaction entity", () => {
         const description = 'transaction description'
         const date = new Date('2023-01-23')
         const type: TransactionType = 'EXPENSE'
-        const transaction = Transaction.create({ account: walletAccount, amount, descriptionOriginal: description, date, type }).value as Transaction
+        const transaction = Transaction.create({ amount, descriptionOriginal: description, date, type }).value as Transaction
         expect(transaction.descriptionOriginal).toEqual(description)
         expect(transaction.description).toEqual('')
     })
