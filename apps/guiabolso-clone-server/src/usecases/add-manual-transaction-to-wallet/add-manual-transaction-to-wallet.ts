@@ -1,14 +1,14 @@
 import { Transaction, User, WalletAccount } from "@/entities"
 import { left, right } from "@/shared"
-import { AccountRepository, TransactionRequest, TransactionRepository, UseCase, UserRepository, TransactionData } from "@/usecases/ports"
+import { TransactionRequest, TransactionRepository, UseCase, UserRepository, TransactionData, UpdateAccountRepository } from "@/usecases/ports"
 import { UnregisteredAccountError, UnregisteredUserError } from "@/usecases/errors"
 
 export class AddManualTransactionToWallet implements UseCase {
-    private readonly accountRepo: AccountRepository
+    private readonly accountRepo: UpdateAccountRepository
     private readonly userRepo: UserRepository
     private readonly transactionRepo: TransactionRepository
 
-    constructor(userRepository: UserRepository, accountRepository: AccountRepository, transactionRepository: TransactionRepository) {
+    constructor(userRepository: UserRepository, accountRepository: UpdateAccountRepository, transactionRepository: TransactionRepository) {
         this.userRepo = userRepository
         this.accountRepo = accountRepository
         this.transactionRepo = transactionRepository
@@ -74,6 +74,8 @@ export class AddManualTransactionToWallet implements UseCase {
         }
 
         const addedTransaction = await this.transactionRepo.add(transactionData)
+
+        await this.accountRepo.addToBalance(request.accountId, transactionData.amount)
         
         return right(addedTransaction)
     }

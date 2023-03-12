@@ -1,11 +1,15 @@
-import { AccountRepository, AccountData } from "@/usecases/ports";
+import { AccountRepository, AccountData, UpdateAccountRepository } from "@/usecases/ports";
 
-export class InMemoryAccountRepository implements AccountRepository {
+export class InMemoryAccountRepository implements AccountRepository, UpdateAccountRepository {
     private readonly _data: AccountData[]
     private idCounter: number = 0
 
     constructor (data: AccountData[]) {
         this._data = data
+    }
+
+    public get data() {
+        return this._data
     }
 
     async add(account: AccountData): Promise<AccountData> {
@@ -29,8 +33,13 @@ export class InMemoryAccountRepository implements AccountRepository {
         return false
     }
 
-    public get data() {
-        return this._data
+
+
+    async addToBalance(accountId: string, amount: number): Promise<void> {
+        const account = await this.findById(accountId)
+        if(account) {
+            account.balance += amount
+        }
     }
 
 

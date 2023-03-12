@@ -23,15 +23,19 @@ describe('add manual transaction to wallet account use case', () => {
     const balance = 678
     const imageUrl = 'valid image url'
 
-    const walletAccountData: WalletAccountData = {
-        id: accountId,
-        type: accountType,
-        syncType,
-        name,
-        balance,
-        imageUrl,
-        userId,
-    }
+    let walletAccountData: WalletAccountData
+
+    beforeEach(() => {
+        walletAccountData = {
+            id: accountId,
+            type: accountType,
+            syncType,
+            name,
+            balance,
+            imageUrl,
+            userId,
+        }
+    })
 
     test('should not add transaction if account is not found', async () => {
 
@@ -117,7 +121,7 @@ describe('add manual transaction to wallet account use case', () => {
         expect(response.message).toBe('Invalid amount')
     })
 
-    test('should add transaction of type expense', async () => {
+    test('should add transaction of type expense and update account balance', async () => {
 
         const transactionRequest: TransactionRequest = {
             accountId,
@@ -137,9 +141,10 @@ describe('add manual transaction to wallet account use case', () => {
         const response = (await sut.perform(transactionRequest)).value as TransactionData
         expect(response.id).not.toBeUndefined()
         expect(await transactionRepository.exists(response.id)).toBe(true)
+        expect((await accountRepository.findById(accountId)).balance).toBe(balance + transactionRequest.amount)
     })
 
-    test('should add transaction of type income', async () => {
+    test('should add transaction of type income and update account balance', async () => {
 
         const transactionRequest: TransactionRequest = {
             accountId,
@@ -159,5 +164,6 @@ describe('add manual transaction to wallet account use case', () => {
         const response = (await sut.perform(transactionRequest)).value as TransactionData
         expect(response.id).not.toBeUndefined()
         expect(await transactionRepository.exists(response.id)).toBe(true)
+        expect((await accountRepository.findById(accountId)).balance).toBe(balance + transactionRequest.amount)
     })
 })
