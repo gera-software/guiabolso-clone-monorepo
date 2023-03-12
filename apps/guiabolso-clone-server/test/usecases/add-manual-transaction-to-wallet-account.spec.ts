@@ -11,7 +11,6 @@ describe('add manual transaction to wallet account use case', () => {
     const amount = -5060
     const description = 'valid description'
     const date = new Date('2023-03-09')
-    const type: TransactionType = 'EXPENSE'
     const comment = 'valid comment'
     const ignored = false
 
@@ -217,6 +216,27 @@ describe('add manual transaction to wallet account use case', () => {
         const response = (await sut.perform(transactionRequest)).value as TransactionData
         expect(response.id).not.toBeUndefined()
         expect((await transactionRepository.findById(response.id)).category).toEqual(categoryData)
+        expect((await accountRepository.findById(accountId)).balance).toBe(balance + transactionRequest.amount)
+    })
+
+    test('should add transaction without optional category', async () => {
+        const transactionRequest: TransactionRequest = {
+            accountId,
+            amount: 4567,
+            description,
+            date,
+            comment,
+            ignored,
+        }
+
+        const userRepository = new InMemoryUserRepository([{ id: userId, name: 'any name', email: 'any@email.com', password: '123' }])
+        const accountRepository = new InMemoryAccountRepository([walletAccountData])
+        const categoryRepository = new InMemoryCategoryRepository([categoryData])
+        const transactionRepository = new InMemoryTransactionRepository([])
+        const sut = new AddManualTransactionToWallet(userRepository, accountRepository, transactionRepository, categoryRepository)
+        const response = (await sut.perform(transactionRequest)).value as TransactionData
+        expect(response.id).not.toBeUndefined()
+        expect((await transactionRepository.findById(response.id)).category).toBeNull()
         expect((await accountRepository.findById(accountId)).balance).toBe(balance + transactionRequest.amount)
     })
 })
