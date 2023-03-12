@@ -73,5 +73,28 @@ describe("Wallet Account entity", () => {
             account.addTransaction(transaction)
             expect(account.balance.value).toBe(balance + transaction.amount.value)
         })
+
+        test('should update balance if add a valid expense transaction', () => {
+            const name = 'valid name'
+            const balance = 300
+            const imageUrl = 'valid image url'
+            const user = User.create({
+                name: 'user name',
+                email: 'user@email',
+                password: 'user password',
+            }).value as User
+            const account = WalletAccount.create({name, balance, imageUrl, user}).value as WalletAccount
+
+            const transaction = Transaction.create({ 
+                amount: -2567, 
+                category: null, 
+                description: 'valid description', 
+                date: new Date('2023-03-19'), 
+                type: 'EXPENSE'
+            }).value as Transaction
+
+            account.addTransaction(transaction)
+            expect(account.balance.value).toBe(balance + transaction.amount.value)
+        })
     })
 })

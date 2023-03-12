@@ -2,16 +2,7 @@ import { Category, Transaction, TransactionType } from "@/entities"
 import { InvalidTransactionError } from "@/entities/errors"
 
 describe("Transaction entity", () => {
-    // const name = 'valid name'
-    // const balance = 300
-    // const imageUrl = 'valid image url'
-    // const user = User.create({
-    //     name: 'user name',
-    //     email: 'user@email.com',
-    //     password: 'user password',
-    // }).value as User
-    // const walletAccount = WalletAccount.create({name, balance, imageUrl, user}).value as WalletAccount
-    
+
     const category = Category.create({
         name: 'valid name',
         group: 'GROUPNAME',
