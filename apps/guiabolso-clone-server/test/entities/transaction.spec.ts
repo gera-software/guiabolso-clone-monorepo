@@ -14,8 +14,7 @@ describe("Transaction entity", () => {
     test("should not create transaction without description or descriptionOriginal", () => {
         const amount = -1900
         const date = new Date('2023-01-23')
-        const type: TransactionType = 'EXPENSE'
-        const error = Transaction.create({ amount, category, date, type }).value as Error
+        const error = Transaction.create({ amount, category, date }).value as Error
         expect(error).toBeInstanceOf(InvalidTransactionError)
         expect(error.message).toBe('Required some description')
     })
@@ -24,30 +23,9 @@ describe("Transaction entity", () => {
         const amount = 0
         const description = 'transaction description'
         const date = new Date('2023-01-23')
-        const type: TransactionType = 'EXPENSE'
-        const error = Transaction.create({ amount, description, date, type }).value as Error
+        const error = Transaction.create({ amount, description, date }).value as Error
         expect(error).toBeInstanceOf(InvalidTransactionError)
         expect(error.message).toBe('Invalid amount')
-    })
-
-    test("should not create transaction type EXPENSE if amount is positive", () => {
-        const amount = 3459
-        const description = 'transaction description'
-        const date = new Date('2023-01-23')
-        const type: TransactionType = 'EXPENSE'
-        const error = Transaction.create({ amount, description, date, type }).value as Error
-        expect(error).toBeInstanceOf(InvalidTransactionError)
-        expect(error.message).toBe('An expense should have a negative amount')
-    })
-
-    test("should not create transaction type INCOME if amount is negative", () => {
-        const amount = -3459
-        const description = 'transaction description'
-        const date = new Date('2023-01-23')
-        const type: TransactionType = 'INCOME'
-        const error = Transaction.create({ amount, description, date, type }).value as Error
-        expect(error).toBeInstanceOf(InvalidTransactionError)
-        expect(error.message).toBe('An income should have a positive amount')
     })
 
     test("should create transaction type expense", () => {
@@ -57,7 +35,7 @@ describe("Transaction entity", () => {
         const type: TransactionType = 'EXPENSE'
         const comment = 'comentario válido'
         const ignored = true
-        const transaction = Transaction.create({ amount, description, date, type, comment, ignored }).value as Transaction
+        const transaction = Transaction.create({ amount, description, date, comment, ignored }).value as Transaction
         expect(transaction.category).toEqual(null)
         expect(transaction.amount.value).toEqual(amount)
         expect(transaction.description).toEqual(description)
@@ -75,7 +53,7 @@ describe("Transaction entity", () => {
         const type: TransactionType = 'INCOME'
         const comment = 'comentario válido'
         const ignored = true
-        const transaction = Transaction.create({ amount, description, date, type, comment, ignored }).value as Transaction
+        const transaction = Transaction.create({ amount, description, date, comment, ignored }).value as Transaction
         expect(transaction.category).toEqual(null)
         expect(transaction.amount.value).toEqual(amount)
         expect(transaction.description).toEqual(description)
@@ -91,7 +69,7 @@ describe("Transaction entity", () => {
         const description = 'transaction description'
         const date = new Date('2023-01-23')
         const type: TransactionType = 'EXPENSE'
-        const transaction = Transaction.create({ amount, category, description, date, type }).value as Transaction
+        const transaction = Transaction.create({ amount, category, description, date }).value as Transaction
         expect(transaction.category).toEqual(category)
         expect(transaction.amount.value).toEqual(amount)
         expect(transaction.description).toEqual(description)
@@ -105,8 +83,7 @@ describe("Transaction entity", () => {
         const amount = -1900
         const description = 'transaction description'
         const date = new Date('2023-01-23')
-        const type: TransactionType = 'EXPENSE'
-        const transaction = Transaction.create({ amount, descriptionOriginal: description, date, type }).value as Transaction
+        const transaction = Transaction.create({ amount, descriptionOriginal: description, date }).value as Transaction
         expect(transaction.descriptionOriginal).toEqual(description)
         expect(transaction.description).toEqual('')
     })

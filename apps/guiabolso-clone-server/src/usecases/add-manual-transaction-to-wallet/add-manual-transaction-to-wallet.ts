@@ -62,7 +62,6 @@ export class AddManualTransactionToWallet implements UseCase {
             description: request.description,
             descriptionOriginal: request.descriptionOriginal,
             date: request.date,
-            type: request.type,
             category,
             comment: request.comment,
             ignored: request.ignored,

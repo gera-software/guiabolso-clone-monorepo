@@ -66,8 +66,7 @@ describe("Wallet Account entity", () => {
                 amount: 2567, 
                 category: null, 
                 description: 'valid description', 
-                date: new Date('2023-03-19'), 
-                type: 'INCOME'
+                date: new Date('2023-03-19'),
             }).value as Transaction
 
             account.addTransaction(transaction)
@@ -89,8 +88,7 @@ describe("Wallet Account entity", () => {
                 amount: -2567, 
                 category: null, 
                 description: 'valid description', 
-                date: new Date('2023-03-19'), 
-                type: 'EXPENSE'
+                date: new Date('2023-03-19'),
             }).value as Transaction
 
             account.addTransaction(transaction)

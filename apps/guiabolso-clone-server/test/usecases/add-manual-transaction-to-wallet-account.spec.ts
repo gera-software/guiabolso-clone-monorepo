@@ -54,7 +54,6 @@ describe('add manual transaction to wallet account use case', () => {
             amount,
             description,
             date,
-            type,
             comment,
             ignored,
         }
@@ -76,7 +75,6 @@ describe('add manual transaction to wallet account use case', () => {
             amount,
             description,
             date,
-            type,
             comment,
             ignored,
         }
@@ -97,7 +95,6 @@ describe('add manual transaction to wallet account use case', () => {
             categoryId,
             amount,
             date,
-            type,
             comment,
             ignored,
         }
@@ -118,7 +115,6 @@ describe('add manual transaction to wallet account use case', () => {
             categoryId: 'invalid',
             amount,
             date,
-            type,
             comment,
             ignored,
         }
@@ -140,7 +136,6 @@ describe('add manual transaction to wallet account use case', () => {
             amount: 0,
             description,
             date,
-            type,
             comment,
             ignored,
         }
@@ -163,7 +158,6 @@ describe('add manual transaction to wallet account use case', () => {
             amount: -4567,
             description,
             date,
-            type: 'EXPENSE',
             comment,
             ignored,
         }
@@ -175,6 +169,7 @@ describe('add manual transaction to wallet account use case', () => {
         const sut = new AddManualTransactionToWallet(userRepository, accountRepository, transactionRepository, categoryRepository)
         const response = (await sut.perform(transactionRequest)).value as TransactionData
         expect(response.id).not.toBeUndefined()
+        expect(response.type).toBe('EXPENSE')
         expect(await transactionRepository.exists(response.id)).toBe(true)
         expect((await accountRepository.findById(accountId)).balance).toBe(balance + transactionRequest.amount)
     })
@@ -187,7 +182,6 @@ describe('add manual transaction to wallet account use case', () => {
             amount: 4567,
             description,
             date,
-            type: 'INCOME',
             comment,
             ignored,
         }
@@ -199,6 +193,7 @@ describe('add manual transaction to wallet account use case', () => {
         const sut = new AddManualTransactionToWallet(userRepository, accountRepository, transactionRepository, categoryRepository)
         const response = (await sut.perform(transactionRequest)).value as TransactionData
         expect(response.id).not.toBeUndefined()
+        expect(response.type).toBe('INCOME')
         expect(await transactionRepository.exists(response.id)).toBe(true)
         expect((await accountRepository.findById(accountId)).balance).toBe(balance + transactionRequest.amount)
     })
@@ -210,7 +205,6 @@ describe('add manual transaction to wallet account use case', () => {
             amount: 4567,
             description,
             date,
-            type: 'INCOME',
             comment,
             ignored,
         }

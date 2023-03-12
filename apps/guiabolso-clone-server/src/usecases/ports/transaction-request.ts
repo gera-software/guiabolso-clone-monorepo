@@ -6,7 +6,6 @@ export interface TransactionRequest {
     description?: string,
     descriptionOriginal?: string,
     date: Date,
-    type: string,
     comment?: string,
     ignored?: boolean,
 }
