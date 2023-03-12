@@ -26,11 +26,23 @@ export class InMemoryTransactionRepository implements TransactionRepository {
 
     async exists(id: string): Promise<boolean> {
         const found = await this.findById(id)
-        if(found) {
-            return true
+        if(!found || found._isDeleted) {
+            return false
         }
 
-        return false
+        return true
+    }
+
+    async remove(id: string): Promise<TransactionData> {
+        const transaction = await this.findById(id)
+
+        if(!transaction || transaction._isDeleted) {
+            return null
+        }
+
+        transaction._isDeleted = true
+
+        return transaction
     }
     
 }

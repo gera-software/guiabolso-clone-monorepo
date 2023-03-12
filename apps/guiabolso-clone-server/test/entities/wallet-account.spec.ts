@@ -95,4 +95,51 @@ describe("Wallet Account entity", () => {
             expect(account.balance.value).toBe(balance + transaction.amount.value)
         })
     })
+
+    describe('remove transaction', () => {
+        test('should update balance if subtract a valid income transaction', () => {
+            const name = 'valid name'
+            const balance = 300
+            const imageUrl = 'valid image url'
+            const user = User.create({
+                name: 'user name',
+                email: 'user@email',
+                password: 'user password',
+            }).value as User
+            const account = WalletAccount.create({name, balance, imageUrl, user}).value as WalletAccount
+
+            const transaction = Transaction.create({ 
+                amount: 2567, 
+                category: null, 
+                description: 'valid description', 
+                date: new Date('2023-03-19'),
+            }).value as Transaction
+
+            account.removeTransaction(transaction)
+            expect(account.balance.value).toBe(balance - transaction.amount.value)
+        })
+
+        test('should update balance if subtract a valid expense transaction', () => {
+            const name = 'valid name'
+            const balance = 300
+            const imageUrl = 'valid image url'
+            const user = User.create({
+                name: 'user name',
+                email: 'user@email',
+                password: 'user password',
+            }).value as User
+            const account = WalletAccount.create({name, balance, imageUrl, user}).value as WalletAccount
+
+            const transaction = Transaction.create({ 
+                amount: -2567, 
+                category: null, 
+                description: 'valid description', 
+                date: new Date('2023-03-19'),
+            }).value as Transaction
+
+            account.removeTransaction(transaction)
+            expect(account.balance.value).toBe(balance - transaction.amount.value)
+        })
+
+    })
 })

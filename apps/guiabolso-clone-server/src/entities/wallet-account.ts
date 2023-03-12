@@ -39,4 +39,8 @@ export class WalletAccount implements Account {
     public addTransaction(transaction: Transaction) {
         this.balance.add(transaction.amount.value)
     }
+
+    public removeTransaction(transaction: Transaction) {
+        this.balance.subtract(transaction.amount.value)
+    }
 }

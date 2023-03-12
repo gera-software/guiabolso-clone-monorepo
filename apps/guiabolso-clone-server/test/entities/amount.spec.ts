@@ -45,4 +45,22 @@ describe("Amount value object", () => {
             expect(amount.value).toBe(validAmount + valueToAdd)
         })
     })
+
+    describe('subtract', () => {
+        test("should subtract a positive value to the amount", () => {
+            const valueToSubtract = 123
+            const validAmount = 50
+            const amount = Amount.create(validAmount).value as Amount
+            amount.subtract(valueToSubtract)
+            expect(amount.value).toBe(validAmount - valueToSubtract)
+        })
+
+        test("should subtract a negative value to the amount", () => {
+            const valueToSubtract = -123
+            const validAmount = 50
+            const amount = Amount.create(validAmount).value as Amount
+            amount.subtract(valueToSubtract)
+            expect(amount.value).toBe(validAmount - valueToSubtract)
+        })
+    })
 })

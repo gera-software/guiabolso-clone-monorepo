@@ -23,4 +23,8 @@ export class Amount {
     public add(value: number) {
         this._value += value
     }
+
+    public subtract(value: number) {
+        this._value -= value
+    }
 }
