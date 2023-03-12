@@ -35,10 +35,10 @@ export class InMemoryAccountRepository implements AccountRepository, UpdateAccou
 
 
 
-    async addToBalance(accountId: string, amount: number): Promise<void> {
+    async updateBalance(accountId: string, balance: number): Promise<void> {
         const account = await this.findById(accountId)
         if(account) {
-            account.balance += amount
+            account.balance = balance
         }
     }
 

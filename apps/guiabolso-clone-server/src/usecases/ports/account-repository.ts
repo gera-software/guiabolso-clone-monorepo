@@ -7,5 +7,5 @@ export interface AccountRepository {
 }
 
 export interface UpdateAccountRepository extends AccountRepository {
-    addToBalance(accountId: string, amount: number): Promise<void>
+    updateBalance(accountId: string, balance: number): Promise<void>
 }

@@ -75,6 +75,8 @@ export class AddManualTransactionToWallet implements UseCase {
 
         const transaction = transactionOrError.value as Transaction
 
+        walletAccount.addTransaction(transaction)
+
         const transactionData: TransactionData = {
             accountId: request.accountId,
             accountType: walletAccount.type,
@@ -92,7 +94,7 @@ export class AddManualTransactionToWallet implements UseCase {
 
         const addedTransaction = await this.transactionRepo.add(transactionData)
 
-        await this.accountRepo.addToBalance(request.accountId, transactionData.amount)
+        await this.accountRepo.updateBalance(request.accountId, walletAccount.balance.value)
         
         return right(addedTransaction)
     }
