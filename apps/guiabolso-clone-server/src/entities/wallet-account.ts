@@ -1,6 +1,6 @@
 import { left, right } from "@/shared"
 import { InvalidBalanceError, InvalidNameError } from "./errors"
-import { AccountType, Amount, SyncType, User } from "@/entities"
+import { AccountType, Amount, SyncType, Transaction, User } from "@/entities"
 import { Account } from "@/entities"
 
 export class WalletAccount implements Account {
@@ -34,5 +34,9 @@ export class WalletAccount implements Account {
         const amount = balanceOrError.value as Amount
 
         return right(new WalletAccount({name, balance: amount, imageUrl, user}))
+    }
+
+    public addTransaction(transaction: Transaction) {
+        this.balance.add(transaction.amount.value)
     }
 }
