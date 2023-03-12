@@ -1,4 +1,3 @@
-import { TransactionData } from "@/usecases/ports"
 import { InvalidAmountError, InvalidTransactionError } from "@/entities/errors"
 import { Either, left, right } from "@/shared"
 import { Account, Amount, Category, User } from "@/entities"

@@ -1,19 +1,20 @@
 import { Transaction, User, WalletAccount } from "@/entities"
-import { InvalidTransactionError } from "@/entities/errors"
 import { left, right } from "@/shared"
-import { AccountRepository, TransactionData, UseCase, UserRepository } from "@/usecases/ports"
+import { AccountRepository, TransactionRequest, TransactionRepository, UseCase, UserRepository, TransactionData } from "@/usecases/ports"
 import { UnregisteredAccountError, UnregisteredUserError } from "@/usecases/errors"
 
 export class AddManualTransactionToWallet implements UseCase {
     private readonly accountRepo: AccountRepository
     private readonly userRepo: UserRepository
+    private readonly transactionRepo: TransactionRepository
 
-    constructor(userRepository: UserRepository, accountRepository: AccountRepository) {
+    constructor(userRepository: UserRepository, accountRepository: AccountRepository, transactionRepository: TransactionRepository) {
         this.userRepo = userRepository
         this.accountRepo = accountRepository
+        this.transactionRepo = transactionRepository
     }
 
-    async perform(request: TransactionData): Promise<any> {
+    async perform(request: TransactionRequest): Promise<any> {
         const foundAccountData = await this.accountRepo.findById(request.accountId)
         if(!foundAccountData) {
             return left(new UnregisteredAccountError())
@@ -57,9 +58,24 @@ export class AddManualTransactionToWallet implements UseCase {
         }
 
         const transaction = transactionOrError.value as Transaction
-        // TODO salva transação no banco
-        return right(request)
 
+        const transactionData: TransactionData = {
+            accountId: request.accountId,
+            accountType: walletAccount.type,
+            syncType: walletAccount.syncType,
+            userId: foundAccountData.userId,
+            amount: transaction.amount.value,
+            description: transaction.description,
+            descriptionOriginal: transaction.descriptionOriginal,
+            date: transaction.date,
+            type: transaction.type,
+            comment: transaction.comment,
+            ignored: transaction.ignored,
+        }
+
+        const addedTransaction = await this.transactionRepo.add(transactionData)
+        
+        return right(addedTransaction)
     }
 
 }

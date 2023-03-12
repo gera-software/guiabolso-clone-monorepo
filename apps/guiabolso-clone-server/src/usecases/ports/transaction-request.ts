@@ -1,12 +1,7 @@
-import { CategoryData } from "@/usecases/ports"
-
-export interface TransactionData {
+export interface TransactionRequest {
     id?: string,
     accountId: string,
-    accountType: string,
-    syncType: string,
-    userId: string,
-    category?: CategoryData,
+    categoryId?: string,
     amount: number,
     description?: string,
     descriptionOriginal?: string,
