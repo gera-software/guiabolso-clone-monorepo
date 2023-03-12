@@ -1,4 +1,4 @@
-import { left, right } from "@/shared"
+import { Either, left, right } from "@/shared"
 import { InvalidGroupNameError, InvalidIconColorError, InvalidIconNameError, InvalidNameError } from "@/entities/errors"
 import { CategoryData } from "@/usecases/ports"
 
@@ -17,7 +17,7 @@ export class Category {
         this.ignored = categoryData.ignored
     }
 
-    public static create(categoryData : CategoryData) {
+    public static create(categoryData : CategoryData): Either<InvalidNameError | InvalidGroupNameError | InvalidIconNameError | InvalidIconColorError, Category> {
         if(!categoryData.name) {
             return left(new InvalidNameError())
         }

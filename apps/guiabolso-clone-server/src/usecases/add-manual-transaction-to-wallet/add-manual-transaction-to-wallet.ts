@@ -1,17 +1,19 @@
-import { Transaction, User, WalletAccount } from "@/entities"
+import { Category, Transaction, User, WalletAccount } from "@/entities"
 import { left, right } from "@/shared"
-import { TransactionRequest, TransactionRepository, UseCase, UserRepository, TransactionData, UpdateAccountRepository } from "@/usecases/ports"
-import { UnregisteredAccountError, UnregisteredUserError } from "@/usecases/errors"
+import { TransactionRequest, TransactionRepository, UseCase, UserRepository, TransactionData, UpdateAccountRepository, CategoryRepository, CategoryData } from "@/usecases/ports"
+import { UnregisteredAccountError, UnregisteredCategoryError, UnregisteredUserError } from "@/usecases/errors"
 
 export class AddManualTransactionToWallet implements UseCase {
     private readonly accountRepo: UpdateAccountRepository
     private readonly userRepo: UserRepository
     private readonly transactionRepo: TransactionRepository
+    private readonly categoryRepo: CategoryRepository
 
-    constructor(userRepository: UserRepository, accountRepository: UpdateAccountRepository, transactionRepository: TransactionRepository) {
+    constructor(userRepository: UserRepository, accountRepository: UpdateAccountRepository, transactionRepository: TransactionRepository, categoryRepository: CategoryRepository) {
         this.userRepo = userRepository
         this.accountRepo = accountRepository
         this.transactionRepo = transactionRepository
+        this.categoryRepo = categoryRepository
     }
 
     async perform(request: TransactionRequest): Promise<any> {
@@ -44,6 +46,17 @@ export class AddManualTransactionToWallet implements UseCase {
 
         const walletAccount = accountOrError.value as WalletAccount
 
+        let foundCategory: CategoryData = null
+        let category: Category = null
+        if(request.categoryId) {
+            foundCategory = await this.categoryRepo.findById(request.categoryId)
+            if(!foundCategory) {
+                return left(new UnregisteredCategoryError())
+            }
+            category = Category.create(foundCategory).value as Category
+        }
+
+
         const transactionOrError = Transaction.create({
             account: walletAccount,
             amount: request.amount,
@@ -51,6 +64,9 @@ export class AddManualTransactionToWallet implements UseCase {
             descriptionOriginal: request.descriptionOriginal,
             date: request.date,
             type: request.type,
+            category,
+            comment: request.comment,
+            ignored: request.ignored,
         })
 
         if(transactionOrError.isLeft()) {
@@ -71,6 +87,7 @@ export class AddManualTransactionToWallet implements UseCase {
             type: transaction.type,
             comment: transaction.comment,
             ignored: transaction.ignored,
+            category: foundCategory,
         }
 
         const addedTransaction = await this.transactionRepo.add(transactionData)
