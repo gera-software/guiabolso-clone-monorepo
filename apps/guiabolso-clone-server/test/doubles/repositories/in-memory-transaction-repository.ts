@@ -45,4 +45,20 @@ export class InMemoryTransactionRepository implements TransactionRepository {
         return transaction
     }
     
+    async update(transaction: TransactionData): Promise<TransactionData> {
+        const transactionToUpdate = await this.findById(transaction.id)
+
+        transactionToUpdate.amount = transaction.amount
+        transactionToUpdate.description = transaction.description
+        transactionToUpdate.descriptionOriginal = transaction.descriptionOriginal
+        transactionToUpdate.date = transaction.date
+        transactionToUpdate.type = transaction.type
+        transactionToUpdate.comment = transaction.comment
+        transactionToUpdate.ignored = transaction.ignored
+        transactionToUpdate.category = transaction.category
+
+
+        return transactionToUpdate
+    }
+
 }

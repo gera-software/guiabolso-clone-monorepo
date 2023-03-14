@@ -5,4 +5,5 @@ export interface TransactionRepository {
     findById(id: string): Promise<TransactionData>
     exists(id: string): Promise<boolean>
     remove(id: string): Promise<TransactionData>
+    update(transaction: TransactionData): Promise<TransactionData>
 }

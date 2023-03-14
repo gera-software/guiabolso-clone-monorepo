@@ -1,4 +1,3 @@
-import { TransactionType } from "@/entities"
 import { InvalidTransactionError } from "@/entities/errors"
 import { AddManualTransactionToWallet } from "@/usecases/add-manual-transaction-to-wallet"
 import { UnregisteredAccountError, UnregisteredCategoryError, UnregisteredUserError } from "@/usecases/errors"
@@ -87,6 +86,7 @@ describe('add manual transaction to wallet account use case', () => {
         expect(response).toBeInstanceOf(UnregisteredUserError)
     })
 
+    // TODO descriptionOriginal isn't a valid field of a wallet transaction, maybe should be removed
     test('should not add transaction without description or descriptionOriginal', async () => {
 
         const transactionRequest: TransactionRequest = {

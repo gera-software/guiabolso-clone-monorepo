@@ -1,4 +1,4 @@
-import { left, right } from "@/shared"
+import { Either, left, right } from "@/shared"
 import { InvalidBalanceError, InvalidNameError } from "./errors"
 import { AccountType, Amount, SyncType, Transaction, User } from "@/entities"
 import { Account } from "@/entities"
@@ -19,7 +19,7 @@ export class WalletAccount implements Account {
     }
 
 
-    public static create(wallet: { name: string, balance: number, imageUrl?: string, user: User }) {
+    public static create(wallet: { name: string, balance: number, imageUrl?: string, user: User }): Either<InvalidNameError | InvalidBalanceError, WalletAccount> {
         const { name, balance, imageUrl, user } = wallet
 
         if(!name) {
