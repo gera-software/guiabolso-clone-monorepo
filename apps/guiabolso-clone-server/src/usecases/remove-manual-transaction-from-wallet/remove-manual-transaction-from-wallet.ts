@@ -1,5 +1,5 @@
 import { Either, left, right } from "@/shared"
-import { TransactionRepository, UpdateAccountRepository, UseCase, UserRepository } from "@/usecases/ports"
+import { TransactionData, TransactionRepository, UpdateAccountRepository, UseCase, UserRepository } from "@/usecases/ports"
 import { UnregisteredTransactionError } from "@/usecases/errors"
 import { Transaction, User, WalletAccount } from "@/entities"
 
@@ -14,7 +14,7 @@ export class RemoveManualTransactionFromWallet implements UseCase {
         this.userRepo = userRepository
     }
 
-    async perform(id: string): Promise<Either<UnregisteredTransactionError, any>> {
+    async perform(id: string): Promise<Either<UnregisteredTransactionError, TransactionData>> {
 
         const removedTransaction = await this.transactionRepo.remove(id)
 
