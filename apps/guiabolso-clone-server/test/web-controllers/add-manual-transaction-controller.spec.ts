@@ -68,7 +68,7 @@ describe('Add manual transaction web controller', () => {
             const response: HttpResponse = await sut.handle(invalidRequest)
             expect(response.statusCode).toEqual(400)
             expect(response.body as Error).toBeInstanceOf(MissingParamError)
-            expect(response.body.message).toBe("Missing parameters from request: accountId, categoryId, amount, date, description.")
+            expect(response.body.message).toBe("Missing parameters from request: accountId, amount, date, description.")
         })
 
         test('should return status code 201 created when request is valid', async () => {

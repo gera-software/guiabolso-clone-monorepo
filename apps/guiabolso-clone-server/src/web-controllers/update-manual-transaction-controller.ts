@@ -1,10 +1,10 @@
-import { TransactionRequest, UseCase } from "@/usecases/ports";
 import { Controller, HttpRequest, HttpResponse } from "@/web-controllers/ports";
-import { badRequest, created, serverError } from "@/web-controllers/util";
-import { MissingParamError } from "./errors";
+import { badRequest, ok, serverError } from "@/web-controllers/util";
+import { MissingParamError } from "@/web-controllers/errors";
+import { TransactionRequest, UseCase } from "@/usecases/ports";
 
-export class AddManualTransactionController implements Controller {
-    private readonly usecase : UseCase
+export class UpdateManualTransactionController implements Controller {
+    private readonly usecase: UseCase
 
     constructor(usecase: UseCase) {
         this.usecase = usecase
@@ -12,8 +12,8 @@ export class AddManualTransactionController implements Controller {
 
     async handle(request: HttpRequest): Promise<HttpResponse> {
         try {
-            const requiredParamNames = ['accountId', 'amount', 'date', 'description']
-    
+            const requiredParamNames = ['id', 'accountId', 'amount', 'date', 'description']
+        
             const missingParams = requiredParamNames.filter(paramName => {
                 return (!request.body[paramName]) ? true : false
             })
@@ -29,11 +29,10 @@ export class AddManualTransactionController implements Controller {
                 return badRequest(response.value)
             }
     
-            return created(response.value)
+            return ok(response.value)
         } catch(error) {
             return serverError(error)
         }
-
     }
 
 }
