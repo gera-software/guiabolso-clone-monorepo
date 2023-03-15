@@ -1,7 +1,8 @@
 import { Category, Transaction, User, WalletAccount } from "@/entities"
-import { left, right } from "@/shared"
+import { Either, left, right } from "@/shared"
 import { TransactionRequest, TransactionRepository, UseCase, UserRepository, TransactionData, UpdateAccountRepository, CategoryRepository, CategoryData } from "@/usecases/ports"
 import { UnregisteredAccountError, UnregisteredCategoryError, UnregisteredUserError } from "@/usecases/errors"
+import { InvalidAmountError, InvalidBalanceError, InvalidEmailError, InvalidNameError, InvalidPasswordError, InvalidTransactionError } from "@/entities/errors"
 
 export class AddManualTransactionToWallet implements UseCase {
     private readonly accountRepo: UpdateAccountRepository
@@ -16,7 +17,7 @@ export class AddManualTransactionToWallet implements UseCase {
         this.categoryRepo = categoryRepository
     }
 
-    async perform(request: TransactionRequest): Promise<any> {
+    async perform(request: TransactionRequest): Promise<Either<UnregisteredAccountError | UnregisteredUserError | InvalidNameError | InvalidEmailError | InvalidPasswordError | InvalidBalanceError | UnregisteredCategoryError | InvalidTransactionError | InvalidAmountError, TransactionData>> {
         const foundAccountData = await this.accountRepo.findById(request.accountId)
         if(!foundAccountData) {
             return left(new UnregisteredAccountError())
