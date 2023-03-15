@@ -78,7 +78,7 @@ export class UpdateManualTransactionFromWallet implements UseCase {
         return right(accountOrError.value as WalletAccount)
     }
 
-    async perform(request: TransactionRequest): Promise<any> {
+    async perform(request: TransactionRequest): Promise<Either<UnregisteredCategoryError | InvalidTransactionError | InvalidAmountError | UnregisteredTransactionError | UnregisteredAccountError | UnregisteredUserError | InvalidNameError | InvalidEmailError | InvalidPasswordError | InvalidBalanceError, TransactionData>> {
         const oldTransactionData = await this.transactionRepo.findById(request.id)
 
         if(!oldTransactionData) {
