@@ -1,6 +1,6 @@
 import { MongodbAccountRepository } from "@/external/repositories/mongodb"
-import { AccountRepository } from "@/usecases/ports"
+import { UpdateAccountRepository } from "@/usecases/ports"
 
-export const makeAccountRepository = (): AccountRepository => {
+export const makeAccountRepository = (): UpdateAccountRepository => {
     return new MongodbAccountRepository()
 }

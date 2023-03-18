@@ -89,6 +89,7 @@ export class AddManualTransactionToWallet implements UseCase {
             comment: transaction.comment,
             ignored: transaction.ignored,
             category: foundCategory,
+            _isDeleted: false,
         }
 
         const addedTransaction = await this.transactionRepo.add(transactionData)
