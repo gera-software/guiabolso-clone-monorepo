@@ -9,7 +9,8 @@ import {
     makeListInstitutionsByTypeController, 
     makeRemoveManualTransactionController, 
     makeSignInController,
-    makeSignUpController
+    makeSignUpController,
+    makeUpdateManualTransactionController
  } from '@/main/factories'
 
 export default (app: Express): void => {
@@ -30,4 +31,5 @@ export default (app: Express): void => {
 
     router.post('/manual-transaction', adaptRoute(makeAddManualTransactionController()))
     router.delete('/manual-transaction', adaptRoute(makeRemoveManualTransactionController()))
+    router.put('/manual-transaction', adaptRoute(makeUpdateManualTransactionController()))
 }
