@@ -1,6 +1,6 @@
 import { Either, left, right } from "@/shared"
 import { InvalidBalanceError, InvalidNameError } from "./errors"
-import { AccountType, Amount, SyncType, Transaction, User } from "@/entities"
+import { AccountType, Amount, SyncType, TransactionDeprecated, User } from "@/entities"
 import { Account } from "@/entities"
 
 export class WalletAccount implements Account {
@@ -36,11 +36,11 @@ export class WalletAccount implements Account {
         return right(new WalletAccount({name, balance: amount, imageUrl, user}))
     }
 
-    public addTransaction(transaction: Transaction) {
+    public addTransaction(transaction: TransactionDeprecated) {
         this.balance.add(transaction.amount.value)
     }
 
-    public removeTransaction(transaction: Transaction) {
+    public removeTransaction(transaction: TransactionDeprecated) {
         this.balance.subtract(transaction.amount.value)
     }
 }

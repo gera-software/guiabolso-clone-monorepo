@@ -1,4 +1,4 @@
-import { Category, Transaction, User, WalletAccount } from "@/entities"
+import { Category, TransactionDeprecated, User, WalletAccount } from "@/entities"
 import { Either, left, right } from "@/shared"
 import { TransactionRequest, TransactionRepository, UseCase, UserRepository, TransactionData, UpdateAccountRepository, CategoryRepository, CategoryData } from "@/usecases/ports"
 import { UnregisteredAccountError, UnregisteredCategoryError, UnregisteredUserError } from "@/usecases/errors"
@@ -58,7 +58,7 @@ export class AddManualTransactionToWallet implements UseCase {
         }
 
 
-        const transactionOrError = Transaction.create({
+        const transactionOrError = TransactionDeprecated.create({
             amount: request.amount,
             description: request.description,
             descriptionOriginal: request.descriptionOriginal,
@@ -72,7 +72,7 @@ export class AddManualTransactionToWallet implements UseCase {
             return left(transactionOrError.value)
         }
 
-        const transaction = transactionOrError.value as Transaction
+        const transaction = transactionOrError.value as TransactionDeprecated
 
         walletAccount.addTransaction(transaction)
 

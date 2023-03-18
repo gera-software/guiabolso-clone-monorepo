@@ -1,4 +1,4 @@
-import { Transaction, User, WalletAccount } from "@/entities"
+import { TransactionDeprecated, User, WalletAccount } from "@/entities"
 import { InvalidBalanceError, InvalidNameError } from "@/entities/errors"
 
 describe("Wallet Account entity", () => {
@@ -62,12 +62,12 @@ describe("Wallet Account entity", () => {
             }).value as User
             const account = WalletAccount.create({name, balance, imageUrl, user}).value as WalletAccount
 
-            const transaction = Transaction.create({ 
+            const transaction = TransactionDeprecated.create({ 
                 amount: 2567, 
                 category: null, 
                 description: 'valid description', 
                 date: new Date('2023-03-19'),
-            }).value as Transaction
+            }).value as TransactionDeprecated
 
             account.addTransaction(transaction)
             expect(account.balance.value).toBe(balance + transaction.amount.value)
@@ -84,12 +84,12 @@ describe("Wallet Account entity", () => {
             }).value as User
             const account = WalletAccount.create({name, balance, imageUrl, user}).value as WalletAccount
 
-            const transaction = Transaction.create({ 
+            const transaction = TransactionDeprecated.create({ 
                 amount: -2567, 
                 category: null, 
                 description: 'valid description', 
                 date: new Date('2023-03-19'),
-            }).value as Transaction
+            }).value as TransactionDeprecated
 
             account.addTransaction(transaction)
             expect(account.balance.value).toBe(balance + transaction.amount.value)
@@ -108,12 +108,12 @@ describe("Wallet Account entity", () => {
             }).value as User
             const account = WalletAccount.create({name, balance, imageUrl, user}).value as WalletAccount
 
-            const transaction = Transaction.create({ 
+            const transaction = TransactionDeprecated.create({ 
                 amount: 2567, 
                 category: null, 
                 description: 'valid description', 
                 date: new Date('2023-03-19'),
-            }).value as Transaction
+            }).value as TransactionDeprecated
 
             account.removeTransaction(transaction)
             expect(account.balance.value).toBe(balance - transaction.amount.value)
@@ -130,12 +130,12 @@ describe("Wallet Account entity", () => {
             }).value as User
             const account = WalletAccount.create({name, balance, imageUrl, user}).value as WalletAccount
 
-            const transaction = Transaction.create({ 
+            const transaction = TransactionDeprecated.create({ 
                 amount: -2567, 
                 category: null, 
                 description: 'valid description', 
                 date: new Date('2023-03-19'),
-            }).value as Transaction
+            }).value as TransactionDeprecated
 
             account.removeTransaction(transaction)
             expect(account.balance.value).toBe(balance - transaction.amount.value)

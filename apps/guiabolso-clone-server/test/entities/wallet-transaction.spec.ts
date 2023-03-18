@@ -1,8 +1,7 @@
-import { Category, TransactionDeprecated, TransactionType } from "@/entities"
+import { Category, WalletTransaction, TransactionType } from "@/entities"
 import { InvalidTransactionError } from "@/entities/errors"
 
-// @deprecated
-describe("Transaction entity", () => {
+describe("Wallet Transaction entity", () => {
 
     const category = Category.create({
         name: 'valid name',
@@ -12,10 +11,10 @@ describe("Transaction entity", () => {
         ignored: false,
     }).value as Category
 
-    test("should not create transaction without description or descriptionOriginal", () => {
+    test("should not create transaction without description", () => {
         const amount = -1900
         const date = new Date('2023-01-23')
-        const error = TransactionDeprecated.create({ amount, category, date }).value as Error
+        const error = WalletTransaction.create({ amount, category, date }).value as Error
         expect(error).toBeInstanceOf(InvalidTransactionError)
         expect(error.message).toBe('Required some description')
     })
@@ -24,7 +23,7 @@ describe("Transaction entity", () => {
         const amount = 0
         const description = 'transaction description'
         const date = new Date('2023-01-23')
-        const error = TransactionDeprecated.create({ amount, description, date }).value as Error
+        const error = WalletTransaction.create({ amount, description, date }).value as Error
         expect(error).toBeInstanceOf(InvalidTransactionError)
         expect(error.message).toBe('Invalid amount')
     })
@@ -36,11 +35,11 @@ describe("Transaction entity", () => {
         const type: TransactionType = 'EXPENSE'
         const comment = 'comentario válido'
         const ignored = true
-        const transaction = TransactionDeprecated.create({ amount, description, date, comment, ignored }).value as TransactionDeprecated
+        const transaction = WalletTransaction.create({ amount, description, date, comment, ignored }).value as WalletTransaction
         expect(transaction.category).toEqual(null)
         expect(transaction.amount.value).toEqual(amount)
         expect(transaction.description).toEqual(description)
-        expect(transaction.descriptionOriginal).toEqual('')
+        // expect(transaction.descriptionOriginal).toEqual('')
         expect(transaction.date.toISOString()).toEqual('2023-01-23T00:00:00.000Z')
         expect(transaction.type).toEqual(type)
         expect(transaction.comment).toEqual(comment)
@@ -54,11 +53,11 @@ describe("Transaction entity", () => {
         const type: TransactionType = 'INCOME'
         const comment = 'comentario válido'
         const ignored = true
-        const transaction = TransactionDeprecated.create({ amount, description, date, comment, ignored }).value as TransactionDeprecated
+        const transaction = WalletTransaction.create({ amount, description, date, comment, ignored }).value as WalletTransaction
         expect(transaction.category).toEqual(null)
         expect(transaction.amount.value).toEqual(amount)
         expect(transaction.description).toEqual(description)
-        expect(transaction.descriptionOriginal).toEqual('')
+        // expect(transaction.descriptionOriginal).toEqual('')
         expect(transaction.date.toISOString()).toEqual('2023-01-23T00:00:00.000Z')
         expect(transaction.type).toEqual(type)
         expect(transaction.comment).toEqual(comment)
@@ -70,23 +69,16 @@ describe("Transaction entity", () => {
         const description = 'transaction description'
         const date = new Date('2023-01-23')
         const type: TransactionType = 'EXPENSE'
-        const transaction = TransactionDeprecated.create({ amount, category, description, date }).value as TransactionDeprecated
+        const transaction = WalletTransaction.create({ amount, category, description, date }).value as WalletTransaction
         expect(transaction.category).toEqual(category)
         expect(transaction.amount.value).toEqual(amount)
         expect(transaction.description).toEqual(description)
-        expect(transaction.descriptionOriginal).toEqual('')
+        // expect(transaction.descriptionOriginal).toEqual('')
         expect(transaction.type).toEqual(type)
         expect(transaction.comment).toEqual('')
         expect(transaction.ignored).toEqual(false)
     })
 
-    test("should create transaction with only descriptionOriginal", () => {
-        const amount = -1900
-        const description = 'transaction description'
-        const date = new Date('2023-01-23')
-        const transaction = TransactionDeprecated.create({ amount, descriptionOriginal: description, date }).value as TransactionDeprecated
-        expect(transaction.descriptionOriginal).toEqual(description)
-        expect(transaction.description).toEqual('')
-    })
+
 
 })

@@ -1,7 +1,7 @@
 import { Either, left, right } from "@/shared"
 import { TransactionData, TransactionRepository, UpdateAccountRepository, UseCase, UserRepository } from "@/usecases/ports"
 import { UnregisteredTransactionError } from "@/usecases/errors"
-import { Transaction, User, WalletAccount } from "@/entities"
+import { TransactionDeprecated, User, WalletAccount } from "@/entities"
 
 export class RemoveManualTransactionFromWallet implements UseCase {
     private readonly transactionRepo: TransactionRepository
@@ -38,7 +38,7 @@ export class RemoveManualTransactionFromWallet implements UseCase {
 
         const walletAccount = accountOrError.value as WalletAccount
 
-        const transactionOrError = Transaction.create({
+        const transactionOrError = TransactionDeprecated.create({
             amount: removedTransaction.amount,
             description: removedTransaction.description,
             descriptionOriginal: removedTransaction.descriptionOriginal,
@@ -48,7 +48,7 @@ export class RemoveManualTransactionFromWallet implements UseCase {
             ignored: removedTransaction.ignored,
         })
 
-        const transaction = transactionOrError.value as Transaction
+        const transaction = transactionOrError.value as TransactionDeprecated
 
         walletAccount.removeTransaction(transaction)
 
