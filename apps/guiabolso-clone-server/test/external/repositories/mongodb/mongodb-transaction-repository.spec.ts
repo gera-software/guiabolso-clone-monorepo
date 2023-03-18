@@ -196,4 +196,89 @@ describe('Mongodb Transaction repository', () => {
         const transaction = await sut.findById(removedTransaction.id)
         expect(transaction._isDeleted).toBeTruthy()
     })
+
+    
+    test('should return null if a transaction to update is not found', async () => {
+        const sut = new MongodbTransactionRepository()
+
+        const notFoundId = '62f95f4a93d61d8fff971668'
+        const transactionData: TransactionData = {
+            id: notFoundId,
+            accountId: validWalletAccount.id,
+            accountType: 'WALLET',
+            syncType: 'MANUAL',
+            userId: validUser.id,
+            amount: 2345,
+            description: 'valid description',
+            descriptionOriginal: '',
+            date: new Date('2023-05-18'),
+            type: 'INCOME',
+            comment: 'valid comment',
+            ignored: false,
+            category: {
+                id: validCategory0.id,
+                name: "category 0",
+                group: "group 0",
+                iconName: "icon 0",
+                primaryColor: "color 0",
+                ignored: true,
+            },
+            _isDeleted: false,
+        }
+        const updatedTransaction = await sut.update(transactionData)
+        expect(updatedTransaction).toBeNull()
+
+    })
+
+        
+    test('should update a valid transaction', async () => {
+        const sut = new MongodbTransactionRepository()
+
+        const transactionData: TransactionData = {
+            accountId: validWalletAccount.id,
+            accountType: 'WALLET',
+            syncType: 'MANUAL',
+            userId: validUser.id,
+            amount: 2345,
+            description: 'valid description',
+            descriptionOriginal: '',
+            date: new Date('2023-05-18'),
+            type: 'INCOME',
+            comment: 'valid comment',
+            ignored: false,
+            category: validCategory0,
+            _isDeleted: false,
+        }
+
+        const insertedTransaction = await sut.add(transactionData)
+
+        const updateTransactionData: TransactionData = {
+            id: insertedTransaction.id,
+            accountId: validWalletAccount.id,
+            accountType: 'WALLET',
+            syncType: 'MANUAL',
+            userId: validUser.id,
+            amount: -5000,
+            description: 'updated description',
+            descriptionOriginal: 'updated original',
+            date: new Date('2023-01-15'),
+            type: 'EXPENSE',
+            comment: 'updated comment',
+            ignored: true,
+            category: validCategory1,
+            _isDeleted: false,
+        }
+
+        const updatedTransaction = await sut.update(updateTransactionData)
+
+        const transaction = await sut.findById(updatedTransaction.id)
+        expect(transaction.amount).toBe(updateTransactionData.amount)
+        expect(transaction.type).toBe(updateTransactionData.type)
+        expect(transaction.description).toBe(updateTransactionData.description)
+        expect(transaction.descriptionOriginal).toBe(updateTransactionData.descriptionOriginal)
+        expect(transaction.date).toEqual(updateTransactionData.date)
+        expect(transaction.comment).toBe(updateTransactionData.comment)
+        expect(transaction.ignored).toBe(updateTransactionData.ignored)
+        expect(transaction.category).toEqual(updateTransactionData.category)
+    })
 })
