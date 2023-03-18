@@ -11,16 +11,16 @@ export class WalletAccount implements Account {
     public readonly type: AccountType = 'WALLET'
     public readonly syncType: SyncType = 'MANUAL'
 
-    private constructor(wallet: {name: string, balance: Amount, imageUrl?: string, user: User}) {
-        this.name = wallet.name
-        this.balance = wallet.balance
-        this.imageUrl = wallet.imageUrl
-        this.user = wallet.user
+    private constructor(account: {name: string, balance: Amount, imageUrl?: string, user: User}) {
+        this.name = account.name
+        this.balance = account.balance
+        this.imageUrl = account.imageUrl
+        this.user = account.user
     }
 
 
-    public static create(wallet: { name: string, balance: number, imageUrl?: string, user: User }): Either<InvalidNameError | InvalidBalanceError, WalletAccount> {
-        const { name, balance, imageUrl, user } = wallet
+    public static create(account: { name: string, balance: number, imageUrl?: string, user: User }): Either<InvalidNameError | InvalidBalanceError, WalletAccount> {
+        const { name, balance, imageUrl, user } = account
 
         if(!name) {
             return left(new InvalidNameError())

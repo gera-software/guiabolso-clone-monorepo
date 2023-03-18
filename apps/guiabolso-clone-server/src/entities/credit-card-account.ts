@@ -14,17 +14,17 @@ export class CreditCardAccount implements Account {
     public readonly creditCardInfo: CreditCardInfo
 
     
-    private constructor(wallet: {name: string, balance: Amount, imageUrl?: string, user: User, institution?: Institution, creditCardInfo: CreditCardInfo }) {
-        this.name = wallet.name
-        this.balance = wallet.balance
-        this.imageUrl = wallet.imageUrl
-        this.user = wallet.user
-        this.institution = wallet.institution
-        this.creditCardInfo = wallet.creditCardInfo
+    private constructor(account: {name: string, balance: Amount, imageUrl?: string, user: User, institution?: Institution, creditCardInfo: CreditCardInfo }) {
+        this.name = account.name
+        this.balance = account.balance
+        this.imageUrl = account.imageUrl
+        this.user = account.user
+        this.institution = account.institution
+        this.creditCardInfo = account.creditCardInfo
     }
 
-    public static create(wallet: { name: string, balance: number, imageUrl?: string, user: User, institution?: Institution, creditCardInfo: CreditCardInfoData}) {
-        const { name, balance, imageUrl, user, institution, creditCardInfo } = wallet
+    public static create(account: { name: string, balance: number, imageUrl?: string, user: User, institution?: Institution, creditCardInfo: CreditCardInfoData}) {
+        const { name, balance, imageUrl, user, institution, creditCardInfo } = account
         
         if(!name) {
             return left(new InvalidNameError())

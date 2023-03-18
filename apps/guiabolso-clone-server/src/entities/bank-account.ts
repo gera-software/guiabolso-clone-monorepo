@@ -12,16 +12,16 @@ export class BankAccount implements Account {
     public readonly institution: Institution
 
     
-    private constructor(wallet: {name: string, balance: Amount, imageUrl?: string, user: User, institution?: Institution}) {
-        this.name = wallet.name
-        this.balance = wallet.balance
-        this.imageUrl = wallet.imageUrl
-        this.user = wallet.user
-        this.institution = wallet.institution
+    private constructor(account: {name: string, balance: Amount, imageUrl?: string, user: User, institution?: Institution}) {
+        this.name = account.name
+        this.balance = account.balance
+        this.imageUrl = account.imageUrl
+        this.user = account.user
+        this.institution = account.institution
     }
 
-    public static create(wallet: { name: string, balance: number, imageUrl?: string, user: User, institution?: Institution}) {
-        const { name, balance, imageUrl, user, institution } = wallet
+    public static create(account: { name: string, balance: number, imageUrl?: string, user: User, institution?: Institution}) {
+        const { name, balance, imageUrl, user, institution } = account
         
         if(!name) {
             return left(new InvalidNameError())
