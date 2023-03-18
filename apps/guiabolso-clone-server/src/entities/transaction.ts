@@ -8,7 +8,7 @@ export class TransactionDeprecated {
     public readonly category: Category
     public readonly amount: Amount
     public readonly description: string
-    public readonly descriptionOriginal: string // TODO this field doesn't belong to wallet trasnactions
+    public readonly descriptionOriginal: string // TODO this field doesn't belong to wallet transactions
     public readonly date: Date
     public readonly comment: string
     public readonly ignored: boolean

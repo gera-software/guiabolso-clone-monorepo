@@ -1,7 +1,7 @@
 import { Either, left, right } from "@/shared"
 import { CategoryData, CategoryRepository, TransactionData, TransactionRepository, TransactionRequest, UpdateAccountRepository, UseCase, UserRepository } from "@/usecases/ports"
-import { Category, TransactionDeprecated, User, WalletAccount } from "@/entities"
-import { UnregisteredAccountError, UnregisteredCategoryError, UnregisteredTransactionError, UnregisteredUserError } from "../errors"
+import { Category, WalletTransaction, User, WalletAccount } from "@/entities"
+import { UnregisteredAccountError, UnregisteredCategoryError, UnregisteredTransactionError, UnregisteredUserError } from "@/usecases/errors"
 import { InvalidAmountError, InvalidBalanceError, InvalidEmailError, InvalidNameError, InvalidPasswordError, InvalidTransactionError } from "@/entities/errors"
 
 export class UpdateManualTransactionFromWallet implements UseCase {
@@ -17,7 +17,7 @@ export class UpdateManualTransactionFromWallet implements UseCase {
         this.userRepo = userRepository
     }
 
-    private async createTransaction(transaction: TransactionRequest | TransactionData): Promise<Either<UnregisteredCategoryError | InvalidTransactionError | InvalidAmountError, TransactionDeprecated>> {
+    private async createTransaction(transaction: TransactionRequest | TransactionData): Promise<Either<UnregisteredCategoryError | InvalidTransactionError | InvalidAmountError, WalletTransaction>> {
         let foundCategory: CategoryData = null
         let category: Category = null
         
@@ -30,10 +30,9 @@ export class UpdateManualTransactionFromWallet implements UseCase {
             category = Category.create(foundCategory).value as Category
         }
 
-        const transactionOrError = TransactionDeprecated.create({
+        const transactionOrError = WalletTransaction.create({
             amount: transaction.amount,
             description: transaction.description,
-            descriptionOriginal: transaction.descriptionOriginal,
             date: transaction.date,
             category,
             comment: transaction.comment,
@@ -44,7 +43,7 @@ export class UpdateManualTransactionFromWallet implements UseCase {
             return left(transactionOrError.value)
         }
 
-        return right(transactionOrError.value as TransactionDeprecated) 
+        return right(transactionOrError.value as WalletTransaction) 
     }
 
     private async createWalletAccount(accountId: string): Promise<Either<UnregisteredAccountError | UnregisteredUserError | InvalidNameError | InvalidEmailError | InvalidPasswordError | InvalidBalanceError, WalletAccount>> {
@@ -96,8 +95,8 @@ export class UpdateManualTransactionFromWallet implements UseCase {
             return left(newTransactionOrError.value)
         }
 
-        const oldTransaction = oldTransactionOrError.value as TransactionDeprecated
-        const newTransaction = newTransactionOrError.value as TransactionDeprecated
+        const oldTransaction = oldTransactionOrError.value as WalletTransaction
+        const newTransaction = newTransactionOrError.value as WalletTransaction
 
         const accountOrError = await this.createWalletAccount(request.accountId)
         if(accountOrError.isLeft()) {
@@ -119,7 +118,6 @@ export class UpdateManualTransactionFromWallet implements UseCase {
             userId: oldTransactionData.userId,
             amount: newTransaction.amount.value,
             description: newTransaction.description,
-            descriptionOriginal: newTransaction.descriptionOriginal,
             date: newTransaction.date,
             type: newTransaction.type,
             comment: newTransaction.comment,
