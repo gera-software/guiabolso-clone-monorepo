@@ -21,6 +21,7 @@ export type MongodbTransaction = {
 }
 
 export class MongodbTransactionRepository implements TransactionRepository {
+
     async add(transaction: TransactionData): Promise<TransactionData> {
         const transactionCollection = MongoHelper.getCollection('transactions')
 
@@ -75,7 +76,19 @@ export class MongodbTransactionRepository implements TransactionRepository {
     }
 
     async remove(id: string): Promise<TransactionData> {
-        throw new Error("Method not implemented.");
+        const transactionCollection = MongoHelper.getCollection('transactions')
+
+        const updateDoc = {
+            $set: {
+              _isDeleted: true
+            },
+        };
+
+        const result = await transactionCollection.findOneAndUpdate({ _id: new ObjectId(id) }, updateDoc, { returnDocument: 'after' });
+        if(result.value) {
+            return this.withApplicationId(result.value as MongodbTransaction)
+        }
+        return null
     }
 
     async update(transaction: TransactionData): Promise<TransactionData> {

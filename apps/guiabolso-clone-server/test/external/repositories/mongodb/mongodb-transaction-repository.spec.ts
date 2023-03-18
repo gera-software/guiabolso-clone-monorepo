@@ -71,7 +71,7 @@ describe('Mongodb Transaction repository', () => {
         await MongoHelper.clearCollection('transactions')
     })
 
-    test('when transaction is added, it should exist', async () => {
+    test('when transaction is added, it should exists', async () => {
         const sut = new MongodbTransactionRepository()
         const transactionData: TransactionData = {
             accountId: validWalletAccount.id,
@@ -153,5 +153,47 @@ describe('Mongodb Transaction repository', () => {
         expect(result.category).toEqual(transactionData.category)
         expect(result._isDeleted).toBe(transactionData._isDeleted)
 
+    })
+
+    test('should return null if a transaction to remove is not found', async () => {
+        const sut = new MongodbTransactionRepository()
+
+        const notFoundId = '62f95f4a93d61d8fff971668'
+        const removedTransaction = await sut.remove(notFoundId)
+        expect(removedTransaction).toBeNull()
+
+    })
+
+    test('when a transaction is removed, should be a logic exclusion', async () => {
+        const sut = new MongodbTransactionRepository()
+        const transactionData: TransactionData = {
+            accountId: validWalletAccount.id,
+            accountType: 'WALLET',
+            syncType: 'MANUAL',
+            userId: validUser.id,
+            amount: 2345,
+            description: 'valid description',
+            descriptionOriginal: '',
+            date: new Date('2023-05-18'),
+            type: 'INCOME',
+            comment: 'valid comment',
+            ignored: false,
+            category: {
+                id: validCategory0.id,
+                name: "category 0",
+                group: "group 0",
+                iconName: "icon 0",
+                primaryColor: "color 0",
+                ignored: true,
+            },
+            _isDeleted: false,
+        }
+
+        const addedTransaction =  await sut.add(transactionData)
+
+        const removedTransaction = await sut.remove(addedTransaction.id)
+
+        const transaction = await sut.findById(removedTransaction.id)
+        expect(transaction._isDeleted).toBeTruthy()
     })
 })
