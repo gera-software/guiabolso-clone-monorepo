@@ -1,6 +1,16 @@
 import { Express, Router } from 'express'
 import { adaptRoute } from '@/main/adapters'
-import { makeAddManualTransactionController, makeCreateManualBankAccountController, makeCreateManualCreditCardAccountController, makeCreateManualWalletAccountController, makeListAllCategoriesController, makeListInstitutionsByTypeController, makeSignInController, makeSignUpController } from '@/main/factories'
+import { 
+    makeAddManualTransactionController, 
+    makeCreateManualBankAccountController, 
+    makeCreateManualCreditCardAccountController, 
+    makeCreateManualWalletAccountController, 
+    makeListAllCategoriesController, 
+    makeListInstitutionsByTypeController, 
+    makeRemoveManualTransactionController, 
+    makeSignInController,
+    makeSignUpController
+ } from '@/main/factories'
 
 export default (app: Express): void => {
     const router = Router()
@@ -17,5 +27,7 @@ export default (app: Express): void => {
     router.post('/create/manual-credit-card', adaptRoute(makeCreateManualCreditCardAccountController()))
     router.get('/institution', adaptRoute(makeListInstitutionsByTypeController()))
     router.get('/category', adaptRoute(makeListAllCategoriesController()))
+
     router.post('/manual-transaction', adaptRoute(makeAddManualTransactionController()))
+    router.delete('/manual-transaction', adaptRoute(makeRemoveManualTransactionController()))
 }
