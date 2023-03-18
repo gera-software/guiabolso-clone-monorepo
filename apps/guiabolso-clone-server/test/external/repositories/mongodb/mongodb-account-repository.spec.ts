@@ -142,4 +142,22 @@ describe('Mongodb Account repository', () => {
         expect(result.institution).toEqual(validInstitution)
         expect(result.creditCardInfo).toEqual(validCreditCardInfoData)
     })
+
+    test('should update account balance', async () => {
+        const sut = new MongodbAccountRepository()
+        const account: AccountData = {
+            type: 'WALLET',
+            syncType: 'MANUAL',
+            name: 'any name',
+            balance: 789,
+            userId: validUser.id
+        }
+        const addedAccount = await sut.add(account)
+        
+        const newBalance = -5123
+        await sut.updateBalance(addedAccount.id, newBalance)
+
+        
+        expect((await sut.findById(addedAccount.id)).balance).toBe(newBalance)
+    })
 })

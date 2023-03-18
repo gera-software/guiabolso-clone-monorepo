@@ -1,4 +1,4 @@
-import { AccountData, AccountRepository, CreditCardInfoData, InstitutionData } from "@/usecases/ports"
+import { AccountData, AccountRepository, CreditCardInfoData, InstitutionData, UpdateAccountRepository } from "@/usecases/ports"
 import { ObjectId } from "mongodb"
 import { MongoHelper } from "@/external/repositories/mongodb/helper"
 import { MongodbInstitution } from "@/external/repositories/mongodb"
@@ -24,7 +24,7 @@ export type MongodbAccount = {
 }
 
 
-export class MongodbAccountRepository implements AccountRepository {
+export class MongodbAccountRepository implements AccountRepository, UpdateAccountRepository {
 
     async add(account: AccountData): Promise<AccountData> {
         const accountCollection = MongoHelper.getCollection('accounts')
@@ -77,6 +77,18 @@ export class MongodbAccountRepository implements AccountRepository {
             return true
         }
         return false
+    }
+
+    async updateBalance(accountId: string, balance: number): Promise<void> {
+        const accountCollection = MongoHelper.getCollection('accounts')
+
+        const updateDoc = {
+            $set: {
+              balance,
+            },
+        };
+
+        await accountCollection.updateOne({ _id: new ObjectId(accountId) }, updateDoc)
     }
 
     private withApplicationId (dbAccount: MongodbAccount): AccountData {
