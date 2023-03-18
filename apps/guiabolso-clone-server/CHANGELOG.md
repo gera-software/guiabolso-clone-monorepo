@@ -1,5 +1,11 @@
 # @gera-software/guiabolso-clone-server
 
+## 1.6.0
+
+### Minor Changes
+
+- Add, update and delete manual transaction from wallet account
+
 ## 1.5.0
 
 ### Minor Changes
