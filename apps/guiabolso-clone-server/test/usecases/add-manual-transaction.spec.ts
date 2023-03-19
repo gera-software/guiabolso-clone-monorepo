@@ -74,7 +74,7 @@ describe('Add manual transaction to account use case', () => {
             const accountRepository = new InMemoryAccountRepository([walletAccountData, bankAccountData])
             const categoryRepository = new InMemoryCategoryRepository([categoryData])
             const transactionRepository = new InMemoryTransactionRepository([])
-            const addManualTransactionToWallet = new AddManualTransactionToWallet(userRepository, accountRepository, transactionRepository, categoryRepository)
+            const addManualTransactionToWallet = new AddManualTransactionToWallet(accountRepository, transactionRepository)
             const addManualTransactionToBank = new AddManualTransactionToBank(userRepository, accountRepository, transactionRepository, categoryRepository)
             
             const sut = new AddManualTransaction(userRepository, accountRepository, categoryRepository, addManualTransactionToWallet, addManualTransactionToBank)
@@ -98,7 +98,7 @@ describe('Add manual transaction to account use case', () => {
             const accountRepository = new InMemoryAccountRepository([walletAccountData, bankAccountData])
             const categoryRepository = new InMemoryCategoryRepository([categoryData])
             const transactionRepository = new InMemoryTransactionRepository([])
-            const addManualTransactionToWallet = new AddManualTransactionToWallet(userRepository, accountRepository, transactionRepository, categoryRepository)
+            const addManualTransactionToWallet = new AddManualTransactionToWallet(accountRepository, transactionRepository)
             const addManualTransactionToBank = new AddManualTransactionToBank(userRepository, accountRepository, transactionRepository, categoryRepository)
             
             const sut = new AddManualTransaction(userRepository, accountRepository, categoryRepository, addManualTransactionToWallet, addManualTransactionToBank)
@@ -122,7 +122,7 @@ describe('Add manual transaction to account use case', () => {
             const accountRepository = new InMemoryAccountRepository([walletAccountData, bankAccountData])
             const categoryRepository = new InMemoryCategoryRepository([categoryData])
             const transactionRepository = new InMemoryTransactionRepository([])
-            const addManualTransactionToWallet = new AddManualTransactionToWallet(userRepository, accountRepository, transactionRepository, categoryRepository)
+            const addManualTransactionToWallet = new AddManualTransactionToWallet(accountRepository, transactionRepository)
             const addManualTransactionToBank = new AddManualTransactionToBank(userRepository, accountRepository, transactionRepository, categoryRepository)
             
             const sut = new AddManualTransaction(userRepository, accountRepository, categoryRepository,addManualTransactionToWallet, addManualTransactionToBank)
@@ -185,7 +185,7 @@ describe('Add manual transaction to account use case', () => {
     //         const accountRepository = new InMemoryAccountRepository([walletAccountData])
     //         const categoryRepository = new InMemoryCategoryRepository([categoryData])
     //         const transactionRepository = new InMemoryTransactionRepository([])
-    //         const addManualTransactionToWallet = new AddManualTransactionToWallet(userRepository, accountRepository, transactionRepository, categoryRepository)
+    //         const addManualTransactionToWallet = new AddManualTransactionToWallet(accountRepository, transactionRepository)
     //         const addManualTransactionToBank = new AddManualTransactionToBank(userRepository, accountRepository, transactionRepository, categoryRepository)
             
     //         const sut = new AddManualTransaction(addManualTransactionToWallet, addManualTransactionToBank)
@@ -209,7 +209,7 @@ describe('Add manual transaction to account use case', () => {
     //         const accountRepository = new InMemoryAccountRepository([walletAccountData])
     //         const categoryRepository = new InMemoryCategoryRepository([categoryData])
     //         const transactionRepository = new InMemoryTransactionRepository([])
-    //         const addManualTransactionToWallet = new AddManualTransactionToWallet(userRepository, accountRepository, transactionRepository, categoryRepository)
+    //         const addManualTransactionToWallet = new AddManualTransactionToWallet(accountRepository, transactionRepository)
     //         const addManualTransactionToBank = new AddManualTransactionToBank(userRepository, accountRepository, transactionRepository, categoryRepository)
             
     //         const sut = new AddManualTransaction(addManualTransactionToWallet, addManualTransactionToBank)
@@ -274,7 +274,7 @@ describe('Add manual transaction to account use case', () => {
     //         const accountRepository = new InMemoryAccountRepository([bankAccountData])
     //         const categoryRepository = new InMemoryCategoryRepository([categoryData])
     //         const transactionRepository = new InMemoryTransactionRepository([])
-    //         const addManualTransactionToWallet = new AddManualTransactionToWallet(userRepository, accountRepository, transactionRepository, categoryRepository)
+    //         const addManualTransactionToWallet = new AddManualTransactionToWallet(accountRepository, transactionRepository)
     //         const addManualTransactionToBank = new AddManualTransactionToBank(userRepository, accountRepository, transactionRepository, categoryRepository)
             
     //         const sut = new AddManualTransaction(addManualTransactionToWallet, addManualTransactionToBank)
