@@ -53,6 +53,7 @@ describe('Add manual transaction to account use case', () => {
             imageUrl,
             userId,
         }
+        
         bankAccountData = {
             id: bankAccountId,
             type: bankAccountType,

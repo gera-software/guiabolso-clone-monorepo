@@ -1,6 +1,7 @@
 import { AddManualTransaction } from "@/usecases/add-manual-transaction"
+import { AddManualTransactionToBank } from "@/usecases/add-manual-transaction-to-bank"
 import { AddManualTransactionToWallet } from "@/usecases/add-manual-transaction-to-wallet"
-import { CategoryData, UseCase, WalletAccountData } from "@/usecases/ports"
+import { BankAccountData, CategoryData, UseCase, UserData, WalletAccountData } from "@/usecases/ports"
 import { AddManualTransactionController } from "@/web-controllers"
 import { MissingParamError } from "@/web-controllers/errors"
 import { HttpRequest, HttpResponse } from "@/web-controllers/ports"
@@ -16,6 +17,13 @@ describe('Add manual transaction web controller', () => {
     const comment = 'valid comment'
     const ignored = false
 
+    const userData: UserData = {
+        id: userId, 
+        name: 'any name', 
+        email: 'any@email.com', 
+        password: '123'
+    }
+
     const categoryData: CategoryData = {
         name: "category 0",
         group: "group 0",
@@ -26,55 +34,88 @@ describe('Add manual transaction web controller', () => {
     }
     
     
-    const accountId = 'ac0'
-    const accountType = 'WALLET'
+    const walletAccountId = 'wac0'
+    const walletAccountType = 'WALLET'
+    const bankAccountId = 'bac0'
+    const bankAccountType = 'BANK'
     const syncType = 'MANUAL'
-    const name = 'valid account'
     const balance = 678
     const imageUrl = 'valid image url'
 
     let walletAccountData: WalletAccountData
+    let bankAccountData: BankAccountData
 
     beforeEach(() => {
         walletAccountData = {
-            id: accountId,
-            type: accountType,
+            id: walletAccountId,
+            type: walletAccountType,
             syncType,
-            name,
+            name: 'valid wallet account',
+            balance,
+            imageUrl,
+            userId,
+        }
+
+        bankAccountData = {
+            id: bankAccountId,
+            type: bankAccountType,
+            syncType,
+            name: 'valid wallet account',
             balance,
             imageUrl,
             userId,
         }
     })
 
-    describe('Add manual transaction to wallet account', () => {
-
-        test('should return status code 400 bad request when request is missing required params', async () => {
+    test('should return status code 400 bad request when request is missing required params', async () => {
     
-            const invalidRequest: HttpRequest = {
-                body: {
-                }
+        const invalidRequest: HttpRequest = {
+            body: {
             }
-    
-            const userRepository = new InMemoryUserRepository([{ id: userId, name: 'any name', email: 'any@email.com', password: '123' }])
-            const accountRepository = new InMemoryAccountRepository([walletAccountData])
-            const categoryRepository = new InMemoryCategoryRepository([categoryData])
-            const transactionRepository = new InMemoryTransactionRepository([])
-            const addManualTransactionToWallet = new AddManualTransactionToWallet(userRepository, accountRepository, transactionRepository, categoryRepository)
-            
-            const usecase = new AddManualTransaction(addManualTransactionToWallet)
-    
-            const sut = new AddManualTransactionController(usecase)
-            const response: HttpResponse = await sut.handle(invalidRequest)
-            expect(response.statusCode).toEqual(400)
-            expect(response.body as Error).toBeInstanceOf(MissingParamError)
-            expect(response.body.message).toBe("Missing parameters from request: accountId, amount, date, description.")
-        })
+        }
+
+        const userRepository = new InMemoryUserRepository([userData])
+        const accountRepository = new InMemoryAccountRepository([walletAccountData, bankAccountData])
+        const categoryRepository = new InMemoryCategoryRepository([categoryData])
+        const transactionRepository = new InMemoryTransactionRepository([])
+        const addManualTransactionToWallet = new AddManualTransactionToWallet(accountRepository, transactionRepository)
+        const addManualTransactionToBank = new AddManualTransactionToBank(accountRepository, transactionRepository)
+        
+        const usecase = new AddManualTransaction(userRepository, accountRepository, categoryRepository, addManualTransactionToWallet, addManualTransactionToBank)
+
+        const sut = new AddManualTransactionController(usecase)
+        const response: HttpResponse = await sut.handle(invalidRequest)
+        expect(response.statusCode).toEqual(400)
+        expect(response.body as Error).toBeInstanceOf(MissingParamError)
+        expect(response.body.message).toBe("Missing parameters from request: accountId, amount, date, description.")
+    })
+
+    test('should return status code 500 when server raises', async () => {
+        const validRequest: HttpRequest = {
+            body: {
+                accountId: walletAccountId, 
+                categoryId, 
+                amount, 
+                date,
+                description,
+                comment,
+                ignored,
+            }
+        }
+
+        const errorThrowingUseCaseStub: UseCase = new ErrorThrowingUseCaseStub()
+        const sut = new AddManualTransactionController(errorThrowingUseCaseStub)
+        const response: HttpResponse = await sut.handle(validRequest)
+        expect(response.statusCode).toEqual(500)
+
+    })
+
+    describe('Add manual transaction to wallet account', () => {
 
         test('should return status code 201 created when request is valid', async () => {
             const validRequest: HttpRequest = {
                 body: {
-                    accountId, 
+                    accountId: walletAccountId, 
                     categoryId, 
                     amount, 
                     date,
@@ -84,13 +125,14 @@ describe('Add manual transaction web controller', () => {
                 }
             }
     
-            const userRepository = new InMemoryUserRepository([{ id: userId, name: 'any name', email: 'any@email.com', password: '123' }])
-            const accountRepository = new InMemoryAccountRepository([walletAccountData])
+            const userRepository = new InMemoryUserRepository([userData])
+            const accountRepository = new InMemoryAccountRepository([walletAccountData, bankAccountData])
             const categoryRepository = new InMemoryCategoryRepository([categoryData])
             const transactionRepository = new InMemoryTransactionRepository([])
-            const addManualTransactionToWallet = new AddManualTransactionToWallet(userRepository, accountRepository, transactionRepository, categoryRepository)
+            const addManualTransactionToWallet = new AddManualTransactionToWallet(accountRepository, transactionRepository)
+            const addManualTransactionToBank = new AddManualTransactionToBank(accountRepository, transactionRepository)
             
-            const usecase = new AddManualTransaction(addManualTransactionToWallet)
+            const usecase = new AddManualTransaction(userRepository, accountRepository, categoryRepository, addManualTransactionToWallet, addManualTransactionToBank)    
     
             const sut = new AddManualTransactionController(usecase)
             const response: HttpResponse = await sut.handle(validRequest)
@@ -99,10 +141,14 @@ describe('Add manual transaction web controller', () => {
 
         })
 
-        test('should return status code 500 when server raises', async () => {
+    })
+
+    describe('Add manual transaction to bank account', () => {
+
+        test('should return status code 201 created when request is valid', async () => {
             const validRequest: HttpRequest = {
                 body: {
-                    accountId, 
+                    accountId: bankAccountId, 
                     categoryId, 
                     amount, 
                     date,
@@ -111,12 +157,22 @@ describe('Add manual transaction web controller', () => {
                     ignored,
                 }
             }
-
-            const errorThrowingUseCaseStub: UseCase = new ErrorThrowingUseCaseStub()
-            const sut = new AddManualTransactionController(errorThrowingUseCaseStub)
+    
+            const userRepository = new InMemoryUserRepository([userData])
+            const accountRepository = new InMemoryAccountRepository([walletAccountData, bankAccountData])
+            const categoryRepository = new InMemoryCategoryRepository([categoryData])
+            const transactionRepository = new InMemoryTransactionRepository([])
+            const addManualTransactionToWallet = new AddManualTransactionToWallet(accountRepository, transactionRepository)
+            const addManualTransactionToBank = new AddManualTransactionToBank(accountRepository, transactionRepository)
+            
+            const usecase = new AddManualTransaction(userRepository, accountRepository, categoryRepository, addManualTransactionToWallet, addManualTransactionToBank)    
+    
+            const sut = new AddManualTransactionController(usecase)
             const response: HttpResponse = await sut.handle(validRequest)
-            expect(response.statusCode).toEqual(500)
+            expect(response.statusCode).toEqual(201)
+            expect(response.body.id).toBeTruthy()
 
         })
+
     })
 })
