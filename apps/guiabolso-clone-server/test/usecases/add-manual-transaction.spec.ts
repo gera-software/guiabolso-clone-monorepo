@@ -1,9 +1,8 @@
-import { InvalidTransactionError } from "@/entities/errors"
 import { AddManualTransaction } from "@/usecases/add-manual-transaction"
 import { AddManualTransactionToBank } from "@/usecases/add-manual-transaction-to-bank"
 import { AddManualTransactionToWallet } from "@/usecases/add-manual-transaction-to-wallet"
 import { UnregisteredAccountError, UnregisteredCategoryError, UnregisteredUserError } from "@/usecases/errors"
-import { BankAccountData, CategoryData, TransactionData, TransactionRequest, WalletAccountData } from "@/usecases/ports"
+import { BankAccountData, CategoryData, TransactionRequest, WalletAccountData } from "@/usecases/ports"
 import { InMemoryAccountRepository, InMemoryCategoryRepository, InMemoryTransactionRepository, InMemoryUserRepository } from "@test/doubles/repositories"
 
 describe('Add manual transaction to account use case', () => {
@@ -75,7 +74,7 @@ describe('Add manual transaction to account use case', () => {
             const categoryRepository = new InMemoryCategoryRepository([categoryData])
             const transactionRepository = new InMemoryTransactionRepository([])
             const addManualTransactionToWallet = new AddManualTransactionToWallet(accountRepository, transactionRepository)
-            const addManualTransactionToBank = new AddManualTransactionToBank(userRepository, accountRepository, transactionRepository, categoryRepository)
+            const addManualTransactionToBank = new AddManualTransactionToBank(accountRepository, transactionRepository)
             
             const sut = new AddManualTransaction(userRepository, accountRepository, categoryRepository, addManualTransactionToWallet, addManualTransactionToBank)
             const response = (await sut.perform(transactionRequest)).value as Error
@@ -99,7 +98,7 @@ describe('Add manual transaction to account use case', () => {
             const categoryRepository = new InMemoryCategoryRepository([categoryData])
             const transactionRepository = new InMemoryTransactionRepository([])
             const addManualTransactionToWallet = new AddManualTransactionToWallet(accountRepository, transactionRepository)
-            const addManualTransactionToBank = new AddManualTransactionToBank(userRepository, accountRepository, transactionRepository, categoryRepository)
+            const addManualTransactionToBank = new AddManualTransactionToBank(accountRepository, transactionRepository)
             
             const sut = new AddManualTransaction(userRepository, accountRepository, categoryRepository, addManualTransactionToWallet, addManualTransactionToBank)
             const response = (await sut.perform(transactionRequest)).value as Error
@@ -123,7 +122,7 @@ describe('Add manual transaction to account use case', () => {
             const categoryRepository = new InMemoryCategoryRepository([categoryData])
             const transactionRepository = new InMemoryTransactionRepository([])
             const addManualTransactionToWallet = new AddManualTransactionToWallet(accountRepository, transactionRepository)
-            const addManualTransactionToBank = new AddManualTransactionToBank(userRepository, accountRepository, transactionRepository, categoryRepository)
+            const addManualTransactionToBank = new AddManualTransactionToBank(accountRepository, transactionRepository)
             
             const sut = new AddManualTransaction(userRepository, accountRepository, categoryRepository,addManualTransactionToWallet, addManualTransactionToBank)
             const response = (await sut.perform(transactionRequest)).value as Error

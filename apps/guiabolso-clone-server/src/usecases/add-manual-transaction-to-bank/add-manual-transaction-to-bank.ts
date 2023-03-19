@@ -1,34 +1,22 @@
 import { Category, BankTransaction, User, BankAccount } from "@/entities"
 import { Either, left, right } from "@/shared"
-import { TransactionRequest, TransactionRepository, UseCase, UserRepository, TransactionData, UpdateAccountRepository, CategoryRepository, CategoryData } from "@/usecases/ports"
-import { UnregisteredAccountError, UnregisteredCategoryError, UnregisteredUserError } from "@/usecases/errors"
+import { TransactionRepository, UseCase, TransactionData, UpdateAccountRepository } from "@/usecases/ports"
 import { InvalidAmountError, InvalidBalanceError, InvalidEmailError, InvalidNameError, InvalidPasswordError, InvalidTransactionError } from "@/entities/errors"
+import { TransactionToAddData } from "@/usecases/add-manual-transaction/ports"
 
 export class AddManualTransactionToBank implements UseCase {
     private readonly accountRepo: UpdateAccountRepository
-    private readonly userRepo: UserRepository
     private readonly transactionRepo: TransactionRepository
-    private readonly categoryRepo: CategoryRepository
 
-    constructor(userRepository: UserRepository, accountRepository: UpdateAccountRepository, transactionRepository: TransactionRepository, categoryRepository: CategoryRepository) {
-        this.userRepo = userRepository
+    constructor(accountRepository: UpdateAccountRepository, transactionRepository: TransactionRepository) {
         this.accountRepo = accountRepository
         this.transactionRepo = transactionRepository
-        this.categoryRepo = categoryRepository
     }
 
-    async perform(request: TransactionRequest): Promise<Either<UnregisteredAccountError | UnregisteredUserError | InvalidNameError | InvalidEmailError | InvalidPasswordError | InvalidBalanceError | UnregisteredCategoryError | InvalidTransactionError | InvalidAmountError, TransactionData>> {
-        const foundAccountData = await this.accountRepo.findById(request.accountId)
-        if(!foundAccountData) {
-            return left(new UnregisteredAccountError())
-        }
+    async perform(request: TransactionToAddData): Promise<Either<InvalidNameError | InvalidEmailError | InvalidPasswordError | InvalidBalanceError | InvalidTransactionError | InvalidAmountError, TransactionData>> {
+        const { userData, accountData, categoryData } = request
 
-        const foundUserData = await this.userRepo.findUserById(foundAccountData.userId)
-        if(!foundUserData) {
-            return left(new UnregisteredUserError())
-        }
-
-        const userOrError = User.create(foundUserData)
+        const userOrError = User.create(userData)
         if(userOrError.isLeft()) {
             return left(userOrError.value)
         }
@@ -36,9 +24,9 @@ export class AddManualTransactionToBank implements UseCase {
         const user = userOrError.value as User
 
         const accountOrError = BankAccount.create({ 
-            name: foundAccountData.name, 
-            balance: foundAccountData.balance, 
-            imageUrl: foundAccountData.imageUrl, 
+            name: accountData.name, 
+            balance: accountData.balance, 
+            imageUrl: accountData.imageUrl, 
             user 
         })
         if(accountOrError.isLeft()) {
@@ -47,16 +35,10 @@ export class AddManualTransactionToBank implements UseCase {
 
         const bankAccount = accountOrError.value as BankAccount
 
-        let foundCategory: CategoryData = null
         let category: Category = null
-        if(request.categoryId) {
-            foundCategory = await this.categoryRepo.findById(request.categoryId)
-            if(!foundCategory) {
-                return left(new UnregisteredCategoryError())
-            }
-            category = Category.create(foundCategory).value as Category
+        if(categoryData) {
+            category = Category.create(categoryData).value as Category
         }
-
 
         const transactionOrError = BankTransaction.create({
             amount: request.amount,
@@ -76,23 +58,23 @@ export class AddManualTransactionToBank implements UseCase {
         bankAccount.addTransaction(transaction)
 
         const transactionData: TransactionData = {
-            accountId: request.accountId,
+            accountId: accountData.id,
             accountType: bankAccount.type,
             syncType: bankAccount.syncType,
-            userId: foundAccountData.userId,
+            userId: accountData.userId,
             amount: transaction.amount.value,
             description: transaction.description,
             date: transaction.date,
             type: transaction.type,
             comment: transaction.comment,
             ignored: transaction.ignored,
-            category: foundCategory,
+            category: categoryData ?? null,
             _isDeleted: false,
         }
 
         const addedTransaction = await this.transactionRepo.add(transactionData)
 
-        await this.accountRepo.updateBalance(request.accountId, bankAccount.balance.value)
+        await this.accountRepo.updateBalance(accountData.id, bankAccount.balance.value)
         
         return right(addedTransaction)
     }

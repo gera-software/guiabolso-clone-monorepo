@@ -1,7 +1,6 @@
 import { Category, WalletTransaction, User, WalletAccount } from "@/entities"
 import { Either, left, right } from "@/shared"
 import { TransactionRepository, UseCase, TransactionData, UpdateAccountRepository } from "@/usecases/ports"
-import { UnregisteredAccountError, UnregisteredCategoryError, UnregisteredUserError } from "@/usecases/errors"
 import { InvalidAmountError, InvalidBalanceError, InvalidEmailError, InvalidNameError, InvalidPasswordError, InvalidTransactionError } from "@/entities/errors"
 import { TransactionToAddData } from "@/usecases/add-manual-transaction/ports"
 
@@ -14,7 +13,7 @@ export class AddManualTransactionToWallet implements UseCase {
         this.transactionRepo = transactionRepository
     }
 
-    async perform(request: TransactionToAddData): Promise<Either<UnregisteredAccountError | UnregisteredUserError | InvalidNameError | InvalidEmailError | InvalidPasswordError | InvalidBalanceError | UnregisteredCategoryError | InvalidTransactionError | InvalidAmountError, TransactionData>> {
+    async perform(request: TransactionToAddData): Promise<Either<InvalidNameError | InvalidEmailError | InvalidPasswordError | InvalidBalanceError | InvalidTransactionError | InvalidAmountError, TransactionData>> {
         const { userData, accountData, categoryData } = request
 
         const userOrError = User.create(userData)
