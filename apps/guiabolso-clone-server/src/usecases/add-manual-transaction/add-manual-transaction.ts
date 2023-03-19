@@ -1,10 +1,7 @@
-import { CategoryData, CategoryRepository, TransactionData, TransactionRequest, UpdateAccountRepository, UseCase, UserRepository } from "@/usecases/ports";
-import { AddManualTransactionToWallet } from "@/usecases/add-manual-transaction-to-wallet";
-import { InvalidAmountError, InvalidBalanceError, InvalidEmailError, InvalidNameError, InvalidPasswordError, InvalidTransactionError } from "@/entities/errors";
-import { Either, left } from "@/shared";
+import { CategoryData, CategoryRepository, TransactionRequest, UpdateAccountRepository, UseCase, UserRepository } from "@/usecases/ports";
+import { left } from "@/shared";
 import { UnregisteredAccountError, UnregisteredUserError, UnregisteredCategoryError } from "@/usecases/errors"
-import { Category, User } from "@/entities";
-import { TransactionToAddData } from "./ports";
+import { TransactionToAddData } from "@/usecases/add-manual-transaction/ports";
 
 export class AddManualTransaction implements UseCase {
     private readonly accountRepo: UpdateAccountRepository
@@ -37,12 +34,12 @@ export class AddManualTransaction implements UseCase {
         }
 
         let foundCategoryData: CategoryData = null
-        // if(request.categoryId) {
+        if(request.categoryId) {
             foundCategoryData = await this.categoryRepo.findById(request.categoryId)
             if(!foundCategoryData) {
                 return left(new UnregisteredCategoryError())
             }
-        // }
+        }
 
         const transactionToAddData: TransactionToAddData = {
             userData: foundUserData, 
@@ -58,10 +55,10 @@ export class AddManualTransaction implements UseCase {
         switch(foundAccountData.type) {
             case 'WALLET':
                 return this.addManualTransactionToWallet.perform(transactionToAddData)
+            case 'BANK':
+                return this.addManualTransactionToBank.perform(transactionToAddData)
         }
-        
 
-        // return this.addManualTransactionToWallet.perform(request)
     }
 
 }

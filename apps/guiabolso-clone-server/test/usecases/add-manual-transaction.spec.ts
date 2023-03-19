@@ -120,6 +120,7 @@ describe('Add manual transaction to account use case', () => {
                 accountId: walletAccountId,
                 categoryId: 'invalid',
                 amount,
+                description,
                 date,
                 comment,
                 ignored,
@@ -135,6 +136,30 @@ describe('Add manual transaction to account use case', () => {
             const sut = new AddManualTransaction(userRepository, accountRepository, categoryRepository,addManualTransactionToWallet, addManualTransactionToBank)
             const response = (await sut.perform(transactionRequest)).value as Error
             expect(response).toBeInstanceOf(UnregisteredCategoryError)
+        })
+
+        test('should not return error when transaction doesnt have a category', async () => {
+
+            const transactionRequest: TransactionRequest = {
+                accountId: bankAccountId,
+                // categoryId: 'invalid',
+                amount,
+                description,
+                date,
+                comment,
+                ignored,
+            }
+    
+            const userRepository = new InMemoryUserRepository([userData])
+            const accountRepository = new InMemoryAccountRepository([walletAccountData, bankAccountData])
+            const categoryRepository = new InMemoryCategoryRepository([categoryData])
+            const transactionRepository = new InMemoryTransactionRepository([])
+            const addManualTransactionToWallet = new AddManualTransactionToWallet(accountRepository, transactionRepository)
+            const addManualTransactionToBank = new AddManualTransactionToBank(accountRepository, transactionRepository)
+            
+            const sut = new AddManualTransaction(userRepository, accountRepository, categoryRepository, addManualTransactionToWallet, addManualTransactionToBank)
+            const response = (await sut.perform(transactionRequest)).value
+            expect(response).not.toBeInstanceOf(Error)
         })
     })
 
@@ -194,69 +219,60 @@ describe('Add manual transaction to account use case', () => {
         })
     })
 
-    // describe.skip('add manual transaction to bank account', () => {
-    //     const userId = 'u0'
-    //     const categoryId = 'c0'
-    //     const amount = -5060
-    //     const description = 'valid description'
-    //     const date = new Date('2023-03-09')
-    //     const comment = 'valid comment'
-    //     const ignored = false
-    
-    //     const categoryData: CategoryData = {
-    //         name: "category 0",
-    //         group: "group 0",
-    //         iconName: "icon 0",
-    //         primaryColor: "color 0",
-    //         ignored: true,
-    //         id: categoryId,
-    //     }
-        
-        
-    //     const accountId = 'ac0'
-    //     const accountType = 'BANK'
-    //     const syncType = 'MANUAL'
-    //     const name = 'valid bank account'
-    //     const balance = 678
-    //     const imageUrl = 'valid image url'
-    
-    //     let bankAccountData: BankAccountData
-    
-    //     beforeEach(() => {
-    //         bankAccountData = {
-    //             id: accountId,
-    //             type: accountType,
-    //             syncType,
-    //             name,
-    //             balance,
-    //             imageUrl,
-    //             userId,
-    //         }
-    //     })
+    describe('bank transactions', () => {
 
-    //     test('should not add transaction without required field', async () => {
-    //         const transactionRequest: TransactionRequest = {
-    //             accountId,
-    //             categoryId,
-    //             amount,
-    //             date,
-    //             comment,
-    //             ignored,
-    //         }
-
-    //         const userRepository = new InMemoryUserRepository([userData])
-    //         const accountRepository = new InMemoryAccountRepository([bankAccountData])
-    //         const categoryRepository = new InMemoryCategoryRepository([categoryData])
-    //         const transactionRepository = new InMemoryTransactionRepository([])
-    //         const addManualTransactionToWallet = new AddManualTransactionToWallet(accountRepository, transactionRepository)
-    //         const addManualTransactionToBank = new AddManualTransactionToBank(userRepository, accountRepository, transactionRepository, categoryRepository)
+        test('should not add transaction without required field', async () => {
+            const transactionRequest: TransactionRequest = {
+                accountId: bankAccountId,
+                categoryId,
+                amount,
+                // description,
+                date,
+                comment,
+                ignored,
+            }
+    
+            const userRepository = new InMemoryUserRepository([userData])
+            const accountRepository = new InMemoryAccountRepository([walletAccountData, bankAccountData])
+            const categoryRepository = new InMemoryCategoryRepository([categoryData])
+            const transactionRepository = new InMemoryTransactionRepository([])
+            const addManualTransactionToWallet = new AddManualTransactionToWallet(accountRepository, transactionRepository)
+            const addManualTransactionToBank = new AddManualTransactionToBank(accountRepository, transactionRepository)
             
-    //         const sut = new AddManualTransaction(addManualTransactionToWallet, addManualTransactionToBank)
-    //         const response = (await sut.perform(transactionRequest)).value as Error
-    //         expect(response).toBeInstanceOf(InvalidTransactionError)
+            const sut = new AddManualTransaction(userRepository, accountRepository, categoryRepository, addManualTransactionToWallet, addManualTransactionToBank)
+            
+            
+            const response = (await sut.perform(transactionRequest)).value as Error
+            expect(response).toBeInstanceOf(InvalidTransactionError)
 
-    //     })
-    // })
+        })
 
+        test('should add a valid transaction and update account balance', async () => {
+            const transactionRequest: TransactionRequest = {
+                accountId: bankAccountId,
+                categoryId,
+                amount,
+                description,
+                date,
+                comment,
+                ignored,
+            }
     
+            const userRepository = new InMemoryUserRepository([userData])
+            const accountRepository = new InMemoryAccountRepository([walletAccountData, bankAccountData])
+            const categoryRepository = new InMemoryCategoryRepository([categoryData])
+            const transactionRepository = new InMemoryTransactionRepository([])
+            const addManualTransactionToWallet = new AddManualTransactionToWallet(accountRepository, transactionRepository)
+            const addManualTransactionToBank = new AddManualTransactionToBank(accountRepository, transactionRepository)
+            
+            const sut = new AddManualTransaction(userRepository, accountRepository, categoryRepository, addManualTransactionToWallet, addManualTransactionToBank)
+            
+    
+            const response = (await sut.perform(transactionRequest)).value as TransactionData
+            expect(response.id).not.toBeUndefined()
+            expect(await transactionRepository.exists(response.id)).toBe(true)
+            expect((await accountRepository.findById(bankAccountId)).balance).toBe(balance + transactionRequest.amount)
+        })
+    })
+
 })
