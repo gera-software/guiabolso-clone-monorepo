@@ -1,9 +1,9 @@
 import { AccountData, CategoryData, UserData } from "@/usecases/ports"
 
 export type TransactionToAddData = {
-    userData: UserData, 
-    accountData: AccountData, 
-    categoryData?: CategoryData, 
+    user: UserData, 
+    account: AccountData, 
+    category?: CategoryData, 
     amount: number,
     description?: string,
     date: Date,

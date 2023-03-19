@@ -1,33 +1,25 @@
 import { Either, left, right } from "@/shared"
-import { CategoryData, CategoryRepository, TransactionData, TransactionRepository, TransactionRequest, UpdateAccountRepository, UseCase, UserRepository } from "@/usecases/ports"
+import { AccountData, TransactionData, TransactionRepository, UpdateAccountRepository, UseCase, UserData } from "@/usecases/ports"
 import { Category, WalletTransaction, User, WalletAccount } from "@/entities"
-import { UnregisteredAccountError, UnregisteredCategoryError, UnregisteredTransactionError, UnregisteredUserError } from "@/usecases/errors"
+import { UnregisteredUserError } from "@/usecases/errors"
 import { InvalidAmountError, InvalidBalanceError, InvalidEmailError, InvalidNameError, InvalidPasswordError, InvalidTransactionError } from "@/entities/errors"
+import { TransactionToUpdateData } from "@/usecases/update-manual-transaction/ports"
+import { TransactionToAddData } from "@/usecases/add-manual-transaction/ports"
 
 export class UpdateManualTransactionFromWallet implements UseCase {
     private readonly transactionRepo: TransactionRepository
-    private readonly categoryRepo: CategoryRepository
     private readonly accountRepo: UpdateAccountRepository
-    private readonly userRepo: UserRepository
 
-    constructor(transactionRepository: TransactionRepository, categoryRepository: CategoryRepository, accountRepository: UpdateAccountRepository, userRepository: UserRepository) {
+    constructor(transactionRepository: TransactionRepository, accountRepository: UpdateAccountRepository) {
         this.transactionRepo = transactionRepository
-        this.categoryRepo = categoryRepository
         this.accountRepo = accountRepository
-        this.userRepo = userRepository
     }
 
-    private async createTransaction(transaction: TransactionRequest | TransactionData): Promise<Either<UnregisteredCategoryError | InvalidTransactionError | InvalidAmountError, WalletTransaction>> {
-        let foundCategory: CategoryData = null
+    private async createTransaction(transaction: TransactionToAddData | TransactionData): Promise<Either<InvalidTransactionError | InvalidAmountError, WalletTransaction>> {
         let category: Category = null
         
-        const categoryId = (transaction as TransactionRequest).categoryId || (transaction as TransactionData).category?.id
-        if(categoryId) {
-            foundCategory = await this.categoryRepo.findById(categoryId)
-            if(!foundCategory) {
-                return left(new UnregisteredCategoryError())
-            }
-            category = Category.create(foundCategory).value as Category
+        if(transaction.category) {
+            category = Category.create(transaction.category).value as Category
         }
 
         const transactionOrError = WalletTransaction.create({
@@ -46,18 +38,8 @@ export class UpdateManualTransactionFromWallet implements UseCase {
         return right(transactionOrError.value as WalletTransaction) 
     }
 
-    private async createWalletAccount(accountId: string): Promise<Either<UnregisteredAccountError | UnregisteredUserError | InvalidNameError | InvalidEmailError | InvalidPasswordError | InvalidBalanceError, WalletAccount>> {
-        const foundAccountData = await this.accountRepo.findById(accountId)
-        if(!foundAccountData) {
-            return left(new UnregisteredAccountError())
-        }
-
-        const foundUserData = await this.userRepo.findUserById(foundAccountData.userId)
-        if(!foundUserData) {
-            return left(new UnregisteredUserError())
-        }
-
-        const userOrError = User.create(foundUserData)
+    private async createWalletAccount(accountData: AccountData, userData: UserData): Promise<Either<InvalidNameError | InvalidEmailError | InvalidPasswordError | InvalidBalanceError, WalletAccount>> {
+        const userOrError = User.create(userData)
         if(userOrError.isLeft()) {
             return left(userOrError.value)
         }
@@ -65,9 +47,9 @@ export class UpdateManualTransactionFromWallet implements UseCase {
         const user = userOrError.value as User
 
         const accountOrError = WalletAccount.create({ 
-            name: foundAccountData.name, 
-            balance: foundAccountData.balance, 
-            imageUrl: foundAccountData.imageUrl, 
+            name: accountData.name, 
+            balance: accountData.balance, 
+            imageUrl: accountData.imageUrl, 
             user 
         })
         if(accountOrError.isLeft()) {
@@ -77,15 +59,11 @@ export class UpdateManualTransactionFromWallet implements UseCase {
         return right(accountOrError.value as WalletAccount)
     }
 
-    async perform(request: TransactionRequest): Promise<Either<UnregisteredCategoryError | InvalidTransactionError | InvalidAmountError | UnregisteredTransactionError | UnregisteredAccountError | UnregisteredUserError | InvalidNameError | InvalidEmailError | InvalidPasswordError | InvalidBalanceError, TransactionData>> {
-        const oldTransactionData = await this.transactionRepo.findById(request.id)
-
-        if(!oldTransactionData) {
-            return left(new UnregisteredTransactionError())
-        }
+    async perform(request: TransactionToUpdateData): Promise<Either<InvalidTransactionError | InvalidAmountError | UnregisteredUserError | InvalidNameError | InvalidEmailError | InvalidPasswordError | InvalidBalanceError, TransactionData>> {
+        const { oldTransactionData } = request
 
         const oldTransactionOrError = await this.createTransaction(oldTransactionData)
-        const newTransactionOrError = await this.createTransaction(request)
+        const newTransactionOrError = await this.createTransaction(request.newTransaction)
 
         if(oldTransactionOrError.isLeft()) {
             return left(oldTransactionOrError.value)
@@ -98,7 +76,7 @@ export class UpdateManualTransactionFromWallet implements UseCase {
         const oldTransaction = oldTransactionOrError.value as WalletTransaction
         const newTransaction = newTransactionOrError.value as WalletTransaction
 
-        const accountOrError = await this.createWalletAccount(request.accountId)
+        const accountOrError = await this.createWalletAccount(request.newTransaction.account, request.newTransaction.user)
         if(accountOrError.isLeft()) {
             return left(accountOrError.value)
         }
@@ -107,8 +85,6 @@ export class UpdateManualTransactionFromWallet implements UseCase {
 
         walletAccount.removeTransaction(oldTransaction)
         walletAccount.addTransaction(newTransaction)
-
-        const category = await this.categoryRepo.findById(request.categoryId)
 
         const transactionData: TransactionData = {
             id: oldTransactionData.id,
@@ -122,12 +98,12 @@ export class UpdateManualTransactionFromWallet implements UseCase {
             type: newTransaction.type,
             comment: newTransaction.comment,
             ignored: newTransaction.ignored,
-            category,
+            category: request.newTransaction.category,
         }
 
         const result = await this.transactionRepo.update(transactionData)
 
-        await this.accountRepo.updateBalance(request.accountId, walletAccount.balance.value)
+        await this.accountRepo.updateBalance(request.oldTransactionData.accountId, walletAccount.balance.value)
 
         return(right(result))
 
