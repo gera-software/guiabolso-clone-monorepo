@@ -4,6 +4,7 @@ import { InvalidAmountError, InvalidBalanceError, InvalidEmailError, InvalidName
 import { Either, left } from "@/shared";
 import { UnregisteredAccountError, UnregisteredUserError, UnregisteredCategoryError } from "@/usecases/errors"
 import { Category, User } from "@/entities";
+import { TransactionToAddData } from "./ports";
 
 export class AddManualTransaction implements UseCase {
     private readonly accountRepo: UpdateAccountRepository
@@ -42,6 +43,23 @@ export class AddManualTransaction implements UseCase {
                 return left(new UnregisteredCategoryError())
             }
         // }
+
+        const transactionToAddData: TransactionToAddData = {
+            userData: foundUserData, 
+            accountData: foundAccountData, 
+            categoryData: foundCategoryData, 
+            amount: request.amount,
+            description: request.description,
+            date: request.date,
+            comment: request.comment,
+            ignored: request.ignored,
+        }
+
+        switch(foundAccountData.type) {
+            case 'WALLET':
+                return this.addManualTransactionToWallet.perform(transactionToAddData)
+        }
+        
 
         // return this.addManualTransactionToWallet.perform(request)
     }
