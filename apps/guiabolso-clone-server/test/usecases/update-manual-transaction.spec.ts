@@ -1,6 +1,7 @@
 import { UnregisteredAccountError, UnregisteredCategoryError, UnregisteredTransactionError, UnregisteredUserError } from "@/usecases/errors"
 import { BankAccountData, CategoryData, TransactionData, TransactionRequest, UserData, WalletAccountData } from "@/usecases/ports"
 import { UpdateManualTransaction } from "@/usecases/update-manual-transaction"
+import { UpdateManualTransactionFromBank } from "@/usecases/update-manual-transaction-from-bank"
 import { UpdateManualTransactionFromWallet } from "@/usecases/update-manual-transaction-from-wallet"
 import { InMemoryAccountRepository, InMemoryCategoryRepository, InMemoryTransactionRepository, InMemoryUserRepository } from "@test/doubles/repositories"
 
@@ -86,12 +87,13 @@ describe('Update manual transaction from account use case', () => {
         }
 
         const userRepository = new InMemoryUserRepository([userData])
-        const accountRepository = new InMemoryAccountRepository([walletAccountData])
+        const accountRepository = new InMemoryAccountRepository([walletAccountData, bankAccountData])
         const transactionRepository = new InMemoryTransactionRepository([])
         const categoryRepository = new InMemoryCategoryRepository([categoryData, categoryData1])
         const updateManualTransactionFromWallet = new UpdateManualTransactionFromWallet(transactionRepository, accountRepository)
+        const updateManualTransactionFromBank = new UpdateManualTransactionFromBank(transactionRepository, accountRepository)
 
-        const sut = new UpdateManualTransaction(userRepository, accountRepository, transactionRepository, categoryRepository, updateManualTransactionFromWallet)
+        const sut = new UpdateManualTransaction(userRepository, accountRepository, transactionRepository, categoryRepository, updateManualTransactionFromWallet, updateManualTransactionFromBank)
         const response = (await sut.perform(transactionRequest)).value as Error
         expect(response).toBeInstanceOf(UnregisteredTransactionError)
     })
@@ -122,12 +124,13 @@ describe('Update manual transaction from account use case', () => {
         }
 
         const userRepository = new InMemoryUserRepository([])
-        const accountRepository = new InMemoryAccountRepository([walletAccountData])
+        const accountRepository = new InMemoryAccountRepository([walletAccountData, bankAccountData])
         const transactionRepository = new InMemoryTransactionRepository([transactionData])
         const categoryRepository = new InMemoryCategoryRepository([categoryData, categoryData1])
         const updateManualTransactionFromWallet = new UpdateManualTransactionFromWallet(transactionRepository, accountRepository)
+        const updateManualTransactionFromBank = new UpdateManualTransactionFromBank(transactionRepository, accountRepository)
 
-        const sut = new UpdateManualTransaction(userRepository, accountRepository, transactionRepository, categoryRepository, updateManualTransactionFromWallet)
+        const sut = new UpdateManualTransaction(userRepository, accountRepository, transactionRepository, categoryRepository, updateManualTransactionFromWallet, updateManualTransactionFromBank)
         const response = (await sut.perform(transactionRequest)).value as Error
         expect(response).toBeInstanceOf(UnregisteredUserError)
     })
@@ -162,8 +165,9 @@ describe('Update manual transaction from account use case', () => {
         const transactionRepository = new InMemoryTransactionRepository([transactionData])
         const categoryRepository = new InMemoryCategoryRepository([categoryData, categoryData1])
         const updateManualTransactionFromWallet = new UpdateManualTransactionFromWallet(transactionRepository, accountRepository)
+        const updateManualTransactionFromBank = new UpdateManualTransactionFromBank(transactionRepository, accountRepository)
 
-        const sut = new UpdateManualTransaction(userRepository, accountRepository, transactionRepository, categoryRepository, updateManualTransactionFromWallet)
+        const sut = new UpdateManualTransaction(userRepository, accountRepository, transactionRepository, categoryRepository, updateManualTransactionFromWallet, updateManualTransactionFromBank)
         const response = (await sut.perform(transactionRequest)).value as Error
         expect(response).toBeInstanceOf(UnregisteredAccountError)
     })
@@ -194,12 +198,13 @@ describe('Update manual transaction from account use case', () => {
         }
 
         const userRepository = new InMemoryUserRepository([userData])
-        const accountRepository = new InMemoryAccountRepository([walletAccountData])
+        const accountRepository = new InMemoryAccountRepository([walletAccountData, bankAccountData])
         const transactionRepository = new InMemoryTransactionRepository([transactionData])
         const categoryRepository = new InMemoryCategoryRepository([categoryData, categoryData1])
         const updateManualTransactionFromWallet = new UpdateManualTransactionFromWallet(transactionRepository, accountRepository)
+        const updateManualTransactionFromBank = new UpdateManualTransactionFromBank(transactionRepository, accountRepository)
 
-        const sut = new UpdateManualTransaction(userRepository, accountRepository, transactionRepository, categoryRepository, updateManualTransactionFromWallet)
+        const sut = new UpdateManualTransaction(userRepository, accountRepository, transactionRepository, categoryRepository, updateManualTransactionFromWallet, updateManualTransactionFromBank)        
         const response = (await sut.perform(transactionRequest)).value as Error
         expect(response).toBeInstanceOf(UnregisteredCategoryError)
     })
@@ -230,12 +235,13 @@ describe('Update manual transaction from account use case', () => {
         }
 
         const userRepository = new InMemoryUserRepository([userData])
-        const accountRepository = new InMemoryAccountRepository([walletAccountData])
+        const accountRepository = new InMemoryAccountRepository([walletAccountData, bankAccountData])
         const transactionRepository = new InMemoryTransactionRepository([transactionData])
         const categoryRepository = new InMemoryCategoryRepository([categoryData, categoryData1])
         const updateManualTransactionFromWallet = new UpdateManualTransactionFromWallet(transactionRepository, accountRepository)
+        const updateManualTransactionFromBank = new UpdateManualTransactionFromBank(transactionRepository, accountRepository)
 
-        const sut = new UpdateManualTransaction(userRepository, accountRepository, transactionRepository, categoryRepository, updateManualTransactionFromWallet)
+        const sut = new UpdateManualTransaction(userRepository, accountRepository, transactionRepository, categoryRepository, updateManualTransactionFromWallet, updateManualTransactionFromBank)        
         const response = (await sut.perform(transactionRequest)).value
         expect(response).not.toBeInstanceOf(Error)
     })
@@ -268,12 +274,13 @@ describe('Update manual transaction from account use case', () => {
             }
 
             const userRepository = new InMemoryUserRepository([userData])
-            const accountRepository = new InMemoryAccountRepository([walletAccountData])
+            const accountRepository = new InMemoryAccountRepository([walletAccountData, bankAccountData])
             const transactionRepository = new InMemoryTransactionRepository([transactionData])
             const categoryRepository = new InMemoryCategoryRepository([categoryData, categoryData1])
             const updateManualTransactionFromWallet = new UpdateManualTransactionFromWallet(transactionRepository, accountRepository)
+            const updateManualTransactionFromBank = new UpdateManualTransactionFromBank(transactionRepository, accountRepository)
 
-            const sut = new UpdateManualTransaction(userRepository, accountRepository, transactionRepository, categoryRepository, updateManualTransactionFromWallet)
+            const sut = new UpdateManualTransaction(userRepository, accountRepository, transactionRepository, categoryRepository, updateManualTransactionFromWallet, updateManualTransactionFromBank)            
             const response = (await sut.perform(transactionRequest)).value as TransactionData
             
             const updated = await transactionRepository.findById(transactionId)
@@ -285,6 +292,56 @@ describe('Update manual transaction from account use case', () => {
             expect(updated.ignored).toEqual(true)
             expect(updated.category.id).toBe(categoryId)
             const newBalance = (await accountRepository.findById(walletAccountId)).balance
+            expect(newBalance).toBe(balance - amount + transactionRequest.amount)
+        })
+    })
+
+    describe('update manual transaction from bank account', () => {
+
+        test('should update transaction and update account balance', async () => {
+            const transactionData: TransactionData = {
+                id: transactionId,
+                accountId: bankAccountId,
+                accountType: bankAccountType,
+                syncType,
+                userId,
+                description,
+                amount,
+                date,
+                type: 'INCOME',
+                category: categoryData1,
+            }
+    
+            const transactionRequest: TransactionRequest = {
+                id: transactionId,
+                accountId: bankAccountId,
+                categoryId,
+                amount: -400,
+                description: 'new description',
+                date: new Date('2023-04-10'),
+                comment: 'new comment',
+                ignored: true,
+            }
+
+            const userRepository = new InMemoryUserRepository([userData])
+            const accountRepository = new InMemoryAccountRepository([walletAccountData, bankAccountData])
+            const transactionRepository = new InMemoryTransactionRepository([transactionData])
+            const categoryRepository = new InMemoryCategoryRepository([categoryData, categoryData1])
+            const updateManualTransactionFromWallet = new UpdateManualTransactionFromWallet(transactionRepository, accountRepository)
+            const updateManualTransactionFromBank = new UpdateManualTransactionFromBank(transactionRepository, accountRepository)
+
+            const sut = new UpdateManualTransaction(userRepository, accountRepository, transactionRepository, categoryRepository, updateManualTransactionFromWallet, updateManualTransactionFromBank)            
+            const response = (await sut.perform(transactionRequest)).value as TransactionData
+            
+            const updated = await transactionRepository.findById(transactionId)
+            expect(updated.amount).toBe(-400)
+            expect(updated.type).toBe('EXPENSE')
+            expect(updated.description).toBe('new description')
+            expect(updated.date).toEqual(new Date('2023-04-10'))
+            expect(updated.comment).toEqual('new comment')
+            expect(updated.ignored).toEqual(true)
+            expect(updated.category.id).toBe(categoryId)
+            const newBalance = (await accountRepository.findById(bankAccountId)).balance
             expect(newBalance).toBe(balance - amount + transactionRequest.amount)
         })
     })

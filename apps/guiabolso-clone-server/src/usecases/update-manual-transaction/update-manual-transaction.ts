@@ -4,6 +4,7 @@ import { UnregisteredAccountError, UnregisteredCategoryError, UnregisteredTransa
 import { UpdateManualTransactionFromWallet } from "@/usecases/update-manual-transaction-from-wallet";
 import { InvalidTransactionError, InvalidAmountError, InvalidNameError, InvalidEmailError, InvalidPasswordError, InvalidBalanceError } from "@/entities/errors";
 import { TransactionToUpdateData } from "@/usecases/update-manual-transaction/ports";
+import { UpdateManualTransactionFromBank } from "@/usecases/update-manual-transaction-from-bank";
 
 export class UpdateManualTransaction implements UseCase {
     private readonly userRepo: UserRepository
@@ -11,13 +12,15 @@ export class UpdateManualTransaction implements UseCase {
     private readonly transactionRepo: TransactionRepository
     private readonly categoryRepo: CategoryRepository
     private readonly updateManualTransactionFromWallet: UpdateManualTransactionFromWallet
+    private readonly updateManualTransactionFromBank: UpdateManualTransactionFromBank
 
-    constructor(userRepository: UserRepository, accountRepository: UpdateAccountRepository, transactionRepository: TransactionRepository, categoryRepository: CategoryRepository, updateManualTransactionFromWallet: UpdateManualTransactionFromWallet) {
+    constructor(userRepository: UserRepository, accountRepository: UpdateAccountRepository, transactionRepository: TransactionRepository, categoryRepository: CategoryRepository, updateManualTransactionFromWallet: UpdateManualTransactionFromWallet, updateManualTransactionFromBank: UpdateManualTransactionFromBank) {
         this.userRepo = userRepository
         this.accountRepo = accountRepository
         this.transactionRepo = transactionRepository
         this.categoryRepo = categoryRepository
         this.updateManualTransactionFromWallet = updateManualTransactionFromWallet
+        this.updateManualTransactionFromBank = updateManualTransactionFromBank
     }
 
     async perform(request: TransactionRequest): Promise<Either<UnregisteredCategoryError | InvalidTransactionError | InvalidAmountError | UnregisteredTransactionError | UnregisteredAccountError | UnregisteredUserError | InvalidNameError | InvalidEmailError | InvalidPasswordError | InvalidBalanceError, TransactionData>> {
@@ -58,7 +61,13 @@ export class UpdateManualTransaction implements UseCase {
                 ignored: request.ignored
             }
         }
-        return this.updateManualTransactionFromWallet.perform(transactionToUpdate)
+
+        switch(foundAccountData.type) {
+            case 'WALLET':
+                return this.updateManualTransactionFromWallet.perform(transactionToUpdate)
+            case 'BANK':
+                return this.updateManualTransactionFromBank.perform(transactionToUpdate)
+        }
     }
 
 }
