@@ -1,5 +1,6 @@
 import { CategoryData, TransactionData, UseCase, WalletAccountData } from "@/usecases/ports"
 import { RemoveManualTransaction } from "@/usecases/remove-manual-transaction"
+import { RemoveManualTransactionFromBank } from "@/usecases/remove-manual-transaction-from-bank"
 import { RemoveManualTransactionFromWallet } from "@/usecases/remove-manual-transaction-from-wallet"
 import { RemoveManualTransactionController } from "@/web-controllers"
 import { MissingParamError } from "@/web-controllers/errors"
@@ -48,26 +49,43 @@ describe('Remove manual transaction web controller', () => {
         }
     })
 
-    describe('Remove manual transaction from wallet account', () => {
-        test('should return status code 400 bad request when request is missing required params', async () => {
-            const invalidRequest: HttpRequest = {
-                body: {
-                }
+    test('should return status code 400 bad request when request is missing required params', async () => {
+        const invalidRequest: HttpRequest = {
+            body: {
             }
-            const userRepository = new InMemoryUserRepository([{ id: userId, name: 'any name', email: 'any@email.com', password: '123' }])
-            const accountRepository = new InMemoryAccountRepository([walletAccountData])
-            const transactionRepository = new InMemoryTransactionRepository([])
-            const removeManualTransactionFromWallet = new RemoveManualTransactionFromWallet(transactionRepository, accountRepository, userRepository)
-            
-            const usecase = new RemoveManualTransaction(removeManualTransactionFromWallet)
+        }
+        const userRepository = new InMemoryUserRepository([{ id: userId, name: 'any name', email: 'any@email.com', password: '123' }])
+        const accountRepository = new InMemoryAccountRepository([walletAccountData])
+        const transactionRepository = new InMemoryTransactionRepository([])
+        const removeManualTransactionFromWallet = new RemoveManualTransactionFromWallet(transactionRepository, accountRepository, userRepository)
+        const removeManualTransactionFromBank = new RemoveManualTransactionFromBank(transactionRepository, accountRepository, userRepository)
+        
+        const usecase = new RemoveManualTransaction(transactionRepository, removeManualTransactionFromWallet, removeManualTransactionFromBank)
 
-            const sut = new RemoveManualTransactionController(usecase)
-            const response: HttpResponse = await sut.handle(invalidRequest)
-            expect(response.statusCode).toEqual(400)
-            expect(response.body as Error).toBeInstanceOf(MissingParamError)
-            expect(response.body.message).toBe("Missing parameters from request: id.")
+        const sut = new RemoveManualTransactionController(usecase)
+        const response: HttpResponse = await sut.handle(invalidRequest)
+        expect(response.statusCode).toEqual(400)
+        expect(response.body as Error).toBeInstanceOf(MissingParamError)
+        expect(response.body.message).toBe("Missing parameters from request: id.")
 
-        })
+    })
+
+    test('should return status code 500 when server raises', async () => {
+        const id = 'valid id'
+
+        const validRequest: HttpRequest = {
+            body: {
+                id
+            }
+        }
+
+        const errorThrowingUseCaseStub: UseCase = new ErrorThrowingUseCaseStub()
+        const sut = new RemoveManualTransactionController(errorThrowingUseCaseStub)
+        const response: HttpResponse = await sut.handle(validRequest)
+        expect(response.statusCode).toEqual(500)
+    })
+
+    describe('Remove manual transaction from wallet account', () => {
 
         test('should return status code 200 ok when request is valid', async () => {
             const id = 'valid id'
@@ -96,8 +114,9 @@ describe('Remove manual transaction web controller', () => {
             const accountRepository = new InMemoryAccountRepository([walletAccountData])
             const transactionRepository = new InMemoryTransactionRepository([transactionData])
             const removeManualTransactionFromWallet = new RemoveManualTransactionFromWallet(transactionRepository, accountRepository, userRepository)
+            const removeManualTransactionFromBank = new RemoveManualTransactionFromBank(transactionRepository, accountRepository, userRepository)
             
-            const usecase = new RemoveManualTransaction(removeManualTransactionFromWallet)
+            const usecase = new RemoveManualTransaction(transactionRepository, removeManualTransactionFromWallet, removeManualTransactionFromBank)
 
             const sut = new RemoveManualTransactionController(usecase)
             const response: HttpResponse = await sut.handle(validRequest)
@@ -105,19 +124,6 @@ describe('Remove manual transaction web controller', () => {
             expect(response.body._isDeleted).toEqual(true)
         })
 
-        test('should return status code 500 when server raises', async () => {
-            const id = 'valid id'
 
-            const validRequest: HttpRequest = {
-                body: {
-                    id
-                }
-            }
-
-            const errorThrowingUseCaseStub: UseCase = new ErrorThrowingUseCaseStub()
-            const sut = new RemoveManualTransactionController(errorThrowingUseCaseStub)
-            const response: HttpResponse = await sut.handle(validRequest)
-            expect(response.statusCode).toEqual(500)
-        })
     })
 })
