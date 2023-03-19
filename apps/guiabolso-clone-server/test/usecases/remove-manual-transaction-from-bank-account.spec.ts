@@ -1,5 +1,5 @@
 import { UnregisteredTransactionError } from "@/usecases/errors"
-import { CategoryData, TransactionData, BankAccountData } from "@/usecases/ports"
+import { CategoryData, TransactionData, BankAccountData, UserData } from "@/usecases/ports"
 import { RemoveManualTransactionFromBank } from "@/usecases/remove-manual-transaction-from-bank"
 import { InMemoryAccountRepository, InMemoryTransactionRepository, InMemoryUserRepository } from "@test/doubles/repositories"
 
@@ -12,6 +12,13 @@ describe('remove manual transaction from bank account use case', () => {
     const date = new Date('2023-03-09')
     const comment = 'valid comment'
     const ignored = false
+
+    const userData: UserData = {
+        id: userId, 
+        name: 'any name', 
+        email: 'any@email.com', 
+        password: '123'
+    }
 
     const categoryData: CategoryData = {
         name: "category 0",
@@ -44,40 +51,6 @@ describe('remove manual transaction from bank account use case', () => {
         }
     })
 
-    test('should return error if removing unexisting transaction', async () => {
-        const id = 'inexistent id'
-        const userRepository = new InMemoryUserRepository([{ id: userId, name: 'any name', email: 'any@email.com', password: '123' }])
-        const accountRepository = new InMemoryAccountRepository([])
-        const transactionRepository = new InMemoryTransactionRepository([])
-        const sut = new RemoveManualTransactionFromBank(transactionRepository, accountRepository, userRepository)
-        const error = (await sut.perform(id)).value as Error
-        expect(error).toBeInstanceOf(UnregisteredTransactionError)
-    })
-
-    test('should return error if removing already removed transaction', async () => {
-        const id = 'removed id'
-        const transactionData: TransactionData = {
-            id, 
-            accountId,
-            accountType,
-            syncType,
-            userId,
-            amount,
-            date,
-            type,
-            description,
-            comment,
-            ignored,
-            _isDeleted: true,
-        }
-
-        const userRepository = new InMemoryUserRepository([{ id: userId, name: 'any name', email: 'any@email.com', password: '123' }])
-        const accountRepository = new InMemoryAccountRepository([])
-        const transactionRepository = new InMemoryTransactionRepository([transactionData])
-        const sut = new RemoveManualTransactionFromBank(transactionRepository, accountRepository, userRepository)
-        const error = (await sut.perform(id)).value as Error
-        expect(error).toBeInstanceOf(UnregisteredTransactionError)
-    })
 
     test('should remove a transaction of type expense and update account balance', async () => {
         const id = 'valid id'
@@ -96,7 +69,7 @@ describe('remove manual transaction from bank account use case', () => {
             _isDeleted: false,
         }
 
-        const userRepository = new InMemoryUserRepository([{ id: userId, name: 'any name', email: 'any@email.com', password: '123' }])
+        const userRepository = new InMemoryUserRepository([userData])
         const accountRepository = new InMemoryAccountRepository([bankAccountData])
         const transactionRepository = new InMemoryTransactionRepository([transactionData])
         const sut = new RemoveManualTransactionFromBank(transactionRepository, accountRepository, userRepository)
@@ -123,7 +96,7 @@ describe('remove manual transaction from bank account use case', () => {
             _isDeleted: false,
         }
 
-        const userRepository = new InMemoryUserRepository([{ id: userId, name: 'any name', email: 'any@email.com', password: '123' }])
+        const userRepository = new InMemoryUserRepository([userData])
         const accountRepository = new InMemoryAccountRepository([bankAccountData])
         const transactionRepository = new InMemoryTransactionRepository([transactionData])
         const sut = new RemoveManualTransactionFromBank(transactionRepository, accountRepository, userRepository)

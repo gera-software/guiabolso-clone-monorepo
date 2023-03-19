@@ -14,13 +14,9 @@ export class RemoveManualTransactionFromBank implements UseCase {
         this.userRepo = userRepository
     }
 
-    async perform(id: string): Promise<Either<UnregisteredTransactionError, TransactionData>> {
+    async perform(id: string): Promise<Either<null, TransactionData>> {
 
         const removedTransaction = await this.transactionRepo.remove(id)
-
-        if(!removedTransaction) {
-            return left(new UnregisteredTransactionError())
-        }
 
         const foundAccountData = await this.accountRepo.findById(removedTransaction.accountId)
         const foundUserData = await this.userRepo.findUserById(foundAccountData.userId)

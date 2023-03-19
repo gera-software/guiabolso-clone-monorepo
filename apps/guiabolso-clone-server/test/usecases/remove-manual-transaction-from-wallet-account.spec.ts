@@ -1,5 +1,4 @@
-import { UnregisteredTransactionError } from "@/usecases/errors"
-import { CategoryData, TransactionData, WalletAccountData } from "@/usecases/ports"
+import { CategoryData, TransactionData, UserData, WalletAccountData } from "@/usecases/ports"
 import { RemoveManualTransactionFromWallet } from "@/usecases/remove-manual-transaction-from-wallet"
 import { InMemoryAccountRepository, InMemoryTransactionRepository, InMemoryUserRepository } from "@test/doubles/repositories"
 
@@ -12,6 +11,13 @@ describe('remove manual transaction from wallet account use case', () => {
     const date = new Date('2023-03-09')
     const comment = 'valid comment'
     const ignored = false
+
+    const userData: UserData = {
+        id: userId, 
+        name: 'any name', 
+        email: 'any@email.com', 
+        password: '123'
+    }
 
     const categoryData: CategoryData = {
         name: "category 0",
@@ -44,41 +50,6 @@ describe('remove manual transaction from wallet account use case', () => {
         }
     })
 
-    test('should return error if removing unexisting transaction', async () => {
-        const id = 'inexistent id'
-        const userRepository = new InMemoryUserRepository([{ id: userId, name: 'any name', email: 'any@email.com', password: '123' }])
-        const accountRepository = new InMemoryAccountRepository([])
-        const transactionRepository = new InMemoryTransactionRepository([])
-        const sut = new RemoveManualTransactionFromWallet(transactionRepository, accountRepository, userRepository)
-        const error = (await sut.perform(id)).value as Error
-        expect(error).toBeInstanceOf(UnregisteredTransactionError)
-    })
-
-    test('should return error if removing already removed transaction', async () => {
-        const id = 'removed id'
-        const transactionData: TransactionData = {
-            id, 
-            accountId,
-            accountType,
-            syncType,
-            userId,
-            amount,
-            date,
-            type,
-            description,
-            comment,
-            ignored,
-            _isDeleted: true,
-        }
-
-        const userRepository = new InMemoryUserRepository([{ id: userId, name: 'any name', email: 'any@email.com', password: '123' }])
-        const accountRepository = new InMemoryAccountRepository([])
-        const transactionRepository = new InMemoryTransactionRepository([transactionData])
-        const sut = new RemoveManualTransactionFromWallet(transactionRepository, accountRepository, userRepository)
-        const error = (await sut.perform(id)).value as Error
-        expect(error).toBeInstanceOf(UnregisteredTransactionError)
-    })
-
     test('should remove a transaction of type expense and update account balance', async () => {
         const id = 'valid id'
         const transactionData: TransactionData = {
@@ -96,7 +67,7 @@ describe('remove manual transaction from wallet account use case', () => {
             _isDeleted: false,
         }
 
-        const userRepository = new InMemoryUserRepository([{ id: userId, name: 'any name', email: 'any@email.com', password: '123' }])
+        const userRepository = new InMemoryUserRepository([userData])
         const accountRepository = new InMemoryAccountRepository([walletAccountData])
         const transactionRepository = new InMemoryTransactionRepository([transactionData])
         const sut = new RemoveManualTransactionFromWallet(transactionRepository, accountRepository, userRepository)
@@ -123,7 +94,7 @@ describe('remove manual transaction from wallet account use case', () => {
             _isDeleted: false,
         }
 
-        const userRepository = new InMemoryUserRepository([{ id: userId, name: 'any name', email: 'any@email.com', password: '123' }])
+        const userRepository = new InMemoryUserRepository([userData])
         const accountRepository = new InMemoryAccountRepository([walletAccountData])
         const transactionRepository = new InMemoryTransactionRepository([transactionData])
         const sut = new RemoveManualTransactionFromWallet(transactionRepository, accountRepository, userRepository)
