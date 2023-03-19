@@ -69,9 +69,9 @@ describe('Update manual transaction web controller', () => {
             const accountRepository = new InMemoryAccountRepository([walletAccountData])
             const transactionRepository = new InMemoryTransactionRepository([])
             const categoryRepository = new InMemoryCategoryRepository([categoryData, categoryData1])
-            const updateManualTransactionFromWallet = new UpdateManualTransactionFromWallet(transactionRepository, categoryRepository, accountRepository, userRepository)
+            const updateManualTransactionFromWallet = new UpdateManualTransactionFromWallet(transactionRepository, accountRepository)
 
-            const usecase = new UpdateManualTransaction(updateManualTransactionFromWallet)
+            const usecase = new UpdateManualTransaction(userRepository, accountRepository, transactionRepository, categoryRepository, updateManualTransactionFromWallet)
 
             const sut = new UpdateManualTransactionController(usecase)
             const response: HttpResponse = await sut.handle(invalidRequest)
@@ -111,9 +111,9 @@ describe('Update manual transaction web controller', () => {
             const accountRepository = new InMemoryAccountRepository([walletAccountData])
             const transactionRepository = new InMemoryTransactionRepository([transactionData])
             const categoryRepository = new InMemoryCategoryRepository([categoryData, categoryData1])
-            const updateManualTransactionFromWallet = new UpdateManualTransactionFromWallet(transactionRepository, categoryRepository, accountRepository, userRepository)
+            const updateManualTransactionFromWallet = new UpdateManualTransactionFromWallet(transactionRepository, accountRepository)
 
-            const usecase = new UpdateManualTransaction(updateManualTransactionFromWallet)
+            const usecase = new UpdateManualTransaction(userRepository, accountRepository, transactionRepository, categoryRepository, updateManualTransactionFromWallet)
 
             const sut = new UpdateManualTransactionController(usecase)
             const response: HttpResponse = await sut.handle(validRequest)

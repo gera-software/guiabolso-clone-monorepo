@@ -9,9 +9,9 @@ export const makeUpdateManualTransactionController = (): Controller => {
     const accountRepository = makeAccountRepository()
     const transactionRepository = makeTransactionRepository()
     const categoryRepository = makeCategoryRepository()
-    const updateManualTransactionFromWallet = new UpdateManualTransactionFromWallet(transactionRepository, categoryRepository, accountRepository, userRepository)
+    const updateManualTransactionFromWallet = new UpdateManualTransactionFromWallet(transactionRepository, accountRepository)
 
-    const usecase = new UpdateManualTransaction(updateManualTransactionFromWallet)
+    const usecase = new UpdateManualTransaction(userRepository, accountRepository, transactionRepository, categoryRepository, updateManualTransactionFromWallet)
 
     const controller = new UpdateManualTransactionController(usecase)
     return controller
