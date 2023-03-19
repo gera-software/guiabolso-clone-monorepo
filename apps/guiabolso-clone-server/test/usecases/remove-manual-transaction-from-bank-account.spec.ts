@@ -24,7 +24,7 @@ describe('remove manual transaction from bank account use case', () => {
     
     
     const accountId = 'ac0'
-    const accountType = 'WALLET'
+    const accountType = 'BANK'
     const syncType = 'MANUAL'
     const name = 'valid account'
     const balance = 678

@@ -1,7 +1,7 @@
 import { InvalidTransactionError } from "@/entities/errors"
 import { AddManualTransactionToBank } from "@/usecases/add-manual-transaction-to-bank"
 import { UnregisteredAccountError, UnregisteredCategoryError, UnregisteredUserError } from "@/usecases/errors"
-import { BankAccountData, CategoryData, TransactionData, TransactionRequest, WalletAccountData } from "@/usecases/ports"
+import { BankAccountData, CategoryData, TransactionData, TransactionRequest } from "@/usecases/ports"
 import { InMemoryAccountRepository, InMemoryCategoryRepository, InMemoryTransactionRepository, InMemoryUserRepository } from "@test/doubles/repositories"
 
 describe('add manual transaction to bank account use case', () => {
@@ -24,7 +24,7 @@ describe('add manual transaction to bank account use case', () => {
     
     
     const accountId = 'ac0'
-    const accountType = 'WALLET'
+    const accountType = 'BANK'
     const syncType = 'MANUAL'
     const name = 'valid account'
     const balance = 678
@@ -86,7 +86,7 @@ describe('add manual transaction to bank account use case', () => {
         expect(response).toBeInstanceOf(UnregisteredUserError)
     })
 
-    // TODO descriptionOriginal isn't a valid field of a wallet transaction, maybe should be removed
+    // TODO descriptionOriginal isn't a valid field of a manual transaction, maybe should be removed
     test('should not add transaction without description or descriptionOriginal', async () => {
 
         const transactionRequest: TransactionRequest = {
