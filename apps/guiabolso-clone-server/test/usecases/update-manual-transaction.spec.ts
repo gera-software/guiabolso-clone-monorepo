@@ -89,7 +89,7 @@ describe('Update manual transaction from account use case', () => {
         const accountRepository = new InMemoryAccountRepository([walletAccountData])
         const transactionRepository = new InMemoryTransactionRepository([])
         const categoryRepository = new InMemoryCategoryRepository([categoryData, categoryData1])
-        const updateManualTransactionFromWallet = new UpdateManualTransactionFromWallet(transactionRepository, categoryRepository, accountRepository, userRepository)
+        const updateManualTransactionFromWallet = new UpdateManualTransactionFromWallet(transactionRepository, accountRepository)
 
         const sut = new UpdateManualTransaction(userRepository, accountRepository, transactionRepository, categoryRepository, updateManualTransactionFromWallet)
         const response = (await sut.perform(transactionRequest)).value as Error
@@ -125,7 +125,7 @@ describe('Update manual transaction from account use case', () => {
         const accountRepository = new InMemoryAccountRepository([walletAccountData])
         const transactionRepository = new InMemoryTransactionRepository([transactionData])
         const categoryRepository = new InMemoryCategoryRepository([categoryData, categoryData1])
-        const updateManualTransactionFromWallet = new UpdateManualTransactionFromWallet(transactionRepository, categoryRepository, accountRepository, userRepository)
+        const updateManualTransactionFromWallet = new UpdateManualTransactionFromWallet(transactionRepository, accountRepository)
 
         const sut = new UpdateManualTransaction(userRepository, accountRepository, transactionRepository, categoryRepository, updateManualTransactionFromWallet)
         const response = (await sut.perform(transactionRequest)).value as Error
@@ -161,7 +161,7 @@ describe('Update manual transaction from account use case', () => {
         const accountRepository = new InMemoryAccountRepository([])
         const transactionRepository = new InMemoryTransactionRepository([transactionData])
         const categoryRepository = new InMemoryCategoryRepository([categoryData, categoryData1])
-        const updateManualTransactionFromWallet = new UpdateManualTransactionFromWallet(transactionRepository, categoryRepository, accountRepository, userRepository)
+        const updateManualTransactionFromWallet = new UpdateManualTransactionFromWallet(transactionRepository, accountRepository)
 
         const sut = new UpdateManualTransaction(userRepository, accountRepository, transactionRepository, categoryRepository, updateManualTransactionFromWallet)
         const response = (await sut.perform(transactionRequest)).value as Error
@@ -197,7 +197,7 @@ describe('Update manual transaction from account use case', () => {
         const accountRepository = new InMemoryAccountRepository([walletAccountData])
         const transactionRepository = new InMemoryTransactionRepository([transactionData])
         const categoryRepository = new InMemoryCategoryRepository([categoryData, categoryData1])
-        const updateManualTransactionFromWallet = new UpdateManualTransactionFromWallet(transactionRepository, categoryRepository, accountRepository, userRepository)
+        const updateManualTransactionFromWallet = new UpdateManualTransactionFromWallet(transactionRepository, accountRepository)
 
         const sut = new UpdateManualTransaction(userRepository, accountRepository, transactionRepository, categoryRepository, updateManualTransactionFromWallet)
         const response = (await sut.perform(transactionRequest)).value as Error
@@ -233,7 +233,7 @@ describe('Update manual transaction from account use case', () => {
         const accountRepository = new InMemoryAccountRepository([walletAccountData])
         const transactionRepository = new InMemoryTransactionRepository([transactionData])
         const categoryRepository = new InMemoryCategoryRepository([categoryData, categoryData1])
-        const updateManualTransactionFromWallet = new UpdateManualTransactionFromWallet(transactionRepository, categoryRepository, accountRepository, userRepository)
+        const updateManualTransactionFromWallet = new UpdateManualTransactionFromWallet(transactionRepository, accountRepository)
 
         const sut = new UpdateManualTransaction(userRepository, accountRepository, transactionRepository, categoryRepository, updateManualTransactionFromWallet)
         const response = (await sut.perform(transactionRequest)).value
@@ -271,7 +271,7 @@ describe('Update manual transaction from account use case', () => {
             const accountRepository = new InMemoryAccountRepository([walletAccountData])
             const transactionRepository = new InMemoryTransactionRepository([transactionData])
             const categoryRepository = new InMemoryCategoryRepository([categoryData, categoryData1])
-            const updateManualTransactionFromWallet = new UpdateManualTransactionFromWallet(transactionRepository, categoryRepository, accountRepository, userRepository)
+            const updateManualTransactionFromWallet = new UpdateManualTransactionFromWallet(transactionRepository, accountRepository)
 
             const sut = new UpdateManualTransaction(userRepository, accountRepository, transactionRepository, categoryRepository, updateManualTransactionFromWallet)
             const response = (await sut.perform(transactionRequest)).value as TransactionData

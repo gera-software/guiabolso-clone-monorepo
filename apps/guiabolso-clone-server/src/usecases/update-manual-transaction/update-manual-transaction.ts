@@ -3,6 +3,7 @@ import { CategoryData, CategoryRepository, TransactionData, TransactionRepositor
 import { UnregisteredAccountError, UnregisteredCategoryError, UnregisteredTransactionError, UnregisteredUserError } from "@/usecases/errors";
 import { UpdateManualTransactionFromWallet } from "@/usecases/update-manual-transaction-from-wallet";
 import { InvalidTransactionError, InvalidAmountError, InvalidNameError, InvalidEmailError, InvalidPasswordError, InvalidBalanceError } from "@/entities/errors";
+import { TransactionToUpdateData } from "@/usecases/update-manual-transaction/ports";
 
 export class UpdateManualTransaction implements UseCase {
     private readonly userRepo: UserRepository
@@ -44,8 +45,20 @@ export class UpdateManualTransaction implements UseCase {
             }
         }
 
-        
-        return this.updateManualTransactionFromWallet.perform(request)
+        const transactionToUpdate: TransactionToUpdateData =  {
+            oldTransactionData,
+            newTransaction: {
+                user: foundUserData,
+                account: foundAccountData,
+                category: foundCategory,
+                amount: request.amount,
+                description: request.description,
+                date: request.date,
+                comment: request.comment,
+                ignored: request.ignored
+            }
+        }
+        return this.updateManualTransactionFromWallet.perform(transactionToUpdate)
     }
 
 }
