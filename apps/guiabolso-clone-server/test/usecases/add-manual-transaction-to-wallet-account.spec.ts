@@ -54,9 +54,9 @@ describe('add manual transaction to wallet account use case', () => {
     test('should not add transaction without description or descriptionOriginal', async () => {
 
         const transactionRequest = {
-            userData, 
-            accountData: walletAccountData, 
-            categoryData,
+            user: userData, 
+            account: walletAccountData, 
+            category: categoryData,
             amount,
             // description,
             date,
@@ -74,9 +74,9 @@ describe('add manual transaction to wallet account use case', () => {
     test('should not add transaction with zero amount', async () => {
 
         const transactionRequest = {
-            userData, 
-            accountData: walletAccountData, 
-            categoryData,
+            user: userData, 
+            account: walletAccountData, 
+            category: categoryData,
             amount: 0,
             description,
             date,
@@ -95,9 +95,9 @@ describe('add manual transaction to wallet account use case', () => {
     test('should add transaction of type expense and update account balance', async () => {
 
         const transactionRequest = {
-            userData, 
-            accountData: walletAccountData, 
-            categoryData,
+            user: userData, 
+            account: walletAccountData, 
+            category: categoryData,
             amount: -4567,
             description,
             date,
@@ -117,9 +117,9 @@ describe('add manual transaction to wallet account use case', () => {
 
     test('should add transaction of type income and update account balance', async () => {
         const transactionRequest = {
-            userData, 
-            accountData: walletAccountData, 
-            categoryData,
+            user: userData, 
+            account: walletAccountData, 
+            category: categoryData,
             amount: 4567,
             description,
             date,
@@ -139,9 +139,9 @@ describe('add manual transaction to wallet account use case', () => {
 
     test('should add transaction with category', async () => {
         const transactionRequest = {
-            userData, 
-            accountData: walletAccountData, 
-            categoryData,
+            user: userData, 
+            account: walletAccountData, 
+            category: categoryData,
             amount,
             description,
             date,
@@ -160,9 +160,9 @@ describe('add manual transaction to wallet account use case', () => {
 
     test('should add transaction without category', async () => {
         const transactionRequest = {
-            userData, 
-            accountData: walletAccountData, 
-            // categoryData,
+            user: userData, 
+            account: walletAccountData, 
+            // category: categoryData,
             amount,
             description,
             date,

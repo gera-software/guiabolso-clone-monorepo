@@ -14,7 +14,9 @@ export class AddManualTransactionToWallet implements UseCase {
     }
 
     async perform(request: TransactionToAddData): Promise<Either<InvalidNameError | InvalidEmailError | InvalidPasswordError | InvalidBalanceError | InvalidTransactionError | InvalidAmountError, TransactionData>> {
-        const { userData, accountData, categoryData } = request
+        const userData = request.user
+        const accountData = request.account
+        const categoryData = request.category
 
         const userOrError = User.create(userData)
         if(userOrError.isLeft()) {

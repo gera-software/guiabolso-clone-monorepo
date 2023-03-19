@@ -42,9 +42,9 @@ export class AddManualTransaction implements UseCase {
         }
 
         const transactionToAddData: TransactionToAddData = {
-            userData: foundUserData, 
-            accountData: foundAccountData, 
-            categoryData: foundCategoryData, 
+            user: foundUserData, 
+            account: foundAccountData, 
+            category: foundCategoryData, 
             amount: request.amount,
             description: request.description,
             date: request.date,
