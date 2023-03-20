@@ -2,7 +2,7 @@ import request from 'supertest'
 import app from '@/main/config/app'
 import { MongoHelper } from "@/external/repositories/mongodb/helper"
 import { makeUserRepository, makeAccountRepository, makeTransactionRepository, makeCategoryRepository } from "@/main/factories"
-import { CategoryData, TransactionData, UserData, WalletAccountData } from "@/usecases/ports"
+import { BankAccountData, CategoryData, TransactionData, UserData, WalletAccountData } from "@/usecases/ports"
 
 describe('update manual transaction route', () => {
     const amount = -1294
@@ -11,18 +11,18 @@ describe('update manual transaction route', () => {
     const comment = 'updated comment'
     const ignored = true
 
-
-    
-    const accountType = 'WALLET'
+    const walletAccountType = 'WALLET'
+    const bankAccountType = 'BANK'
     const syncType = 'MANUAL'
     const accountName = 'valid account'
     const balance = 678
     const imageUrl = 'valid image url'
 
-
     let validUser: UserData
     let validWalletAccount: WalletAccountData
-    let transactionData: TransactionData
+    let validBankAccount: BankAccountData
+    let walletTransactionData: TransactionData
+    let bankTransactionData: TransactionData
     let category0: CategoryData
     let category1: CategoryData
 
@@ -47,7 +47,15 @@ describe('update manual transaction route', () => {
         })
 
         validWalletAccount = await accountRepo.add({
-            type: accountType,
+            type: walletAccountType,
+            syncType: syncType,
+            name: accountName,
+            balance: 0,
+            userId: validUser.id,
+        })
+
+        validBankAccount = await accountRepo.add({
+            type: bankAccountType,
             syncType: syncType,
             name: accountName,
             balance: 0,
@@ -75,13 +83,29 @@ describe('update manual transaction route', () => {
         category0 = cat0
         category1 = cat1
 
-        transactionData = await transactionRepo.add({
+        walletTransactionData = await transactionRepo.add({
             accountId: validWalletAccount.id,
             accountType: validWalletAccount.type,
             syncType: validWalletAccount.syncType,
             userId: validUser.id,
             category: category0,
             amount: 2345,
+            description: 'valid description',
+            descriptionOriginal: '',
+            date: new Date('2023-05-18'),
+            type: 'INCOME',
+            comment: 'valid comment',
+            ignored: false,
+            _isDeleted: false,
+        })
+
+        bankTransactionData = await transactionRepo.add({
+            accountId: validBankAccount.id,
+            accountType: validBankAccount.type,
+            syncType: validBankAccount.syncType,
+            userId: validUser.id,
+            category: category0,
+            amount: 5678,
             description: 'valid description',
             descriptionOriginal: '',
             date: new Date('2023-05-18'),
@@ -106,8 +130,34 @@ describe('update manual transaction route', () => {
         await request(app)
             .put('/api/manual-transaction')
             .send({
-                id: transactionData.id,
+                id: walletTransactionData.id,
                 accountId: validWalletAccount.id.toString(), 
+                categoryId: category1,
+                amount, 
+                date,
+                description,
+                comment,
+                ignored,
+            })
+            .expect(200)
+            .then((res) => {
+                expect(res.body.id).toBeDefined()
+                expect(res.body._isDeleted).toBe(false)
+                expect(res.body.category.id).toBe(category1.id)
+                expect(res.body.amount).toBe(amount)
+                expect(res.body.date).toEqual(date.toISOString())
+                expect(res.body.description).toBe(description)
+                expect(res.body.comment).toBe(comment)
+                expect(res.body.ignored).toBe(ignored)
+            })
+    })
+
+    test('should update a manual transaction from a bank account', async () => {
+        await request(app)
+            .put('/api/manual-transaction')
+            .send({
+                id: bankTransactionData.id,
+                accountId: validBankAccount.id.toString(), 
                 categoryId: category1,
                 amount, 
                 date,
