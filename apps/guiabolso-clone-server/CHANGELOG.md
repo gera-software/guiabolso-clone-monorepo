@@ -1,5 +1,11 @@
 # @gera-software/guiabolso-clone-server
 
+## 1.7.0
+
+### Minor Changes
+
+- Support for manual bank transactions
+
 ## 1.6.0
 
 ### Minor Changes
