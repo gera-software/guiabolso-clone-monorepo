@@ -94,4 +94,7 @@ describe("Bank Account entity", () => {
         expect(account.user.email).toBe(user.email)
         expect(account.institution).toBeFalsy()
     })
+
+    test.todo('add transaction')
+    test.todo('remove transaction')
 })

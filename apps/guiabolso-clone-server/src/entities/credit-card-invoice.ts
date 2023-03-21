@@ -1,5 +1,5 @@
 import { left, right } from "@/shared";
-import { Amount, CreditCardAccount } from "@/entities";
+import { Amount, CreditCardAccount, CreditCardTransaction } from "@/entities";
 import { InvalidCreditCardInvoiceError } from "./errors";
 
 export class CreditCardInvoice {
@@ -34,5 +34,13 @@ export class CreditCardInvoice {
             amount,
             account: invoice.account,
         }))
+    }
+
+    public addTransaction(transaction: CreditCardTransaction) {
+        this.amount.add(transaction.amount.value)
+    }
+
+    public removeTransaction(transaction: CreditCardTransaction) {
+        this.amount.subtract(transaction.amount.value)
     }
 }
