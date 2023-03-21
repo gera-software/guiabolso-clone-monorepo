@@ -7,22 +7,24 @@ export class CreditCardTransaction implements Transaction {
     public readonly category: Category
     public readonly amount: Amount
     public readonly description: string
-    public readonly date: Date
+    public readonly date: Date // transaction date
+    public readonly invoiceDate: Date
     public readonly comment: string
     public readonly ignored: boolean
     public readonly type: TransactionType
 
-    private constructor(transaction: { category: Category, amount: Amount, description?: string, date: Date, comment?: string, ignored?: boolean }) {
+    private constructor(transaction: { category: Category, amount: Amount, description?: string, transactionDate: Date, invoiceDate: Date, comment?: string, ignored?: boolean }) {
         this.amount = transaction.amount
         this.category = transaction.category ?? null
         this.description = transaction.description ?? ''
-        this.date = transaction.date
+        this.date = transaction.transactionDate
+        this.invoiceDate = transaction.invoiceDate
         this.comment = transaction.comment ?? ''
         this.ignored = !!transaction.ignored
         this.type = (this.amount.value >= 0) ? 'INCOME' : 'EXPENSE'
     }
 
-    public static create(transaction: { category?: Category, amount: number, description?: string, date: Date, comment?: string, ignored?: boolean }): Either<InvalidTransactionError | InvalidAmountError, BankTransaction> {
+    public static create(transaction: { category?: Category, amount: number, description?: string, transactionDate: Date, invoiceDate: Date, comment?: string, ignored?: boolean }): Either<InvalidTransactionError | InvalidAmountError, BankTransaction> {
 
         if(!transaction.description) {
             return left(new InvalidTransactionError('Required some description'))
@@ -44,7 +46,8 @@ export class CreditCardTransaction implements Transaction {
             amount, 
             category: transaction.category,
             description: transaction.description,
-            date: transaction.date,
+            transactionDate: transaction.transactionDate,
+            invoiceDate: transaction.invoiceDate,
             comment: transaction.comment,
             ignored: transaction.ignored,
         }))
