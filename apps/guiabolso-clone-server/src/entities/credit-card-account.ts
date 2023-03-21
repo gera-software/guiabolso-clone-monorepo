@@ -1,6 +1,6 @@
 import { Account, AccountType, Amount, CreditCardInfo, Institution, SyncType, User } from "@/entities"
-import { left, right } from "@/shared"
-import { InvalidBalanceError, InvalidNameError } from "@/entities/errors"
+import { Either, left, right } from "@/shared"
+import { InvalidBalanceError, InvalidCreditCardError, InvalidNameError } from "@/entities/errors"
 import { CreditCardInfoData } from "@/usecases/ports"
 
 export class CreditCardAccount implements Account {
@@ -23,7 +23,7 @@ export class CreditCardAccount implements Account {
         this.creditCardInfo = account.creditCardInfo
     }
 
-    public static create(account: { name: string, balance: number, imageUrl?: string, user: User, institution?: Institution, creditCardInfo: CreditCardInfoData}) {
+    public static create(account: { name: string, balance: number, imageUrl?: string, user: User, institution?: Institution, creditCardInfo: CreditCardInfoData}): Either<InvalidNameError | InvalidBalanceError | InvalidCreditCardError , CreditCardAccount> {
         const { name, balance, imageUrl, user, institution, creditCardInfo } = account
         
         if(!name) {

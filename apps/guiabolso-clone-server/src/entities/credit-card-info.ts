@@ -1,4 +1,4 @@
-import { left, right } from "@/shared"
+import { Either, left, right } from "@/shared"
 import { Amount } from "./amount"
 import { InvalidCreditCardError } from "@/entities/errors"
 import { CreditCardInfoData } from "@/usecases/ports"
@@ -18,7 +18,7 @@ export class CreditCardInfo {
         this.dueDay = creditCard.dueDay
     }
 
-    public static create(creditCardInfoData: CreditCardInfoData) {
+    public static create(creditCardInfoData: CreditCardInfoData): Either<InvalidCreditCardError, CreditCardInfo> {
 
         const invalidParams = []
         if(!creditCardInfoData.brand) {
