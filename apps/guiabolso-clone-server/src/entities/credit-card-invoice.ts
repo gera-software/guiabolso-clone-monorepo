@@ -37,10 +37,14 @@ export class CreditCardInvoice {
     }
 
     public addTransaction(transaction: CreditCardTransaction) {
-        this.amount.add(transaction.amount.value)
+        if(transaction.category?.name !== 'Pagamento de cartão') {
+            this.amount.add(transaction.amount.value)
+        }
     }
 
     public removeTransaction(transaction: CreditCardTransaction) {
-        this.amount.subtract(transaction.amount.value)
+        if(transaction.category?.name !== 'Pagamento de cartão') {
+            this.amount.subtract(transaction.amount.value)
+        }
     }
 }
