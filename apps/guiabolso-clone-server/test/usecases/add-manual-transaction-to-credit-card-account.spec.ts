@@ -1,7 +1,7 @@
 import { InvalidTransactionError } from "@/entities/errors"
 import { AddManualTransactionToCreditCard } from "@/usecases/add-manual-transaction-to-credit-card"
 import { CategoryData, CreditCardAccountData, TransactionData, UserData } from "@/usecases/ports"
-import { InMemoryAccountRepository, InMemoryTransactionRepository } from "@test/doubles/repositories"
+import { InMemoryAccountRepository, InMemoryCreditCardInvoiceRepository, InMemoryTransactionRepository } from "@test/doubles/repositories"
 
 describe('add manual transaction to credit card account use case', () => {
     const userId = 'u0'
@@ -71,9 +71,10 @@ describe('add manual transaction to credit card account use case', () => {
             ignored,
         }
 
+        const creditCardInvoiceRepository = new InMemoryCreditCardInvoiceRepository([])
         const accountRepository = new InMemoryAccountRepository([creditCardAccountData])
         const transactionRepository = new InMemoryTransactionRepository([])
-        const sut = new AddManualTransactionToCreditCard(accountRepository, transactionRepository)
+        const sut = new AddManualTransactionToCreditCard(accountRepository, transactionRepository, creditCardInvoiceRepository)
         const response = (await sut.perform(transactionRequest)).value as Error
         expect(response).toBeInstanceOf(InvalidTransactionError)
     })
@@ -91,9 +92,10 @@ describe('add manual transaction to credit card account use case', () => {
             ignored,
         }
 
+        const creditCardInvoiceRepository = new InMemoryCreditCardInvoiceRepository([])
         const accountRepository = new InMemoryAccountRepository([creditCardAccountData])
         const transactionRepository = new InMemoryTransactionRepository([])
-        const sut = new AddManualTransactionToCreditCard(accountRepository, transactionRepository)
+        const sut = new AddManualTransactionToCreditCard(accountRepository, transactionRepository, creditCardInvoiceRepository)
         const response = (await sut.perform(transactionRequest)).value as Error
         expect(response).toBeInstanceOf(InvalidTransactionError)
         expect(response.message).toBe('Invalid amount')
@@ -112,9 +114,10 @@ describe('add manual transaction to credit card account use case', () => {
             ignored,
         }
 
+        const creditCardInvoiceRepository = new InMemoryCreditCardInvoiceRepository([])
         const accountRepository = new InMemoryAccountRepository([creditCardAccountData])
         const transactionRepository = new InMemoryTransactionRepository([])
-        const sut = new AddManualTransactionToCreditCard(accountRepository, transactionRepository)
+        const sut = new AddManualTransactionToCreditCard(accountRepository, transactionRepository, creditCardInvoiceRepository)
         const response = (await sut.perform(transactionRequest)).value as TransactionData
         expect(response.id).not.toBeUndefined()
         expect(response.type).toBe('EXPENSE')
@@ -122,7 +125,7 @@ describe('add manual transaction to credit card account use case', () => {
         // expect((await accountRepository.findById(accountId)).balance).toBe(balance + transactionRequest.amount)
     })
 
-    test('should add transaction of type income and update account balance', async () => {
+    test('should add transaction of type income and update invoice balance', async () => {
         const transactionRequest = {
             user: userData, 
             account: creditCardAccountData, 
@@ -134,9 +137,10 @@ describe('add manual transaction to credit card account use case', () => {
             ignored,
         }
 
+        const creditCardInvoiceRepository = new InMemoryCreditCardInvoiceRepository([])
         const accountRepository = new InMemoryAccountRepository([creditCardAccountData])
         const transactionRepository = new InMemoryTransactionRepository([])
-        const sut = new AddManualTransactionToCreditCard(accountRepository, transactionRepository)
+        const sut = new AddManualTransactionToCreditCard(accountRepository, transactionRepository, creditCardInvoiceRepository)
         const response = (await sut.perform(transactionRequest)).value as TransactionData
         expect(response.id).not.toBeUndefined()
         expect(response.type).toBe('INCOME')
@@ -156,9 +160,10 @@ describe('add manual transaction to credit card account use case', () => {
             ignored,
         }
 
+        const creditCardInvoiceRepository = new InMemoryCreditCardInvoiceRepository([])
         const accountRepository = new InMemoryAccountRepository([creditCardAccountData])
         const transactionRepository = new InMemoryTransactionRepository([])
-        const sut = new AddManualTransactionToCreditCard(accountRepository, transactionRepository)
+        const sut = new AddManualTransactionToCreditCard(accountRepository, transactionRepository, creditCardInvoiceRepository)
         const response = (await sut.perform(transactionRequest)).value as TransactionData
         expect(response.id).not.toBeUndefined()
         expect((await transactionRepository.findById(response.id)).category).toEqual(categoryData)
@@ -177,9 +182,10 @@ describe('add manual transaction to credit card account use case', () => {
             ignored,
         }
 
+        const creditCardInvoiceRepository = new InMemoryCreditCardInvoiceRepository([])
         const accountRepository = new InMemoryAccountRepository([creditCardAccountData])
         const transactionRepository = new InMemoryTransactionRepository([])
-        const sut = new AddManualTransactionToCreditCard(accountRepository, transactionRepository)
+        const sut = new AddManualTransactionToCreditCard(accountRepository, transactionRepository, creditCardInvoiceRepository)
         const response = (await sut.perform(transactionRequest)).value as TransactionData
         expect(response.id).not.toBeUndefined()
         expect((await transactionRepository.findById(response.id)).category).toBeNull()

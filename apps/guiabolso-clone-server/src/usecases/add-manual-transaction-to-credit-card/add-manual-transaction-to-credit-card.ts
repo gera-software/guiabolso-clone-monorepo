@@ -2,15 +2,17 @@ import { Category, CreditCardAccount, CreditCardTransaction, User } from "@/enti
 import { InvalidTransactionError } from "@/entities/errors"
 import { left, right } from "@/shared"
 import { TransactionToAddData } from "@/usecases/add-manual-transaction/ports"
-import { UseCase, UpdateAccountRepository, TransactionRepository, TransactionData } from "@/usecases/ports"
+import { UseCase, UpdateAccountRepository, TransactionRepository, TransactionData, CreditCardInvoiceRepository } from "@/usecases/ports"
 
 export class AddManualTransactionToCreditCard implements UseCase {
     private readonly accountRepo: UpdateAccountRepository
     private readonly transactionRepo: TransactionRepository
+    private readonly creditCardInvoiceRepo: CreditCardInvoiceRepository
 
-    constructor(accountRepository: UpdateAccountRepository, transactionRepository: TransactionRepository) {
+    constructor(accountRepository: UpdateAccountRepository, transactionRepository: TransactionRepository, creditCardInvoiceRepository: CreditCardInvoiceRepository) {
         this.accountRepo = accountRepository
         this.transactionRepo = transactionRepository
+        this.creditCardInvoiceRepo = creditCardInvoiceRepository
     }
 
     async perform(request: TransactionToAddData) {
