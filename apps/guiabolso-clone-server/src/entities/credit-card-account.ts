@@ -47,34 +47,25 @@ export class CreditCardAccount implements Account {
         return right(new CreditCardAccount({name, balance: amount, imageUrl, user, institution, creditCardInfo: creditCard}))
     }
 
+    /**
+     * All transactions carried out from the invoice closing date onwards will belong to the next month's invoice.
+     * All transactions made before the invoice closing date will belong to the current month's invoice.
+     * @param transactionDate 
+     * @returns invoiceDueDate Date
+     */
     public calculateInvoiceDueDateFromTransaction(transactionDate: Date) {
-        //suposed invoiceDate
-        const creditCardDate = new Date(transactionDate)
-        let invoiceMonth = creditCardDate.getUTCMonth() // between 0 and 11
-        let invoiceYear = creditCardDate.getUTCFullYear()
+        let month = transactionDate.getUTCMonth() // between 0 and 11
+        let year = transactionDate.getUTCFullYear()
 
-        //account info
-        const closeDay = this.creditCardInfo.closeDay
-        const dueDay = this.creditCardInfo.dueDay
+        const invoiceClosingDate = new Date(Date.UTC(year, month, this.creditCardInfo.closeDay, 0, 0, 0))
+        const invoiceDueDate = new Date(Date.UTC(year, month, this.creditCardInfo.dueDay, 0, 0, 0))
 
-        const closingDate = new Date(Date.UTC(invoiceYear, invoiceMonth, closeDay, 0, 0, 0))
-
-        const dueDate = new Date(Date.UTC(invoiceYear, invoiceMonth, dueDay, 0, 0, 0))
-
-        // move a transação para a data de vencimento da fatura correspondente
-        if(creditCardDate >= closingDate) {
-            dueDate.setUTCMonth(dueDate.getUTCMonth() + 1)
-            closingDate.setUTCMonth(closingDate.getUTCMonth() + 1)
-            // console.log('dentro da fatura do mes que vem', dueDate.toISOString())
-        } else {
-            // console.log('dentro da fatura do mes atual', dueDate.toISOString())
+        if(transactionDate >= invoiceClosingDate) {
+            invoiceDueDate.setUTCMonth(invoiceDueDate.getUTCMonth() + 1)
+            invoiceClosingDate.setUTCMonth(invoiceClosingDate.getUTCMonth() + 1)
         }
 
-        return dueDate
-        // return {
-        //     dueDate,
-        //     closingDate,
-        // }
+        return invoiceDueDate
     }
 
 }

@@ -168,7 +168,7 @@ describe("Credit Card Account entity", () => {
     })
 
     describe('calculate invoice due date from transaction', () => {
-        test('transactions on closing date should belong to next month invoice', () => {
+        test('transactions on closing date should belong to next month\'s invoice', () => {
             const validClosingDate = new Date('2023-03-03')
             const validDueDate = new Date('2023-04-10')
 
@@ -195,7 +195,7 @@ describe("Credit Card Account entity", () => {
             expect(invoiceDate).toEqual(validDueDate)
         })
 
-        test('transactions after closing date should belong to next month invoice', () => {
+        test('transactions after closing date should belong to next month\'s invoice', () => {
             const validClosingDate = new Date('2023-03-03')
             const validDueDate = new Date('2023-04-10')
 
@@ -223,7 +223,7 @@ describe("Credit Card Account entity", () => {
             expect(invoiceDate).toEqual(validDueDate)
         })
 
-        test('transactions before closing date should belong to current month invoice', () => {
+        test('transactions before closing date should belong to current month\'s invoice', () => {
             const validClosingDate = new Date('2023-03-03')
             const validDueDate = new Date('2023-03-10')
 
@@ -251,7 +251,7 @@ describe("Credit Card Account entity", () => {
             expect(invoiceDate).toEqual(validDueDate)
         })
 
-        test('transactions on december closing date should belong to next year', () => {
+        test('transactions on december closing date should belong to next year\' invoice', () => {
             const validClosingDate = new Date('2023-12-25')
             const validDueDate = new Date('2024-01-01')
 
@@ -279,7 +279,7 @@ describe("Credit Card Account entity", () => {
             expect(invoiceDate).toEqual(validDueDate)
         })
 
-        test('transactions before december closing date should belong to current year', () => {
+        test('transactions before december closing date should belong to current year\' invoice', () => {
             const validClosingDate = new Date('2023-12-25')
             const validDueDate = new Date('2023-12-01')
 
