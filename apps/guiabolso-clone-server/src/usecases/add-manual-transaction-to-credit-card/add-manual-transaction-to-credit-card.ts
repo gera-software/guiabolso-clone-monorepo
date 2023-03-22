@@ -45,13 +45,13 @@ export class AddManualTransactionToCreditCard implements UseCase {
             category = Category.create(categoryData).value as Category
         }
 
-        const invoiceDate = creditCardAccount.calculateInvoiceDueDateFromTransaction(request.date)
+        const invoiceDueDate = creditCardAccount.calculateInvoiceDueDateFromTransaction(request.date)
 
         const transactionOrError = CreditCardTransaction.create({
             amount: request.amount,
             description: request.description,
-            transactionDate: request.date,
-            invoiceDate: invoiceDate,
+            transactionDate: invoiceDueDate,
+            invoiceDate: request.date,
             category: category,
             comment: request.comment,
             ignored: request.ignored,

@@ -130,7 +130,8 @@ describe('add manual transaction to credit card account use case', () => {
         const response = (await sut.perform(transactionRequest)).value as TransactionData
         expect(response.id).not.toBeUndefined()
         expect(response.type).toBe('EXPENSE')
-        expect(response.invoiceDate).toEqual(new Date('2023-04-10'))
+        expect(response.date).toEqual(new Date('2023-04-10'))
+        expect(response.invoiceDate).toEqual(new Date('2023-03-17'))
         expect(await transactionRepository.exists(response.id)).toBe(true)
         // expect((await creditCardInvoiceRepository.findById('maio/23')).amount).toBe(-4567)
 
@@ -166,7 +167,8 @@ describe('add manual transaction to credit card account use case', () => {
         const response = (await sut.perform(transactionRequest)).value as TransactionData
         expect(response.id).not.toBeUndefined()
         expect(response.type).toBe('INCOME')
-        expect(response.invoiceDate).toEqual(new Date('2023-04-10'))
+        expect(response.date).toEqual(new Date('2023-04-10'))
+        expect(response.invoiceDate).toEqual(new Date('2023-03-17'))
         expect(await transactionRepository.exists(response.id)).toBe(true)
         // expect((await creditCardInvoiceRepository.findById('maio/23')).amount).toBe(4567)
 
@@ -232,13 +234,15 @@ describe('add manual transaction to credit card account use case', () => {
                 _isDeleted: false
             }
     
+            const transactionDate = new Date(validClosingDate)
+            
             const transactionRequest = {
                 user: userData, 
                 account: creditCardAccountData, 
                 category: categoryData,
                 amount: -4567,
                 description,
-                date: validClosingDate,
+                date: transactionDate,
                 comment,
                 ignored,
             }
@@ -248,10 +252,12 @@ describe('add manual transaction to credit card account use case', () => {
             const transactionRepository = new InMemoryTransactionRepository([])
             const sut = new AddManualTransactionToCreditCard(accountRepository, transactionRepository, creditCardInvoiceRepository)
             const response = (await sut.perform(transactionRequest)).value as TransactionData
-            expect(response.invoiceDate).toEqual(validDueDate)
+            expect(response.date).toEqual(validDueDate)
+            expect(response.invoiceDate).toEqual(transactionDate)
 
             const transaction = await transactionRepository.findById(response.id)
-            expect(transaction.invoiceDate).toEqual(validDueDate)
+            expect(transaction.date).toEqual(validDueDate)
+            expect(transaction.invoiceDate).toEqual(transactionDate)
         })
 
         test('transactions after closing date should belong to next month\'s invoice', async () => {
@@ -287,10 +293,12 @@ describe('add manual transaction to credit card account use case', () => {
             const transactionRepository = new InMemoryTransactionRepository([])
             const sut = new AddManualTransactionToCreditCard(accountRepository, transactionRepository, creditCardInvoiceRepository)
             const response = (await sut.perform(transactionRequest)).value as TransactionData
-            expect(response.invoiceDate).toEqual(validDueDate)
+            expect(response.date).toEqual(validDueDate)
+            expect(response.invoiceDate).toEqual(transactionDate)
 
             const transaction = await transactionRepository.findById(response.id)
-            expect(transaction.invoiceDate).toEqual(validDueDate)
+            expect(transaction.date).toEqual(validDueDate)
+            expect(transaction.invoiceDate).toEqual(transactionDate)
         })
         
         test('transactions before closing date should belong to current month\'s invoice', async () => {
@@ -326,10 +334,12 @@ describe('add manual transaction to credit card account use case', () => {
             const transactionRepository = new InMemoryTransactionRepository([])
             const sut = new AddManualTransactionToCreditCard(accountRepository, transactionRepository, creditCardInvoiceRepository)
             const response = (await sut.perform(transactionRequest)).value as TransactionData
-            expect(response.invoiceDate).toEqual(validDueDate)
+            expect(response.date).toEqual(validDueDate)
+            expect(response.invoiceDate).toEqual(transactionDate)
 
             const transaction = await transactionRepository.findById(response.id)
-            expect(transaction.invoiceDate).toEqual(validDueDate)
+            expect(transaction.date).toEqual(validDueDate)
+            expect(transaction.invoiceDate).toEqual(transactionDate)
         })
 
     })
