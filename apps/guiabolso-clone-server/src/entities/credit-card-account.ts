@@ -47,4 +47,34 @@ export class CreditCardAccount implements Account {
         return right(new CreditCardAccount({name, balance: amount, imageUrl, user, institution, creditCardInfo: creditCard}))
     }
 
+    public calculateInvoiceDueDateFromTransaction(transactionDate: Date) {
+        //suposed invoiceDate
+        const creditCardDate = new Date(transactionDate)
+        let invoiceMonth = creditCardDate.getUTCMonth() // between 0 and 11
+        let invoiceYear = creditCardDate.getUTCFullYear()
+
+        //account info
+        const closeDay = this.creditCardInfo.closeDay
+        const dueDay = this.creditCardInfo.dueDay
+
+        const closingDate = new Date(Date.UTC(invoiceYear, invoiceMonth, closeDay, 0, 0, 0))
+
+        const dueDate = new Date(Date.UTC(invoiceYear, invoiceMonth, dueDay, 0, 0, 0))
+
+        // move a transação para a data de vencimento da fatura correspondente
+        if(creditCardDate >= closingDate) {
+            dueDate.setUTCMonth(dueDate.getUTCMonth() + 1)
+            closingDate.setUTCMonth(closingDate.getUTCMonth() + 1)
+            // console.log('dentro da fatura do mes que vem', dueDate.toISOString())
+        } else {
+            // console.log('dentro da fatura do mes atual', dueDate.toISOString())
+        }
+
+        return dueDate
+        // return {
+        //     dueDate,
+        //     closingDate,
+        // }
+    }
+
 }
