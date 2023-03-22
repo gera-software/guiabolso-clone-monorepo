@@ -11,6 +11,7 @@ export interface TransactionData {
     description?: string,
     descriptionOriginal?: string,
     date: Date,
+    invoiceDate?: Date,
     type: string,
     comment?: string,
     ignored?: boolean,
