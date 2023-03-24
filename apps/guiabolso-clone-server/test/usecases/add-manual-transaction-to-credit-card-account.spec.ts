@@ -6,6 +6,7 @@ import { InMemoryAccountRepository, InMemoryCreditCardInvoiceRepository, InMemor
 describe('add manual transaction to credit card account use case', () => {
     const userId = 'u0'
     const categoryId = 'c0'
+    const categoryPagamentoCartaoId = 'c1'
     const amount = -5060
     const description = 'valid description'
     const date = new Date('2023-03-09')
@@ -26,6 +27,16 @@ describe('add manual transaction to credit card account use case', () => {
         primaryColor: "color 0",
         ignored: true,
         id: categoryId,
+    }
+    
+
+    const categoryPagamentoCartaoData: CategoryData = {
+        name: "Pagamento de cartão",
+        group: "group 1",
+        iconName: "icon 1",
+        primaryColor: "color 1",
+        ignored: true,
+        id: categoryPagamentoCartaoId,
     }
     
     
@@ -58,7 +69,7 @@ describe('add manual transaction to credit card account use case', () => {
     })
 
     // TODO descriptionOriginal isn't a valid field of a manual transaction, maybe should be removed
-    test.skip('should not add transaction without description or descriptionOriginal', async () => {
+    test('should not add transaction without description or descriptionOriginal', async () => {
 
         const transactionRequest = {
             user: userData, 
@@ -79,7 +90,7 @@ describe('add manual transaction to credit card account use case', () => {
         expect(response).toBeInstanceOf(InvalidTransactionError)
     })
 
-    test.skip('should not add transaction with zero amount', async () => {
+    test('should not add transaction with zero amount', async () => {
 
         const transactionRequest = {
             user: userData, 
@@ -101,7 +112,7 @@ describe('add manual transaction to credit card account use case', () => {
         expect(response.message).toBe('Invalid amount')
     })
 
-    test.skip('should add transaction of type expense and update invoice balance', async () => {
+    test('should add transaction of type expense and update invoice balance', async () => {
         const invoiceData: CreditCardInvoiceData = {
             id: 'maio/23',
             dueDate: new Date('2023-04-10'),
@@ -138,7 +149,7 @@ describe('add manual transaction to credit card account use case', () => {
         // expect((await accountRepository.findById(accountId)).balance).toBe(balance + transactionRequest.amount)
     })
 
-    test.skip('should add transaction of type income and update invoice balance', async () => {
+    test('should add transaction of type income and update invoice balance', async () => {
         const invoiceData: CreditCardInvoiceData = {
             id: 'maio/23',
             dueDate: new Date('2023-04-10'),
@@ -175,7 +186,7 @@ describe('add manual transaction to credit card account use case', () => {
         // expect((await accountRepository.findById(accountId)).balance).toBe(balance + transactionRequest.amount)
     })
 
-    test.skip('should add transaction with category', async () => {
+    test('should add transaction with category', async () => {
         const transactionRequest = {
             user: userData, 
             account: creditCardAccountData, 
@@ -197,7 +208,7 @@ describe('add manual transaction to credit card account use case', () => {
         // expect((await accountRepository.findById(accountId)).balance).toBe(balance + transactionRequest.amount)
     })
 
-    test.skip('should add transaction without category', async () => {
+    test('should add transaction without category', async () => {
         const transactionRequest = {
             user: userData, 
             account: creditCardAccountData, 
@@ -220,6 +231,49 @@ describe('add manual transaction to credit card account use case', () => {
     })
 
     describe('invoices', () => {
+        test('transactions before closing date should belong to current month\'s invoice', async () => {
+            const validClosingDate = new Date('2023-03-03')
+            const validDueDate = new Date('2023-03-10')
+
+            const invoiceData: CreditCardInvoiceData = {
+                id: 'invoiceId',
+                dueDate: validDueDate,
+                closeDate: validClosingDate,
+                amount: 0,
+                userId: userData.id,
+                accountId: creditCardAccountData.id,
+                _isDeleted: false
+            }
+
+            const transactionDate = new Date('2023-03-02')
+    
+            const transactionRequest = {
+                user: userData, 
+                account: creditCardAccountData, 
+                category: categoryData,
+                amount: -4567,
+                description,
+                date: transactionDate,
+                comment,
+                ignored,
+            }
+    
+            const creditCardInvoiceRepository = new InMemoryCreditCardInvoiceRepository([invoiceData])
+            const accountRepository = new InMemoryAccountRepository([creditCardAccountData])
+            const transactionRepository = new InMemoryTransactionRepository([])
+            const sut = new AddManualTransactionToCreditCard(accountRepository, transactionRepository, creditCardInvoiceRepository)
+            const response = (await sut.perform(transactionRequest)).value as TransactionData
+            expect(response.date).toEqual(validDueDate)
+            expect(response.invoiceDate).toEqual(transactionDate)
+
+            const transaction = await transactionRepository.findById(response.id)
+            expect(transaction.date).toEqual(validDueDate)
+            expect(transaction.invoiceDate).toEqual(transactionDate)
+
+            expect((await creditCardInvoiceRepository.findByDueDate(validDueDate)).amount).toBe(-4567)
+
+        })
+
         test('transactions on closing date should belong to next month\'s invoice', async () => {
             const validClosingDate = new Date('2023-04-03')
             const validDueDate = new Date('2023-04-10')
@@ -277,52 +331,7 @@ describe('add manual transaction to credit card account use case', () => {
                 _isDeleted: false
             }
 
-            const transactionDate = new Date('2023-03-03')
-            transactionDate.setDate(transactionDate.getDate() + 1); // 2023-03-04
-    
-            const transactionRequest = {
-                user: userData, 
-                account: creditCardAccountData, 
-                category: categoryData,
-                amount: -4567,
-                description,
-                date: transactionDate,
-                comment,
-                ignored,
-            }
-    
-            const creditCardInvoiceRepository = new InMemoryCreditCardInvoiceRepository([invoiceData])
-            const accountRepository = new InMemoryAccountRepository([creditCardAccountData])
-            const transactionRepository = new InMemoryTransactionRepository([])
-            const sut = new AddManualTransactionToCreditCard(accountRepository, transactionRepository, creditCardInvoiceRepository)
-            const response = (await sut.perform(transactionRequest)).value as TransactionData
-            expect(response.date).toEqual(validDueDate)
-            expect(response.invoiceDate).toEqual(transactionDate)
-
-            const transaction = await transactionRepository.findById(response.id)
-            expect(transaction.date).toEqual(validDueDate)
-            expect(transaction.invoiceDate).toEqual(transactionDate)
-
-            expect((await creditCardInvoiceRepository.findByDueDate(validDueDate)).amount).toBe(-4567)
-
-        })
-        
-        test('transactions before closing date should belong to current month\'s invoice', async () => {
-            const validClosingDate = new Date('2023-03-03')
-            const validDueDate = new Date('2023-03-10')
-
-            const invoiceData: CreditCardInvoiceData = {
-                id: 'invoiceId',
-                dueDate: validDueDate,
-                closeDate: validClosingDate,
-                amount: 0,
-                userId: userData.id,
-                accountId: creditCardAccountData.id,
-                _isDeleted: false
-            }
-
-            const transactionDate = new Date(validClosingDate)
-            transactionDate.setDate(transactionDate.getDate() - 1); // 2023-03-02
+            const transactionDate = new Date('2023-03-04')
     
             const transactionRequest = {
                 user: userData, 
@@ -351,22 +360,21 @@ describe('add manual transaction to credit card account use case', () => {
 
         })
 
-        test('should add invoice if it does not exists yet', async () => {
+        test('should create invoice if it does not exists yet', async () => {
             const validClosingDate = new Date('2023-04-03')
             const validDueDate = new Date('2023-04-10')
 
-            const invoiceData: CreditCardInvoiceData = {
-                id: 'invoiceId',
+            const expectedInvoiceData: CreditCardInvoiceData = {
+                id: '0',
                 dueDate: validDueDate,
                 closeDate: validClosingDate,
-                amount: 0,
+                amount: -4567,
                 userId: userData.id,
                 accountId: creditCardAccountData.id,
                 _isDeleted: false
             }
 
-            const transactionDate = new Date('2023-03-03')
-            transactionDate.setDate(transactionDate.getDate() + 1); // 2023-03-04
+            const transactionDate = new Date('2023-03-04')
     
             const transactionRequest = {
                 user: userData, 
@@ -391,8 +399,51 @@ describe('add manual transaction to credit card account use case', () => {
             expect(transaction.date).toEqual(validDueDate)
             expect(transaction.invoiceDate).toEqual(transactionDate)
 
-            expect((await creditCardInvoiceRepository.findByDueDate(validDueDate)).amount).toBe(-4567)
+            const createdInvoice = await creditCardInvoiceRepository.findByDueDate(validDueDate)
+            expect(createdInvoice).toEqual(expectedInvoiceData)
 
+        })
+
+        test('transactions of category "Pagamento de cartão" should not impact invoice balance', async () => {
+            const validClosingDate = new Date('2023-04-03')
+            const validDueDate = new Date('2023-04-10')
+
+            const invoiceData: CreditCardInvoiceData = {
+                id: 'invoiceId',
+                dueDate: validDueDate,
+                closeDate: validClosingDate,
+                amount: 7890,
+                userId: userData.id,
+                accountId: creditCardAccountData.id,
+                _isDeleted: false
+            }
+    
+            const transactionDate = new Date('2023-03-03')
+            
+            const transactionRequest = {
+                user: userData, 
+                account: creditCardAccountData, 
+                category: categoryPagamentoCartaoData,
+                amount: -4567,
+                description,
+                date: transactionDate,
+                comment,
+                ignored,
+            }
+    
+            const creditCardInvoiceRepository = new InMemoryCreditCardInvoiceRepository([invoiceData])
+            const accountRepository = new InMemoryAccountRepository([creditCardAccountData])
+            const transactionRepository = new InMemoryTransactionRepository([])
+            const sut = new AddManualTransactionToCreditCard(accountRepository, transactionRepository, creditCardInvoiceRepository)
+            const response = (await sut.perform(transactionRequest)).value as TransactionData
+            expect(response.date).toEqual(validDueDate)
+            expect(response.invoiceDate).toEqual(transactionDate)
+
+            const transaction = await transactionRepository.findById(response.id)
+            expect(transaction.date).toEqual(validDueDate)
+            expect(transaction.invoiceDate).toEqual(transactionDate)
+
+            expect((await creditCardInvoiceRepository.findByDueDate(validDueDate)).amount).toBe(7890)
         })
 
     })

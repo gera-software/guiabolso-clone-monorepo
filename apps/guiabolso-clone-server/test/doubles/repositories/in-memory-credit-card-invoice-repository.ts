@@ -33,6 +33,12 @@ export class InMemoryCreditCardInvoiceRepository implements CreditCardInvoiceRep
         return false
     }
 
+    /**
+     * Desconsidera o dia, busca pelo mes e ano da fatura
+     * @param date 
+     * @returns 
+     */
+    // FIX IT should receive the account id tooo!!!!!!
     async findByDueDate(date: Date): Promise<CreditCardInvoiceData> {
         const invoice = this.data.find(invoice => invoice.dueDate.getUTCMonth() == date.getUTCMonth() && invoice.dueDate.getUTCFullYear() == date.getUTCFullYear())
         return invoice || null

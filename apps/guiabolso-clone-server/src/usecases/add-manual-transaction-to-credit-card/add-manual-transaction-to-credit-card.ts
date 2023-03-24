@@ -1,5 +1,4 @@
 import { Category, CreditCardAccount, CreditCardInvoice, CreditCardTransaction, User } from "@/entities"
-import { InvalidTransactionError } from "@/entities/errors"
 import { left, right } from "@/shared"
 import { TransactionToAddData } from "@/usecases/add-manual-transaction/ports"
 import { UseCase, UpdateAccountRepository, TransactionRepository, TransactionData, CreditCardInvoiceRepository } from "@/usecases/ports"
@@ -45,10 +44,20 @@ export class AddManualTransactionToCreditCard implements UseCase {
             category = Category.create(categoryData).value as Category
         }
 
-        const invoiceDueDate = creditCardAccount.calculateInvoiceDatesFromTransaction(request.date)
+        const { invoiceClosingDate, invoiceDueDate } = creditCardAccount.calculateInvoiceDatesFromTransaction(request.date)
 
-        // TODO what if invoice does not exists yet?
-        const invoiceData = await this.creditCardInvoiceRepo.findByDueDate(invoiceDueDate)
+        // Find or create invoice
+        let invoiceData = await this.creditCardInvoiceRepo.findByDueDate(invoiceDueDate)
+        if(!invoiceData) {
+            invoiceData = await this.creditCardInvoiceRepo.add({
+                dueDate: invoiceDueDate,
+                closeDate: invoiceClosingDate,
+                amount: 0,
+                userId: userData.id,
+                accountId: accountData.id,
+                _isDeleted: false
+            })
+        }
         const invoiceOrError = CreditCardInvoice.create({
             closeDate: invoiceData.closeDate,
             dueDate: invoiceData.dueDate,
@@ -62,8 +71,8 @@ export class AddManualTransactionToCreditCard implements UseCase {
         const transactionOrError = CreditCardTransaction.create({
             amount: request.amount,
             description: request.description,
-            transactionDate: invoiceDueDate,
-            invoiceDate: request.date,
+            transactionDate: invoiceDueDate, // Na tela de transações, elas aparecem no dia de vencimento da fatura. Muitos economistas determinam que uma despesa somente é uma despesa no momento em que ela é paga.
+            invoiceDate: request.date, // Na tela de detalhes da fatura, a transação aparece na data original
             category: category,
             comment: request.comment,
             ignored: request.ignored,
