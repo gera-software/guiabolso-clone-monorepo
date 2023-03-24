@@ -68,11 +68,10 @@ export class AddManualTransactionToCreditCard implements UseCase {
             return left(invoiceOrError.value)
         }
         
-        // TODO link transaction to invoice
         const transactionOrError = CreditCardTransaction.create({
             amount: request.amount,
             description: request.description,
-            transactionDate: invoiceDueDate, // Na tela de transações, elas aparecem no dia de vencimento da fatura. Muitos economistas determinam que uma despesa somente é uma despesa no momento em que ela é paga.
+            transactionDate: invoiceDueDate, // Na tela de transações, elas aparecem no dia de vencimento da fatura. Porque muitos economistas determinam que uma despesa somente é uma despesa no momento em que ela é paga.
             invoiceDate: request.date, // Na tela de detalhes da fatura, a transação aparece na data original
             category: category,
             comment: request.comment,
@@ -100,6 +99,7 @@ export class AddManualTransactionToCreditCard implements UseCase {
             description: transaction.description,
             date: transaction.date,
             invoiceDate: transaction.invoiceDate,
+            invoiceId: invoiceData.id,
             type: transaction.type,
             comment: transaction.comment,
             ignored: transaction.ignored,

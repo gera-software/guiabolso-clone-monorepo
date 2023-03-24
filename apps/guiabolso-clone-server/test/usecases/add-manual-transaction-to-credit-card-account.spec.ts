@@ -265,12 +265,14 @@ describe('add manual transaction to credit card account use case', () => {
             const response = (await sut.perform(transactionRequest)).value as TransactionData
             expect(response.date).toEqual(validDueDate)
             expect(response.invoiceDate).toEqual(transactionDate)
+            expect(response.invoiceId).toEqual('invoiceId')
 
             const transaction = await transactionRepository.findById(response.id)
             expect(transaction.date).toEqual(validDueDate)
             expect(transaction.invoiceDate).toEqual(transactionDate)
+            expect(transaction.invoiceId).toEqual('invoiceId')
 
-            expect((await creditCardInvoiceRepository.findByDueDate(validDueDate, creditCardAccountData.id)).amount).toBe(-4567)
+            expect((await creditCardInvoiceRepository.findById(transaction.invoiceId)).amount).toBe(-4567)
 
         })
 
@@ -308,12 +310,14 @@ describe('add manual transaction to credit card account use case', () => {
             const response = (await sut.perform(transactionRequest)).value as TransactionData
             expect(response.date).toEqual(validDueDate)
             expect(response.invoiceDate).toEqual(transactionDate)
+            expect(response.invoiceId).toEqual('invoiceId')
 
             const transaction = await transactionRepository.findById(response.id)
             expect(transaction.date).toEqual(validDueDate)
             expect(transaction.invoiceDate).toEqual(transactionDate)
+            expect(transaction.invoiceId).toEqual('invoiceId')
 
-            expect((await creditCardInvoiceRepository.findByDueDate(validDueDate, creditCardAccountData.id)).amount).toBe(-4567)
+            expect((await creditCardInvoiceRepository.findById(transaction.invoiceId)).amount).toBe(-4567)
 
         })
 
@@ -351,12 +355,14 @@ describe('add manual transaction to credit card account use case', () => {
             const response = (await sut.perform(transactionRequest)).value as TransactionData
             expect(response.date).toEqual(validDueDate)
             expect(response.invoiceDate).toEqual(transactionDate)
+            expect(response.invoiceId).toEqual('invoiceId')
 
             const transaction = await transactionRepository.findById(response.id)
             expect(transaction.date).toEqual(validDueDate)
             expect(transaction.invoiceDate).toEqual(transactionDate)
+            expect(transaction.invoiceId).toEqual('invoiceId')
 
-            expect((await creditCardInvoiceRepository.findByDueDate(validDueDate, creditCardAccountData.id)).amount).toBe(-4567)
+            expect((await creditCardInvoiceRepository.findById(transaction.invoiceId)).amount).toBe(-4567)
 
         })
 
@@ -394,12 +400,14 @@ describe('add manual transaction to credit card account use case', () => {
             const response = (await sut.perform(transactionRequest)).value as TransactionData
             expect(response.date).toEqual(validDueDate)
             expect(response.invoiceDate).toEqual(transactionDate)
+            expect(response.invoiceId).toEqual('0')
 
             const transaction = await transactionRepository.findById(response.id)
             expect(transaction.date).toEqual(validDueDate)
             expect(transaction.invoiceDate).toEqual(transactionDate)
+            expect(transaction.invoiceId).toEqual('0')
 
-            const createdInvoice = await creditCardInvoiceRepository.findByDueDate(validDueDate, creditCardAccountData.id)
+            const createdInvoice = await creditCardInvoiceRepository.findById(transaction.invoiceId)
             expect(createdInvoice).toEqual(expectedInvoiceData)
 
         })
@@ -438,12 +446,14 @@ describe('add manual transaction to credit card account use case', () => {
             const response = (await sut.perform(transactionRequest)).value as TransactionData
             expect(response.date).toEqual(validDueDate)
             expect(response.invoiceDate).toEqual(transactionDate)
+            expect(response.invoiceId).toEqual('invoiceId')
 
             const transaction = await transactionRepository.findById(response.id)
             expect(transaction.date).toEqual(validDueDate)
             expect(transaction.invoiceDate).toEqual(transactionDate)
+            expect(transaction.invoiceId).toEqual('invoiceId')
 
-            expect((await creditCardInvoiceRepository.findByDueDate(validDueDate, creditCardAccountData.id)).amount).toBe(7890)
+            expect((await creditCardInvoiceRepository.findById(transaction.invoiceId)).amount).toBe(7890)
         })
 
     })
