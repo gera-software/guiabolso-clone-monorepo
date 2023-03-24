@@ -88,7 +88,7 @@ export class AddManualTransactionToCreditCard implements UseCase {
 
         invoice.addTransaction(transaction)
         
-        // CreditCardTransaction.addTransaction(transaction)
+        // creditCardAccount.addTransaction(transaction)
 
         const transactionData: TransactionData = {
             accountId: accountData.id,

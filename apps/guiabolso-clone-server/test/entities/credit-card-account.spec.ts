@@ -1,4 +1,4 @@
-import { CreditCardAccount, Institution, User } from "@/entities"
+import { CreditCardAccount, CreditCardTransaction, Institution, User } from "@/entities"
 import { InvalidBalanceError, InvalidCreditCardError, InvalidNameError } from "@/entities/errors"
 
 describe("Credit Card Account entity", () => {
@@ -602,10 +602,11 @@ describe("Credit Card Account entity", () => {
 
     })
 
-    describe('addToAvaliableCreditLimit', () => {
+    describe('add transaction', () => {
         test('should add an expense to avaliable credit limit', () => {
             const validClosingDate = new Date('2023-10-25')
             const validDueDate = new Date('2023-11-01')
+            const validAvaliableCreditLimit = 50000
 
             const name = 'valid name'
             const balance = 300
@@ -613,7 +614,7 @@ describe("Credit Card Account entity", () => {
             const creditCardInfo = {
                 brand: 'Master Card',
                 creditLimit: 100000,
-                availableCreditLimit: 50000,
+                availableCreditLimit: validAvaliableCreditLimit,
                 closeDay: validClosingDate.getUTCDate(),
                 dueDay: validDueDate.getUTCDate(),
             }
@@ -625,15 +626,23 @@ describe("Credit Card Account entity", () => {
     
             const account = CreditCardAccount.create({name, balance, imageUrl, user, creditCardInfo}).value as CreditCardAccount
 
-            account.creditCardInfo.addToAvailableCreditLimit(-35000)
+            const transaction = CreditCardTransaction.create({ 
+                amount: -35000, 
+                description: 'valid transaction', 
+                transactionDate: new Date('2023-11-01'), 
+                invoiceDate: new Date('2023-10-23'),
+             }).value as CreditCardTransaction
+            
+            account.addTransaction(transaction)
 
-            expect(account.creditCardInfo.availableCreditLimit.value).toBe(15000)
+            expect(account.creditCardInfo.availableCreditLimit.value).toBe(validAvaliableCreditLimit + transaction.amount.value)
             
         })
 
         test('should add an income to avaliable credit limit', () => {
             const validClosingDate = new Date('2023-10-25')
             const validDueDate = new Date('2023-11-01')
+            const validAvaliableCreditLimit = 50000
 
             const name = 'valid name'
             const balance = 300
@@ -641,7 +650,7 @@ describe("Credit Card Account entity", () => {
             const creditCardInfo = {
                 brand: 'Master Card',
                 creditLimit: 100000,
-                availableCreditLimit: 50000,
+                availableCreditLimit: validAvaliableCreditLimit,
                 closeDay: validClosingDate.getUTCDate(),
                 dueDay: validDueDate.getUTCDate(),
             }
@@ -653,17 +662,25 @@ describe("Credit Card Account entity", () => {
     
             const account = CreditCardAccount.create({name, balance, imageUrl, user, creditCardInfo}).value as CreditCardAccount
 
-            account.creditCardInfo.addToAvailableCreditLimit(35000)
+            const transaction = CreditCardTransaction.create({ 
+                amount: 35000, 
+                description: 'valid transaction', 
+                transactionDate: new Date('2023-11-01'), 
+                invoiceDate: new Date('2023-10-23'),
+             }).value as CreditCardTransaction
+            
+            account.addTransaction(transaction)
 
-            expect(account.creditCardInfo.availableCreditLimit.value).toBe(85000)
+            expect(account.creditCardInfo.availableCreditLimit.value).toBe(validAvaliableCreditLimit + transaction.amount.value)
             
         })
     })
 
-    describe('subtractFromAvaliableCreditLimit', () => {
-        test('should subtract an expense to avaliable credit limit', () => {
+    describe('remove transaction', () => {
+        test('should subtract an expense from avaliable credit limit', () => {
             const validClosingDate = new Date('2023-10-25')
             const validDueDate = new Date('2023-11-01')
+            const validAvaliableCreditLimit = 50000
 
             const name = 'valid name'
             const balance = 300
@@ -671,7 +688,7 @@ describe("Credit Card Account entity", () => {
             const creditCardInfo = {
                 brand: 'Master Card',
                 creditLimit: 100000,
-                availableCreditLimit: 50000,
+                availableCreditLimit: validAvaliableCreditLimit,
                 closeDay: validClosingDate.getUTCDate(),
                 dueDay: validDueDate.getUTCDate(),
             }
@@ -683,15 +700,24 @@ describe("Credit Card Account entity", () => {
     
             const account = CreditCardAccount.create({name, balance, imageUrl, user, creditCardInfo}).value as CreditCardAccount
 
-            account.creditCardInfo.subtractFromAvailableCreditLimit(-35000)
+            const transaction = CreditCardTransaction.create({ 
+                amount: -35000, 
+                description: 'valid transaction', 
+                transactionDate: new Date('2023-11-01'), 
+                invoiceDate: new Date('2023-10-23'),
+             }).value as CreditCardTransaction
+            
+            account.removeTransaction(transaction)
 
-            expect(account.creditCardInfo.availableCreditLimit.value).toBe(85000)
+            expect(account.creditCardInfo.availableCreditLimit.value).toBe(validAvaliableCreditLimit - transaction.amount.value)
+            
             
         })
 
-        test('should subtract an income to avaliable credit limit', () => {
+        test('should subtract an income from avaliable credit limit', () => {
             const validClosingDate = new Date('2023-10-25')
             const validDueDate = new Date('2023-11-01')
+            const validAvaliableCreditLimit = 50000
 
             const name = 'valid name'
             const balance = 300
@@ -699,7 +725,7 @@ describe("Credit Card Account entity", () => {
             const creditCardInfo = {
                 brand: 'Master Card',
                 creditLimit: 100000,
-                availableCreditLimit: 50000,
+                availableCreditLimit: validAvaliableCreditLimit,
                 closeDay: validClosingDate.getUTCDate(),
                 dueDay: validDueDate.getUTCDate(),
             }
@@ -711,9 +737,17 @@ describe("Credit Card Account entity", () => {
     
             const account = CreditCardAccount.create({name, balance, imageUrl, user, creditCardInfo}).value as CreditCardAccount
 
-            account.creditCardInfo.subtractFromAvailableCreditLimit(35000)
+            const transaction = CreditCardTransaction.create({ 
+                amount: 35000, 
+                description: 'valid transaction', 
+                transactionDate: new Date('2023-11-01'), 
+                invoiceDate: new Date('2023-10-23'),
+             }).value as CreditCardTransaction
+            
+            account.removeTransaction(transaction)
 
-            expect(account.creditCardInfo.availableCreditLimit.value).toBe(15000)
+            expect(account.creditCardInfo.availableCreditLimit.value).toBe(validAvaliableCreditLimit - transaction.amount.value)
+            
             
         })
     })

@@ -1,4 +1,4 @@
-import { Account, AccountType, Amount, CreditCardInfo, Institution, SyncType, User } from "@/entities"
+import { Account, AccountType, Amount, CreditCardInfo, CreditCardTransaction, Institution, SyncType, User } from "@/entities"
 import { Either, left, right } from "@/shared"
 import { InvalidBalanceError, InvalidCreditCardError, InvalidNameError } from "@/entities/errors"
 import { CreditCardInfoData } from "@/usecases/ports"
@@ -80,6 +80,16 @@ export class CreditCardAccount implements Account {
             invoiceClosingDate,
             invoiceDueDate,
         }
+    }
+
+    // TODO UPDADE BALANCE
+    public addTransaction(transaction: CreditCardTransaction) {
+        this.creditCardInfo.addToAvailableCreditLimit(transaction.amount.value)
+    }
+
+    // TODO UPDADE BALANCE
+    public removeTransaction(transaction: CreditCardTransaction) {
+        this.creditCardInfo.subtractFromAvailableCreditLimit(transaction.amount.value)
     }
 
 }
