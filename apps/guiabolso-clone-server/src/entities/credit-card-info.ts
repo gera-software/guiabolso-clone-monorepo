@@ -57,4 +57,12 @@ export class CreditCardInfo {
     
         return right(creditCardInfo)
     }
+
+    public addToAvailableCreditLimit(valueToAdd: number) {
+        this.availableCreditLimit.add(valueToAdd)
+    }
+
+    public subtractFromAvailableCreditLimit(valueToSubtract: number) {
+        this.availableCreditLimit.subtract(valueToSubtract)
+    }
 }

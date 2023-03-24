@@ -601,4 +601,120 @@ describe("Credit Card Account entity", () => {
         })
 
     })
+
+    describe('addToAvaliableCreditLimit', () => {
+        test('should add an expense to avaliable credit limit', () => {
+            const validClosingDate = new Date('2023-10-25')
+            const validDueDate = new Date('2023-11-01')
+
+            const name = 'valid name'
+            const balance = 300
+            const imageUrl = 'valid image url'
+            const creditCardInfo = {
+                brand: 'Master Card',
+                creditLimit: 100000,
+                availableCreditLimit: 50000,
+                closeDay: validClosingDate.getUTCDate(),
+                dueDay: validDueDate.getUTCDate(),
+            }
+            const user = User.create({
+                name: 'user name',
+                email: 'user@email.com',
+                password: 'user password',
+            }).value as User
+    
+            const account = CreditCardAccount.create({name, balance, imageUrl, user, creditCardInfo}).value as CreditCardAccount
+
+            account.creditCardInfo.addToAvailableCreditLimit(-35000)
+
+            expect(account.creditCardInfo.availableCreditLimit.value).toBe(15000)
+            
+        })
+
+        test('should add an income to avaliable credit limit', () => {
+            const validClosingDate = new Date('2023-10-25')
+            const validDueDate = new Date('2023-11-01')
+
+            const name = 'valid name'
+            const balance = 300
+            const imageUrl = 'valid image url'
+            const creditCardInfo = {
+                brand: 'Master Card',
+                creditLimit: 100000,
+                availableCreditLimit: 50000,
+                closeDay: validClosingDate.getUTCDate(),
+                dueDay: validDueDate.getUTCDate(),
+            }
+            const user = User.create({
+                name: 'user name',
+                email: 'user@email.com',
+                password: 'user password',
+            }).value as User
+    
+            const account = CreditCardAccount.create({name, balance, imageUrl, user, creditCardInfo}).value as CreditCardAccount
+
+            account.creditCardInfo.addToAvailableCreditLimit(35000)
+
+            expect(account.creditCardInfo.availableCreditLimit.value).toBe(85000)
+            
+        })
+    })
+
+    describe('subtractFromAvaliableCreditLimit', () => {
+        test('should subtract an expense to avaliable credit limit', () => {
+            const validClosingDate = new Date('2023-10-25')
+            const validDueDate = new Date('2023-11-01')
+
+            const name = 'valid name'
+            const balance = 300
+            const imageUrl = 'valid image url'
+            const creditCardInfo = {
+                brand: 'Master Card',
+                creditLimit: 100000,
+                availableCreditLimit: 50000,
+                closeDay: validClosingDate.getUTCDate(),
+                dueDay: validDueDate.getUTCDate(),
+            }
+            const user = User.create({
+                name: 'user name',
+                email: 'user@email.com',
+                password: 'user password',
+            }).value as User
+    
+            const account = CreditCardAccount.create({name, balance, imageUrl, user, creditCardInfo}).value as CreditCardAccount
+
+            account.creditCardInfo.subtractFromAvailableCreditLimit(-35000)
+
+            expect(account.creditCardInfo.availableCreditLimit.value).toBe(85000)
+            
+        })
+
+        test('should subtract an income to avaliable credit limit', () => {
+            const validClosingDate = new Date('2023-10-25')
+            const validDueDate = new Date('2023-11-01')
+
+            const name = 'valid name'
+            const balance = 300
+            const imageUrl = 'valid image url'
+            const creditCardInfo = {
+                brand: 'Master Card',
+                creditLimit: 100000,
+                availableCreditLimit: 50000,
+                closeDay: validClosingDate.getUTCDate(),
+                dueDay: validDueDate.getUTCDate(),
+            }
+            const user = User.create({
+                name: 'user name',
+                email: 'user@email.com',
+                password: 'user password',
+            }).value as User
+    
+            const account = CreditCardAccount.create({name, balance, imageUrl, user, creditCardInfo}).value as CreditCardAccount
+
+            account.creditCardInfo.subtractFromAvailableCreditLimit(35000)
+
+            expect(account.creditCardInfo.availableCreditLimit.value).toBe(15000)
+            
+        })
+    })
 })
