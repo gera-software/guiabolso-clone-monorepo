@@ -144,7 +144,7 @@ describe('add manual transaction to credit card account use case', () => {
         expect(response.date).toEqual(new Date('2023-04-10'))
         expect(response.invoiceDate).toEqual(new Date('2023-03-17'))
         expect(await transactionRepository.exists(response.id)).toBe(true)
-        expect((await creditCardInvoiceRepository.findByDueDate(new Date('2023-04-10'))).amount).toBe(-4567)
+        expect((await creditCardInvoiceRepository.findByDueDate(new Date('2023-04-10'), creditCardAccountData.id)).amount).toBe(-4567)
 
         // expect((await accountRepository.findById(accountId)).balance).toBe(balance + transactionRequest.amount)
     })
@@ -181,7 +181,7 @@ describe('add manual transaction to credit card account use case', () => {
         expect(response.date).toEqual(new Date('2023-04-10'))
         expect(response.invoiceDate).toEqual(new Date('2023-03-17'))
         expect(await transactionRepository.exists(response.id)).toBe(true)
-        expect((await creditCardInvoiceRepository.findByDueDate(new Date('2023-04-10'))).amount).toBe(4567)
+        expect((await creditCardInvoiceRepository.findByDueDate(new Date('2023-04-10'), creditCardAccountData.id)).amount).toBe(4567)
 
         // expect((await accountRepository.findById(accountId)).balance).toBe(balance + transactionRequest.amount)
     })
@@ -270,7 +270,7 @@ describe('add manual transaction to credit card account use case', () => {
             expect(transaction.date).toEqual(validDueDate)
             expect(transaction.invoiceDate).toEqual(transactionDate)
 
-            expect((await creditCardInvoiceRepository.findByDueDate(validDueDate)).amount).toBe(-4567)
+            expect((await creditCardInvoiceRepository.findByDueDate(validDueDate, creditCardAccountData.id)).amount).toBe(-4567)
 
         })
 
@@ -313,7 +313,7 @@ describe('add manual transaction to credit card account use case', () => {
             expect(transaction.date).toEqual(validDueDate)
             expect(transaction.invoiceDate).toEqual(transactionDate)
 
-            expect((await creditCardInvoiceRepository.findByDueDate(validDueDate)).amount).toBe(-4567)
+            expect((await creditCardInvoiceRepository.findByDueDate(validDueDate, creditCardAccountData.id)).amount).toBe(-4567)
 
         })
 
@@ -356,7 +356,7 @@ describe('add manual transaction to credit card account use case', () => {
             expect(transaction.date).toEqual(validDueDate)
             expect(transaction.invoiceDate).toEqual(transactionDate)
 
-            expect((await creditCardInvoiceRepository.findByDueDate(validDueDate)).amount).toBe(-4567)
+            expect((await creditCardInvoiceRepository.findByDueDate(validDueDate, creditCardAccountData.id)).amount).toBe(-4567)
 
         })
 
@@ -399,7 +399,7 @@ describe('add manual transaction to credit card account use case', () => {
             expect(transaction.date).toEqual(validDueDate)
             expect(transaction.invoiceDate).toEqual(transactionDate)
 
-            const createdInvoice = await creditCardInvoiceRepository.findByDueDate(validDueDate)
+            const createdInvoice = await creditCardInvoiceRepository.findByDueDate(validDueDate, creditCardAccountData.id)
             expect(createdInvoice).toEqual(expectedInvoiceData)
 
         })
@@ -443,7 +443,7 @@ describe('add manual transaction to credit card account use case', () => {
             expect(transaction.date).toEqual(validDueDate)
             expect(transaction.invoiceDate).toEqual(transactionDate)
 
-            expect((await creditCardInvoiceRepository.findByDueDate(validDueDate)).amount).toBe(7890)
+            expect((await creditCardInvoiceRepository.findByDueDate(validDueDate, creditCardAccountData.id)).amount).toBe(7890)
         })
 
     })

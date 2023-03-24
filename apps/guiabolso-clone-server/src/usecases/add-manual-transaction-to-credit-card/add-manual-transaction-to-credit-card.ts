@@ -47,7 +47,7 @@ export class AddManualTransactionToCreditCard implements UseCase {
         const { invoiceClosingDate, invoiceDueDate } = creditCardAccount.calculateInvoiceDatesFromTransaction(request.date)
 
         // Find or create invoice
-        let invoiceData = await this.creditCardInvoiceRepo.findByDueDate(invoiceDueDate)
+        let invoiceData = await this.creditCardInvoiceRepo.findByDueDate(invoiceDueDate, accountData.id)
         if(!invoiceData) {
             invoiceData = await this.creditCardInvoiceRepo.add({
                 dueDate: invoiceDueDate,
@@ -68,6 +68,7 @@ export class AddManualTransactionToCreditCard implements UseCase {
             return left(invoiceOrError.value)
         }
         
+        // TODO link transaction to invoice
         const transactionOrError = CreditCardTransaction.create({
             amount: request.amount,
             description: request.description,

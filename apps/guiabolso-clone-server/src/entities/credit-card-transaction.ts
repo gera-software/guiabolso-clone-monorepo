@@ -1,6 +1,6 @@
 import { Amount, BankTransaction, Category, Transaction, TransactionType } from "@/entities";
 import { Either, left, right } from "@/shared";
-import { InvalidTransactionError, InvalidAmountError } from "./errors";
+import { InvalidTransactionError, InvalidAmountError } from "@/entities/errors";
 
 
 export class CreditCardTransaction implements Transaction {
