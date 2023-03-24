@@ -82,12 +82,10 @@ export class CreditCardAccount implements Account {
         }
     }
 
-    // TODO UPDADE BALANCE
     public addTransaction(transaction: CreditCardTransaction) {
         this.creditCardInfo.addToAvailableCreditLimit(transaction.amount.value)
     }
 
-    // TODO UPDADE BALANCE
     public removeTransaction(transaction: CreditCardTransaction) {
         this.creditCardInfo.subtractFromAvailableCreditLimit(transaction.amount.value)
     }

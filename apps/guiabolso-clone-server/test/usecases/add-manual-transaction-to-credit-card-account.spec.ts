@@ -46,6 +46,7 @@ describe('add manual transaction to credit card account use case', () => {
     const name = 'valid account'
     const balance = 678
     const imageUrl = 'valid image url'
+    const availableCreditLimit = 100000
 
     let creditCardAccountData: CreditCardAccountData
 
@@ -61,7 +62,7 @@ describe('add manual transaction to credit card account use case', () => {
             creditCardInfo: {
                 brand: 'master card',
                 creditLimit: 100000,
-                availableCreditLimit: 100000,
+                availableCreditLimit: availableCreditLimit,
                 closeDay: 3,
                 dueDay: 10
             }
@@ -456,5 +457,81 @@ describe('add manual transaction to credit card account use case', () => {
             expect((await creditCardInvoiceRepository.findById(transaction.invoiceId)).amount).toBe(7890)
         })
 
+    })
+
+    describe('avaliable credit limit', () => {
+        test('new expense should consume avaliable credit limit', async () => {
+            const validClosingDate = new Date('2023-03-03')
+            const validDueDate = new Date('2023-03-10')
+
+            const invoiceData: CreditCardInvoiceData = {
+                id: 'invoiceId',
+                dueDate: validDueDate,
+                closeDate: validClosingDate,
+                amount: 0,
+                userId: userData.id,
+                accountId: creditCardAccountData.id,
+                _isDeleted: false
+            }
+
+            const transactionDate = new Date('2023-03-02')
+    
+            const transactionRequest = {
+                user: userData, 
+                account: creditCardAccountData, 
+                category: categoryData,
+                amount: -4567,
+                description,
+                date: transactionDate,
+                comment,
+                ignored,
+            }
+    
+            const creditCardInvoiceRepository = new InMemoryCreditCardInvoiceRepository([invoiceData])
+            const accountRepository = new InMemoryAccountRepository([creditCardAccountData])
+            const transactionRepository = new InMemoryTransactionRepository([])
+            const sut = new AddManualTransactionToCreditCard(accountRepository, transactionRepository, creditCardInvoiceRepository)
+            const response = (await sut.perform(transactionRequest)).value as TransactionData
+
+            const account = await accountRepository.findById(creditCardAccountData.id)
+            expect(account.creditCardInfo.availableCreditLimit).toBe(availableCreditLimit + transactionRequest.amount)
+        })
+
+        test('new income should release avaliable credit limit', async () => {
+            const validClosingDate = new Date('2023-03-03')
+            const validDueDate = new Date('2023-03-10')
+
+            const invoiceData: CreditCardInvoiceData = {
+                id: 'invoiceId',
+                dueDate: validDueDate,
+                closeDate: validClosingDate,
+                amount: 0,
+                userId: userData.id,
+                accountId: creditCardAccountData.id,
+                _isDeleted: false
+            }
+
+            const transactionDate = new Date('2023-03-02')
+    
+            const transactionRequest = {
+                user: userData, 
+                account: creditCardAccountData, 
+                category: categoryData,
+                amount: 4567,
+                description,
+                date: transactionDate,
+                comment,
+                ignored,
+            }
+    
+            const creditCardInvoiceRepository = new InMemoryCreditCardInvoiceRepository([invoiceData])
+            const accountRepository = new InMemoryAccountRepository([creditCardAccountData])
+            const transactionRepository = new InMemoryTransactionRepository([])
+            const sut = new AddManualTransactionToCreditCard(accountRepository, transactionRepository, creditCardInvoiceRepository)
+            const response = (await sut.perform(transactionRequest)).value as TransactionData
+
+            const account = await accountRepository.findById(creditCardAccountData.id)
+            expect(account.creditCardInfo.availableCreditLimit).toBe(availableCreditLimit + transactionRequest.amount)
+        })
     })
 })

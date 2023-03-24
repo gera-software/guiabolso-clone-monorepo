@@ -88,7 +88,7 @@ export class AddManualTransactionToCreditCard implements UseCase {
 
         invoice.addTransaction(transaction)
         
-        // creditCardAccount.addTransaction(transaction)
+        creditCardAccount.addTransaction(transaction)
 
         const transactionData: TransactionData = {
             accountId: accountData.id,
@@ -110,6 +110,7 @@ export class AddManualTransactionToCreditCard implements UseCase {
         const addedTransaction = await this.transactionRepo.add(transactionData)
 
         await this.creditCardInvoiceRepo.updateAmount(invoiceData.id, invoice.amount.value)
+        await this.accountRepo.updateAvaliableCreditCardLimit(accountData.id, creditCardAccount.creditCardInfo.availableCreditLimit.value)
         // await this.accountRepo.updateBalance(accountData.id, bankAccount.balance.value)
         
         return right(addedTransaction)

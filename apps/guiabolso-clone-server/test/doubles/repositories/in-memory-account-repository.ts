@@ -42,5 +42,10 @@ export class InMemoryAccountRepository implements AccountRepository, UpdateAccou
         }
     }
 
-
+    async updateAvaliableCreditCardLimit(accountId: string, limit: number): Promise<void> {
+        const account = await this.findById(accountId)
+        if(account) {
+            account.creditCardInfo.availableCreditLimit = limit
+        }
+    }
 }

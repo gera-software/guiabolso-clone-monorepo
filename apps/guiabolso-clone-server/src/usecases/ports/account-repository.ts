@@ -8,4 +8,5 @@ export interface AccountRepository {
 
 export interface UpdateAccountRepository extends AccountRepository {
     updateBalance(accountId: string, balance: number): Promise<void>
+    updateAvaliableCreditCardLimit(accountId: string, limit: number): Promise<void>
 }
