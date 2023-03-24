@@ -33,4 +33,15 @@ export class InMemoryCreditCardInvoiceRepository implements CreditCardInvoiceRep
         return false
     }
 
+    async findByDueDate(date: Date): Promise<CreditCardInvoiceData> {
+        const invoice = this.data.find(invoice => invoice.dueDate.getUTCMonth() == date.getUTCMonth() && invoice.dueDate.getUTCFullYear() == date.getUTCFullYear())
+        return invoice || null
+    }
+
+    async updateAmount(id: string, amount: number): Promise<void> {
+        const invoice = await this.findById(id)
+        if(invoice) {
+            invoice.amount = amount
+        }
+    }
 }

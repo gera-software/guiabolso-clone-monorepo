@@ -50,22 +50,36 @@ export class CreditCardAccount implements Account {
     /**
      * All transactions carried out from the invoice closing date onwards will belong to the next month's invoice.
      * All transactions made before the invoice closing date will belong to the current month's invoice.
+     * 
+     * Using Nubank rules as a reference. Other banks have different rules.
+     * A fatura do cartão Nubank fecha 7 dias corridos antes do vencimento.
+     * Todas as compras feitas a partir do dia de fechamento só entram na fatura seguinte.
+     * Por isso, o melhor dia para compra é no dia do fechamento.
+     * 
      * @param transactionDate 
-     * @returns invoiceDueDate Date
+     * @returns invoiceDates { invoiceClosingDate: Date, invoiceDueDate: Date } 
      */
-    public calculateInvoiceDueDateFromTransaction(transactionDate: Date) {
+    public calculateInvoiceDatesFromTransaction(transactionDate: Date) {
         let month = transactionDate.getUTCMonth() // between 0 and 11
         let year = transactionDate.getUTCFullYear()
 
+        // current invoice
         const invoiceClosingDate = new Date(Date.UTC(year, month, this.creditCardInfo.closeDay, 0, 0, 0))
         const invoiceDueDate = new Date(Date.UTC(year, month, this.creditCardInfo.dueDay, 0, 0, 0))
+        if(invoiceDueDate < invoiceClosingDate) { // ie. the diference between due date and closing date has to be 7 days
+            invoiceDueDate.setUTCMonth(invoiceDueDate.getUTCMonth() + 1)
+        }
 
-        if(transactionDate >= invoiceClosingDate) {
+        // next invoice
+        if(transactionDate.getUTCDate() >= this.creditCardInfo.closeDay) {
             invoiceDueDate.setUTCMonth(invoiceDueDate.getUTCMonth() + 1)
             invoiceClosingDate.setUTCMonth(invoiceClosingDate.getUTCMonth() + 1)
         }
 
-        return invoiceDueDate
+        return {
+            invoiceClosingDate,
+            invoiceDueDate,
+        }
     }
 
 }

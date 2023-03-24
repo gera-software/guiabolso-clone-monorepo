@@ -1,4 +1,4 @@
-import { Category, CreditCardAccount, CreditCardTransaction, User } from "@/entities"
+import { Category, CreditCardAccount, CreditCardInvoice, CreditCardTransaction, User } from "@/entities"
 import { InvalidTransactionError } from "@/entities/errors"
 import { left, right } from "@/shared"
 import { TransactionToAddData } from "@/usecases/add-manual-transaction/ports"
@@ -45,8 +45,20 @@ export class AddManualTransactionToCreditCard implements UseCase {
             category = Category.create(categoryData).value as Category
         }
 
-        const invoiceDueDate = creditCardAccount.calculateInvoiceDueDateFromTransaction(request.date)
+        const invoiceDueDate = creditCardAccount.calculateInvoiceDatesFromTransaction(request.date)
 
+        // TODO what if invoice does not exists yet?
+        const invoiceData = await this.creditCardInvoiceRepo.findByDueDate(invoiceDueDate)
+        const invoiceOrError = CreditCardInvoice.create({
+            closeDate: invoiceData.closeDate,
+            dueDate: invoiceData.dueDate,
+            amount: invoiceData.amount,
+            account: creditCardAccount
+        })
+        if(invoiceOrError.isLeft()) {
+            return left(invoiceOrError.value)
+        }
+        
         const transactionOrError = CreditCardTransaction.create({
             amount: request.amount,
             description: request.description,
@@ -61,8 +73,12 @@ export class AddManualTransactionToCreditCard implements UseCase {
             return left(transactionOrError.value)
         }
 
+        const invoice = invoiceOrError.value as CreditCardInvoice
+
         const transaction = transactionOrError.value as CreditCardTransaction
 
+        invoice.addTransaction(transaction)
+        
         // CreditCardTransaction.addTransaction(transaction)
 
         const transactionData: TransactionData = {
@@ -83,6 +99,7 @@ export class AddManualTransactionToCreditCard implements UseCase {
 
         const addedTransaction = await this.transactionRepo.add(transactionData)
 
+        await this.creditCardInvoiceRepo.updateAmount(invoiceData.id, invoice.amount.value)
         // await this.accountRepo.updateBalance(accountData.id, bankAccount.balance.value)
         
         return right(addedTransaction)
