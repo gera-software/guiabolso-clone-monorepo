@@ -11,8 +11,9 @@ export class AddManualTransaction implements UseCase {
 
     private addManualTransactionToWallet: UseCase
     private addManualTransactionToBank: UseCase
+    private addManualTransactionToCreditCard: UseCase
 
-    constructor(userRepository: UserRepository, accountRepository: UpdateAccountRepository, categoryRepository: CategoryRepository, addManualTransactionToWallet: UseCase, addManualTransactionToBank: UseCase, ) {
+    constructor(userRepository: UserRepository, accountRepository: UpdateAccountRepository, categoryRepository: CategoryRepository, addManualTransactionToWallet: UseCase, addManualTransactionToBank: UseCase, addManualTransactionToCreditCard: UseCase) {
         this.userRepo = userRepository
         this.accountRepo = accountRepository
         this.categoryRepo = categoryRepository
@@ -20,6 +21,7 @@ export class AddManualTransaction implements UseCase {
         
         this.addManualTransactionToWallet = addManualTransactionToWallet
         this.addManualTransactionToBank = addManualTransactionToBank
+        this.addManualTransactionToCreditCard = addManualTransactionToCreditCard
     }
 
     async perform(request: TransactionRequest): Promise<any> {
@@ -57,6 +59,8 @@ export class AddManualTransaction implements UseCase {
                 return this.addManualTransactionToWallet.perform(transactionToAddData)
             case 'BANK':
                 return this.addManualTransactionToBank.perform(transactionToAddData)
+            case 'CREDIT_CARD':
+                return this.addManualTransactionToCreditCard.perform(transactionToAddData)
         }
 
     }
