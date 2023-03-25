@@ -1,11 +1,12 @@
 import { AddManualTransaction } from "@/usecases/add-manual-transaction"
 import { AddManualTransactionToBank } from "@/usecases/add-manual-transaction-to-bank"
+import { AddManualTransactionToCreditCard } from "@/usecases/add-manual-transaction-to-credit-card"
 import { AddManualTransactionToWallet } from "@/usecases/add-manual-transaction-to-wallet"
-import { BankAccountData, CategoryData, UseCase, UserData, WalletAccountData } from "@/usecases/ports"
+import { BankAccountData, CategoryData, CreditCardAccountData, UseCase, UserData, WalletAccountData } from "@/usecases/ports"
 import { AddManualTransactionController } from "@/web-controllers"
 import { MissingParamError } from "@/web-controllers/errors"
 import { HttpRequest, HttpResponse } from "@/web-controllers/ports"
-import { InMemoryAccountRepository, InMemoryCategoryRepository, InMemoryTransactionRepository, InMemoryUserRepository } from "@test/doubles/repositories"
+import { InMemoryAccountRepository, InMemoryCategoryRepository, InMemoryCreditCardInvoiceRepository, InMemoryTransactionRepository, InMemoryUserRepository } from "@test/doubles/repositories"
 import { ErrorThrowingUseCaseStub } from "@test/doubles/usecases"
 
 describe('Add manual transaction web controller', () => {
@@ -38,12 +39,16 @@ describe('Add manual transaction web controller', () => {
     const walletAccountType = 'WALLET'
     const bankAccountId = 'bac0'
     const bankAccountType = 'BANK'
+    const creditCardAccountId = 'ccac0'
+    const creditCardAccountType = 'CREDIT_CARD'
     const syncType = 'MANUAL'
     const balance = 678
     const imageUrl = 'valid image url'
+    const availableCreditLimit = 100000
 
     let walletAccountData: WalletAccountData
     let bankAccountData: BankAccountData
+    let creditCardAccountData: CreditCardAccountData
 
     beforeEach(() => {
         walletAccountData = {
@@ -65,6 +70,23 @@ describe('Add manual transaction web controller', () => {
             imageUrl,
             userId,
         }
+
+        creditCardAccountData = {
+            id: creditCardAccountId,
+            type: creditCardAccountType,
+            syncType,
+            name: 'valid credit card account',
+            balance,
+            imageUrl,
+            userId,
+            creditCardInfo: {
+                brand: 'master card',
+                creditLimit: 100000,
+                availableCreditLimit: availableCreditLimit,
+                closeDay: 3,
+                dueDay: 10
+            }
+        }
     })
 
     test('should return status code 400 bad request when request is missing required params', async () => {
@@ -75,13 +97,14 @@ describe('Add manual transaction web controller', () => {
         }
 
         const userRepository = new InMemoryUserRepository([userData])
-        const accountRepository = new InMemoryAccountRepository([walletAccountData, bankAccountData])
+        const accountRepository = new InMemoryAccountRepository([walletAccountData, bankAccountData, creditCardAccountData])
         const categoryRepository = new InMemoryCategoryRepository([categoryData])
         const transactionRepository = new InMemoryTransactionRepository([])
+        const invoiceRepository = new InMemoryCreditCardInvoiceRepository([])
         const addManualTransactionToWallet = new AddManualTransactionToWallet(accountRepository, transactionRepository)
         const addManualTransactionToBank = new AddManualTransactionToBank(accountRepository, transactionRepository)
-        
-        const usecase = new AddManualTransaction(userRepository, accountRepository, categoryRepository, addManualTransactionToWallet, addManualTransactionToBank)
+        const addManualTransactionToCreditCard = new AddManualTransactionToCreditCard(accountRepository, transactionRepository, invoiceRepository)
+        const usecase = new AddManualTransaction(userRepository, accountRepository, categoryRepository, addManualTransactionToWallet, addManualTransactionToBank, addManualTransactionToCreditCard)
 
         const sut = new AddManualTransactionController(usecase)
         const response: HttpResponse = await sut.handle(invalidRequest)
@@ -126,13 +149,14 @@ describe('Add manual transaction web controller', () => {
             }
     
             const userRepository = new InMemoryUserRepository([userData])
-            const accountRepository = new InMemoryAccountRepository([walletAccountData, bankAccountData])
+            const accountRepository = new InMemoryAccountRepository([walletAccountData, bankAccountData, creditCardAccountData])
             const categoryRepository = new InMemoryCategoryRepository([categoryData])
             const transactionRepository = new InMemoryTransactionRepository([])
+            const invoiceRepository = new InMemoryCreditCardInvoiceRepository([])
             const addManualTransactionToWallet = new AddManualTransactionToWallet(accountRepository, transactionRepository)
             const addManualTransactionToBank = new AddManualTransactionToBank(accountRepository, transactionRepository)
-            
-            const usecase = new AddManualTransaction(userRepository, accountRepository, categoryRepository, addManualTransactionToWallet, addManualTransactionToBank)    
+            const addManualTransactionToCreditCard = new AddManualTransactionToCreditCard(accountRepository, transactionRepository, invoiceRepository)
+            const usecase = new AddManualTransaction(userRepository, accountRepository, categoryRepository, addManualTransactionToWallet, addManualTransactionToBank, addManualTransactionToCreditCard)    
     
             const sut = new AddManualTransactionController(usecase)
             const response: HttpResponse = await sut.handle(validRequest)
@@ -159,13 +183,48 @@ describe('Add manual transaction web controller', () => {
             }
     
             const userRepository = new InMemoryUserRepository([userData])
-            const accountRepository = new InMemoryAccountRepository([walletAccountData, bankAccountData])
+            const accountRepository = new InMemoryAccountRepository([walletAccountData, bankAccountData, creditCardAccountData])
             const categoryRepository = new InMemoryCategoryRepository([categoryData])
             const transactionRepository = new InMemoryTransactionRepository([])
+            const invoiceRepository = new InMemoryCreditCardInvoiceRepository([])
             const addManualTransactionToWallet = new AddManualTransactionToWallet(accountRepository, transactionRepository)
             const addManualTransactionToBank = new AddManualTransactionToBank(accountRepository, transactionRepository)
-            
-            const usecase = new AddManualTransaction(userRepository, accountRepository, categoryRepository, addManualTransactionToWallet, addManualTransactionToBank)    
+            const addManualTransactionToCreditCard = new AddManualTransactionToCreditCard(accountRepository, transactionRepository, invoiceRepository)
+            const usecase = new AddManualTransaction(userRepository, accountRepository, categoryRepository, addManualTransactionToWallet, addManualTransactionToBank, addManualTransactionToCreditCard)   
+    
+            const sut = new AddManualTransactionController(usecase)
+            const response: HttpResponse = await sut.handle(validRequest)
+            expect(response.statusCode).toEqual(201)
+            expect(response.body.id).toBeTruthy()
+
+        })
+
+    })
+
+    describe('Add manual transaction to credit card account', () => {
+
+        test('should return status code 201 created when request is valid', async () => {
+            const validRequest: HttpRequest = {
+                body: {
+                    accountId: creditCardAccountId, 
+                    categoryId, 
+                    amount, 
+                    date,
+                    description,
+                    comment,
+                    ignored,
+                }
+            }
+    
+            const userRepository = new InMemoryUserRepository([userData])
+            const accountRepository = new InMemoryAccountRepository([walletAccountData, bankAccountData, creditCardAccountData])
+            const categoryRepository = new InMemoryCategoryRepository([categoryData])
+            const transactionRepository = new InMemoryTransactionRepository([])
+            const invoiceRepository = new InMemoryCreditCardInvoiceRepository([])
+            const addManualTransactionToWallet = new AddManualTransactionToWallet(accountRepository, transactionRepository)
+            const addManualTransactionToBank = new AddManualTransactionToBank(accountRepository, transactionRepository)
+            const addManualTransactionToCreditCard = new AddManualTransactionToCreditCard(accountRepository, transactionRepository, invoiceRepository)
+            const usecase = new AddManualTransaction(userRepository, accountRepository, categoryRepository, addManualTransactionToWallet, addManualTransactionToBank, addManualTransactionToCreditCard)   
     
             const sut = new AddManualTransactionController(usecase)
             const response: HttpResponse = await sut.handle(validRequest)
