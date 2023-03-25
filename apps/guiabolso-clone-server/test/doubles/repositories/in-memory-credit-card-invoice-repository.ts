@@ -24,6 +24,7 @@ export class InMemoryCreditCardInvoiceRepository implements CreditCardInvoiceRep
         return invoice || null
     }
 
+    // TODO finds e exists should ignore deleted itens
     async exists(id: string): Promise<boolean> {
         const found = await this.findById(id)
         if(found) {
@@ -46,5 +47,21 @@ export class InMemoryCreditCardInvoiceRepository implements CreditCardInvoiceRep
         if(invoice) {
             invoice.amount = amount
         }
+    }
+
+    async getLastClosedInvoice(accountId: string): Promise<CreditCardInvoiceData> {
+        const c = new Date()
+        const currentDate = new Date(Date.UTC(c.getFullYear(), c.getMonth(), c.getDate()))
+
+        const invoices = this.data
+            .filter(invoice => invoice.accountId === accountId && invoice.closeDate <= currentDate)
+            .sort((a,b) => {
+                if(a.closeDate < b.closeDate) return -1
+                if(a.closeDate > b.closeDate) return 1
+                return 0
+            })
+            .reverse()
+
+        return invoices[0] || null
     }
 }
