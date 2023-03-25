@@ -91,6 +91,10 @@ export class MongodbAccountRepository implements AccountRepository, UpdateAccoun
         await accountCollection.updateOne({ _id: new ObjectId(accountId) }, updateDoc)
     }
 
+    async updateAvaliableCreditCardLimit(accountId: string, limit: number): Promise<void> {
+        throw new Error("Method not implemented.")
+    }
+
     private withApplicationId (dbAccount: MongodbAccount): AccountData {
         let institution: InstitutionData = null
 
