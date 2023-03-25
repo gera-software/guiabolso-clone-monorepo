@@ -89,4 +89,7 @@ describe('add manual transaction route', () => {
                 expect(res.body._isDeleted).toBe(false)
             })
     })
+
+    test.todo('should add a manual transaction to a bank account')
+    test.todo('should add a manual transaction to a credit card account')
 })
