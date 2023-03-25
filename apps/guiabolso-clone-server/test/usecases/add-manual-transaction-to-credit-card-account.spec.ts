@@ -2,6 +2,7 @@ import { InvalidTransactionError } from "@/entities/errors"
 import { AddManualTransactionToCreditCard } from "@/usecases/add-manual-transaction-to-credit-card"
 import { CategoryData, CreditCardAccountData, CreditCardInvoiceData, TransactionData, UserData } from "@/usecases/ports"
 import { InMemoryAccountRepository, InMemoryCreditCardInvoiceRepository, InMemoryTransactionRepository } from "@test/doubles/repositories"
+import * as sinon from 'sinon'
 
 describe('add manual transaction to credit card account use case', () => {
     const userId = 'u0'
@@ -575,8 +576,8 @@ describe('add manual transaction to credit card account use case', () => {
             expect(account.balance).toBe(transactionRequest.amount * 2)
         })
 
-        // TODO should use a mock to simulate current date!
         test('if there is no last closed invoice yet, should be equal zero', async () => {
+            const clock = sinon.useFakeTimers(new Date('2023-03-10'))
             // const invoiceData: CreditCardInvoiceData = {
             //     id: 'invoiceId',
             //     dueDate: validDueDate,
@@ -587,7 +588,7 @@ describe('add manual transaction to credit card account use case', () => {
             //     _isDeleted: false
             // }
 
-            const transactionDate = new Date('2024-03-02')
+            const transactionDate = new Date('2023-03-03')
     
             const transactionRequest = {
                 user: userData, 
@@ -608,10 +609,46 @@ describe('add manual transaction to credit card account use case', () => {
 
             const account = await accountRepository.findById(creditCardAccountData.id)
             expect(account.balance).toBe(0)
-
+            clock.restore()
         })
 
-        // TODO should use a mock to simulate current date!
-        test.todo('adding transaction to open invoice should not update account balance')
+        test('adding transaction to open invoice should not update account balance', async () => {
+            const clock = sinon.useFakeTimers(new Date('2023-03-02'))
+            const validClosingDate = new Date('2023-03-03')
+            const validDueDate = new Date('2023-03-10')
+
+            const invoiceData: CreditCardInvoiceData = {
+                id: 'invoiceId',
+                dueDate: validDueDate,
+                closeDate: validClosingDate,
+                amount: 0,
+                userId: userData.id,
+                accountId: creditCardAccountData.id,
+                _isDeleted: false
+            }
+
+            const transactionDate = new Date('2023-03-02')
+    
+            const transactionRequest = {
+                user: userData, 
+                account: creditCardAccountData, 
+                category: categoryData,
+                amount: -4567,
+                description,
+                date: transactionDate,
+                comment,
+                ignored,
+            }
+    
+            const creditCardInvoiceRepository = new InMemoryCreditCardInvoiceRepository([invoiceData])
+            const accountRepository = new InMemoryAccountRepository([creditCardAccountData])
+            const transactionRepository = new InMemoryTransactionRepository([])
+            const sut = new AddManualTransactionToCreditCard(accountRepository, transactionRepository, creditCardInvoiceRepository)
+            const response = (await sut.perform(transactionRequest)).value as TransactionData
+
+            const account = await accountRepository.findById(creditCardAccountData.id)
+            expect(account.balance).toBe(0)
+            clock.restore()
+        })
     })
 })
