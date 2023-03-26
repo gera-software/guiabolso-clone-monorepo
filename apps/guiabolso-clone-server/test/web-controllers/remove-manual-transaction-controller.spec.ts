@@ -1,4 +1,4 @@
-import { CategoryData, TransactionData, UseCase, WalletAccountData } from "@/usecases/ports"
+import { BankAccountData, CategoryData, CreditCardAccountData, TransactionData, UseCase, WalletAccountData } from "@/usecases/ports"
 import { RemoveManualTransaction } from "@/usecases/remove-manual-transaction"
 import { RemoveManualTransactionFromBank } from "@/usecases/remove-manual-transaction-from-bank"
 import { RemoveManualTransactionFromWallet } from "@/usecases/remove-manual-transaction-from-wallet"
@@ -28,24 +28,58 @@ describe('Remove manual transaction web controller', () => {
     }
     
     
-    const accountId = 'ac0'
-    const accountType = 'WALLET'
+    const walletAccountId = 'ac0'
+    const walletAccountType = 'WALLET'
+    const bankAccountId = 'bac0'
+    const bankAccountType = 'BANK'
+    const creditCardAccountId = 'ca0'
+    const creditCardAccountType = 'CREDIT_CARD'
     const syncType = 'MANUAL'
     const name = 'valid account'
     const balance = 678
     const imageUrl = 'valid image url'
+    const availableCreditLimit = 100000
 
     let walletAccountData: WalletAccountData
+    let bankAccountData: BankAccountData
+    let creditCardAccountData: CreditCardAccountData
 
     beforeEach(() => {
         walletAccountData = {
-            id: accountId,
-            type: accountType,
+            id: walletAccountId,
+            type: walletAccountType,
             syncType,
             name,
             balance,
             imageUrl,
             userId,
+        }
+
+        bankAccountData = {
+            id: bankAccountId,
+            type: bankAccountType,
+            syncType,
+            name: 'valid wallet account',
+            balance,
+            imageUrl,
+            userId,
+        }
+
+        creditCardAccountData = {
+            id: creditCardAccountId,
+            type: creditCardAccountType,
+            syncType,
+            name: 'valid credit card account',
+            balance,
+            imageUrl,
+            userId,
+            creditCardInfo: {
+                brand: 'master card',
+                creditLimit: 100000,
+                availableCreditLimit: availableCreditLimit,
+                closeDay: 3,
+                dueDay: 10
+            }
         }
     })
 
@@ -55,7 +89,7 @@ describe('Remove manual transaction web controller', () => {
             }
         }
         const userRepository = new InMemoryUserRepository([{ id: userId, name: 'any name', email: 'any@email.com', password: '123' }])
-        const accountRepository = new InMemoryAccountRepository([walletAccountData])
+        const accountRepository = new InMemoryAccountRepository([walletAccountData, bankAccountData, creditCardAccountData])
         const transactionRepository = new InMemoryTransactionRepository([])
         const removeManualTransactionFromWallet = new RemoveManualTransactionFromWallet(transactionRepository, accountRepository, userRepository)
         const removeManualTransactionFromBank = new RemoveManualTransactionFromBank(transactionRepository, accountRepository, userRepository)
@@ -91,8 +125,8 @@ describe('Remove manual transaction web controller', () => {
             const id = 'valid id'
             const transactionData: TransactionData = {
                 id, 
-                accountId,
-                accountType,
+                accountId: walletAccountId,
+                accountType: walletAccountType,
                 syncType,
                 userId,
                 amount: -5678,
@@ -111,7 +145,7 @@ describe('Remove manual transaction web controller', () => {
             }
 
             const userRepository = new InMemoryUserRepository([{ id: userId, name: 'any name', email: 'any@email.com', password: '123' }])
-            const accountRepository = new InMemoryAccountRepository([walletAccountData])
+            const accountRepository = new InMemoryAccountRepository([walletAccountData, bankAccountData, creditCardAccountData])
             const transactionRepository = new InMemoryTransactionRepository([transactionData])
             const removeManualTransactionFromWallet = new RemoveManualTransactionFromWallet(transactionRepository, accountRepository, userRepository)
             const removeManualTransactionFromBank = new RemoveManualTransactionFromBank(transactionRepository, accountRepository, userRepository)
@@ -126,4 +160,48 @@ describe('Remove manual transaction web controller', () => {
 
 
     })
+
+    describe('Remove manual transaction from bank account', () => {
+
+        test('should return status code 200 ok when request is valid', async () => {
+            const id = 'valid id'
+            const transactionData: TransactionData = {
+                id, 
+                accountId: bankAccountId,
+                accountType: bankAccountType,
+                syncType,
+                userId,
+                amount: -5678,
+                date,
+                type: 'EXPENSE',
+                description,
+                comment,
+                ignored,
+                _isDeleted: false,
+            }
+
+            const validRequest: HttpRequest = {
+                body: {
+                    id
+                }
+            }
+
+            const userRepository = new InMemoryUserRepository([{ id: userId, name: 'any name', email: 'any@email.com', password: '123' }])
+            const accountRepository = new InMemoryAccountRepository([walletAccountData, bankAccountData, creditCardAccountData])
+            const transactionRepository = new InMemoryTransactionRepository([transactionData])
+            const removeManualTransactionFromWallet = new RemoveManualTransactionFromWallet(transactionRepository, accountRepository, userRepository)
+            const removeManualTransactionFromBank = new RemoveManualTransactionFromBank(transactionRepository, accountRepository, userRepository)
+            
+            const usecase = new RemoveManualTransaction(transactionRepository, removeManualTransactionFromWallet, removeManualTransactionFromBank)
+
+            const sut = new RemoveManualTransactionController(usecase)
+            const response: HttpResponse = await sut.handle(validRequest)
+            expect(response.statusCode).toEqual(200)
+            expect(response.body._isDeleted).toEqual(true)
+        })
+
+
+    })
+
+    test.todo('Remove manual transaction from credit card account')
 })
