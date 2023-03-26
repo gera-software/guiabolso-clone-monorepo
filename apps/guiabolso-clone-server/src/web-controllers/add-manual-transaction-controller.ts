@@ -1,7 +1,7 @@
 import { TransactionRequest, UseCase } from "@/usecases/ports";
 import { Controller, HttpRequest, HttpResponse } from "@/web-controllers/ports";
 import { badRequest, created, serverError } from "@/web-controllers/util";
-import { MissingParamError } from "./errors";
+import { MissingParamError } from "@/web-controllers/errors";
 
 export class AddManualTransactionController implements Controller {
     private readonly usecase : UseCase
@@ -22,8 +22,8 @@ export class AddManualTransactionController implements Controller {
                 return badRequest(new MissingParamError(`Missing parameters from request: ${missingParams.join(', ')}.`))
             }
     
+            request.body.date = new Date(request.body.date)
             const transactionRequest: TransactionRequest = request.body
-            console.log('ADD CONTROLLER', transactionRequest)
             const response = await this.usecase.perform(transactionRequest)
     
             if(response.isLeft()) {

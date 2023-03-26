@@ -15,8 +15,6 @@ export class AddManualTransactionToCreditCard implements UseCase {
     }
 
     async perform(request: TransactionToAddData) {
-        request.date = new Date(request.date)
-
         const userData = request.user
         const accountData = request.account
         const categoryData = request.category
@@ -46,7 +44,6 @@ export class AddManualTransactionToCreditCard implements UseCase {
             category = Category.create(categoryData).value as Category
         }
 
-        console.log(`REQUEST DATE`, typeof request.date)
         const { invoiceClosingDate, invoiceDueDate } = creditCardAccount.calculateInvoiceDatesFromTransaction(request.date)
 
         // Find or create invoice

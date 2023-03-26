@@ -22,6 +22,7 @@ export class UpdateManualTransactionController implements Controller {
                 return badRequest(new MissingParamError(`Missing parameters from request: ${missingParams.join(', ')}.`))
             }
     
+            request.body.date = new Date(request.body.date)
             const transactionRequest: TransactionRequest = request.body
             const response = await this.usecase.perform(transactionRequest)
     

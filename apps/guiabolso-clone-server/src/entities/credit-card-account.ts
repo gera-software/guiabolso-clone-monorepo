@@ -60,7 +60,6 @@ export class CreditCardAccount implements Account {
      * @returns invoiceDates { invoiceClosingDate: Date, invoiceDueDate: Date } 
      */
     public calculateInvoiceDatesFromTransaction(transactionDate: Date) {
-        console.log(`TRANSACTION DATE`, typeof transactionDate)
         let year = transactionDate.getUTCFullYear()
         let month = transactionDate.getUTCMonth() // between 0 and 11
 
