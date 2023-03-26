@@ -1,12 +1,21 @@
-import { MongodbAccountRepository, MongodbInstitution, MongodbInstitutionRepository, MongodbUserRepository } from "@/external/repositories/mongodb"
+import { MongodbAccountRepository } from "@/external/repositories/mongodb"
 import { MongoHelper } from "@/external/repositories/mongodb/helper"
-import { AccountData, CreditCardAccountData, CreditCardInfoData, InstitutionData, UserData, WalletAccountData } from "@/usecases/ports"
+import { AccountData, BankAccountData, CreditCardAccountData, CreditCardInfoData, InstitutionData, WalletAccountData } from "@/usecases/ports"
+import { ObjectId } from "mongodb"
 
 describe('Mongodb Account repository', () => {
-    const userRepo = new MongodbUserRepository()
-    const institutionRepo = new MongodbInstitutionRepository()
-    let validUser: UserData
-    let validInstitution: InstitutionData
+
+    const validUserId = new ObjectId()
+
+    let validInstitution: InstitutionData = {
+        id: new ObjectId().toString(),
+        name: 'institution 0', 
+        type: 'PERSONAL_BANK', 
+        imageUrl: 'url 0', 
+        primaryColor: 'color 0',
+        providerConnectorId: 'connector 0'
+    }
+
     const validCreditCardInfoData: CreditCardInfoData = {
         brand: "master card",
         creditLimit: 100000,
@@ -17,38 +26,15 @@ describe('Mongodb Account repository', () => {
 
     beforeAll(async () => {
         await MongoHelper.connect(process.env.MONGO_URL)
-        const user = {
-            name: 'any_name',
-            email: 'any@mail.com',
-            password: '123',
-        }
-        validUser = await userRepo.add(user)
-
-        const institutionsArray: MongodbInstitution[] = [{
-            _id: null,
-            name: 'institution 0', 
-            type: 'PERSONAL_BANK', 
-            imageUrl: 'url 0', 
-            primaryColor: 'color 0',
-            providerConnectorId: 'connector 0'
-        }]
-
-        const institutionCollection = MongoHelper.getCollection('institutions')
-        await institutionCollection.insertMany(institutionsArray)
-
-        validInstitution = (await institutionRepo.fetchByType('PERSONAL_BANK'))[0]
-
     })
     
     afterAll(async () => {
-        await MongoHelper.clearCollection('users')
-        await MongoHelper.clearCollection('institutions')
+        await MongoHelper.clearCollection('accounts')
         await MongoHelper.disconnect()
     })
     
     beforeEach(async () => {
         await MongoHelper.clearCollection('accounts')
-        // await MongoHelper.clearCollection('users')
     })
 
     test('when account is added, it should exist', async () => {
@@ -58,10 +44,10 @@ describe('Mongodb Account repository', () => {
             syncType: 'MANUAL',
             name: 'any name',
             balance: 789,
-            userId: validUser.id
+            userId: validUserId.toString()
         }
         const addedAccount = await sut.add(account)
-        expect(addedAccount.userId).toBe(validUser.id)
+        expect(addedAccount.userId).toBe(validUserId.toString())
         const exists = await sut.exists(addedAccount.id)
         expect(exists).toBeTruthy()
     })
@@ -75,12 +61,12 @@ describe('Mongodb Account repository', () => {
 
     test('when a wallet account is find by id, should return the account', async () => {
         const sut = new MongodbAccountRepository()
-        const account: AccountData = {
+        const account: WalletAccountData = {
             type: 'WALLET',
             syncType: 'MANUAL',
             name: 'any name',
             balance: 789,
-            userId: validUser.id
+            userId: validUserId.toString()
         }
         const addedAccount = await sut.add(account)
 
@@ -97,12 +83,12 @@ describe('Mongodb Account repository', () => {
 
     test('when a bank account is find by id, should return the account', async () => {
         const sut = new MongodbAccountRepository()
-        const account: AccountData = {
+        const account: BankAccountData = {
             type: 'BANK',
             syncType: 'MANUAL',
             name: 'any name',
             balance: 789,
-            userId: validUser.id,
+            userId: validUserId.toString(),
             institution: validInstitution,
         }
         const addedAccount = await sut.add(account)
@@ -120,12 +106,12 @@ describe('Mongodb Account repository', () => {
 
     test('when a credit card account is find by id, should return the account', async () => {
         const sut = new MongodbAccountRepository()
-        const account: AccountData = {
+        const account: CreditCardAccountData = {
             type: 'CREDIT_CARD',
             syncType: 'MANUAL',
             name: 'any name',
             balance: 789,
-            userId: validUser.id,
+            userId: validUserId.toString(),
             institution: validInstitution,
             creditCardInfo: validCreditCardInfoData,
         }
@@ -150,7 +136,7 @@ describe('Mongodb Account repository', () => {
             syncType: 'MANUAL',
             name: 'any name',
             balance: 789,
-            userId: validUser.id
+            userId: validUserId.toString()
         }
         const addedAccount = await sut.add(account)
         
@@ -168,7 +154,7 @@ describe('Mongodb Account repository', () => {
             syncType: 'MANUAL',
             name: 'any name',
             balance: 789,
-            userId: validUser.id,
+            userId: validUserId.toString(),
             creditCardInfo: {
                 brand: 'master',
                 creditLimit: 100000,
