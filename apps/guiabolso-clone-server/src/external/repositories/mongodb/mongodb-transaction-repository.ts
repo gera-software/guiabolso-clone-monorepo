@@ -118,6 +118,8 @@ export class MongodbTransactionRepository implements TransactionRepository {
               description: transaction.description,
               descriptionOriginal: transaction.descriptionOriginal,
               date: transaction.date,
+              invoiceDate: transaction.invoiceDate ?? null,
+              invoiceId: transaction.invoiceId ? new ObjectId(transaction.invoiceId) : null,
               category: updateCategoryDoc,
               comment: transaction.comment,
               ignored: transaction.ignored,
