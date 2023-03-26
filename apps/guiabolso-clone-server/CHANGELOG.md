@@ -1,5 +1,11 @@
 # @gera-software/guiabolso-clone-server
 
+## 1.8.0
+
+### Minor Changes
+
+- Add credit card transactions
+
 ## 1.7.0
 
 ### Minor Changes
