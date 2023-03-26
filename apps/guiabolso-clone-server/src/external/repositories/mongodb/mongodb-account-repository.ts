@@ -92,7 +92,15 @@ export class MongodbAccountRepository implements AccountRepository, UpdateAccoun
     }
 
     async updateAvaliableCreditCardLimit(accountId: string, limit: number): Promise<void> {
-        throw new Error("Method not implemented.")
+        const accountCollection = MongoHelper.getCollection('accounts')
+
+        const updateDoc = {
+            $set: {
+                'creditCardInfo.availableCreditLimit': limit,
+            },
+        };
+
+        await accountCollection.updateOne({ _id: new ObjectId(accountId) }, updateDoc)
     }
 
     private withApplicationId (dbAccount: MongodbAccount): AccountData {

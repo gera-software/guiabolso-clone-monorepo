@@ -1,6 +1,6 @@
 import { MongodbAccountRepository, MongodbInstitution, MongodbInstitutionRepository, MongodbUserRepository } from "@/external/repositories/mongodb"
 import { MongoHelper } from "@/external/repositories/mongodb/helper"
-import { AccountData, CreditCardInfoData, InstitutionData, UserData } from "@/usecases/ports"
+import { AccountData, CreditCardAccountData, CreditCardInfoData, InstitutionData, UserData, WalletAccountData } from "@/usecases/ports"
 
 describe('Mongodb Account repository', () => {
     const userRepo = new MongodbUserRepository()
@@ -159,5 +159,30 @@ describe('Mongodb Account repository', () => {
 
         
         expect((await sut.findById(addedAccount.id)).balance).toBe(newBalance)
+    })
+
+    test('should update avaliable credit card limit', async () => {
+        const sut = new MongodbAccountRepository()
+        const account: CreditCardAccountData = {
+            type: 'CREDIT_CARD',
+            syncType: 'MANUAL',
+            name: 'any name',
+            balance: 789,
+            userId: validUser.id,
+            creditCardInfo: {
+                brand: 'master',
+                creditLimit: 100000,
+                availableCreditLimit: 50000,
+                closeDay: 3,
+                dueDay: 10,
+            }
+        }
+        const addedAccount = await sut.add(account)
+        
+        const newAvailableCreditLimit = 23000
+        await sut.updateAvaliableCreditCardLimit(addedAccount.id, newAvailableCreditLimit)
+
+        
+        expect((await sut.findById(addedAccount.id)).creditCardInfo.availableCreditLimit).toBe(newAvailableCreditLimit)
     })
 })
