@@ -1,83 +1,50 @@
-import { MongodbAccountRepository, MongodbCategory, MongodbCategoryRepository, MongodbTransactionRepository, MongodbUserRepository } from "@/external/repositories/mongodb"
+import { MongodbTransactionRepository } from "@/external/repositories/mongodb"
 import { MongoHelper } from "@/external/repositories/mongodb/helper"
-import { CategoryData, TransactionData, UserData, WalletAccountData } from "@/usecases/ports"
+import { CategoryData, TransactionData } from "@/usecases/ports"
+import { ObjectId } from "mongodb"
 
 describe('Mongodb Transaction repository', () => { 
-    const userRepo = new MongodbUserRepository()
-    let validUser: UserData
+    const validUserId = new ObjectId()
+    const validWalletAccountId = new ObjectId()
 
-    const accountRepo = new MongodbAccountRepository()
-    let validWalletAccount: WalletAccountData
+    let validCategory0: CategoryData = {
+        id: new ObjectId().toString(),
+        name: "category 0",
+        group: "VALIDGROUP",
+        iconName: "ICON 0",
+        primaryColor: "COLOR 0",
+        ignored: false
+    }
 
-    const categoryRepo = new MongodbCategoryRepository()
-    let validCategory0: CategoryData
-    let validCategory1: CategoryData
+    let validCategory1: CategoryData = {
+        id: new ObjectId().toString(),
+        name: "category 1",
+        group: "VALIDGROUP",
+        iconName: "ICON 1",
+        primaryColor: "COLOR 1",
+        ignored: false
+    }
 
     beforeAll(async () => {
         await MongoHelper.connect(process.env.MONGO_URL)
-        const user = {
-            name: 'any_name',
-            email: 'any@mail.com',
-            password: '123',
-        }
-        validUser = await userRepo.add(user)
-
-        const walletAccount: WalletAccountData = {
-            type: "WALLET",
-            syncType: "MANUAL",
-            name: "valid wallet account",
-            balance: 0,
-            userId: validUser.id,
-        }
-        validWalletAccount = await accountRepo.add(walletAccount)
-
-        const category0: MongodbCategory = {
-            _id: null,
-            name: "category 0",
-            group: "VALIDGROUP",
-            iconName: "ICON 0",
-            primaryColor: "COLOR 0",
-            ignored: false
-        }
-        const category1: MongodbCategory = {
-            _id: null,
-            name: "category 1",
-            group: "VALIDGROUP",
-            iconName: "ICON 1",
-            primaryColor: "COLOR 1",
-            ignored: false
-        }
-
-        const categoryCollection = MongoHelper.getCollection('categories')
-        await categoryCollection.insertMany([ category0, category1 ])
-
-        const [ cat0, cat1 ]= await categoryRepo.fetchAll()
-        validCategory0 = cat0
-        validCategory1 = cat1
     })
 
     afterAll(async () => {
-        await MongoHelper.clearCollection('users')
-        await MongoHelper.clearCollection('accounts')
-        await MongoHelper.clearCollection('categories')
         await MongoHelper.clearCollection('transactions')
         await MongoHelper.disconnect()
     })
 
     beforeEach(async () => {
-        await MongoHelper.clearCollection('users')
-        await MongoHelper.clearCollection('accounts')
-        await MongoHelper.clearCollection('categories')
         await MongoHelper.clearCollection('transactions')
     })
 
     test('when transaction is added, it should exists', async () => {
         const sut = new MongodbTransactionRepository()
         const transactionData: TransactionData = {
-            accountId: validWalletAccount.id,
+            accountId: validWalletAccountId.toString(),
             accountType: 'WALLET',
             syncType: 'MANUAL',
-            userId: validUser.id,
+            userId: validUserId.toString(),
             amount: 2345,
             description: 'valid description',
             descriptionOriginal: '',
@@ -112,10 +79,10 @@ describe('Mongodb Transaction repository', () => {
     test('when a transaction is find by id, should return the transaction', async () => {
         const sut = new MongodbTransactionRepository()
         const transactionData: TransactionData = {
-            accountId: validWalletAccount.id,
+            accountId: validWalletAccountId.toString(),
             accountType: 'WALLET',
             syncType: 'MANUAL',
-            userId: validUser.id,
+            userId: validUserId.toString(),
             amount: 2345,
             description: 'valid description',
             descriptionOriginal: '',
@@ -167,10 +134,10 @@ describe('Mongodb Transaction repository', () => {
     test('when a transaction is removed, should be a logic exclusion', async () => {
         const sut = new MongodbTransactionRepository()
         const transactionData: TransactionData = {
-            accountId: validWalletAccount.id,
+            accountId: validWalletAccountId.toString(),
             accountType: 'WALLET',
             syncType: 'MANUAL',
-            userId: validUser.id,
+            userId: validUserId.toString(),
             amount: 2345,
             description: 'valid description',
             descriptionOriginal: '',
@@ -204,10 +171,10 @@ describe('Mongodb Transaction repository', () => {
         const notFoundId = '62f95f4a93d61d8fff971668'
         const transactionData: TransactionData = {
             id: notFoundId,
-            accountId: validWalletAccount.id,
+            accountId: validWalletAccountId.toString(),
             accountType: 'WALLET',
             syncType: 'MANUAL',
-            userId: validUser.id,
+            userId: validUserId.toString(),
             amount: 2345,
             description: 'valid description',
             descriptionOriginal: '',
@@ -235,10 +202,10 @@ describe('Mongodb Transaction repository', () => {
         const sut = new MongodbTransactionRepository()
 
         const transactionData: TransactionData = {
-            accountId: validWalletAccount.id,
+            accountId: validWalletAccountId.toString(),
             accountType: 'WALLET',
             syncType: 'MANUAL',
-            userId: validUser.id,
+            userId: validUserId.toString(),
             amount: 2345,
             description: 'valid description',
             descriptionOriginal: '',
@@ -254,10 +221,10 @@ describe('Mongodb Transaction repository', () => {
 
         const updateTransactionData: TransactionData = {
             id: insertedTransaction.id,
-            accountId: validWalletAccount.id,
+            accountId: validWalletAccountId.toString(),
             accountType: 'WALLET',
             syncType: 'MANUAL',
-            userId: validUser.id,
+            userId: validUserId.toString(),
             amount: -5000,
             description: 'updated description',
             descriptionOriginal: 'updated original',
@@ -281,4 +248,7 @@ describe('Mongodb Transaction repository', () => {
         expect(transaction.ignored).toBe(updateTransactionData.ignored)
         expect(transaction.category).toEqual(updateTransactionData.category)
     })
+
+    test.todo('add wallet, bank, credit card transaction')
+    test.todo('update wallet, bank, credit card transaction')
 })

@@ -149,9 +149,9 @@ describe('add manual transaction route', () => {
         })
         .expect(201)
         .then((res) => {
-            expect(res).toBe(2)
             expect(res.body.id).toBeDefined()
             expect(res.body._isDeleted).toBe(false)
+            expect(res.body.invoiceId).toBeDefined()
         })
     })
 })
