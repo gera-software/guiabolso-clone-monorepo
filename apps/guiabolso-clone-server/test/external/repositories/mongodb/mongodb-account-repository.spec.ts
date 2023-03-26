@@ -37,96 +37,136 @@ describe('Mongodb Account repository', () => {
         await MongoHelper.clearCollection('accounts')
     })
 
-    test('when account is added, it should exist', async () => {
-        const sut = new MongodbAccountRepository()
-        const account: AccountData = {
-            type: 'WALLET',
-            syncType: 'MANUAL',
-            name: 'any name',
-            balance: 789,
-            userId: validUserId.toString()
-        }
-        const addedAccount = await sut.add(account)
-        expect(addedAccount.userId).toBe(validUserId.toString())
-        const exists = await sut.exists(addedAccount.id)
-        expect(exists).toBeTruthy()
+    describe('add account', () => {        
+        test('when a wallet account is added, it should exist', async () => {
+            const sut = new MongodbAccountRepository()
+            const account: WalletAccountData = {
+                type: 'WALLET',
+                syncType: 'MANUAL',
+                name: 'any name',
+                balance: 789,
+                userId: validUserId.toString()
+            }
+            const addedAccount = await sut.add(account)
+            expect(addedAccount.userId).toBe(validUserId.toString())
+            const exists = await sut.exists(addedAccount.id)
+            expect(exists).toBeTruthy()
+        })
+    
+        test('when a bank account is added, it should exist', async () => {
+            const sut = new MongodbAccountRepository()
+            const account: BankAccountData = {
+                type: 'BANK',
+                syncType: 'MANUAL',
+                name: 'any name',
+                balance: 789,
+                userId: validUserId.toString(),
+                institution: validInstitution
+            }
+            const addedAccount = await sut.add(account)
+            expect(addedAccount.userId).toBe(validUserId.toString())
+            expect(addedAccount.institution.id).toBe(validInstitution.id)
+            const exists = await sut.exists(addedAccount.id)
+            expect(exists).toBeTruthy()
+        })
+    
+        test('when a credit card account is added, it should exist', async () => {
+            const sut = new MongodbAccountRepository()
+            const account: CreditCardAccountData = {
+                type: 'CREDIT_CARD',
+                syncType: 'MANUAL',
+                name: 'any name',
+                balance: 789,
+                userId: validUserId.toString(),
+                institution: validInstitution,
+                creditCardInfo: validCreditCardInfoData
+            }
+            const addedAccount = await sut.add(account)
+            expect(addedAccount.userId).toBe(validUserId.toString())
+            expect(addedAccount.institution.id).toBe(validInstitution.id)
+            expect(addedAccount.creditCardInfo).toEqual(validCreditCardInfoData)
+            const exists = await sut.exists(addedAccount.id)
+            expect(exists).toBeTruthy()
+        })
     })
 
-    test('when an account is not find by id, should return null', async () => {
-        const notFoundId = '62f95f4a93d61d8fff971668'
-        const sut = new MongodbAccountRepository()
-        const result = await sut.findById(notFoundId)
-        expect(result).toBeNull()
-    })
-
-    test('when a wallet account is find by id, should return the account', async () => {
-        const sut = new MongodbAccountRepository()
-        const account: WalletAccountData = {
-            type: 'WALLET',
-            syncType: 'MANUAL',
-            name: 'any name',
-            balance: 789,
-            userId: validUserId.toString()
-        }
-        const addedAccount = await sut.add(account)
-
-        const result: AccountData = await sut.findById(addedAccount.id) as AccountData
-        expect(result).not.toBeNull()
-        expect(result.id).toBe(addedAccount.id)
-        expect(result.type).toBe(account.type)
-        expect(result.syncType).toBe(account.syncType)
-        expect(result.name).toBe(account.name)
-        expect(result.balance).toBe(account.balance)
-        expect(result.userId).toBe(account.userId)
-
-    })
-
-    test('when a bank account is find by id, should return the account', async () => {
-        const sut = new MongodbAccountRepository()
-        const account: BankAccountData = {
-            type: 'BANK',
-            syncType: 'MANUAL',
-            name: 'any name',
-            balance: 789,
-            userId: validUserId.toString(),
-            institution: validInstitution,
-        }
-        const addedAccount = await sut.add(account)
-
-        const result: AccountData = await sut.findById(addedAccount.id) as AccountData
-        expect(result).not.toBeNull()
-        expect(result.id).toBe(addedAccount.id)
-        expect(result.type).toBe(account.type)
-        expect(result.syncType).toBe(account.syncType)
-        expect(result.name).toBe(account.name)
-        expect(result.balance).toBe(account.balance)
-        expect(result.userId).toBe(account.userId)
-        expect(result.institution).toEqual(validInstitution)
-    })
-
-    test('when a credit card account is find by id, should return the account', async () => {
-        const sut = new MongodbAccountRepository()
-        const account: CreditCardAccountData = {
-            type: 'CREDIT_CARD',
-            syncType: 'MANUAL',
-            name: 'any name',
-            balance: 789,
-            userId: validUserId.toString(),
-            institution: validInstitution,
-            creditCardInfo: validCreditCardInfoData,
-        }
-        const addedAccount = await sut.add(account)
-
-        const result: AccountData = await sut.findById(addedAccount.id) as AccountData
-        expect(result).not.toBeNull()
-        expect(result.id).toBe(addedAccount.id)
-        expect(result.type).toBe(account.type)
-        expect(result.syncType).toBe(account.syncType)
-        expect(result.name).toBe(account.name)
-        expect(result.balance).toBe(account.balance)
-        expect(result.userId).toBe(account.userId)
-        expect(result.institution).toEqual(validInstitution)
-        expect(result.creditCardInfo).toEqual(validCreditCardInfoData)
+    describe('find by id', () => {
+        test('when an account is not find by id, should return null', async () => {
+            const notFoundId = '62f95f4a93d61d8fff971668'
+            const sut = new MongodbAccountRepository()
+            const result = await sut.findById(notFoundId)
+            expect(result).toBeNull()
+        })
+    
+        test('when a wallet account is find by id, should return the account', async () => {
+            const sut = new MongodbAccountRepository()
+            const account: WalletAccountData = {
+                type: 'WALLET',
+                syncType: 'MANUAL',
+                name: 'any name',
+                balance: 789,
+                userId: validUserId.toString()
+            }
+            const addedAccount = await sut.add(account)
+    
+            const result: AccountData = await sut.findById(addedAccount.id) as AccountData
+            expect(result).not.toBeNull()
+            expect(result.id).toBe(addedAccount.id)
+            expect(result.type).toBe(account.type)
+            expect(result.syncType).toBe(account.syncType)
+            expect(result.name).toBe(account.name)
+            expect(result.balance).toBe(account.balance)
+            expect(result.userId).toBe(account.userId)
+    
+        })
+    
+        test('when a bank account is find by id, should return the account', async () => {
+            const sut = new MongodbAccountRepository()
+            const account: BankAccountData = {
+                type: 'BANK',
+                syncType: 'MANUAL',
+                name: 'any name',
+                balance: 789,
+                userId: validUserId.toString(),
+                institution: validInstitution,
+            }
+            const addedAccount = await sut.add(account)
+    
+            const result: AccountData = await sut.findById(addedAccount.id) as AccountData
+            expect(result).not.toBeNull()
+            expect(result.id).toBe(addedAccount.id)
+            expect(result.type).toBe(account.type)
+            expect(result.syncType).toBe(account.syncType)
+            expect(result.name).toBe(account.name)
+            expect(result.balance).toBe(account.balance)
+            expect(result.userId).toBe(account.userId)
+            expect(result.institution).toEqual(validInstitution)
+        })
+    
+        test('when a credit card account is find by id, should return the account', async () => {
+            const sut = new MongodbAccountRepository()
+            const account: CreditCardAccountData = {
+                type: 'CREDIT_CARD',
+                syncType: 'MANUAL',
+                name: 'any name',
+                balance: 789,
+                userId: validUserId.toString(),
+                institution: validInstitution,
+                creditCardInfo: validCreditCardInfoData,
+            }
+            const addedAccount = await sut.add(account)
+    
+            const result: AccountData = await sut.findById(addedAccount.id) as AccountData
+            expect(result).not.toBeNull()
+            expect(result.id).toBe(addedAccount.id)
+            expect(result.type).toBe(account.type)
+            expect(result.syncType).toBe(account.syncType)
+            expect(result.name).toBe(account.name)
+            expect(result.balance).toBe(account.balance)
+            expect(result.userId).toBe(account.userId)
+            expect(result.institution).toEqual(validInstitution)
+            expect(result.creditCardInfo).toEqual(validCreditCardInfoData)
+        })
     })
 
     test('should update account balance', async () => {
