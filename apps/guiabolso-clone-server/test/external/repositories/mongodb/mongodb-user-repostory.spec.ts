@@ -8,6 +8,7 @@ describe('Mongodb User repository', () => {
       })
     
       afterAll(async () => {
+        await MongoHelper.clearCollection('users')
         await MongoHelper.disconnect()
       })
     
