@@ -1,4 +1,3 @@
-import { UnregisteredTransactionError } from "@/usecases/errors"
 import { CategoryData, TransactionData, BankAccountData, UserData } from "@/usecases/ports"
 import { RemoveManualTransactionFromBank } from "@/usecases/remove-manual-transaction-from-bank"
 import { InMemoryAccountRepository, InMemoryTransactionRepository, InMemoryUserRepository } from "@test/doubles/repositories"
