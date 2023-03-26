@@ -54,6 +54,8 @@ export class AddManualTransaction implements UseCase {
             ignored: request.ignored,
         }
 
+        console.log('ADD MANUAL TRANSACTION', typeof transactionToAddData.date)
+
         switch(foundAccountData.type) {
             case 'WALLET':
                 return this.addManualTransactionToWallet.perform(transactionToAddData)

@@ -9,5 +9,5 @@ export interface CreditCardAccountData {
     userId: string,
     institution?: InstitutionData,
     id?: string,
-    creditCardInfo: CreditCardInfoData,
+    creditCardInfo?: CreditCardInfoData,
 }

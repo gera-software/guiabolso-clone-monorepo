@@ -23,6 +23,7 @@ export class AddManualTransactionController implements Controller {
             }
     
             const transactionRequest: TransactionRequest = request.body
+            console.log('ADD CONTROLLER', transactionRequest)
             const response = await this.usecase.perform(transactionRequest)
     
             if(response.isLeft()) {
@@ -31,6 +32,7 @@ export class AddManualTransactionController implements Controller {
     
             return created(response.value)
         } catch(error) {
+            console.log(error)
             return serverError(error)
         }
 

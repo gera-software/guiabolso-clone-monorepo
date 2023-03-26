@@ -82,8 +82,6 @@ export class MongodbCreditCardInvoiceRepository implements CreditCardInvoiceRepo
             }
         ]).toArray() as MongodbCreditCardInvoice[]
 
-        console.log(result)
-
         if(result.length) {
             return this.withApplicationId(result[0])
         }

@@ -1,6 +1,6 @@
 import request from 'supertest'
 import app from '@/main/config/app'
-import { UserData, WalletAccountData } from '@/usecases/ports'
+import { BankAccountData, CreditCardAccountData, UserData, WalletAccountData } from '@/usecases/ports'
 import { MongoHelper } from '@/external/repositories/mongodb/helper'
 import { makeAccountRepository, makeUserRepository } from '@/main/factories'
 import { MongodbCategory } from '@/external/repositories/mongodb'
@@ -21,15 +21,18 @@ describe('add manual transaction route', () => {
         _id: null,
     }
     
-    const accountType = 'WALLET'
+    const walletAccountType = 'WALLET'
+    const bankAccountType = 'BANK'
+    const creditCardAccountType = 'CREDIT_CARD'
     const syncType = 'MANUAL'
-    const accountName = 'valid account'
     const balance = 678
     const imageUrl = 'valid image url'
 
 
     let validUser: UserData
     let validWalletAccount: WalletAccountData
+    let validBankAccount: BankAccountData
+    let validCreditCardAccount: CreditCardAccountData
 
     beforeAll(async () => {
         await MongoHelper.connect(process.env.MONGO_URL)
@@ -50,11 +53,34 @@ describe('add manual transaction route', () => {
         })
 
         validWalletAccount = await accountRepo.add({
-            type: accountType,
+            type: walletAccountType,
             syncType: syncType,
-            name: accountName,
+            name: 'wallet',
             balance: 0,
             userId: validUser.id,
+        })
+
+        validBankAccount = await accountRepo.add({
+            type: bankAccountType,
+            syncType: syncType,
+            name: 'wallet',
+            balance: 0,
+            userId: validUser.id,
+        })
+
+        validCreditCardAccount = await accountRepo.add({
+            type: creditCardAccountType,
+            syncType: syncType,
+            name: 'wallet',
+            balance: 0,
+            userId: validUser.id,
+            creditCardInfo: {
+                brand: 'master',
+                creditLimit: 100000,
+                availableCreditLimit: 50000,
+                closeDay: 3,
+                dueDay: 10,
+            }
         })
 
         const categoryCollection = MongoHelper.getCollection('categories')
@@ -90,6 +116,42 @@ describe('add manual transaction route', () => {
             })
     })
 
-    test.todo('should add a manual transaction to a bank account')
-    test.todo('should add a manual transaction to a credit card account')
+    test('should add a manual transaction to a bank account', async () => {
+        await request(app)
+            .post('/api/manual-transaction')
+            .send({
+                accountId: validBankAccount.id.toString(), 
+                categoryId: category0._id.toString(), 
+                amount, 
+                date,
+                description,
+                comment,
+                ignored,
+            })
+            .expect(201)
+            .then((res) => {
+                expect(res.body.id).toBeDefined()
+                expect(res.body._isDeleted).toBe(false)
+            })
+    })
+
+    test('should add a manual transaction to a credit card account', async () => {
+        await request(app)
+        .post('/api/manual-transaction')
+        .send({
+            accountId: validCreditCardAccount.id.toString(), 
+            categoryId: category0._id.toString(), 
+            amount, 
+            date,
+            description,
+            comment,
+            ignored,
+        })
+        .expect(201)
+        .then((res) => {
+            expect(res).toBe(2)
+            expect(res.body.id).toBeDefined()
+            expect(res.body._isDeleted).toBe(false)
+        })
+    })
 })
