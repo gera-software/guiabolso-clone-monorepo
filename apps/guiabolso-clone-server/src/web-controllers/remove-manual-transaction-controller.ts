@@ -30,6 +30,7 @@ export class RemoveManualTransactionController implements Controller {
     
             return ok(response.value)
         } catch(error) {
+            console.log(error)
             return serverError(error)
         }
     }

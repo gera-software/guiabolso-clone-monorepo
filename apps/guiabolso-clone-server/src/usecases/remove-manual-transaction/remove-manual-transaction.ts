@@ -7,11 +7,13 @@ export class RemoveManualTransaction implements UseCase {
 
     private readonly removeManualTransactionFromWallet: UseCase
     private readonly removeManualTransactionFromBank: UseCase
+    private readonly removeManualTransactionFromCreditCard: UseCase
 
-    constructor(transactionRepository: TransactionRepository, removeManualTransactionFromWallet: UseCase, removeManualTransactionFromBank: UseCase,) {
+    constructor(transactionRepository: TransactionRepository, removeManualTransactionFromWallet: UseCase, removeManualTransactionFromBank: UseCase, removeManualTransactionFromCreditCard: UseCase) {
         this.transactionRepo = transactionRepository
         this.removeManualTransactionFromWallet = removeManualTransactionFromWallet
         this.removeManualTransactionFromBank = removeManualTransactionFromBank
+        this.removeManualTransactionFromCreditCard = removeManualTransactionFromCreditCard
     }
     
     async perform(id: string): Promise<Either<UnregisteredTransactionError, TransactionData>> {
@@ -26,6 +28,8 @@ export class RemoveManualTransaction implements UseCase {
                 return this.removeManualTransactionFromWallet.perform(id)
             case 'BANK':
                 return this.removeManualTransactionFromBank.perform(id)
+            case 'CREDIT_CARD':
+                return this.removeManualTransactionFromCreditCard.perform(id)
         }
 
     }

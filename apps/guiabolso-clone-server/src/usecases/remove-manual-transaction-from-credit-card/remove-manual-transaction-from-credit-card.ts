@@ -35,8 +35,10 @@ export class RemoveManualTransactionFromCreditCard implements UseCase {
 
         const creditCardAccount = accountOrError.value as CreditCardAccount
 
-        const { invoiceClosingDate, invoiceDueDate } = creditCardAccount.calculateInvoiceDatesFromTransaction(removedTransaction.date)
-        let invoiceData = await this.creditCardInvoiceRepo.findByDueDate(invoiceDueDate, foundAccountData.id)
+        // const { invoiceClosingDate, invoiceDueDate } = creditCardAccount.calculateInvoiceDatesFromTransaction(removedTransaction.invoiceDate)
+        console.log('INVOICE ID', removedTransaction.invoiceId)
+        let invoiceData = await this.creditCardInvoiceRepo.findById(removedTransaction.invoiceId)
+        console.log(invoiceData)
         const invoiceOrError = CreditCardInvoice.create({
             closeDate: invoiceData.closeDate,
             dueDate: invoiceData.dueDate,
