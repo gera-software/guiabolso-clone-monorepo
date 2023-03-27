@@ -1,4 +1,3 @@
-import { CreditCardTransaction } from "@/entities"
 import { InvalidTransactionError } from "@/entities/errors"
 import { CategoryData, CreditCardAccountData, CreditCardInvoiceData, TransactionData, UserData } from "@/usecases/ports"
 import { UpdateManualTransactionFromCreditCard } from "@/usecases/update-manual-transaction-from-credit-card"
@@ -270,7 +269,216 @@ describe('update manual transaction from credit card account use case', () => {
         expect(account.creditCardInfo.availableCreditLimit).toBe(availableCreditLimit - oldExpense + newExpense)
     })
 
-    test.todo('should update transaction of type income, update invoices and update account balance')
-    test.todo('should update transaction with new category')
-    test.todo('should update transaction without category')
+    test('should update transaction of type income, update invoices and update account balance', async () => {
+        const invoiceId1 = 'valid invoice 1'
+        const invoiceId2 = 'valid invoice 2'
+        const oldIncome = 5678
+        const newIncome = 1234
+        const newDescription = 'new description'
+        const newComment = 'new comment'
+        const newDate = new Date('2023-01-17')
+
+        const invoiceData1: CreditCardInvoiceData = {
+            id: invoiceId1,
+            dueDate: new Date('2023-03-10'),
+            closeDate: new Date('2023-03-03'),
+            amount: oldIncome,
+            userId: userData.id,
+            accountId: creditCardAccountData.id,
+            _isDeleted: false
+        }
+        const invoiceData2: CreditCardInvoiceData = {
+            id: invoiceId2,
+            dueDate: new Date('2023-02-10'),
+            closeDate: new Date('2023-02-03'),
+            amount: 0,
+            userId: userData.id,
+            accountId: creditCardAccountData.id,
+            _isDeleted: false
+        }
+
+        const transactionData: TransactionData = {
+            id: transactionId,
+            accountId,
+            accountType,
+            syncType,
+            userId,
+            description,
+            amount: oldIncome,
+            date: new Date('2023-03-10'),
+            invoiceDate: new Date('2023-02-17'),
+            invoiceId: invoiceId1,
+            type: 'INCOME'
+        }
+
+        const request: TransactionToUpdateData = {
+            oldTransactionData: transactionData,
+            newTransaction: {
+                user: userData,
+                account: creditCardAccountData,
+                category: categoryData0,
+                amount: newIncome,
+                description: newDescription, 
+                date: newDate,
+                comment: newComment,
+                ignored: true,
+            },
+        }
+
+        const accountRepository = new InMemoryAccountRepository([creditCardAccountData])
+        const transactionRepository = new InMemoryTransactionRepository([transactionData])
+        const invoiceRepository = new InMemoryCreditCardInvoiceRepository([invoiceData1, invoiceData2])
+        const sut = new UpdateManualTransactionFromCreditCard(transactionRepository, accountRepository, invoiceRepository)
+        
+        const response = (await sut.perform(request)).value as TransactionData
+        expect(response.amount).toBe(newIncome)
+        expect(response.description).toBe(newDescription)
+        expect(response.comment).toBe(newComment)
+        expect(response.ignored).toBe(true)
+        expect(response.date).toEqual(invoiceData2.dueDate)
+        expect(response.invoiceDate).toEqual(newDate)
+        expect(response.invoiceId).toBe(invoiceId2)
+
+        const oldInvoice = await invoiceRepository.findById(invoiceId1)
+        expect(oldInvoice.amount).toBe(0)
+
+        const newInvoice = await invoiceRepository.findById(invoiceId2)
+        expect(newInvoice.amount).toBe(newIncome)
+
+        const account = await accountRepository.findById(creditCardAccountData.id)
+        expect(account.balance).toBe(oldInvoice.amount)
+        expect(account.creditCardInfo.availableCreditLimit).toBe(availableCreditLimit - oldIncome + newIncome)
+    })
+
+    test('should update transaction with new category', async () => {
+        const invoiceId1 = 'valid invoice 1'
+        const invoiceId2 = 'valid invoice 2'
+        const oldExpense = -5678
+        const newExpense = -1234
+        const newDescription = 'new description'
+        const newComment = 'new comment'
+        const newDate = new Date('2023-01-17')
+
+        const invoiceData1: CreditCardInvoiceData = {
+            id: invoiceId1,
+            dueDate: new Date('2023-03-10'),
+            closeDate: new Date('2023-03-03'),
+            amount: oldExpense,
+            userId: userData.id,
+            accountId: creditCardAccountData.id,
+            _isDeleted: false
+        }
+        const invoiceData2: CreditCardInvoiceData = {
+            id: invoiceId2,
+            dueDate: new Date('2023-02-10'),
+            closeDate: new Date('2023-02-03'),
+            amount: 0,
+            userId: userData.id,
+            accountId: creditCardAccountData.id,
+            _isDeleted: false
+        }
+
+        const transactionData: TransactionData = {
+            id: transactionId,
+            accountId,
+            accountType,
+            syncType,
+            userId,
+            description,
+            amount: oldExpense,
+            date: new Date('2023-03-10'),
+            invoiceDate: new Date('2023-02-17'),
+            invoiceId: invoiceId1,
+            type: 'EXPENSE',
+            category: categoryData0,
+        }
+
+        const request: TransactionToUpdateData = {
+            oldTransactionData: transactionData,
+            newTransaction: {
+                user: userData,
+                account: creditCardAccountData,
+                category: categoryData1,
+                amount: newExpense,
+                description: newDescription, 
+                date: newDate,
+                comment: newComment,
+                ignored: true,
+            },
+        }
+
+        const accountRepository = new InMemoryAccountRepository([creditCardAccountData])
+        const transactionRepository = new InMemoryTransactionRepository([transactionData])
+        const invoiceRepository = new InMemoryCreditCardInvoiceRepository([invoiceData1, invoiceData2])
+        const sut = new UpdateManualTransactionFromCreditCard(transactionRepository, accountRepository, invoiceRepository)
+        
+        const response = (await sut.perform(request)).value as TransactionData
+        expect(response.category).toBe(categoryData1)
+    })
+ 
+    test('should update transaction without category', async () => {
+        const invoiceId1 = 'valid invoice 1'
+        const invoiceId2 = 'valid invoice 2'
+        const oldExpense = -5678
+        const newExpense = -1234
+        const newDescription = 'new description'
+        const newComment = 'new comment'
+        const newDate = new Date('2023-01-17')
+
+        const invoiceData1: CreditCardInvoiceData = {
+            id: invoiceId1,
+            dueDate: new Date('2023-03-10'),
+            closeDate: new Date('2023-03-03'),
+            amount: oldExpense,
+            userId: userData.id,
+            accountId: creditCardAccountData.id,
+            _isDeleted: false
+        }
+        const invoiceData2: CreditCardInvoiceData = {
+            id: invoiceId2,
+            dueDate: new Date('2023-02-10'),
+            closeDate: new Date('2023-02-03'),
+            amount: 0,
+            userId: userData.id,
+            accountId: creditCardAccountData.id,
+            _isDeleted: false
+        }
+
+        const transactionData: TransactionData = {
+            id: transactionId,
+            accountId,
+            accountType,
+            syncType,
+            userId,
+            description,
+            amount: oldExpense,
+            date: new Date('2023-03-10'),
+            invoiceDate: new Date('2023-02-17'),
+            invoiceId: invoiceId1,
+            type: 'EXPENSE',
+            category: categoryData0,
+        }
+
+        const request: TransactionToUpdateData = {
+            oldTransactionData: transactionData,
+            newTransaction: {
+                user: userData,
+                account: creditCardAccountData,
+                // category: categoryData1,
+                amount: newExpense,
+                description: newDescription, 
+                date: newDate,
+                comment: newComment,
+                ignored: true,
+            },
+        }
+
+        const accountRepository = new InMemoryAccountRepository([creditCardAccountData])
+        const transactionRepository = new InMemoryTransactionRepository([transactionData])
+        const invoiceRepository = new InMemoryCreditCardInvoiceRepository([invoiceData1, invoiceData2])
+        const sut = new UpdateManualTransactionFromCreditCard(transactionRepository, accountRepository, invoiceRepository)
+        
+        const response = (await sut.perform(request)).value as TransactionData
+        expect(response.category).toBeNull()
+    })
 })

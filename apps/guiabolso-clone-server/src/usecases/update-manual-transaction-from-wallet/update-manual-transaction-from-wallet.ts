@@ -97,7 +97,7 @@ export class UpdateManualTransactionFromWallet implements UseCase {
             type: newTransaction.type,
             comment: newTransaction.comment,
             ignored: newTransaction.ignored,
-            category: request.newTransaction.category,
+            category: request.newTransaction.category ?? null,
         }
 
         const result = await this.transactionRepo.update(transactionData)

@@ -191,7 +191,7 @@ export class UpdateManualTransactionFromCreditCard implements UseCase {
             type: newTransaction.type,
             comment: newTransaction.comment,
             ignored: newTransaction.ignored,
-            category: request.newTransaction.category,
+            category: request.newTransaction.category ?? null,
         }
 
         oldInvoice.removeTransaction(oldTransaction)
