@@ -1,9 +1,10 @@
 import { UnregisteredAccountError, UnregisteredCategoryError, UnregisteredTransactionError, UnregisteredUserError } from "@/usecases/errors"
-import { BankAccountData, CategoryData, TransactionData, TransactionRequest, UserData, WalletAccountData } from "@/usecases/ports"
+import { BankAccountData, CategoryData, CreditCardAccountData, CreditCardInvoiceData, TransactionData, TransactionRequest, UserData, WalletAccountData } from "@/usecases/ports"
 import { UpdateManualTransaction } from "@/usecases/update-manual-transaction"
 import { UpdateManualTransactionFromBank } from "@/usecases/update-manual-transaction-from-bank"
+import { UpdateManualTransactionFromCreditCard } from "@/usecases/update-manual-transaction-from-credit-card"
 import { UpdateManualTransactionFromWallet } from "@/usecases/update-manual-transaction-from-wallet"
-import { InMemoryAccountRepository, InMemoryCategoryRepository, InMemoryTransactionRepository, InMemoryUserRepository } from "@test/doubles/repositories"
+import { InMemoryAccountRepository, InMemoryCategoryRepository, InMemoryCreditCardInvoiceRepository, InMemoryTransactionRepository, InMemoryUserRepository } from "@test/doubles/repositories"
 
 describe('Update manual transaction from account use case', () => {
     const transactionId = 'valid id'
@@ -45,12 +46,16 @@ describe('Update manual transaction from account use case', () => {
     const walletAccountType = 'WALLET'
     const bankAccountId = 'bac0'
     const bankAccountType = 'BANK'
+    const creditCardAccountId = 'cca0'
+    const creditCardAccountType = 'CREDIT_CARD'
     const syncType = 'MANUAL'
     const balance = 678
     const imageUrl = 'valid image url'
+    const availableCreditLimit = 100000
 
     let walletAccountData: WalletAccountData
     let bankAccountData: BankAccountData
+    let creditCardAccountData: CreditCardAccountData
 
     beforeEach(() => {
         walletAccountData = {
@@ -67,10 +72,27 @@ describe('Update manual transaction from account use case', () => {
             id: bankAccountId,
             type: bankAccountType,
             syncType,
-            name: 'valid wallet account',
+            name: 'valid bank account',
             balance,
             imageUrl,
             userId,
+        }
+
+        creditCardAccountData = {
+            id: creditCardAccountId,
+            type: creditCardAccountType,
+            syncType,
+            name: 'valid credit card account',
+            balance,
+            imageUrl,
+            userId,
+            creditCardInfo: {
+                brand: 'master card',
+                creditLimit: 100000,
+                availableCreditLimit: availableCreditLimit,
+                closeDay: 3,
+                dueDay: 10
+            }
         }
     })
 
@@ -87,13 +109,15 @@ describe('Update manual transaction from account use case', () => {
         }
 
         const userRepository = new InMemoryUserRepository([userData])
-        const accountRepository = new InMemoryAccountRepository([walletAccountData, bankAccountData])
+        const accountRepository = new InMemoryAccountRepository([walletAccountData, bankAccountData, creditCardAccountData])
         const transactionRepository = new InMemoryTransactionRepository([])
+        const invoiceRepository = new InMemoryCreditCardInvoiceRepository([])
         const categoryRepository = new InMemoryCategoryRepository([categoryData, categoryData1])
         const updateManualTransactionFromWallet = new UpdateManualTransactionFromWallet(transactionRepository, accountRepository)
         const updateManualTransactionFromBank = new UpdateManualTransactionFromBank(transactionRepository, accountRepository)
+        const updateManualTransactionFromCreditCard = new UpdateManualTransactionFromCreditCard(transactionRepository, accountRepository, invoiceRepository)
 
-        const sut = new UpdateManualTransaction(userRepository, accountRepository, transactionRepository, categoryRepository, updateManualTransactionFromWallet, updateManualTransactionFromBank)
+        const sut = new UpdateManualTransaction(userRepository, accountRepository, transactionRepository, categoryRepository, updateManualTransactionFromWallet, updateManualTransactionFromBank, updateManualTransactionFromCreditCard)        
         const response = (await sut.perform(transactionRequest)).value as Error
         expect(response).toBeInstanceOf(UnregisteredTransactionError)
     })
@@ -124,13 +148,15 @@ describe('Update manual transaction from account use case', () => {
         }
 
         const userRepository = new InMemoryUserRepository([])
-        const accountRepository = new InMemoryAccountRepository([walletAccountData, bankAccountData])
+        const accountRepository = new InMemoryAccountRepository([walletAccountData, bankAccountData, creditCardAccountData])
         const transactionRepository = new InMemoryTransactionRepository([transactionData])
+        const invoiceRepository = new InMemoryCreditCardInvoiceRepository([])
         const categoryRepository = new InMemoryCategoryRepository([categoryData, categoryData1])
         const updateManualTransactionFromWallet = new UpdateManualTransactionFromWallet(transactionRepository, accountRepository)
         const updateManualTransactionFromBank = new UpdateManualTransactionFromBank(transactionRepository, accountRepository)
+        const updateManualTransactionFromCreditCard = new UpdateManualTransactionFromCreditCard(transactionRepository, accountRepository, invoiceRepository)
 
-        const sut = new UpdateManualTransaction(userRepository, accountRepository, transactionRepository, categoryRepository, updateManualTransactionFromWallet, updateManualTransactionFromBank)
+        const sut = new UpdateManualTransaction(userRepository, accountRepository, transactionRepository, categoryRepository, updateManualTransactionFromWallet, updateManualTransactionFromBank, updateManualTransactionFromCreditCard)   
         const response = (await sut.perform(transactionRequest)).value as Error
         expect(response).toBeInstanceOf(UnregisteredUserError)
     })
@@ -163,11 +189,13 @@ describe('Update manual transaction from account use case', () => {
         const userRepository = new InMemoryUserRepository([userData])
         const accountRepository = new InMemoryAccountRepository([])
         const transactionRepository = new InMemoryTransactionRepository([transactionData])
+        const invoiceRepository = new InMemoryCreditCardInvoiceRepository([])
         const categoryRepository = new InMemoryCategoryRepository([categoryData, categoryData1])
         const updateManualTransactionFromWallet = new UpdateManualTransactionFromWallet(transactionRepository, accountRepository)
         const updateManualTransactionFromBank = new UpdateManualTransactionFromBank(transactionRepository, accountRepository)
+        const updateManualTransactionFromCreditCard = new UpdateManualTransactionFromCreditCard(transactionRepository, accountRepository, invoiceRepository)
 
-        const sut = new UpdateManualTransaction(userRepository, accountRepository, transactionRepository, categoryRepository, updateManualTransactionFromWallet, updateManualTransactionFromBank)
+        const sut = new UpdateManualTransaction(userRepository, accountRepository, transactionRepository, categoryRepository, updateManualTransactionFromWallet, updateManualTransactionFromBank, updateManualTransactionFromCreditCard)   
         const response = (await sut.perform(transactionRequest)).value as Error
         expect(response).toBeInstanceOf(UnregisteredAccountError)
     })
@@ -198,13 +226,15 @@ describe('Update manual transaction from account use case', () => {
         }
 
         const userRepository = new InMemoryUserRepository([userData])
-        const accountRepository = new InMemoryAccountRepository([walletAccountData, bankAccountData])
+        const accountRepository = new InMemoryAccountRepository([walletAccountData, bankAccountData, creditCardAccountData])
         const transactionRepository = new InMemoryTransactionRepository([transactionData])
+        const invoiceRepository = new InMemoryCreditCardInvoiceRepository([])
         const categoryRepository = new InMemoryCategoryRepository([categoryData, categoryData1])
         const updateManualTransactionFromWallet = new UpdateManualTransactionFromWallet(transactionRepository, accountRepository)
         const updateManualTransactionFromBank = new UpdateManualTransactionFromBank(transactionRepository, accountRepository)
+        const updateManualTransactionFromCreditCard = new UpdateManualTransactionFromCreditCard(transactionRepository, accountRepository, invoiceRepository)
 
-        const sut = new UpdateManualTransaction(userRepository, accountRepository, transactionRepository, categoryRepository, updateManualTransactionFromWallet, updateManualTransactionFromBank)        
+        const sut = new UpdateManualTransaction(userRepository, accountRepository, transactionRepository, categoryRepository, updateManualTransactionFromWallet, updateManualTransactionFromBank, updateManualTransactionFromCreditCard)         
         const response = (await sut.perform(transactionRequest)).value as Error
         expect(response).toBeInstanceOf(UnregisteredCategoryError)
     })
@@ -235,13 +265,15 @@ describe('Update manual transaction from account use case', () => {
         }
 
         const userRepository = new InMemoryUserRepository([userData])
-        const accountRepository = new InMemoryAccountRepository([walletAccountData, bankAccountData])
+        const accountRepository = new InMemoryAccountRepository([walletAccountData, bankAccountData, creditCardAccountData])
         const transactionRepository = new InMemoryTransactionRepository([transactionData])
+        const invoiceRepository = new InMemoryCreditCardInvoiceRepository([])
         const categoryRepository = new InMemoryCategoryRepository([categoryData, categoryData1])
         const updateManualTransactionFromWallet = new UpdateManualTransactionFromWallet(transactionRepository, accountRepository)
         const updateManualTransactionFromBank = new UpdateManualTransactionFromBank(transactionRepository, accountRepository)
+        const updateManualTransactionFromCreditCard = new UpdateManualTransactionFromCreditCard(transactionRepository, accountRepository, invoiceRepository)
 
-        const sut = new UpdateManualTransaction(userRepository, accountRepository, transactionRepository, categoryRepository, updateManualTransactionFromWallet, updateManualTransactionFromBank)        
+        const sut = new UpdateManualTransaction(userRepository, accountRepository, transactionRepository, categoryRepository, updateManualTransactionFromWallet, updateManualTransactionFromBank, updateManualTransactionFromCreditCard)          
         const response = (await sut.perform(transactionRequest)).value
         expect(response).not.toBeInstanceOf(Error)
     })
@@ -274,13 +306,15 @@ describe('Update manual transaction from account use case', () => {
             }
 
             const userRepository = new InMemoryUserRepository([userData])
-            const accountRepository = new InMemoryAccountRepository([walletAccountData, bankAccountData])
+            const accountRepository = new InMemoryAccountRepository([walletAccountData, bankAccountData, creditCardAccountData])
             const transactionRepository = new InMemoryTransactionRepository([transactionData])
+            const invoiceRepository = new InMemoryCreditCardInvoiceRepository([])
             const categoryRepository = new InMemoryCategoryRepository([categoryData, categoryData1])
             const updateManualTransactionFromWallet = new UpdateManualTransactionFromWallet(transactionRepository, accountRepository)
             const updateManualTransactionFromBank = new UpdateManualTransactionFromBank(transactionRepository, accountRepository)
-
-            const sut = new UpdateManualTransaction(userRepository, accountRepository, transactionRepository, categoryRepository, updateManualTransactionFromWallet, updateManualTransactionFromBank)            
+            const updateManualTransactionFromCreditCard = new UpdateManualTransactionFromCreditCard(transactionRepository, accountRepository, invoiceRepository)
+    
+            const sut = new UpdateManualTransaction(userRepository, accountRepository, transactionRepository, categoryRepository, updateManualTransactionFromWallet, updateManualTransactionFromBank, updateManualTransactionFromCreditCard)               
             const response = (await sut.perform(transactionRequest)).value as TransactionData
             
             const updated = await transactionRepository.findById(transactionId)
@@ -324,13 +358,15 @@ describe('Update manual transaction from account use case', () => {
             }
 
             const userRepository = new InMemoryUserRepository([userData])
-            const accountRepository = new InMemoryAccountRepository([walletAccountData, bankAccountData])
+            const accountRepository = new InMemoryAccountRepository([walletAccountData, bankAccountData, creditCardAccountData])
             const transactionRepository = new InMemoryTransactionRepository([transactionData])
+            const invoiceRepository = new InMemoryCreditCardInvoiceRepository([])
             const categoryRepository = new InMemoryCategoryRepository([categoryData, categoryData1])
             const updateManualTransactionFromWallet = new UpdateManualTransactionFromWallet(transactionRepository, accountRepository)
             const updateManualTransactionFromBank = new UpdateManualTransactionFromBank(transactionRepository, accountRepository)
-
-            const sut = new UpdateManualTransaction(userRepository, accountRepository, transactionRepository, categoryRepository, updateManualTransactionFromWallet, updateManualTransactionFromBank)            
+            const updateManualTransactionFromCreditCard = new UpdateManualTransactionFromCreditCard(transactionRepository, accountRepository, invoiceRepository)
+    
+            const sut = new UpdateManualTransaction(userRepository, accountRepository, transactionRepository, categoryRepository, updateManualTransactionFromWallet, updateManualTransactionFromBank, updateManualTransactionFromCreditCard)            
             const response = (await sut.perform(transactionRequest)).value as TransactionData
             
             const updated = await transactionRepository.findById(transactionId)
@@ -346,5 +382,93 @@ describe('Update manual transaction from account use case', () => {
         })
     })
 
-    test.todo('update from credit card account')
+    describe('update manual transaction from credit card account', () => {
+
+        test('should update transaction, update invoice and account balance', async () => {
+            const invoiceId1 = 'valid invoice 1'
+            const invoiceId2 = 'valid invoice 2'
+            const oldExpense = -5678
+            const newExpense = -1234
+            const newDescription = 'new description'
+            const newComment = 'new comment'
+            const newDate = new Date('2023-01-17')
+    
+            const invoiceData1: CreditCardInvoiceData = {
+                id: invoiceId1,
+                dueDate: new Date('2023-03-10'),
+                closeDate: new Date('2023-03-03'),
+                amount: oldExpense,
+                userId: userData.id,
+                accountId: creditCardAccountData.id,
+                _isDeleted: false
+            }
+            const invoiceData2: CreditCardInvoiceData = {
+                id: invoiceId2,
+                dueDate: new Date('2023-02-10'),
+                closeDate: new Date('2023-02-03'),
+                amount: 0,
+                userId: userData.id,
+                accountId: creditCardAccountData.id,
+                _isDeleted: false
+            }
+    
+            const transactionData: TransactionData = {
+                id: transactionId,
+                accountId: creditCardAccountId,
+                accountType: creditCardAccountType,
+                syncType,
+                userId,
+                description,
+                amount: oldExpense,
+                date: new Date('2023-03-10'),
+                invoiceDate: new Date('2023-02-17'),
+                invoiceId: invoiceId1,
+                type: 'EXPENSE'
+            }
+    
+            const transactionRequest: TransactionRequest = {
+                id: transactionId,
+                accountId: creditCardAccountId,
+                categoryId: categoryData.id,
+                amount: newExpense,
+                description: newDescription,
+                date: newDate,
+                comment: newComment,
+                ignored: true,
+            }
+
+            const userRepository = new InMemoryUserRepository([userData])
+            const accountRepository = new InMemoryAccountRepository([walletAccountData, bankAccountData, creditCardAccountData])
+            const transactionRepository = new InMemoryTransactionRepository([transactionData])
+            const invoiceRepository = new InMemoryCreditCardInvoiceRepository([invoiceData1, invoiceData2])
+            const categoryRepository = new InMemoryCategoryRepository([categoryData, categoryData1])
+            const updateManualTransactionFromWallet = new UpdateManualTransactionFromWallet(transactionRepository, accountRepository)
+            const updateManualTransactionFromBank = new UpdateManualTransactionFromBank(transactionRepository, accountRepository)
+            const updateManualTransactionFromCreditCard = new UpdateManualTransactionFromCreditCard(transactionRepository, accountRepository, invoiceRepository)
+
+            const sut = new UpdateManualTransaction(userRepository, accountRepository, transactionRepository, categoryRepository, updateManualTransactionFromWallet, updateManualTransactionFromBank, updateManualTransactionFromCreditCard)            
+            const response = (await sut.perform(transactionRequest)).value as TransactionData
+            
+            const updated = await transactionRepository.findById(transactionId)
+            expect(updated.amount).toBe(newExpense)
+            expect(updated.description).toBe(newDescription)
+            expect(updated.comment).toBe(newComment)
+            expect(updated.ignored).toBe(true)
+            expect(updated.date).toEqual(invoiceData2.dueDate)
+            expect(updated.invoiceDate).toEqual(newDate)
+            expect(updated.invoiceId).toBe(invoiceId2)
+            expect(updated.category.id).toBe(categoryData.id)
+
+            const oldInvoice = await invoiceRepository.findById(invoiceId1)
+            expect(oldInvoice.amount).toBe(0)
+    
+            const newInvoice = await invoiceRepository.findById(invoiceId2)
+            expect(newInvoice.amount).toBe(newExpense)
+    
+            const account = await accountRepository.findById(creditCardAccountData.id)
+            expect(account.balance).toBe(oldInvoice.amount)
+            expect(account.creditCardInfo.availableCreditLimit).toBe(availableCreditLimit - oldExpense + newExpense)
+        })
+    })
+
 })

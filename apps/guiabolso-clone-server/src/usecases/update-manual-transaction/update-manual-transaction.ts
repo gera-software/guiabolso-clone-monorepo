@@ -1,10 +1,11 @@
 import { Either, left } from "@/shared";
 import { CategoryData, CategoryRepository, TransactionData, TransactionRepository, TransactionRequest, UpdateAccountRepository, UseCase, UserRepository } from "@/usecases/ports";
 import { UnregisteredAccountError, UnregisteredCategoryError, UnregisteredTransactionError, UnregisteredUserError } from "@/usecases/errors";
-import { UpdateManualTransactionFromWallet } from "@/usecases/update-manual-transaction-from-wallet";
-import { InvalidTransactionError, InvalidAmountError, InvalidNameError, InvalidEmailError, InvalidPasswordError, InvalidBalanceError } from "@/entities/errors";
+import { InvalidTransactionError, InvalidAmountError, InvalidNameError, InvalidEmailError, InvalidPasswordError, InvalidBalanceError, InvalidCreditCardError, InvalidCreditCardInvoiceError } from "@/entities/errors";
 import { TransactionToUpdateData } from "@/usecases/update-manual-transaction/ports";
+import { UpdateManualTransactionFromWallet } from "@/usecases/update-manual-transaction-from-wallet";
 import { UpdateManualTransactionFromBank } from "@/usecases/update-manual-transaction-from-bank";
+import { UpdateManualTransactionFromCreditCard } from "@/usecases/update-manual-transaction-from-credit-card";
 
 export class UpdateManualTransaction implements UseCase {
     private readonly userRepo: UserRepository
@@ -13,17 +14,19 @@ export class UpdateManualTransaction implements UseCase {
     private readonly categoryRepo: CategoryRepository
     private readonly updateManualTransactionFromWallet: UpdateManualTransactionFromWallet
     private readonly updateManualTransactionFromBank: UpdateManualTransactionFromBank
+    private readonly updateManualTransactionFromCreditCard: UpdateManualTransactionFromCreditCard
 
-    constructor(userRepository: UserRepository, accountRepository: UpdateAccountRepository, transactionRepository: TransactionRepository, categoryRepository: CategoryRepository, updateManualTransactionFromWallet: UpdateManualTransactionFromWallet, updateManualTransactionFromBank: UpdateManualTransactionFromBank) {
+    constructor(userRepository: UserRepository, accountRepository: UpdateAccountRepository, transactionRepository: TransactionRepository, categoryRepository: CategoryRepository, updateManualTransactionFromWallet: UpdateManualTransactionFromWallet, updateManualTransactionFromBank: UpdateManualTransactionFromBank, updateManualTransactionFromCreditCard: UpdateManualTransactionFromCreditCard) {
         this.userRepo = userRepository
         this.accountRepo = accountRepository
         this.transactionRepo = transactionRepository
         this.categoryRepo = categoryRepository
         this.updateManualTransactionFromWallet = updateManualTransactionFromWallet
         this.updateManualTransactionFromBank = updateManualTransactionFromBank
+        this.updateManualTransactionFromCreditCard = updateManualTransactionFromCreditCard
     }
 
-    async perform(request: TransactionRequest): Promise<Either<UnregisteredCategoryError | InvalidTransactionError | InvalidAmountError | UnregisteredTransactionError | UnregisteredAccountError | UnregisteredUserError | InvalidNameError | InvalidEmailError | InvalidPasswordError | InvalidBalanceError, TransactionData>> {
+    async perform(request: TransactionRequest): Promise<Either<UnregisteredCategoryError | InvalidTransactionError | InvalidAmountError | UnregisteredTransactionError | UnregisteredAccountError | UnregisteredUserError | InvalidNameError | InvalidEmailError | InvalidPasswordError | InvalidBalanceError | InvalidCreditCardError | InvalidCreditCardInvoiceError, TransactionData>> {
         const oldTransactionData = await this.transactionRepo.findById(request.id)
 
         if(!oldTransactionData) {
@@ -67,6 +70,8 @@ export class UpdateManualTransaction implements UseCase {
                 return this.updateManualTransactionFromWallet.perform(transactionToUpdate)
             case 'BANK':
                 return this.updateManualTransactionFromBank.perform(transactionToUpdate)
+            case 'CREDIT_CARD':
+                return this.updateManualTransactionFromCreditCard.perform(transactionToUpdate)
         }
     }
 
