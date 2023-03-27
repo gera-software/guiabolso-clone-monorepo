@@ -285,6 +285,6 @@ describe('update manual transaction from bank account use case', () => {
         const transactionRepository = new InMemoryTransactionRepository([transactionData])
         const sut = new UpdateManualTransactionFromBank(transactionRepository, accountRepository)
         const response = (await sut.perform(request)).value as TransactionData
-        expect((await transactionRepository.findById(transactionId)).category).not.toBeDefined()
+        expect((await transactionRepository.findById(transactionId)).category).toBeNull()
     })
 })
