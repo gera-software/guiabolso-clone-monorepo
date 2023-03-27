@@ -1,4 +1,4 @@
-import { left, right } from "@/shared";
+import { Either, left, right } from "@/shared";
 import { Amount, CreditCardAccount, CreditCardTransaction } from "@/entities";
 import { InvalidCreditCardInvoiceError } from "./errors";
 
@@ -15,7 +15,7 @@ export class CreditCardInvoice {
         this.account = invoice.account
     }
 
-    public static create(invoice: { closeDate: Date, dueDate: Date, amount: number, account: CreditCardAccount }) {
+    public static create(invoice: { closeDate: Date, dueDate: Date, amount: number, account: CreditCardAccount }): Either<InvalidCreditCardInvoiceError, CreditCardInvoice> {
         if(invoice.dueDate <= invoice.closeDate) {
             return left(new InvalidCreditCardInvoiceError('Close date must be before due date'))
         }

@@ -345,4 +345,6 @@ describe('Update manual transaction from account use case', () => {
             expect(newBalance).toBe(balance - amount + transactionRequest.amount)
         })
     })
+
+    test.todo('update from credit card account')
 })
