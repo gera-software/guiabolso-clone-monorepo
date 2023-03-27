@@ -1,5 +1,11 @@
 # @gera-software/guiabolso-clone-server
 
+## 1.9.0
+
+### Minor Changes
+
+- Suppor to remove and update creditcard transactions
+
 ## 1.8.0
 
 ### Minor Changes
