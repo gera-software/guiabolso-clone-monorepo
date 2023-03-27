@@ -1,11 +1,12 @@
-import { BankAccountData, CategoryData, TransactionData, UseCase, UserData, WalletAccountData } from "@/usecases/ports"
+import { BankAccountData, CategoryData, CreditCardAccountData, CreditCardInvoiceData, TransactionData, UseCase, UserData, WalletAccountData } from "@/usecases/ports"
 import { UpdateManualTransaction } from "@/usecases/update-manual-transaction"
 import { UpdateManualTransactionFromBank } from "@/usecases/update-manual-transaction-from-bank"
+import { UpdateManualTransactionFromCreditCard } from "@/usecases/update-manual-transaction-from-credit-card"
 import { UpdateManualTransactionFromWallet } from "@/usecases/update-manual-transaction-from-wallet"
 import { UpdateManualTransactionController } from "@/web-controllers"
 import { MissingParamError } from "@/web-controllers/errors"
 import { HttpRequest, HttpResponse } from "@/web-controllers/ports"
-import { InMemoryAccountRepository, InMemoryCategoryRepository, InMemoryTransactionRepository, InMemoryUserRepository } from "@test/doubles/repositories"
+import { InMemoryAccountRepository, InMemoryCategoryRepository, InMemoryCreditCardInvoiceRepository, InMemoryTransactionRepository, InMemoryUserRepository } from "@test/doubles/repositories"
 import { ErrorThrowingUseCaseStub } from "@test/doubles/usecases"
 
 describe('Update manual transaction web controller', () => {
@@ -48,12 +49,17 @@ describe('Update manual transaction web controller', () => {
     const walletAccountType = 'WALLET'
     const bankAccountId = 'bac0'
     const bankAccountType = 'BANK'
+    const creditCardAccountId = 'cca0'
+    const creditCardAccountType = 'CREDIT_CARD'
     const syncType = 'MANUAL'
     const balance = 678
     const imageUrl = 'valid image url'
+    const availableCreditLimit = 100000
 
     let walletAccountData: WalletAccountData
     let bankAccountData: BankAccountData
+    let creditCardAccountData: CreditCardAccountData
+
 
     beforeEach(() => {
         walletAccountData = {
@@ -75,6 +81,23 @@ describe('Update manual transaction web controller', () => {
             imageUrl,
             userId,
         }
+
+        creditCardAccountData = {
+            id: creditCardAccountId,
+            type: creditCardAccountType,
+            syncType,
+            name: 'valid credit card account',
+            balance,
+            imageUrl,
+            userId,
+            creditCardInfo: {
+                brand: 'master card',
+                creditLimit: 100000,
+                availableCreditLimit: availableCreditLimit,
+                closeDay: 3,
+                dueDay: 10
+            }
+        }
     })
 
     test('should return status code 400 bad request when request is missing required params', async () => {
@@ -84,13 +107,15 @@ describe('Update manual transaction web controller', () => {
         }
 
         const userRepository = new InMemoryUserRepository([userData])
-        const accountRepository = new InMemoryAccountRepository([walletAccountData, bankAccountData])
+        const accountRepository = new InMemoryAccountRepository([walletAccountData, bankAccountData, creditCardAccountData])
         const transactionRepository = new InMemoryTransactionRepository([])
+        const invoiceRepository = new InMemoryCreditCardInvoiceRepository([])
         const categoryRepository = new InMemoryCategoryRepository([categoryData, categoryData1])
         const updateManualTransactionFromWallet = new UpdateManualTransactionFromWallet(transactionRepository, accountRepository)
         const updateManualTransactionFromBank = new UpdateManualTransactionFromBank(transactionRepository, accountRepository)
+        const updateManualTransactionFromCreditCard = new UpdateManualTransactionFromCreditCard(transactionRepository, accountRepository, invoiceRepository)
 
-        const usecase = new UpdateManualTransaction(userRepository, accountRepository, transactionRepository, categoryRepository, updateManualTransactionFromWallet, updateManualTransactionFromBank)  
+        const usecase = new UpdateManualTransaction(userRepository, accountRepository, transactionRepository, categoryRepository, updateManualTransactionFromWallet, updateManualTransactionFromBank, updateManualTransactionFromCreditCard) 
         const sut = new UpdateManualTransactionController(usecase)
         const response: HttpResponse = await sut.handle(invalidRequest)
         expect(response.statusCode).toEqual(400)
@@ -148,13 +173,15 @@ describe('Update manual transaction web controller', () => {
             }
 
             const userRepository = new InMemoryUserRepository([userData])
-            const accountRepository = new InMemoryAccountRepository([walletAccountData, bankAccountData])
+            const accountRepository = new InMemoryAccountRepository([walletAccountData, bankAccountData, creditCardAccountData])
             const transactionRepository = new InMemoryTransactionRepository([transactionData])
+            const invoiceRepository = new InMemoryCreditCardInvoiceRepository([])
             const categoryRepository = new InMemoryCategoryRepository([categoryData, categoryData1])
             const updateManualTransactionFromWallet = new UpdateManualTransactionFromWallet(transactionRepository, accountRepository)
             const updateManualTransactionFromBank = new UpdateManualTransactionFromBank(transactionRepository, accountRepository)
+            const updateManualTransactionFromCreditCard = new UpdateManualTransactionFromCreditCard(transactionRepository, accountRepository, invoiceRepository)
 
-            const usecase = new UpdateManualTransaction(userRepository, accountRepository, transactionRepository, categoryRepository, updateManualTransactionFromWallet, updateManualTransactionFromBank)  
+            const usecase = new UpdateManualTransaction(userRepository, accountRepository, transactionRepository, categoryRepository, updateManualTransactionFromWallet, updateManualTransactionFromBank, updateManualTransactionFromCreditCard)  
             const sut = new UpdateManualTransactionController(usecase)
             const response: HttpResponse = await sut.handle(validRequest)
             expect(response.statusCode).toEqual(200)
@@ -193,13 +220,15 @@ describe('Update manual transaction web controller', () => {
             }
 
             const userRepository = new InMemoryUserRepository([userData])
-            const accountRepository = new InMemoryAccountRepository([walletAccountData, bankAccountData])
+            const accountRepository = new InMemoryAccountRepository([walletAccountData, bankAccountData, creditCardAccountData])
             const transactionRepository = new InMemoryTransactionRepository([transactionData])
+            const invoiceRepository = new InMemoryCreditCardInvoiceRepository([])
             const categoryRepository = new InMemoryCategoryRepository([categoryData, categoryData1])
             const updateManualTransactionFromWallet = new UpdateManualTransactionFromWallet(transactionRepository, accountRepository)
             const updateManualTransactionFromBank = new UpdateManualTransactionFromBank(transactionRepository, accountRepository)
+            const updateManualTransactionFromCreditCard = new UpdateManualTransactionFromCreditCard(transactionRepository, accountRepository, invoiceRepository)
 
-            const usecase = new UpdateManualTransaction(userRepository, accountRepository, transactionRepository, categoryRepository, updateManualTransactionFromWallet, updateManualTransactionFromBank)  
+            const usecase = new UpdateManualTransaction(userRepository, accountRepository, transactionRepository, categoryRepository, updateManualTransactionFromWallet, updateManualTransactionFromBank, updateManualTransactionFromCreditCard) 
             const sut = new UpdateManualTransactionController(usecase)
             const response: HttpResponse = await sut.handle(validRequest)
             expect(response.statusCode).toEqual(200)
@@ -208,5 +237,79 @@ describe('Update manual transaction web controller', () => {
 
     })
 
-    test.todo('Update manual transaction from credit card account')
+    describe('Update manual transaction from credit card account', () => {
+
+        test('should return status code 200 ok when request is valid', async () => {
+            const invoiceId1 = 'valid invoice 1'
+            const invoiceId2 = 'valid invoice 2'
+            const oldExpense = -5678
+            const newExpense = -1234
+            const newDescription = 'new description'
+            const newComment = 'new comment'
+            const newDate = new Date('2023-01-17')
+    
+            const invoiceData1: CreditCardInvoiceData = {
+                id: invoiceId1,
+                dueDate: new Date('2023-03-10'),
+                closeDate: new Date('2023-03-03'),
+                amount: oldExpense,
+                userId: userData.id,
+                accountId: creditCardAccountData.id,
+                _isDeleted: false
+            }
+            const invoiceData2: CreditCardInvoiceData = {
+                id: invoiceId2,
+                dueDate: new Date('2023-02-10'),
+                closeDate: new Date('2023-02-03'),
+                amount: 0,
+                userId: userData.id,
+                accountId: creditCardAccountData.id,
+                _isDeleted: false
+            }
+    
+            const transactionData: TransactionData = {
+                id: transactionId,
+                accountId: creditCardAccountId,
+                accountType: creditCardAccountType,
+                syncType,
+                userId,
+                description,
+                amount: oldExpense,
+                date: new Date('2023-03-10'),
+                invoiceDate: new Date('2023-02-17'),
+                invoiceId: invoiceId1,
+                type: 'EXPENSE'
+            }
+    
+            const validRequest: HttpRequest = {
+                body: {
+                    id: transactionId,
+                    accountId: creditCardAccountId,
+                    categoryId: categoryData.id,
+                    amount: newExpense,
+                    description: newDescription,
+                    date: newDate,
+                    comment: newComment,
+                    ignored: true,
+                }
+            }
+
+            const userRepository = new InMemoryUserRepository([userData])
+            const accountRepository = new InMemoryAccountRepository([walletAccountData, bankAccountData, creditCardAccountData])
+            const transactionRepository = new InMemoryTransactionRepository([transactionData])
+            const invoiceRepository = new InMemoryCreditCardInvoiceRepository([invoiceData1, invoiceData2])
+            const categoryRepository = new InMemoryCategoryRepository([categoryData, categoryData1])
+            const updateManualTransactionFromWallet = new UpdateManualTransactionFromWallet(transactionRepository, accountRepository)
+            const updateManualTransactionFromBank = new UpdateManualTransactionFromBank(transactionRepository, accountRepository)
+            const updateManualTransactionFromCreditCard = new UpdateManualTransactionFromCreditCard(transactionRepository, accountRepository, invoiceRepository)
+
+            const usecase = new UpdateManualTransaction(userRepository, accountRepository, transactionRepository, categoryRepository, updateManualTransactionFromWallet, updateManualTransactionFromBank, updateManualTransactionFromCreditCard) 
+            const sut = new UpdateManualTransactionController(usecase)
+            const response: HttpResponse = await sut.handle(validRequest)
+            expect(response.statusCode).toEqual(200)
+            expect(response.body.id).toBeTruthy()
+        })
+
+    })
+
 })
