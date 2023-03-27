@@ -94,6 +94,7 @@ describe('update manual transaction from bank account use case', () => {
         const sut = new UpdateManualTransactionFromBank(transactionRepository, accountRepository)
         const response = (await sut.perform(request)).value as Error
         expect(response).toBeInstanceOf(InvalidTransactionError)
+        expect(response.message).toBe('Required some description')
     })
 
     test('should not update transaction with zero amount', async () => {

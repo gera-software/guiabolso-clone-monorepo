@@ -52,6 +52,8 @@ export class InMemoryTransactionRepository implements TransactionRepository {
         transactionToUpdate.description = transaction.description
         transactionToUpdate.descriptionOriginal = transaction.descriptionOriginal
         transactionToUpdate.date = transaction.date
+        transactionToUpdate.invoiceDate = transaction.invoiceDate
+        transactionToUpdate.invoiceId = transaction.invoiceId,
         transactionToUpdate.type = transaction.type
         transactionToUpdate.comment = transaction.comment
         transactionToUpdate.ignored = transaction.ignored
