@@ -1,5 +1,11 @@
 # @gera-software/guiabolso-clone-server
 
+## 1.10.0
+
+### Minor Changes
+
+- POST api/manual-account to create manual account of any type
+
 ## 1.9.0
 
 ### Minor Changes
