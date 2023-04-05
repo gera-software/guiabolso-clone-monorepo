@@ -24,6 +24,20 @@ export class CreateManualAccountController implements Controller {
         }
     }
 
+    async createBankAccount(accountData: AccountData): Promise<HttpResponse> {
+        try {
+            const response = await this.usecase.perform(accountData)
+    
+            if(response.isLeft()) {
+                return badRequest(response.value)
+            }
+    
+            return created(response.value)
+        } catch(error) {
+            return serverError(error)
+        }
+    }
+
     async handle(request: HttpRequest): Promise<HttpResponse> {
         const requiredParamNames = ['type', 'userId', 'name', 'balance']
         
@@ -40,6 +54,8 @@ export class CreateManualAccountController implements Controller {
         switch(accountData.type) {
             case 'WALLET':
                 return this.createWalletAccount(accountData)
+            case 'BANK':
+                return this.createBankAccount(accountData)
         }
     }
 

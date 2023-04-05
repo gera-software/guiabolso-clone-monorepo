@@ -1,8 +1,6 @@
 export * from './sign-up-controller'
 export * from './sign-in-controller'
-// export * from './create-manual-wallet-account-controller'
 export * from './list-institutions-by-type-controller'
-export * from './create-manual-bank-account-controller'
 export * from './create-manual-credit-card-account-controller'
 export * from './list-all-categories-controller'
 export * from './add-manual-transaction-controller'
