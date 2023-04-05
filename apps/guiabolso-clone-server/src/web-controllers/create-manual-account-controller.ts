@@ -10,52 +10,39 @@ export class CreateManualAccountController implements Controller {
         this.usecase = usecase
     }
 
-    async createWalletAccount(accountData: AccountData): Promise<HttpResponse> {
-        try {
-            const response = await this.usecase.perform(accountData)
-    
-            if(response.isLeft()) {
-                return badRequest(response.value)
-            }
-    
-            return created(response.value)
-        } catch(error) {
-            return serverError(error)
-        }
-    }
-
-    async createBankAccount(accountData: AccountData): Promise<HttpResponse> {
-        try {
-            const response = await this.usecase.perform(accountData)
-    
-            if(response.isLeft()) {
-                return badRequest(response.value)
-            }
-    
-            return created(response.value)
-        } catch(error) {
-            return serverError(error)
-        }
-    }
-
     async handle(request: HttpRequest): Promise<HttpResponse> {
-        const requiredParamNames = ['type', 'userId', 'name', 'balance']
-        
-        const missingParams = requiredParamNames.filter(paramName => {
-            return (!request.body[paramName]) ? true : false
-        })
+        try {
+            const requiredParamNames = ['type', 'userId', 'name', 'balance']
+            
+            const missingParams = requiredParamNames.filter(paramName => {
+                return (!request.body[paramName]) ? true : false
+            })
+    
+            const requiredCreditCardParamNames = ['creditCardInfo']
+            if(request.body.type === 'CREDIT_CARD') {
+                const missingCreditCardParams = requiredCreditCardParamNames.filter(paramName => {
+                    return (!request.body[paramName]) ? true : false
+                })
+                missingParams.push(...missingCreditCardParams)
+            }
+    
+    
+            if(missingParams.length > 0) {
+                return badRequest(new MissingParamError(`Missing parameters from request: ${missingParams.join(', ')}.`))
+            }
+    
+            const accountData: AccountData = request.body
 
-        if(missingParams.length > 0) {
-            return badRequest(new MissingParamError(`Missing parameters from request: ${missingParams.join(', ')}.`))
-        }
-
-        const accountData: AccountData = request.body
-
-        switch(accountData.type) {
-            case 'WALLET':
-                return this.createWalletAccount(accountData)
-            case 'BANK':
-                return this.createBankAccount(accountData)
+            const response = await this.usecase.perform(accountData)
+    
+            if(response.isLeft()) {
+                return badRequest(response.value)
+            }
+    
+            return created(response.value)
+            
+        } catch(error) {
+            return serverError(error)
         }
     }
 
