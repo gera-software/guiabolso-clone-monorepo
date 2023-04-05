@@ -44,7 +44,7 @@ export class CreateManualBankAccount implements UseCase {
             institution = institutionOrError.value as Institution
         }
 
-        const walletOrError = BankAccount.create({
+        const bankOrError = BankAccount.create({
             name: accountData.name,
             balance: accountData.balance,
             imageUrl: accountData.imageUrl,
@@ -52,8 +52,8 @@ export class CreateManualBankAccount implements UseCase {
             institution,
         }) 
 
-        if(walletOrError.isLeft()) {
-            return left(walletOrError.value)
+        if(bankOrError.isLeft()) {
+            return left(bankOrError.value)
         }
 
         const addedAccount = await this.accountRepo.add(accountData)

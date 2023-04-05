@@ -43,7 +43,7 @@ export class CreateManualCreditCardAccount implements UseCase {
             institution = institutionOrError.value as Institution
         }
 
-        const walletOrError = CreditCardAccount.create({
+        const creditCardOrError = CreditCardAccount.create({
             name: accountData.name,
             balance: accountData.balance,
             imageUrl: accountData.imageUrl,
@@ -52,8 +52,8 @@ export class CreateManualCreditCardAccount implements UseCase {
             creditCardInfo: accountData.creditCardInfo,
         }) 
 
-        if(walletOrError.isLeft()) {
-            return left(walletOrError.value)
+        if(creditCardOrError.isLeft()) {
+            return left(creditCardOrError.value)
         }
 
         const addedAccount = await this.accountRepo.add(accountData)
