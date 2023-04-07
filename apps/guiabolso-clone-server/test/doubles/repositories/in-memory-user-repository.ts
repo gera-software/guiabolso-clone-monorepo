@@ -1,4 +1,4 @@
-import { UserData, UserRepository } from "@/usecases/ports";
+import { UserData, UserRepository } from "@/usecases/ports"
 
 export class InMemoryUserRepository implements UserRepository {
     private readonly _data: UserData[]
