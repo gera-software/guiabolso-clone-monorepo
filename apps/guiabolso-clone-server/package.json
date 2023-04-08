@@ -4,7 +4,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "version": "1.10.0",
+  "version": "1.11.0",
   "description": "Servidor para execução de tarefas de longa duração que não podem ser colocada em serveless functions",
   "scripts": {
     "test": "jest --passWithNoTests --silent --noStackTrace --runInBand",

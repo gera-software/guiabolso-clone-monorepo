@@ -1,5 +1,11 @@
 # @gera-software/guiabolso-clone-server
 
+## 1.11.0
+
+### Minor Changes
+
+- list available automatic institutions to connect
+
 ## 1.10.0
 
 ### Minor Changes
