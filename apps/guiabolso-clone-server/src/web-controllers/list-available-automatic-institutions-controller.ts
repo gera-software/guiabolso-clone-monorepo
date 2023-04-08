@@ -2,7 +2,7 @@ import { UseCase } from "@/usecases/ports"
 import { Controller, HttpRequest, HttpResponse } from "@/web-controllers/ports"
 import { ok, serverError } from "@/web-controllers/util"
 
-export class ListAvailableConnectorsController implements Controller {
+export class ListAvailableAutomaticInstitutionsController implements Controller {
     private readonly usecase: UseCase
 
     constructor(usecase: UseCase) {

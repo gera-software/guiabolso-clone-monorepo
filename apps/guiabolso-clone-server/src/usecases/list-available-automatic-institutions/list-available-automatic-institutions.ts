@@ -1,7 +1,7 @@
 import { right } from "@/shared"
 import { FinancialDataProvider, UseCase } from "@/usecases/ports"
 
-export class ListAvailableConnectors implements UseCase {
+export class ListAvailableAutomaticInstitutions implements UseCase {
     private readonly financialDataProvider: FinancialDataProvider
 
     constructor(financialDataProvider: FinancialDataProvider) {

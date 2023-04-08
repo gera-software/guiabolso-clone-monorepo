@@ -8,8 +8,8 @@ describe('Pluggy Data Provider', () => {
         mockedPluggyClient.mockClear();
     });
 
-    describe('fetch available connectors', () => {
-        test('should return a list of available connectors', async () => {
+    describe('get available automatic institutions', () => {
+        test('should return a list of available institutions', async () => {
             const arrayConnectors: Connector[] = [
                 {
                     id: 201,

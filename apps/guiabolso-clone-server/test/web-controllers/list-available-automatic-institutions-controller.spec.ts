@@ -1,11 +1,11 @@
-import { ListAvailableConnectors } from "@/usecases/list-available-connectors"
+import { ListAvailableAutomaticInstitutions } from "@/usecases/list-available-automatic-institutions"
 import { InstitutionData, UseCase } from "@/usecases/ports"
-import { ListAvailableConnectorsController } from "@/web-controllers"
+import { ListAvailableAutomaticInstitutionsController } from "@/web-controllers"
 import { HttpRequest, HttpResponse } from "@/web-controllers/ports"
 import { InMemoryPluggyDataProvider } from "@test/doubles/financial-data-provider"
 import { ErrorThrowingUseCaseStub } from "@test/doubles/usecases"
 
-describe('List all available connectors web controller', () => {
+describe('List all available automatic institutions web controller', () => {
     test('should return status code 200', async () => {
         const arrayConnectors: InstitutionData[] = [
             {
@@ -26,8 +26,8 @@ describe('List all available connectors web controller', () => {
             }
         ]
         const financialDataProvider = new InMemoryPluggyDataProvider(arrayConnectors)
-        const usecase = new ListAvailableConnectors(financialDataProvider)
-        const sut = new ListAvailableConnectorsController(usecase)
+        const usecase = new ListAvailableAutomaticInstitutions(financialDataProvider)
+        const sut = new ListAvailableAutomaticInstitutionsController(usecase)
 
         const validRequest: HttpRequest = {}
 
@@ -38,7 +38,7 @@ describe('List all available connectors web controller', () => {
 
     test('should return status code 500 when server raises', async () => {
         const errorThrowingUseCaseStub: UseCase = new ErrorThrowingUseCaseStub()
-        const sut = new ListAvailableConnectorsController(errorThrowingUseCaseStub)
+        const sut = new ListAvailableAutomaticInstitutionsController(errorThrowingUseCaseStub)
 
         const validRequest: HttpRequest = {}
 
