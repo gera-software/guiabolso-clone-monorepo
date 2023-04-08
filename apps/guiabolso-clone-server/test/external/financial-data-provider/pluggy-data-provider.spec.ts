@@ -40,9 +40,10 @@ describe('Pluggy Data Provider', () => {
             const clientSecret = 'valid-client-secret'
             const sut = new PluggyDataProvider(clientId, clientSecret)
 
-            const result = await sut.fetchConnectors()
+            const result = await sut.getAvailableAutomaticInstitutions()
             expect(result.length).toBe(2)
             expect(result[0]).toEqual({
+                id: null,
                 providerConnectorId: '201',
                 name: 'Itaú',
                 imageUrl: 'url itau',
@@ -50,6 +51,7 @@ describe('Pluggy Data Provider', () => {
                 type: 'PERSONAL_BANK',
             })
             expect(result[1]).toEqual({
+                id: null,
                 providerConnectorId: '202',
                 name: 'Nubank',
                 imageUrl: 'url nubank',

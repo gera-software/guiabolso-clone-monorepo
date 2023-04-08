@@ -1,5 +1,5 @@
-import { ConnectorData } from "@/usecases/ports";
+import { InstitutionData } from "@/usecases/ports"
 
 export interface FinancialDataProvider {
-    fetchConnectors(): Promise<ConnectorData[]>
+    getAvailableAutomaticInstitutions(): Promise<InstitutionData[]>
 }

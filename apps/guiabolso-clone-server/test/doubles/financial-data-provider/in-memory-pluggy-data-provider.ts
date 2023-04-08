@@ -1,9 +1,9 @@
-import { ConnectorData, FinancialDataProvider } from "@/usecases/ports"
+import { InstitutionData, FinancialDataProvider } from "@/usecases/ports"
 
 export class InMemoryPluggyDataProvider implements FinancialDataProvider {
-    private readonly _data: ConnectorData[]
+    private readonly _data: InstitutionData[]
 
-    constructor(data: ConnectorData[]) {
+    constructor(data: InstitutionData[]) {
         this._data = data
     }
 
@@ -11,7 +11,7 @@ export class InMemoryPluggyDataProvider implements FinancialDataProvider {
         return this._data
     }
 
-    public async fetchConnectors(): Promise<ConnectorData[]> {
+    public async getAvailableAutomaticInstitutions(): Promise<InstitutionData[]> {
         return this._data
     }
 

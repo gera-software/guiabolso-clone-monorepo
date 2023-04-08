@@ -9,7 +9,7 @@ export class ListAvailableConnectors implements UseCase {
     }
 
     async perform(request: any): Promise<any> {
-        const result = await this.financialDataProvider.fetchConnectors()
+        const result = await this.financialDataProvider.getAvailableAutomaticInstitutions()
         return right(result)
     }
 

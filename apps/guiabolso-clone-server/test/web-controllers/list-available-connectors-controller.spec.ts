@@ -1,5 +1,5 @@
 import { ListAvailableConnectors } from "@/usecases/list-available-connectors"
-import { ConnectorData, UseCase } from "@/usecases/ports"
+import { InstitutionData, UseCase } from "@/usecases/ports"
 import { ListAvailableConnectorsController } from "@/web-controllers"
 import { HttpRequest, HttpResponse } from "@/web-controllers/ports"
 import { InMemoryPluggyDataProvider } from "@test/doubles/financial-data-provider"
@@ -7,8 +7,9 @@ import { ErrorThrowingUseCaseStub } from "@test/doubles/usecases"
 
 describe('List all available connectors web controller', () => {
     test('should return status code 200', async () => {
-        const arrayConnectors: ConnectorData[] = [
+        const arrayConnectors: InstitutionData[] = [
             {
+                id: null,
                 providerConnectorId: '201',
                 name: 'Itaú',
                 imageUrl: 'url itau',
@@ -16,6 +17,7 @@ describe('List all available connectors web controller', () => {
                 type: 'PERSONAL_BANK',
             },
             {
+                id: null,
                 providerConnectorId: '202',
                 name: 'Nubank',
                 imageUrl: 'url nubank',

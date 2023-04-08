@@ -1,5 +1,5 @@
 import { PluggyClient } from 'pluggy-sdk'
-import { ConnectorData, FinancialDataProvider } from "@/usecases/ports"
+import { FinancialDataProvider, InstitutionData } from "@/usecases/ports"
 
 export class PluggyDataProvider implements FinancialDataProvider {
     private client: PluggyClient
@@ -11,13 +11,14 @@ export class PluggyDataProvider implements FinancialDataProvider {
         })
     }
 
-    async fetchConnectors(): Promise<ConnectorData[]> {
-        console.log('[Pluggy] fetch connectors...')
+    async getAvailableAutomaticInstitutions(): Promise<InstitutionData[]> {
+        console.log('[Pluggy] get available automatic institutions...')
         return this.client
                 .fetchConnectors()
                 .then((response) => response.results)
                 .then((connectors) => {
                     return connectors.map((connector) => ({
+                        id: null,
                         providerConnectorId: connector.id.toString(),
                         name: connector.name,
                         imageUrl: connector.imageUrl,
