@@ -4,6 +4,7 @@ import {
     makeAddManualTransactionController, 
     makeCreateManualAccountController, 
     makeListAllCategoriesController, 
+    makeListAvailableAutomaticInstitutionsController, 
     makeListInstitutionsByTypeController, 
     makeRemoveManualTransactionController, 
     makeSignInController,
@@ -24,6 +25,7 @@ export default (app: Express): void => {
     router.post('/manual-account', adaptRoute(makeCreateManualAccountController()))
 
     router.get('/institution', adaptRoute(makeListInstitutionsByTypeController()))
+    router.get('/available-automatic-institutions', adaptRoute(makeListAvailableAutomaticInstitutionsController()))
     router.get('/category', adaptRoute(makeListAllCategoriesController()))
 
     router.post('/manual-transaction', adaptRoute(makeAddManualTransactionController()))

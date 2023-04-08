@@ -5,8 +5,8 @@ const mockedPluggyClient = jest.mocked(PluggyClient)
 
 describe('Pluggy Data Provider', () => {
     beforeEach(() => {
-        mockedPluggyClient.mockClear();
-    });
+        mockedPluggyClient.mockClear()
+    })
 
     describe('get available automatic institutions', () => {
         test('should return a list of available institutions', async () => {
