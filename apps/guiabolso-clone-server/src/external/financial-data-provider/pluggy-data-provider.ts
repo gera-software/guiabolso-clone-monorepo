@@ -1,5 +1,7 @@
 import { PluggyClient } from 'pluggy-sdk'
 import { FinancialDataProvider, InstitutionData } from "@/usecases/ports"
+import { Either } from '@/shared'
+import { UnauthenticatedError, UnexpectedError } from '@/usecases/errors'
 
 export class PluggyDataProvider implements FinancialDataProvider {
     private client: PluggyClient
@@ -11,7 +13,7 @@ export class PluggyDataProvider implements FinancialDataProvider {
         })
     }
 
-    async getAvailableAutomaticInstitutions(): Promise<InstitutionData[]> {
+    public async getAvailableAutomaticInstitutions(): Promise<InstitutionData[]> {
         console.log('[Pluggy] get available automatic institutions...')
         return this.client
                 .fetchConnectors()
@@ -26,6 +28,10 @@ export class PluggyDataProvider implements FinancialDataProvider {
                         type: connector.type,
                     }));
                 })
+    }
+
+    public async getConnectToken(itemId?: string): Promise<Either<UnauthenticatedError | UnexpectedError, string>> {
+        throw new Error("Method not implemented.")
     }
 
 }
