@@ -1,4 +1,4 @@
-import { Category, CreditCardAccount, CreditCardInvoice, CreditCardTransaction, User } from "@/entities";
+import { Category, ManualCreditCardAccount, CreditCardInvoice, CreditCardTransaction, User } from "@/entities";
 import { InvalidTransactionError, InvalidAmountError, InvalidBalanceError, InvalidEmailError, InvalidNameError, InvalidPasswordError, InvalidCreditCardError, InvalidCreditCardInvoiceError } from "@/entities/errors";
 import { Either, left, right } from "@/shared";
 import { AccountData, CreditCardInvoiceData, CreditCardInvoiceRepository, TransactionData, TransactionRepository, UpdateAccountRepository, UseCase, UserData } from "@/usecases/ports";
@@ -64,7 +64,7 @@ export class UpdateManualTransactionFromCreditCard implements UseCase {
         return right(transactionOrError.value as CreditCardTransaction) 
     }
 
-    private async createCreditCardAccount(accountData: AccountData, userData: UserData): Promise<Either<InvalidNameError | InvalidEmailError | InvalidPasswordError | InvalidBalanceError | InvalidCreditCardError, CreditCardAccount>> {
+    private async createCreditCardAccount(accountData: AccountData, userData: UserData): Promise<Either<InvalidNameError | InvalidEmailError | InvalidPasswordError | InvalidBalanceError | InvalidCreditCardError, ManualCreditCardAccount>> {
         const userOrError = User.create(userData)
         if(userOrError.isLeft()) {
             return left(userOrError.value)
@@ -72,7 +72,7 @@ export class UpdateManualTransactionFromCreditCard implements UseCase {
 
         const user = userOrError.value as User
 
-        const accountOrError = CreditCardAccount.create({ 
+        const accountOrError = ManualCreditCardAccount.create({ 
             name: accountData.name, 
             balance: accountData.balance, 
             imageUrl: accountData.imageUrl, 
@@ -83,10 +83,10 @@ export class UpdateManualTransactionFromCreditCard implements UseCase {
             return left(accountOrError.value)
         }
 
-        return right(accountOrError.value as CreditCardAccount)
+        return right(accountOrError.value as ManualCreditCardAccount)
     }
 
-    private async createOldCreditCardInvoice(creditCardAccount: CreditCardAccount, oldTransactionData: TransactionData): Promise<Either<InvalidCreditCardInvoiceError, CreditCardInvoice>>{
+    private async createOldCreditCardInvoice(creditCardAccount: ManualCreditCardAccount, oldTransactionData: TransactionData): Promise<Either<InvalidCreditCardInvoiceError, CreditCardInvoice>>{
         const oldInvoiceData = await this.creditCardInvoiceRepo.findById(oldTransactionData.invoiceId) 
         const invoiceOrError = CreditCardInvoice.create({
             closeDate: oldInvoiceData.closeDate,
@@ -103,7 +103,7 @@ export class UpdateManualTransactionFromCreditCard implements UseCase {
         return right(invoice)
     }
 
-    private async findOrCreateInvoice(creditCardAccount: CreditCardAccount, newTransaction: TransactionToAddData): Promise<CreditCardInvoiceData> {
+    private async findOrCreateInvoice(creditCardAccount: ManualCreditCardAccount, newTransaction: TransactionToAddData): Promise<CreditCardInvoiceData> {
         const { invoiceClosingDate, invoiceDueDate } = creditCardAccount.calculateInvoiceDatesFromTransaction(newTransaction.date)
 
         // Find or create new invoice
@@ -122,7 +122,7 @@ export class UpdateManualTransactionFromCreditCard implements UseCase {
         return newInvoiceData
     }
 
-    private createNewCreditCardInvoice(creditCardAccount: CreditCardAccount, newInvoiceData: CreditCardInvoiceData): Either<InvalidCreditCardInvoiceError, CreditCardInvoice> {
+    private createNewCreditCardInvoice(creditCardAccount: ManualCreditCardAccount, newInvoiceData: CreditCardInvoiceData): Either<InvalidCreditCardInvoiceError, CreditCardInvoice> {
         const invoiceOrError = CreditCardInvoice.create({
             closeDate: newInvoiceData.closeDate,
             dueDate: newInvoiceData.dueDate,
@@ -146,7 +146,7 @@ export class UpdateManualTransactionFromCreditCard implements UseCase {
             return left(accountOrError.value)
         }
 
-        const creditCardAccount = accountOrError.value as CreditCardAccount
+        const creditCardAccount = accountOrError.value as ManualCreditCardAccount
 
         const oldInvoiceOrError = await this.createOldCreditCardInvoice(creditCardAccount, oldTransactionData)
         if(oldInvoiceOrError.isLeft()) {

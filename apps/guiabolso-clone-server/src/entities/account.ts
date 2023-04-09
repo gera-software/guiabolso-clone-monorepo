@@ -1,6 +1,5 @@
 import { Amount, User } from "@/entities"
 
-
 export type AccountType = 'WALLET' | 'BANK' | 'CREDIT_CARD'
 export type SyncType = 'MANUAL' | 'AUTOMATIC'
 

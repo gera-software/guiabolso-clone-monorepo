@@ -1,8 +1,8 @@
-import { Account, AccountType, Amount, BankTransaction, Institution, SyncType, User } from "@/entities"
+import { ManualAccount, AccountType, Amount, BankTransaction, Institution, SyncType, User } from "@/entities"
 import { Either, left, right } from "@/shared"
 import { InvalidBalanceError, InvalidNameError } from "@/entities/errors"
 
-export class BankAccount implements Account {
+export class ManualBankAccount implements ManualAccount {
     public readonly name: string
     public readonly balance: Amount
     public readonly imageUrl?: string
@@ -20,7 +20,7 @@ export class BankAccount implements Account {
         this.institution = account.institution
     }
 
-    public static create(account: { name: string, balance: number, imageUrl?: string, user: User, institution?: Institution}): Either<InvalidNameError | InvalidBalanceError, BankAccount>  {
+    public static create(account: { name: string, balance: number, imageUrl?: string, user: User, institution?: Institution}): Either<InvalidNameError | InvalidBalanceError, ManualBankAccount>  {
         const { name, balance, imageUrl, user, institution } = account
         
         if(!name) {
@@ -34,7 +34,7 @@ export class BankAccount implements Account {
 
         const amount = balanceOrError.value as Amount
 
-        return right(new BankAccount({name, balance: amount, imageUrl, user, institution}))
+        return right(new ManualBankAccount({name, balance: amount, imageUrl, user, institution}))
     }
 
     public addTransaction(transaction: BankTransaction) {

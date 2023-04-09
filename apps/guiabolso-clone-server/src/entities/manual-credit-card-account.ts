@@ -1,9 +1,9 @@
-import { Account, AccountType, Amount, CreditCardInfo, CreditCardTransaction, Institution, SyncType, User } from "@/entities"
+import { ManualAccount, AccountType, Amount, CreditCardInfo, CreditCardTransaction, Institution, SyncType, User } from "@/entities"
 import { Either, left, right } from "@/shared"
 import { InvalidBalanceError, InvalidCreditCardError, InvalidNameError } from "@/entities/errors"
 import { CreditCardInfoData } from "@/usecases/ports"
 
-export class CreditCardAccount implements Account {
+export class ManualCreditCardAccount implements ManualAccount {
     public readonly name: string
     public readonly balance: Amount
     public readonly imageUrl?: string
@@ -23,7 +23,7 @@ export class CreditCardAccount implements Account {
         this.creditCardInfo = account.creditCardInfo
     }
 
-    public static create(account: { name: string, balance: number, imageUrl?: string, user: User, institution?: Institution, creditCardInfo: CreditCardInfoData}): Either<InvalidNameError | InvalidBalanceError | InvalidCreditCardError , CreditCardAccount> {
+    public static create(account: { name: string, balance: number, imageUrl?: string, user: User, institution?: Institution, creditCardInfo: CreditCardInfoData}): Either<InvalidNameError | InvalidBalanceError | InvalidCreditCardError , ManualCreditCardAccount> {
         const { name, balance, imageUrl, user, institution, creditCardInfo } = account
         
         if(!name) {
@@ -44,7 +44,7 @@ export class CreditCardAccount implements Account {
 
         const creditCard = creditCardInfoOrError.value as CreditCardInfo
 
-        return right(new CreditCardAccount({name, balance: amount, imageUrl, user, institution, creditCardInfo: creditCard}))
+        return right(new ManualCreditCardAccount({name, balance: amount, imageUrl, user, institution, creditCardInfo: creditCard}))
     }
 
     /**

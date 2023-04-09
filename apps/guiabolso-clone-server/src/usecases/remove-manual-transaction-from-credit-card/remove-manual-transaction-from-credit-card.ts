@@ -1,4 +1,4 @@
-import { CreditCardAccount, CreditCardInvoice, CreditCardTransaction, User } from "@/entities";
+import { ManualCreditCardAccount, CreditCardInvoice, CreditCardTransaction, User } from "@/entities";
 import { left, right } from "@/shared";
 import { CreditCardInvoiceRepository, TransactionRepository, UpdateAccountRepository, UseCase, UserRepository } from "@/usecases/ports";
 
@@ -25,7 +25,7 @@ export class RemoveManualTransactionFromCreditCard implements UseCase {
 
         const user = userOrError.value as User
 
-        const accountOrError = CreditCardAccount.create({
+        const accountOrError = ManualCreditCardAccount.create({
             name: foundAccountData.name,
             balance: foundAccountData.balance,
             imageUrl: foundAccountData.imageUrl,
@@ -33,7 +33,7 @@ export class RemoveManualTransactionFromCreditCard implements UseCase {
             creditCardInfo: foundAccountData.creditCardInfo,
         })
 
-        const creditCardAccount = accountOrError.value as CreditCardAccount
+        const creditCardAccount = accountOrError.value as ManualCreditCardAccount
 
         let invoiceData = await this.creditCardInvoiceRepo.findById(removedTransaction.invoiceId)
 

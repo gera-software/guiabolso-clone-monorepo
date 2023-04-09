@@ -1,8 +1,8 @@
 import { Either, left, right } from "@/shared"
 import { InvalidBalanceError, InvalidNameError } from "@/entities/errors"
-import { Account, AccountType, Amount, SyncType, User, WalletTransaction } from "@/entities"
+import { AccountType, Amount, ManualAccount, SyncType, User, WalletTransaction } from "@/entities"
 
-export class WalletAccount implements Account {
+export class ManualWalletAccount implements ManualAccount {
     public readonly name: string
     public readonly balance: Amount
     public readonly imageUrl?: string
@@ -18,7 +18,7 @@ export class WalletAccount implements Account {
     }
 
 
-    public static create(account: { name: string, balance: number, imageUrl?: string, user: User }): Either<InvalidNameError | InvalidBalanceError, WalletAccount> {
+    public static create(account: { name: string, balance: number, imageUrl?: string, user: User }): Either<InvalidNameError | InvalidBalanceError, ManualWalletAccount> {
         const { name, balance, imageUrl, user } = account
 
         if(!name) {
@@ -32,7 +32,7 @@ export class WalletAccount implements Account {
 
         const amount = balanceOrError.value as Amount
 
-        return right(new WalletAccount({name, balance: amount, imageUrl, user}))
+        return right(new ManualWalletAccount({name, balance: amount, imageUrl, user}))
     }
 
     public addTransaction(transaction: WalletTransaction) {

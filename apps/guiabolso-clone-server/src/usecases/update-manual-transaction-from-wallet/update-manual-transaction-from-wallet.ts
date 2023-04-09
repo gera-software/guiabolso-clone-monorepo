@@ -1,6 +1,6 @@
 import { Either, left, right } from "@/shared"
 import { AccountData, TransactionData, TransactionRepository, UpdateAccountRepository, UseCase, UserData } from "@/usecases/ports"
-import { Category, WalletTransaction, User, WalletAccount } from "@/entities"
+import { Category, WalletTransaction, User, ManualWalletAccount } from "@/entities"
 import { InvalidAmountError, InvalidBalanceError, InvalidEmailError, InvalidNameError, InvalidPasswordError, InvalidTransactionError } from "@/entities/errors"
 import { TransactionToUpdateData } from "@/usecases/update-manual-transaction/ports"
 import { TransactionToAddData } from "@/usecases/add-manual-transaction/ports"
@@ -37,7 +37,7 @@ export class UpdateManualTransactionFromWallet implements UseCase {
         return right(transactionOrError.value as WalletTransaction) 
     }
 
-    private async createWalletAccount(accountData: AccountData, userData: UserData): Promise<Either<InvalidNameError | InvalidEmailError | InvalidPasswordError | InvalidBalanceError, WalletAccount>> {
+    private async createWalletAccount(accountData: AccountData, userData: UserData): Promise<Either<InvalidNameError | InvalidEmailError | InvalidPasswordError | InvalidBalanceError, ManualWalletAccount>> {
         const userOrError = User.create(userData)
         if(userOrError.isLeft()) {
             return left(userOrError.value)
@@ -45,7 +45,7 @@ export class UpdateManualTransactionFromWallet implements UseCase {
 
         const user = userOrError.value as User
 
-        const accountOrError = WalletAccount.create({ 
+        const accountOrError = ManualWalletAccount.create({ 
             name: accountData.name, 
             balance: accountData.balance, 
             imageUrl: accountData.imageUrl, 
@@ -55,7 +55,7 @@ export class UpdateManualTransactionFromWallet implements UseCase {
             return left(accountOrError.value)
         }
 
-        return right(accountOrError.value as WalletAccount)
+        return right(accountOrError.value as ManualWalletAccount)
     }
 
     async perform(request: TransactionToUpdateData): Promise<Either<InvalidTransactionError | InvalidAmountError | InvalidNameError | InvalidEmailError | InvalidPasswordError | InvalidBalanceError, TransactionData>> {
@@ -80,7 +80,7 @@ export class UpdateManualTransactionFromWallet implements UseCase {
             return left(accountOrError.value)
         }
 
-        const walletAccount = accountOrError.value as WalletAccount
+        const walletAccount = accountOrError.value as ManualWalletAccount
 
         walletAccount.removeTransaction(oldTransaction)
         walletAccount.addTransaction(newTransaction)

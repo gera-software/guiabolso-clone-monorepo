@@ -1,4 +1,4 @@
-import { Category, CreditCardAccount, CreditCardInvoice, CreditCardTransaction, User } from "@/entities"
+import { Category, ManualCreditCardAccount, CreditCardInvoice, CreditCardTransaction, User } from "@/entities"
 import { left, right } from "@/shared"
 import { TransactionToAddData } from "@/usecases/add-manual-transaction/ports"
 import { UseCase, UpdateAccountRepository, TransactionRepository, TransactionData, CreditCardInvoiceRepository } from "@/usecases/ports"
@@ -26,7 +26,7 @@ export class AddManualTransactionToCreditCard implements UseCase {
 
         const user = userOrError.value as User
 
-        const accountOrError = CreditCardAccount.create({ 
+        const accountOrError = ManualCreditCardAccount.create({ 
             name: accountData.name, 
             balance: accountData.balance, 
             imageUrl: accountData.imageUrl, 
@@ -37,7 +37,7 @@ export class AddManualTransactionToCreditCard implements UseCase {
             return left(accountOrError.value)
         }
 
-        const creditCardAccount = accountOrError.value as CreditCardAccount
+        const creditCardAccount = accountOrError.value as ManualCreditCardAccount
 
         let category: Category = null
         if(categoryData) {

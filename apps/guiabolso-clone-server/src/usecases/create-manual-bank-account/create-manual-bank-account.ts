@@ -1,5 +1,4 @@
-import { BankAccount, Institution, User } from '@/entities'
-import { InvalidNameError } from '@/entities/errors'
+import { ManualBankAccount, Institution, User } from '@/entities'
 import { left, right } from '@/shared'
 import { AccountRepository, BankAccountData, InstitutionRepository, UseCase, UserRepository } from '@/usecases/ports'
 import { UnregisteredInstitutionError, UnregisteredUserError } from '@/usecases/errors'
@@ -44,7 +43,7 @@ export class CreateManualBankAccount implements UseCase {
             institution = institutionOrError.value as Institution
         }
 
-        const bankOrError = BankAccount.create({
+        const bankOrError = ManualBankAccount.create({
             name: accountData.name,
             balance: accountData.balance,
             imageUrl: accountData.imageUrl,

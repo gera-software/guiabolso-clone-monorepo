@@ -1,4 +1,4 @@
-import { Category, BankTransaction, User, BankAccount } from "@/entities"
+import { Category, BankTransaction, User, ManualBankAccount } from "@/entities"
 import { Either, left, right } from "@/shared"
 import { TransactionRepository, UseCase, TransactionData, UpdateAccountRepository } from "@/usecases/ports"
 import { InvalidAmountError, InvalidBalanceError, InvalidEmailError, InvalidNameError, InvalidPasswordError, InvalidTransactionError } from "@/entities/errors"
@@ -25,7 +25,7 @@ export class AddManualTransactionToBank implements UseCase {
 
         const user = userOrError.value as User
 
-        const accountOrError = BankAccount.create({ 
+        const accountOrError = ManualBankAccount.create({ 
             name: accountData.name, 
             balance: accountData.balance, 
             imageUrl: accountData.imageUrl, 
@@ -35,7 +35,7 @@ export class AddManualTransactionToBank implements UseCase {
             return left(accountOrError.value)
         }
 
-        const bankAccount = accountOrError.value as BankAccount
+        const bankAccount = accountOrError.value as ManualBankAccount
 
         let category: Category = null
         if(categoryData) {

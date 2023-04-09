@@ -1,7 +1,7 @@
-import { BankAccount, BankTransaction, Institution, User } from "@/entities"
+import { ManualBankAccount, BankTransaction, Institution, User } from "@/entities"
 import { InvalidBalanceError, InvalidNameError } from "@/entities/errors"
 
-describe("Bank Account entity", () => {
+describe("Manual Bank Account entity", () => {
     describe('create', () => {
         test("should not create an account with empty name", () => {
             const name = ''
@@ -21,7 +21,7 @@ describe("Bank Account entity", () => {
                 providerConnectorId: 'valid id'
             }).value as Institution
     
-            const error = BankAccount.create({name, balance, imageUrl, user, institution}).value as Error
+            const error = ManualBankAccount.create({name, balance, imageUrl, user, institution}).value as Error
             expect(error).toBeInstanceOf(InvalidNameError)
         })
     
@@ -43,7 +43,7 @@ describe("Bank Account entity", () => {
                 providerConnectorId: 'valid id'
             }).value as Institution
     
-            const error = BankAccount.create({name, balance, imageUrl, user, institution}).value as Error
+            const error = ManualBankAccount.create({name, balance, imageUrl, user, institution}).value as Error
             expect(error).toBeInstanceOf(InvalidBalanceError)
         })
     
@@ -65,7 +65,7 @@ describe("Bank Account entity", () => {
                 providerConnectorId: 'valid id'
             }).value as Institution
     
-            const account = BankAccount.create({name, balance, imageUrl, user, institution}).value as BankAccount
+            const account = ManualBankAccount.create({name, balance, imageUrl, user, institution}).value as ManualBankAccount
             expect(account.type).toBe('BANK')
             expect(account.name).toBe(name)
             expect(account.balance.value).toBe(balance)
@@ -85,7 +85,7 @@ describe("Bank Account entity", () => {
                 password: 'user password',
             }).value as User
     
-            const account = BankAccount.create({name, balance, imageUrl, user}).value as BankAccount
+            const account = ManualBankAccount.create({name, balance, imageUrl, user}).value as ManualBankAccount
             expect(account.type).toBe('BANK')
             expect(account.syncType).toBe('MANUAL')
             expect(account.name).toBe(name)
@@ -108,7 +108,7 @@ describe("Bank Account entity", () => {
                 password: 'user password',
             }).value as User
     
-            const account = BankAccount.create({name, balance, imageUrl, user}).value as BankAccount
+            const account = ManualBankAccount.create({name, balance, imageUrl, user}).value as ManualBankAccount
 
             const transaction = BankTransaction.create({ 
                 amount: 2567, 
@@ -131,7 +131,7 @@ describe("Bank Account entity", () => {
                 password: 'user password',
             }).value as User
     
-            const account = BankAccount.create({name, balance, imageUrl, user}).value as BankAccount
+            const account = ManualBankAccount.create({name, balance, imageUrl, user}).value as ManualBankAccount
 
             const transaction = BankTransaction.create({ 
                 amount: -2567, 
@@ -156,7 +156,7 @@ describe("Bank Account entity", () => {
                 password: 'user password',
             }).value as User
     
-            const account = BankAccount.create({name, balance, imageUrl, user}).value as BankAccount
+            const account = ManualBankAccount.create({name, balance, imageUrl, user}).value as ManualBankAccount
 
             const transaction = BankTransaction.create({ 
                 amount: 2567, 
@@ -179,7 +179,7 @@ describe("Bank Account entity", () => {
                 password: 'user password',
             }).value as User
     
-            const account = BankAccount.create({name, balance, imageUrl, user}).value as BankAccount
+            const account = ManualBankAccount.create({name, balance, imageUrl, user}).value as ManualBankAccount
 
             const transaction = BankTransaction.create({ 
                 amount: -2567, 

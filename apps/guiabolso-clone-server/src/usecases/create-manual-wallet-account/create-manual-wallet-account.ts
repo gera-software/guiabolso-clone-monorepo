@@ -1,4 +1,4 @@
-import { Amount, User, WalletAccount } from "@/entities";
+import { Amount, User, ManualWalletAccount } from "@/entities";
 import { InvalidBalanceError, InvalidEmailError, InvalidNameError, InvalidPasswordError } from "@/entities/errors";
 import { Either, left, right } from "@/shared";
 import { AccountData, AccountRepository, UseCase, UserRepository, WalletAccountData } from "@/usecases/ports";
@@ -27,7 +27,7 @@ export class CreateManualWalletAccount implements UseCase {
 
         const user = userOrError.value as User
 
-        const walletOrError = WalletAccount.create({
+        const walletOrError = ManualWalletAccount.create({
             name: accountData.name,
             balance: accountData.balance,
             imageUrl: accountData.imageUrl,

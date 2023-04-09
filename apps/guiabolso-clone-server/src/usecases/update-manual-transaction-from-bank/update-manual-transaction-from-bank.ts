@@ -1,6 +1,6 @@
 import { Either, left, right } from "@/shared"
 import { AccountData, TransactionData, TransactionRepository, UpdateAccountRepository, UseCase, UserData } from "@/usecases/ports"
-import { Category, User, BankTransaction, BankAccount } from "@/entities"
+import { Category, User, BankTransaction, ManualBankAccount } from "@/entities"
 import { InvalidAmountError, InvalidBalanceError, InvalidEmailError, InvalidNameError, InvalidPasswordError, InvalidTransactionError } from "@/entities/errors"
 import { TransactionToUpdateData } from "@/usecases/update-manual-transaction/ports"
 import { TransactionToAddData } from "@/usecases/add-manual-transaction/ports"
@@ -37,7 +37,7 @@ export class UpdateManualTransactionFromBank implements UseCase {
         return right(transactionOrError.value as BankTransaction) 
     }
 
-    private async createBankAccount(accountData: AccountData, userData: UserData): Promise<Either<InvalidNameError | InvalidEmailError | InvalidPasswordError | InvalidBalanceError, BankAccount>> {
+    private async createBankAccount(accountData: AccountData, userData: UserData): Promise<Either<InvalidNameError | InvalidEmailError | InvalidPasswordError | InvalidBalanceError, ManualBankAccount>> {
         const userOrError = User.create(userData)
         if(userOrError.isLeft()) {
             return left(userOrError.value)
@@ -45,7 +45,7 @@ export class UpdateManualTransactionFromBank implements UseCase {
 
         const user = userOrError.value as User
 
-        const accountOrError = BankAccount.create({ 
+        const accountOrError = ManualBankAccount.create({ 
             name: accountData.name, 
             balance: accountData.balance, 
             imageUrl: accountData.imageUrl, 
@@ -55,7 +55,7 @@ export class UpdateManualTransactionFromBank implements UseCase {
             return left(accountOrError.value)
         }
 
-        return right(accountOrError.value as BankAccount)
+        return right(accountOrError.value as ManualBankAccount)
     }
 
     async perform(request: TransactionToUpdateData): Promise<Either<InvalidTransactionError | InvalidAmountError | InvalidNameError | InvalidEmailError | InvalidPasswordError | InvalidBalanceError, TransactionData>> {
@@ -80,7 +80,7 @@ export class UpdateManualTransactionFromBank implements UseCase {
             return left(accountOrError.value)
         }
 
-        const bankAccount = accountOrError.value as BankAccount
+        const bankAccount = accountOrError.value as ManualBankAccount
 
         bankAccount.removeTransaction(oldTransaction)
         bankAccount.addTransaction(newTransaction)

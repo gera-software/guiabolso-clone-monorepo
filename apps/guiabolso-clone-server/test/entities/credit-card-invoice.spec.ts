@@ -1,4 +1,4 @@
-import { Category, CreditCardAccount, CreditCardInvoice, CreditCardTransaction, Institution, TransactionType, User } from "@/entities"
+import { Category, ManualCreditCardAccount, CreditCardInvoice, CreditCardTransaction, Institution, TransactionType, User } from "@/entities"
 import { InvalidCreditCardInvoiceError } from "@/entities/errors"
 
 describe("Credit Card Invoice entity", () => {
@@ -34,7 +34,7 @@ describe("Credit Card Invoice entity", () => {
     describe('create', () => {
     
         test("should not create an invoice if dueDate is before close date", () => {
-            const account: CreditCardAccount = CreditCardAccount.create({name: accountName, balance: accountBalance, imageUrl, user, institution, creditCardInfo}).value as CreditCardAccount
+            const account: ManualCreditCardAccount = ManualCreditCardAccount.create({name: accountName, balance: accountBalance, imageUrl, user, institution, creditCardInfo}).value as ManualCreditCardAccount
             const validInvoice = {
                 closeDate: new Date('2023-03-10'),
                 dueDate: new Date('2023-02-28'),
@@ -46,7 +46,7 @@ describe("Credit Card Invoice entity", () => {
         }) 
     
         test("should not create an invoice if diference between due date and close date is bigger than 10 days", () => {
-            const account: CreditCardAccount = CreditCardAccount.create({name: accountName, balance: accountBalance, imageUrl, user, institution, creditCardInfo}).value as CreditCardAccount
+            const account: ManualCreditCardAccount = ManualCreditCardAccount.create({name: accountName, balance: accountBalance, imageUrl, user, institution, creditCardInfo}).value as ManualCreditCardAccount
             const validInvoice = {
                 closeDate: new Date('2023-10-21'),
                 dueDate: new Date('2023-11-01'),
@@ -58,7 +58,7 @@ describe("Credit Card Invoice entity", () => {
         }) 
     
         test("should create an invoice if diference between dueDate and close date is less or equal than 10 days", () => {
-            const account: CreditCardAccount = CreditCardAccount.create({name: accountName, balance: accountBalance, imageUrl, user, institution, creditCardInfo}).value as CreditCardAccount
+            const account: ManualCreditCardAccount = ManualCreditCardAccount.create({name: accountName, balance: accountBalance, imageUrl, user, institution, creditCardInfo}).value as ManualCreditCardAccount
             const validInvoice = {
                 closeDate: new Date('2023-10-22'),
                 dueDate: new Date('2023-11-01'),
@@ -73,7 +73,7 @@ describe("Credit Card Invoice entity", () => {
         }) 
     
         test("should create an invoice with valid fields", () => {
-            const account: CreditCardAccount = CreditCardAccount.create({name: accountName, balance: accountBalance, imageUrl, user, institution, creditCardInfo}).value as CreditCardAccount
+            const account: ManualCreditCardAccount = ManualCreditCardAccount.create({name: accountName, balance: accountBalance, imageUrl, user, institution, creditCardInfo}).value as ManualCreditCardAccount
             const validInvoice = {
                 closeDate: new Date(closeDate),
                 dueDate: new Date(dueDate),
@@ -91,7 +91,7 @@ describe("Credit Card Invoice entity", () => {
     describe('add transaction', () => {
 
         test('should add a transaction (expense) and update invoice total amount', () => {
-            const account: CreditCardAccount = CreditCardAccount.create({name: accountName, balance: accountBalance, imageUrl, user, institution, creditCardInfo}).value as CreditCardAccount
+            const account: ManualCreditCardAccount = ManualCreditCardAccount.create({name: accountName, balance: accountBalance, imageUrl, user, institution, creditCardInfo}).value as ManualCreditCardAccount
             
             const closeDate = new Date('2023-02-03')
             const dueDate = new Date('2023-02-10')
@@ -119,7 +119,7 @@ describe("Credit Card Invoice entity", () => {
         })
 
         test('should add a transaction (income) and update invoice total amount', () => {
-            const account: CreditCardAccount = CreditCardAccount.create({name: accountName, balance: accountBalance, imageUrl, user, institution, creditCardInfo}).value as CreditCardAccount
+            const account: ManualCreditCardAccount = ManualCreditCardAccount.create({name: accountName, balance: accountBalance, imageUrl, user, institution, creditCardInfo}).value as ManualCreditCardAccount
             
             const closeDate = new Date('2023-02-03')
             const dueDate = new Date('2023-02-10')
@@ -147,7 +147,7 @@ describe("Credit Card Invoice entity", () => {
         })
 
         test('should add a transaction category "pagamento de cartão", but not update invoice balance', () => {
-            const account: CreditCardAccount = CreditCardAccount.create({name: accountName, balance: accountBalance, imageUrl, user, institution, creditCardInfo}).value as CreditCardAccount
+            const account: ManualCreditCardAccount = ManualCreditCardAccount.create({name: accountName, balance: accountBalance, imageUrl, user, institution, creditCardInfo}).value as ManualCreditCardAccount
             
             const closeDate = new Date('2023-02-03')
             const dueDate = new Date('2023-02-10')
@@ -179,7 +179,7 @@ describe("Credit Card Invoice entity", () => {
 
     describe('remove transaction', () => {
         test('should remove a transaction (expense) and update invoice total amount', () => {
-            const account: CreditCardAccount = CreditCardAccount.create({name: accountName, balance: accountBalance, imageUrl, user, institution, creditCardInfo}).value as CreditCardAccount
+            const account: ManualCreditCardAccount = ManualCreditCardAccount.create({name: accountName, balance: accountBalance, imageUrl, user, institution, creditCardInfo}).value as ManualCreditCardAccount
             
             const closeDate = new Date('2023-02-03')
             const dueDate = new Date('2023-02-10')
@@ -207,7 +207,7 @@ describe("Credit Card Invoice entity", () => {
         })
 
         test('should remove a transaction (income) and update invoice total amount', () => {
-            const account: CreditCardAccount = CreditCardAccount.create({name: accountName, balance: accountBalance, imageUrl, user, institution, creditCardInfo}).value as CreditCardAccount
+            const account: ManualCreditCardAccount = ManualCreditCardAccount.create({name: accountName, balance: accountBalance, imageUrl, user, institution, creditCardInfo}).value as ManualCreditCardAccount
             
             const closeDate = new Date('2023-02-03')
             const dueDate = new Date('2023-02-10')
@@ -235,7 +235,7 @@ describe("Credit Card Invoice entity", () => {
         })
 
         test('should remove a transaction category "pagamento de cartão", but not update invoice balance', () => {
-            const account: CreditCardAccount = CreditCardAccount.create({name: accountName, balance: accountBalance, imageUrl, user, institution, creditCardInfo}).value as CreditCardAccount
+            const account: ManualCreditCardAccount = ManualCreditCardAccount.create({name: accountName, balance: accountBalance, imageUrl, user, institution, creditCardInfo}).value as ManualCreditCardAccount
             
             const closeDate = new Date('2023-02-03')
             const dueDate = new Date('2023-02-10')

@@ -1,7 +1,7 @@
-import { CreditCardAccount, CreditCardTransaction, Institution, User } from "@/entities"
+import { ManualCreditCardAccount, CreditCardTransaction, Institution, User } from "@/entities"
 import { InvalidBalanceError, InvalidCreditCardError, InvalidNameError } from "@/entities/errors"
 
-describe("Credit Card Account entity", () => {
+describe("Manual Credit Card Account entity", () => {
 
     describe('create', () => {
         test("should not create an account with empty name", () => {
@@ -29,7 +29,7 @@ describe("Credit Card Account entity", () => {
                 providerConnectorId: 'valid id'
             }).value as Institution
     
-            const error = CreditCardAccount.create({name, balance, imageUrl, user, institution, creditCardInfo}).value as Error
+            const error = ManualCreditCardAccount.create({name, balance, imageUrl, user, institution, creditCardInfo}).value as Error
             expect(error).toBeInstanceOf(InvalidNameError)
         })
     
@@ -58,7 +58,7 @@ describe("Credit Card Account entity", () => {
                 providerConnectorId: 'valid id'
             }).value as Institution
     
-            const error = CreditCardAccount.create({name, balance, imageUrl, user, institution, creditCardInfo}).value as Error
+            const error = ManualCreditCardAccount.create({name, balance, imageUrl, user, institution, creditCardInfo}).value as Error
             expect(error).toBeInstanceOf(InvalidBalanceError)
         })
     
@@ -87,7 +87,7 @@ describe("Credit Card Account entity", () => {
                 providerConnectorId: 'valid id'
             }).value as Institution
     
-            const error = CreditCardAccount.create({name, balance, imageUrl, user, institution, creditCardInfo}).value as Error
+            const error = ManualCreditCardAccount.create({name, balance, imageUrl, user, institution, creditCardInfo}).value as Error
             expect(error).toBeInstanceOf(InvalidCreditCardError)
             expect(error.message).toBe('Invalid credit card params: brand, closeDay, dueDay, creditLimit, availableCreditLimit')
         })
@@ -117,7 +117,7 @@ describe("Credit Card Account entity", () => {
                 providerConnectorId: 'valid id'
             }).value as Institution
     
-            const account = CreditCardAccount.create({name, balance, imageUrl, user, institution, creditCardInfo}).value as CreditCardAccount
+            const account = ManualCreditCardAccount.create({name, balance, imageUrl, user, institution, creditCardInfo}).value as ManualCreditCardAccount
             expect(account.type).toBe('CREDIT_CARD')
             expect(account.syncType).toBe('MANUAL')
             expect(account.name).toBe(name)
@@ -150,7 +150,7 @@ describe("Credit Card Account entity", () => {
                 password: 'user password',
             }).value as User
     
-            const account = CreditCardAccount.create({name, balance, imageUrl, user, creditCardInfo}).value as CreditCardAccount
+            const account = ManualCreditCardAccount.create({name, balance, imageUrl, user, creditCardInfo}).value as ManualCreditCardAccount
             expect(account.type).toBe('CREDIT_CARD')
             expect(account.syncType).toBe('MANUAL')
             expect(account.name).toBe(name)
@@ -193,7 +193,7 @@ describe("Credit Card Account entity", () => {
                     password: 'user password',
                 }).value as User
         
-                const account = CreditCardAccount.create({name, balance, imageUrl, user, creditCardInfo}).value as CreditCardAccount
+                const account = ManualCreditCardAccount.create({name, balance, imageUrl, user, creditCardInfo}).value as ManualCreditCardAccount
                 
                 const transactionDate = new Date('2023-10-24')
                 const { invoiceDueDate, invoiceClosingDate } = account.calculateInvoiceDatesFromTransaction(transactionDate)
@@ -221,7 +221,7 @@ describe("Credit Card Account entity", () => {
                     password: 'user password',
                 }).value as User
         
-                const account = CreditCardAccount.create({name, balance, imageUrl, user, creditCardInfo}).value as CreditCardAccount
+                const account = ManualCreditCardAccount.create({name, balance, imageUrl, user, creditCardInfo}).value as ManualCreditCardAccount
                 
                 const transactionDate = new Date('2023-10-25')
                 const { invoiceDueDate, invoiceClosingDate } = account.calculateInvoiceDatesFromTransaction(transactionDate)
@@ -249,7 +249,7 @@ describe("Credit Card Account entity", () => {
                     password: 'user password',
                 }).value as User
         
-                const account = CreditCardAccount.create({name, balance, imageUrl, user, creditCardInfo}).value as CreditCardAccount
+                const account = ManualCreditCardAccount.create({name, balance, imageUrl, user, creditCardInfo}).value as ManualCreditCardAccount
                 
                 const transactionDate = new Date('2023-10-26')
                 const { invoiceDueDate, invoiceClosingDate } = account.calculateInvoiceDatesFromTransaction(transactionDate)
@@ -279,7 +279,7 @@ describe("Credit Card Account entity", () => {
                     password: 'user password',
                 }).value as User
         
-                const account = CreditCardAccount.create({name, balance, imageUrl, user, creditCardInfo}).value as CreditCardAccount
+                const account = ManualCreditCardAccount.create({name, balance, imageUrl, user, creditCardInfo}).value as ManualCreditCardAccount
                 
                 const transactionDate = new Date('2023-01-02')
                 const { invoiceDueDate, invoiceClosingDate } = account.calculateInvoiceDatesFromTransaction(transactionDate)
@@ -307,7 +307,7 @@ describe("Credit Card Account entity", () => {
                     password: 'user password',
                 }).value as User
         
-                const account = CreditCardAccount.create({name, balance, imageUrl, user, creditCardInfo}).value as CreditCardAccount
+                const account = ManualCreditCardAccount.create({name, balance, imageUrl, user, creditCardInfo}).value as ManualCreditCardAccount
                 
                 const transactionDate = new Date('2023-01-03')
                 const { invoiceDueDate, invoiceClosingDate } = account.calculateInvoiceDatesFromTransaction(transactionDate)
@@ -335,7 +335,7 @@ describe("Credit Card Account entity", () => {
                     password: 'user password',
                 }).value as User
         
-                const account = CreditCardAccount.create({name, balance, imageUrl, user, creditCardInfo}).value as CreditCardAccount
+                const account = ManualCreditCardAccount.create({name, balance, imageUrl, user, creditCardInfo}).value as ManualCreditCardAccount
                 
                 const transactionDate = new Date('2023-01-04')
                 const { invoiceDueDate, invoiceClosingDate } = account.calculateInvoiceDatesFromTransaction(transactionDate)
@@ -365,7 +365,7 @@ describe("Credit Card Account entity", () => {
                     password: 'user password',
                 }).value as User
         
-                const account = CreditCardAccount.create({name, balance, imageUrl, user, creditCardInfo}).value as CreditCardAccount
+                const account = ManualCreditCardAccount.create({name, balance, imageUrl, user, creditCardInfo}).value as ManualCreditCardAccount
                 
                 const transactionDate = new Date('2023-01-19')
                 const { invoiceDueDate, invoiceClosingDate } = account.calculateInvoiceDatesFromTransaction(transactionDate)
@@ -393,7 +393,7 @@ describe("Credit Card Account entity", () => {
                     password: 'user password',
                 }).value as User
         
-                const account = CreditCardAccount.create({name, balance, imageUrl, user, creditCardInfo}).value as CreditCardAccount
+                const account = ManualCreditCardAccount.create({name, balance, imageUrl, user, creditCardInfo}).value as ManualCreditCardAccount
                 
                 const transactionDate = new Date('2023-01-20')
                 const { invoiceDueDate, invoiceClosingDate } = account.calculateInvoiceDatesFromTransaction(transactionDate)
@@ -421,7 +421,7 @@ describe("Credit Card Account entity", () => {
                     password: 'user password',
                 }).value as User
         
-                const account = CreditCardAccount.create({name, balance, imageUrl, user, creditCardInfo}).value as CreditCardAccount
+                const account = ManualCreditCardAccount.create({name, balance, imageUrl, user, creditCardInfo}).value as ManualCreditCardAccount
                 
                 const transactionDate = new Date('2023-01-21')
                 const { invoiceDueDate, invoiceClosingDate } = account.calculateInvoiceDatesFromTransaction(transactionDate)
@@ -451,7 +451,7 @@ describe("Credit Card Account entity", () => {
                     password: 'user password',
                 }).value as User
         
-                const account = CreditCardAccount.create({name, balance, imageUrl, user, creditCardInfo}).value as CreditCardAccount
+                const account = ManualCreditCardAccount.create({name, balance, imageUrl, user, creditCardInfo}).value as ManualCreditCardAccount
                 
                 const transactionDate = new Date('2023-11-24')
                 const { invoiceDueDate, invoiceClosingDate } = account.calculateInvoiceDatesFromTransaction(transactionDate)
@@ -479,7 +479,7 @@ describe("Credit Card Account entity", () => {
                     password: 'user password',
                 }).value as User
         
-                const account = CreditCardAccount.create({name, balance, imageUrl, user, creditCardInfo}).value as CreditCardAccount
+                const account = ManualCreditCardAccount.create({name, balance, imageUrl, user, creditCardInfo}).value as ManualCreditCardAccount
                 
                 const transactionDate = new Date('2023-11-25')
                 const { invoiceDueDate, invoiceClosingDate } = account.calculateInvoiceDatesFromTransaction(transactionDate)
@@ -507,7 +507,7 @@ describe("Credit Card Account entity", () => {
                     password: 'user password',
                 }).value as User
         
-                const account = CreditCardAccount.create({name, balance, imageUrl, user, creditCardInfo}).value as CreditCardAccount
+                const account = ManualCreditCardAccount.create({name, balance, imageUrl, user, creditCardInfo}).value as ManualCreditCardAccount
                 
                 const transactionDate = new Date('2023-11-26')
                 const { invoiceDueDate, invoiceClosingDate } = account.calculateInvoiceDatesFromTransaction(transactionDate)
@@ -535,7 +535,7 @@ describe("Credit Card Account entity", () => {
                     password: 'user password',
                 }).value as User
         
-                const account = CreditCardAccount.create({name, balance, imageUrl, user, creditCardInfo}).value as CreditCardAccount
+                const account = ManualCreditCardAccount.create({name, balance, imageUrl, user, creditCardInfo}).value as ManualCreditCardAccount
                 
                 const transactionDate = new Date('2023-12-24')
                 const { invoiceDueDate, invoiceClosingDate } = account.calculateInvoiceDatesFromTransaction(transactionDate)
@@ -563,7 +563,7 @@ describe("Credit Card Account entity", () => {
                     password: 'user password',
                 }).value as User
         
-                const account = CreditCardAccount.create({name, balance, imageUrl, user, creditCardInfo}).value as CreditCardAccount
+                const account = ManualCreditCardAccount.create({name, balance, imageUrl, user, creditCardInfo}).value as ManualCreditCardAccount
                 
                 const transactionDate = new Date('2023-12-25')
                 const { invoiceDueDate, invoiceClosingDate } = account.calculateInvoiceDatesFromTransaction(transactionDate)
@@ -591,7 +591,7 @@ describe("Credit Card Account entity", () => {
                     password: 'user password',
                 }).value as User
         
-                const account = CreditCardAccount.create({name, balance, imageUrl, user, creditCardInfo}).value as CreditCardAccount
+                const account = ManualCreditCardAccount.create({name, balance, imageUrl, user, creditCardInfo}).value as ManualCreditCardAccount
                 
                 const transactionDate = new Date('2023-12-26')
                 const { invoiceDueDate, invoiceClosingDate } = account.calculateInvoiceDatesFromTransaction(transactionDate)
@@ -624,7 +624,7 @@ describe("Credit Card Account entity", () => {
                 password: 'user password',
             }).value as User
     
-            const account = CreditCardAccount.create({name, balance, imageUrl, user, creditCardInfo}).value as CreditCardAccount
+            const account = ManualCreditCardAccount.create({name, balance, imageUrl, user, creditCardInfo}).value as ManualCreditCardAccount
 
             const transaction = CreditCardTransaction.create({ 
                 amount: -35000, 
@@ -660,7 +660,7 @@ describe("Credit Card Account entity", () => {
                 password: 'user password',
             }).value as User
     
-            const account = CreditCardAccount.create({name, balance, imageUrl, user, creditCardInfo}).value as CreditCardAccount
+            const account = ManualCreditCardAccount.create({name, balance, imageUrl, user, creditCardInfo}).value as ManualCreditCardAccount
 
             const transaction = CreditCardTransaction.create({ 
                 amount: 35000, 
@@ -698,7 +698,7 @@ describe("Credit Card Account entity", () => {
                 password: 'user password',
             }).value as User
     
-            const account = CreditCardAccount.create({name, balance, imageUrl, user, creditCardInfo}).value as CreditCardAccount
+            const account = ManualCreditCardAccount.create({name, balance, imageUrl, user, creditCardInfo}).value as ManualCreditCardAccount
 
             const transaction = CreditCardTransaction.create({ 
                 amount: -35000, 
@@ -735,7 +735,7 @@ describe("Credit Card Account entity", () => {
                 password: 'user password',
             }).value as User
     
-            const account = CreditCardAccount.create({name, balance, imageUrl, user, creditCardInfo}).value as CreditCardAccount
+            const account = ManualCreditCardAccount.create({name, balance, imageUrl, user, creditCardInfo}).value as ManualCreditCardAccount
 
             const transaction = CreditCardTransaction.create({ 
                 amount: 35000, 

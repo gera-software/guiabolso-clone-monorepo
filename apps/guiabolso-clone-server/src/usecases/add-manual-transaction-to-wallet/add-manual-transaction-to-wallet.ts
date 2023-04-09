@@ -1,4 +1,4 @@
-import { Category, WalletTransaction, User, WalletAccount } from "@/entities"
+import { Category, WalletTransaction, User, ManualWalletAccount } from "@/entities"
 import { Either, left, right } from "@/shared"
 import { TransactionRepository, UseCase, TransactionData, UpdateAccountRepository } from "@/usecases/ports"
 import { InvalidAmountError, InvalidBalanceError, InvalidEmailError, InvalidNameError, InvalidPasswordError, InvalidTransactionError } from "@/entities/errors"
@@ -25,7 +25,7 @@ export class AddManualTransactionToWallet implements UseCase {
 
         const user = userOrError.value as User
 
-        const accountOrError = WalletAccount.create({ 
+        const accountOrError = ManualWalletAccount.create({ 
             name: accountData.name, 
             balance: accountData.balance, 
             imageUrl: accountData.imageUrl, 
@@ -35,7 +35,7 @@ export class AddManualTransactionToWallet implements UseCase {
             return left(accountOrError.value)
         }
 
-        const walletAccount = accountOrError.value as WalletAccount
+        const walletAccount = accountOrError.value as ManualWalletAccount
 
         let category: Category = null
         if(categoryData) {

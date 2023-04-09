@@ -1,21 +1,21 @@
-import { Either, left, right } from "@/shared";
-import { Amount, CreditCardAccount, CreditCardTransaction } from "@/entities";
-import { InvalidCreditCardInvoiceError } from "./errors";
+import { Either, left, right } from "@/shared"
+import { Amount, ManualCreditCardAccount, CreditCardTransaction } from "@/entities"
+import { InvalidCreditCardInvoiceError } from "@/entities/errors"
 
 export class CreditCardInvoice {
     public readonly closeDate: Date
     public readonly dueDate: Date
     public readonly amount: Amount
-    public readonly account: CreditCardAccount
+    public readonly account: ManualCreditCardAccount
 
-    private constructor(invoice: { closeDate: Date, dueDate: Date, amount: Amount, account: CreditCardAccount }) {
+    private constructor(invoice: { closeDate: Date, dueDate: Date, amount: Amount, account: ManualCreditCardAccount }) {
         this.closeDate = invoice.closeDate
         this.dueDate = invoice.dueDate
         this.amount = invoice.amount
         this.account = invoice.account
     }
 
-    public static create(invoice: { closeDate: Date, dueDate: Date, amount: number, account: CreditCardAccount }): Either<InvalidCreditCardInvoiceError, CreditCardInvoice> {
+    public static create(invoice: { closeDate: Date, dueDate: Date, amount: number, account: ManualCreditCardAccount }): Either<InvalidCreditCardInvoiceError, CreditCardInvoice> {
         if(invoice.dueDate <= invoice.closeDate) {
             return left(new InvalidCreditCardInvoiceError('Close date must be before due date'))
         }

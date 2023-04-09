@@ -1,7 +1,6 @@
-import { Either, left, right } from "@/shared"
+import { Either, right } from "@/shared"
 import { TransactionData, TransactionRepository, UpdateAccountRepository, UseCase, UserRepository } from "@/usecases/ports"
-import { UnregisteredTransactionError } from "@/usecases/errors"
-import { WalletTransaction, User, WalletAccount } from "@/entities"
+import { WalletTransaction, User, ManualWalletAccount } from "@/entities"
 
 export class RemoveManualTransactionFromWallet implements UseCase {
     private readonly transactionRepo: TransactionRepository
@@ -25,14 +24,14 @@ export class RemoveManualTransactionFromWallet implements UseCase {
 
         const user = userOrError.value as User
 
-        const accountOrError = WalletAccount.create({ 
+        const accountOrError = ManualWalletAccount.create({ 
             name: foundAccountData.name, 
             balance: foundAccountData.balance, 
             imageUrl: foundAccountData.imageUrl, 
             user 
         })
 
-        const walletAccount = accountOrError.value as WalletAccount
+        const walletAccount = accountOrError.value as ManualWalletAccount
 
         const transactionOrError = WalletTransaction.create({
             amount: removedTransaction.amount,

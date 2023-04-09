@@ -1,7 +1,7 @@
-import { WalletTransaction, User, WalletAccount } from "@/entities"
+import { WalletTransaction, User, ManualWalletAccount } from "@/entities"
 import { InvalidBalanceError, InvalidNameError } from "@/entities/errors"
 
-describe("Wallet Account entity", () => {
+describe("Manual Wallet Account entity", () => {
     describe('create', () => {
         test("should not create an account with empty name", () => {
             const name = ''
@@ -13,7 +13,7 @@ describe("Wallet Account entity", () => {
                 password: 'user password',
             }).value as User
        
-            const error = WalletAccount.create({name, balance, imageUrl, user}).value as Error
+            const error = ManualWalletAccount.create({name, balance, imageUrl, user}).value as Error
             expect(error).toBeInstanceOf(InvalidNameError)
         })
     
@@ -26,7 +26,7 @@ describe("Wallet Account entity", () => {
                 email: 'user@email',
                 password: 'user password',
             }).value as User
-            const error = WalletAccount.create({name, balance, imageUrl, user}).value as Error
+            const error = ManualWalletAccount.create({name, balance, imageUrl, user}).value as Error
             expect(error).toBeInstanceOf(InvalidBalanceError)
         })
     
@@ -39,7 +39,7 @@ describe("Wallet Account entity", () => {
                 email: 'user@email',
                 password: 'user password',
             }).value as User
-            const account = WalletAccount.create({name, balance, imageUrl, user}).value as WalletAccount
+            const account = ManualWalletAccount.create({name, balance, imageUrl, user}).value as ManualWalletAccount
             expect(account.type).toBe('WALLET')
             expect(account.syncType).toBe('MANUAL')
             expect(account.name).toBe(name)
@@ -60,7 +60,7 @@ describe("Wallet Account entity", () => {
                 email: 'user@email',
                 password: 'user password',
             }).value as User
-            const account = WalletAccount.create({name, balance, imageUrl, user}).value as WalletAccount
+            const account = ManualWalletAccount.create({name, balance, imageUrl, user}).value as ManualWalletAccount
 
             const transaction = WalletTransaction.create({ 
                 amount: 2567, 
@@ -82,7 +82,7 @@ describe("Wallet Account entity", () => {
                 email: 'user@email',
                 password: 'user password',
             }).value as User
-            const account = WalletAccount.create({name, balance, imageUrl, user}).value as WalletAccount
+            const account = ManualWalletAccount.create({name, balance, imageUrl, user}).value as ManualWalletAccount
 
             const transaction = WalletTransaction.create({ 
                 amount: -2567, 
@@ -106,7 +106,7 @@ describe("Wallet Account entity", () => {
                 email: 'user@email',
                 password: 'user password',
             }).value as User
-            const account = WalletAccount.create({name, balance, imageUrl, user}).value as WalletAccount
+            const account = ManualWalletAccount.create({name, balance, imageUrl, user}).value as ManualWalletAccount
 
             const transaction = WalletTransaction.create({ 
                 amount: 2567, 
@@ -128,7 +128,7 @@ describe("Wallet Account entity", () => {
                 email: 'user@email',
                 password: 'user password',
             }).value as User
-            const account = WalletAccount.create({name, balance, imageUrl, user}).value as WalletAccount
+            const account = ManualWalletAccount.create({name, balance, imageUrl, user}).value as ManualWalletAccount
 
             const transaction = WalletTransaction.create({ 
                 amount: -2567, 
