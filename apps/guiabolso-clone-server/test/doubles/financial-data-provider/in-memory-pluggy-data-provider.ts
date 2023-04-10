@@ -1,5 +1,5 @@
 import { Either, right } from "@/shared"
-import { UnauthenticatedError, UnexpectedError } from "@/usecases/errors"
+import { UnexpectedError } from "@/usecases/errors"
 import { InstitutionData, FinancialDataProvider } from "@/usecases/ports"
 
 export class InMemoryPluggyDataProvider implements FinancialDataProvider {

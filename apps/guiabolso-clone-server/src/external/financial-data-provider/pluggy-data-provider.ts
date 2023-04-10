@@ -1,7 +1,7 @@
 import { PluggyClient } from 'pluggy-sdk'
 import { FinancialDataProvider, InstitutionData } from "@/usecases/ports"
 import { Either, left, right } from '@/shared'
-import { UnauthenticatedError, UnexpectedError } from '@/usecases/errors'
+import { UnexpectedError } from '@/usecases/errors'
 
 export class PluggyDataProvider implements FinancialDataProvider {
     private client: PluggyClient

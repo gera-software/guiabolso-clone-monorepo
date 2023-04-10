@@ -1,6 +1,6 @@
 import { Connector, PluggyClient } from 'pluggy-sdk'
 import { PluggyDataProvider } from "@/external/financial-data-provider"
-import { UnauthenticatedError, UnexpectedError } from '@/usecases/errors'
+import { UnexpectedError } from '@/usecases/errors'
 jest.mock('pluggy-sdk')
 const mockedPluggyClient = jest.mocked(PluggyClient)
 

@@ -1,5 +1,5 @@
 import { left, right } from "@/shared"
-import { UnauthenticatedError, UnexpectedError } from "@/usecases/errors"
+import { UnexpectedError } from "@/usecases/errors"
 import { PluggyConnectWidgetCreateToken } from "@/usecases/pluggy-connect-widget-create-token"
 import { UseCase } from "@/usecases/ports"
 import { PluggyConnectWidgetCreateTokenController } from "@/web-controllers"
