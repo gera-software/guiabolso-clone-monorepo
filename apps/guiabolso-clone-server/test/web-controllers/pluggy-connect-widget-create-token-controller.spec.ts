@@ -48,26 +48,7 @@ describe('Pluggy Connect Widget - create token controller', () => {
         expect(response.body).toEqual({ accessToken:'valid-access-token-' + validItemId })
     })
 
-    test('should return status 400 when data provider returns UnauthenticatedError', async () => {
-        mockedDataProvider.prototype.getConnectToken.mockResolvedValueOnce(left(new UnauthenticatedError()))
-
-        const financialDataProvider = new InMemoryPluggyDataProvider([])
-        const usecase = new PluggyConnectWidgetCreateToken(financialDataProvider)
-        const sut = new PluggyConnectWidgetCreateTokenController(usecase)
-
-        const validItemId = 'valid-item-id'
-        const validRequest: HttpRequest = {
-            body: {
-                itemId: validItemId
-            }
-        }
-
-        const response: HttpResponse = await sut.handle(validRequest)
-        expect(response.statusCode).toEqual(400)
-        expect(response.body).toBeInstanceOf(UnauthenticatedError)
-    })
-
-    test('should return status 400 when data provider returns UnexpectedError', async () => {
+    test('should return status 400 when data provider returns error', async () => {
         mockedDataProvider.prototype.getConnectToken.mockResolvedValueOnce(left(new UnexpectedError()))
 
         const financialDataProvider = new InMemoryPluggyDataProvider([])

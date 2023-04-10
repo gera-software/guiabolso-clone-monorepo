@@ -17,7 +17,7 @@ export class InMemoryPluggyDataProvider implements FinancialDataProvider {
         return this._data
     }
 
-    public async getConnectToken(itemId?: string): Promise<Either<UnauthenticatedError | UnexpectedError, string>> {
+    public async getConnectToken(itemId?: string): Promise<Either<UnexpectedError, string>> {
         return right('valid-access-token')
     }
 

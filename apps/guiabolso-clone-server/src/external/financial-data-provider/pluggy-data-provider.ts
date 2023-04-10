@@ -1,6 +1,6 @@
 import { PluggyClient } from 'pluggy-sdk'
 import { FinancialDataProvider, InstitutionData } from "@/usecases/ports"
-import { Either } from '@/shared'
+import { Either, left, right } from '@/shared'
 import { UnauthenticatedError, UnexpectedError } from '@/usecases/errors'
 
 export class PluggyDataProvider implements FinancialDataProvider {
@@ -30,8 +30,13 @@ export class PluggyDataProvider implements FinancialDataProvider {
                 })
     }
 
-    public async getConnectToken(itemId?: string): Promise<Either<UnauthenticatedError | UnexpectedError, string>> {
-        throw new Error("Method not implemented.")
+    public async getConnectToken(itemId?: string): Promise<Either<UnexpectedError, string>> {
+        try {
+            const result = await this.client.createConnectToken(itemId)
+            return right(result.accessToken)
+        } catch(error) {
+            return left(new UnexpectedError())
+        }
     }
 
 }
