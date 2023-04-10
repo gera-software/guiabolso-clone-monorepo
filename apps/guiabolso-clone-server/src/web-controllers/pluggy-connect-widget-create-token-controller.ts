@@ -11,7 +11,7 @@ export class PluggyConnectWidgetCreateTokenController implements Controller {
 
     async handle(request: HttpRequest): Promise<HttpResponse> {
         try {
-            const accessToken = await this.usecase.perform(request.body)
+            const accessToken = await this.usecase.perform({ itemId: request.query?.itemId })
     
             if(accessToken.isLeft()) {
                 return badRequest(accessToken.value)

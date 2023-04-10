@@ -39,6 +39,8 @@ describe('Pluggy Connect Widget - create token controller', () => {
         const validItemId = 'valid-item-id'
         const validRequest: HttpRequest = {
             body: {
+            },
+            query: {
                 itemId: validItemId
             }
         }
@@ -58,6 +60,8 @@ describe('Pluggy Connect Widget - create token controller', () => {
         const validItemId = 'valid-item-id'
         const validRequest: HttpRequest = {
             body: {
+            }, 
+            query: {
                 itemId: validItemId
             }
         }
@@ -74,6 +78,8 @@ describe('Pluggy Connect Widget - create token controller', () => {
         const validItemId = 'valid-item-id'
         const validRequest: HttpRequest = {
             body: {
+            }, 
+            query: {
                 itemId: validItemId
             }
         }

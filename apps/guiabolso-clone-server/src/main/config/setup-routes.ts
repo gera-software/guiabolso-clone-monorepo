@@ -6,10 +6,11 @@ import {
     makeListAllCategoriesController, 
     makeListAvailableAutomaticInstitutionsController, 
     makeListInstitutionsByTypeController, 
+    makePluggyConnectWidgetCreateTokenController, 
     makeRemoveManualTransactionController, 
     makeSignInController,
     makeSignUpController,
-    makeUpdateManualTransactionController
+    makeUpdateManualTransactionController,
  } from '@/main/factories'
 
 export default (app: Express): void => {
@@ -25,8 +26,11 @@ export default (app: Express): void => {
     router.post('/manual-account', adaptRoute(makeCreateManualAccountController()))
 
     router.get('/institution', adaptRoute(makeListInstitutionsByTypeController()))
-    router.get('/available-automatic-institutions', adaptRoute(makeListAvailableAutomaticInstitutionsController()))
     router.get('/category', adaptRoute(makeListAllCategoriesController()))
+
+    router.get('/available-automatic-institutions', adaptRoute(makeListAvailableAutomaticInstitutionsController()))
+    router.get('/pluggy/create-token', adaptRoute(makePluggyConnectWidgetCreateTokenController()))
+
 
     router.post('/manual-transaction', adaptRoute(makeAddManualTransactionController()))
     router.delete('/manual-transaction', adaptRoute(makeRemoveManualTransactionController()))
