@@ -1,5 +1,5 @@
 import { PluggyClient } from 'pluggy-sdk'
-import { FinancialDataProvider, InstitutionData } from "@/usecases/ports"
+import { AccountData, FinancialDataProvider, InstitutionData } from "@/usecases/ports"
 import { Either, left, right } from '@/shared'
 import { UnexpectedError } from '@/usecases/errors'
 
@@ -37,6 +37,10 @@ export class PluggyDataProvider implements FinancialDataProvider {
         } catch(error) {
             return left(new UnexpectedError())
         }
+    }
+
+    public async getAccountsByItemId(itemId: string): Promise<Either<UnexpectedError, AccountData[]>> {
+        throw new Error('Method not implemented.')
     }
 
 }

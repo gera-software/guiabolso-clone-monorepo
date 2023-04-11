@@ -15,6 +15,10 @@ export class InMemoryPluggyDataProvider implements FinancialDataProvider {
         return this._institutions
     }
 
+    public get accounts() {
+        return this._accounts
+    }
+
     public async getAvailableAutomaticInstitutions(): Promise<InstitutionData[]> {
         return this._institutions
     }
@@ -22,5 +26,12 @@ export class InMemoryPluggyDataProvider implements FinancialDataProvider {
     public async getConnectToken(itemId?: string): Promise<Either<UnexpectedError, string>> {
         return right('valid-access-token')
     }
+
+    public async getAccountsByItemId(itemId: string): Promise<Either<UnexpectedError, AccountData[]>> {
+        const accounts = this._accounts.filter(account => account.synchonization?.providerItemId == itemId )
+
+        return right(accounts)
+    }
+
 
 }
