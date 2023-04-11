@@ -23,7 +23,7 @@ describe('List available automatic institutions use case', () => {
                 type: 'BUSINESS_BANK',
             }
         ]
-        const financialDataProvider = new InMemoryPluggyDataProvider(arrayInstitutions)
+        const financialDataProvider = new InMemoryPluggyDataProvider({ institutions: arrayInstitutions})
         const sut = new ListAvailableAutomaticInstitutions(financialDataProvider)
         const response = (await sut.perform({})).value as InstitutionData[]
         expect(response.length).toBe(2)

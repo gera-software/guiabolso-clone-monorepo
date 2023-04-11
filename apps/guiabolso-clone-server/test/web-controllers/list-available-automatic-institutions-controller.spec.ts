@@ -25,7 +25,7 @@ describe('List all available automatic institutions web controller', () => {
                 type: 'BUSINESS_BANK',
             }
         ]
-        const financialDataProvider = new InMemoryPluggyDataProvider(arrayConnectors)
+        const financialDataProvider = new InMemoryPluggyDataProvider({ institutions: arrayConnectors })
         const usecase = new ListAvailableAutomaticInstitutions(financialDataProvider)
         const sut = new ListAvailableAutomaticInstitutionsController(usecase)
 

@@ -14,7 +14,7 @@ describe('Pluggy Connect Widget - create token controller', () => {
     test('should return status 201 created and generic connect token', async () => {
         mockedDataProvider.prototype.getConnectToken.mockImplementationOnce(async () => { return right('valid-access-token')})
 
-        const financialDataProvider = new InMemoryPluggyDataProvider([])
+        const financialDataProvider = new InMemoryPluggyDataProvider({ institutions: [] })
         const usecase = new PluggyConnectWidgetCreateToken(financialDataProvider)
         const sut = new PluggyConnectWidgetCreateTokenController(usecase)
 
@@ -32,7 +32,7 @@ describe('Pluggy Connect Widget - create token controller', () => {
     test('should return status 201 created and specific connect token', async () => {
         mockedDataProvider.prototype.getConnectToken.mockImplementationOnce(async (itemId) => { return right('valid-access-token-' + itemId)})
 
-        const financialDataProvider = new InMemoryPluggyDataProvider([])
+        const financialDataProvider = new InMemoryPluggyDataProvider({ institutions: [] })
         const usecase = new PluggyConnectWidgetCreateToken(financialDataProvider)
         const sut = new PluggyConnectWidgetCreateTokenController(usecase)
 
@@ -53,7 +53,7 @@ describe('Pluggy Connect Widget - create token controller', () => {
     test('should return status 400 when data provider returns error', async () => {
         mockedDataProvider.prototype.getConnectToken.mockResolvedValueOnce(left(new UnexpectedError()))
 
-        const financialDataProvider = new InMemoryPluggyDataProvider([])
+        const financialDataProvider = new InMemoryPluggyDataProvider({ institutions: [] })
         const usecase = new PluggyConnectWidgetCreateToken(financialDataProvider)
         const sut = new PluggyConnectWidgetCreateTokenController(usecase)
 
