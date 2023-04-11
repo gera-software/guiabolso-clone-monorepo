@@ -10,4 +10,9 @@ export interface CreditCardAccountData {
     institution?: InstitutionData,
     id?: string,
     creditCardInfo?: CreditCardInfoData,
+    providerAccountId?: string,
+    synchonization?: {
+        providerItemId: string,
+        createdAt: Date,
+    },
 }
