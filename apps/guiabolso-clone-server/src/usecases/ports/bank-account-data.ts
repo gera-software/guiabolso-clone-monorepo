@@ -9,4 +9,9 @@ export interface BankAccountData {
     userId: string,
     institution?: InstitutionData,
     id?: string,
+    providerAccountId?: string,
+    synchonization?: {
+        providerItemId: string,
+        createdAt: Date,
+    },
 }
