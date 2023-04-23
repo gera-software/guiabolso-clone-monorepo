@@ -27,8 +27,8 @@ describe('Connect automatic accounts use case', () => {
         const response = (await sut.perform(connectRequest)).value as Error
         expect(response).toBeInstanceOf(UnexpectedError)
     })
-    
-    test.skip('should create all accounts linked to an item in data provider', async () => {
+
+    test('should create all accounts linked to an item in data provider', async () => {
         const validItemId = 'valid-item-id'
 
         const userId = 'u0'
@@ -121,7 +121,7 @@ describe('Connect automatic accounts use case', () => {
         }
 
         const accountRepository = new InMemoryAccountRepository([])
-        const userRepository = new InMemoryUserRepository([])
+        const userRepository = new InMemoryUserRepository([userData])
         const institutionRepository = new InMemoryInstitutionRepository([institution])
 
         const financialDataProvider = new InMemoryPluggyDataProvider({ institutions: [], accounts: [ accountData1, accountData2 ] })

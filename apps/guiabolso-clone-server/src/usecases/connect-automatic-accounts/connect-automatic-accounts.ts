@@ -1,5 +1,5 @@
-import { left } from "@/shared";
-import { AccountRepository, FinancialDataProvider, UseCase } from "@/usecases/ports";
+import { Either, left, right } from "@/shared";
+import { AccountData, AccountRepository, FinancialDataProvider, UseCase } from "@/usecases/ports";
 
 export class ConnectAutomaticAccounts implements UseCase {
     private readonly financialDataProvider: FinancialDataProvider
@@ -18,8 +18,31 @@ export class ConnectAutomaticAccounts implements UseCase {
         if(accountsOrError.isLeft()) {
             return left(accountsOrError.value)
         }
+
+        const accounts = accountsOrError.value as AccountData[] 
+
+        const results = []
+        let res
+        for(let i = 0; i < accounts.length; i++) {
+            switch(accounts[i].type) {
+                case 'BANK':
+                    res = await this.createAutomaticBankAccount.perform(accounts[i])
+                    if(res.isRight()) {
+                        results.push(res.value)
+                    }
+                    break
+                case 'CREDIT_CARD':
+                    res = await this.createAutomaticCreditCardAccount.perform(accounts[i])
+                    if(res.isRight()) {
+                        results.push(res.value)
+                    }
+                    break
+            }
+        }
+
         
-        throw new Error();
+
+        return right(results)
     }
 
 }
