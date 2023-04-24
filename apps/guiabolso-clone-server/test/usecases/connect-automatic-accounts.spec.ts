@@ -145,7 +145,7 @@ describe('Connect automatic accounts use case', () => {
 
     })
     
-    test("should create account and institution (if institution's account does not exists yet)", async () => {
+    test("should create account and upsert institution", async () => {
         const validItemId = 'valid-item-id'
 
         const userId = 'u0'
