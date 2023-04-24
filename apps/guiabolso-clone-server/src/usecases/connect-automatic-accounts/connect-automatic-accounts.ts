@@ -45,7 +45,7 @@ export class ConnectAutomaticAccounts implements UseCase {
             if(res && res.isRight()) {
                 results.push(res.value)
             } else {
-                results.push(res.value)
+                // results.push(res.value)
             }
         }
 
