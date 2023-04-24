@@ -14,7 +14,7 @@ export class ConnectAutomaticAccounts implements UseCase {
         this.institutionRepo = institutionRepository
     }
 
-    async perform(request: { itemId: string }): Promise<any> {
+    async perform(request: { itemId: string, userId: string }): Promise<any> {
         const accountsOrError = await this.financialDataProvider.getAccountsByItemId(request.itemId)
         
         if(accountsOrError.isLeft()) {
@@ -26,13 +26,13 @@ export class ConnectAutomaticAccounts implements UseCase {
 
         // update institution
         const institutionData = await this.institutionRepo.findByProviderConnectorIdAndUpdate(accounts[0].institution)
-        
 
         const results = []
         for(let i = 0; i < accounts.length; i++) {
             let res
 
             accounts[i].institution = institutionData
+            accounts[i].userId = request.userId
             switch(accounts[i].type) {
                 case 'BANK':
                     res = await this.createAutomaticBankAccount.perform(accounts[i])

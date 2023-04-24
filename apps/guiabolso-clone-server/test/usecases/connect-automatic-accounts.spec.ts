@@ -9,9 +9,17 @@ import { InMemoryAccountRepository, InMemoryInstitutionRepository, InMemoryUserR
 describe('Connect automatic accounts use case', () => {
     test('should not create accounts when the data provider has an error', async () => {
         const validItemId = 'valid-item-id'
+        const userId = 'u0'
+
+        const userData: UserData = {
+            id: userId, 
+            name: 'any name', 
+            email: 'any@email.com', 
+            password: '123'
+        }
 
         const accountRepository = new InMemoryAccountRepository([])
-        const userRepository = new InMemoryUserRepository([])
+        const userRepository = new InMemoryUserRepository([userData])
         const institutionRepository = new InMemoryInstitutionRepository([])
 
         const financialDataProvider = new ErrorPluggyDataProvider({ institutions: [], accounts: [] })
@@ -21,7 +29,8 @@ describe('Connect automatic accounts use case', () => {
         const sut = new ConnectAutomaticAccounts(financialDataProvider, createAutomaticBankAccount, createAutomaticCreditCardAccount, institutionRepository)
 
         const connectRequest = {
-            itemId: validItemId
+            itemId: validItemId,
+            userId: userId,
         }
 
         const response = (await sut.perform(connectRequest)).value as Error
@@ -94,8 +103,15 @@ describe('Connect automatic accounts use case', () => {
             name: bankName,
             balance: bankBalance,
             imageUrl,
-            userId,
-            institution,
+            userId: null,
+            institution: {
+                id: null,
+                name: institution.name,
+                type: institution.type,
+                imageUrl: institution.imageUrl,
+                primaryColor: institution.primaryColor,
+                providerConnectorId: institution.providerConnectorId,
+            },
             providerAccountId: providerBankAccountId,
             synchonization: {
                 providerItemId,
@@ -109,9 +125,16 @@ describe('Connect automatic accounts use case', () => {
             syncType,
             name: creditCardName,
             balance: creditCardBalance,
-            userId,
+            userId: null,
             imageUrl,
-            institution,
+            institution: {
+                id: null,
+                name: institution.name,
+                type: institution.type,
+                imageUrl: institution.imageUrl,
+                primaryColor: institution.primaryColor,
+                providerConnectorId: institution.providerConnectorId,
+            },
             creditCardInfo,
             providerAccountId: providerCreditCardAccountId,
             synchonization: {
@@ -131,7 +154,8 @@ describe('Connect automatic accounts use case', () => {
         const sut = new ConnectAutomaticAccounts(financialDataProvider, createAutomaticBankAccount, createAutomaticCreditCardAccount, institutionRepository)
 
         const connectRequest = {
-            itemId: validItemId
+            itemId: validItemId,
+            userId: userId,
         }
 
         const response = (await sut.perform(connectRequest)).value as AccountData[]
@@ -211,7 +235,7 @@ describe('Connect automatic accounts use case', () => {
             name: creditCardName,
             balance: creditCardBalance,
             imageUrl,
-            userId,
+            userId: null,
             institution: institution1,
             providerAccountId: providerBankAccountId,
             synchonization: {
@@ -226,7 +250,7 @@ describe('Connect automatic accounts use case', () => {
             syncType,
             name: bankName,
             balance: bankBalance,
-            userId,
+            userId: null,
             imageUrl,
             institution: institution1,
             creditCardInfo,
@@ -248,7 +272,8 @@ describe('Connect automatic accounts use case', () => {
         const sut = new ConnectAutomaticAccounts(financialDataProvider, createAutomaticBankAccount, createAutomaticCreditCardAccount, institutionRepository)
 
         const connectRequest = {
-            itemId: validItemId
+            itemId: validItemId,
+            userId: userId,
         }
 
         const response = (await sut.perform(connectRequest)).value as AccountData[]
