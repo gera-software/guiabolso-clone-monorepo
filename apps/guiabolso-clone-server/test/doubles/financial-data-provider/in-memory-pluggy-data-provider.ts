@@ -33,10 +33,4 @@ export class InMemoryPluggyDataProvider implements FinancialDataProvider {
         return right(accounts)
     }
 
-    public async getInstitution(providerConnectorId: number): Promise<Either<UnexpectedError, InstitutionData>> {
-        const institution = this._institutions.find(institution => institution.providerConnectorId == ''+providerConnectorId)
-
-        return right(institution ?? null)
-    }
-
 }

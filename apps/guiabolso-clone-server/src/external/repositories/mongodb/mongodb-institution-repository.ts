@@ -39,6 +39,10 @@ export class MongodbInstitutionRepository implements InstitutionRepository {
         return false
     }
 
+    async findByProviderConnectorIdAndUpdate(institution: InstitutionData): Promise<InstitutionData> {
+        throw new Error("Method findByProviderConnectorIdAndUpdate not implemented.")
+    }
+
     private withApplicationId (dbInstitution: MongodbInstitution): InstitutionData {
         return {
             id: dbInstitution._id.toString(),

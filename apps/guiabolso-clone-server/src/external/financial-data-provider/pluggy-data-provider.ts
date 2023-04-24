@@ -42,9 +42,4 @@ export class PluggyDataProvider implements FinancialDataProvider {
     public async getAccountsByItemId(itemId: string): Promise<Either<UnexpectedError, AccountData[]>> {
         throw new Error('Method getAccountsByItemId not implemented.')
     }
-
-    public async getInstitution(providerConnectorId: number): Promise<Either<UnexpectedError, InstitutionData>> {
-        throw new Error('Method getInstitution not implemented.')
-    }
-
 }

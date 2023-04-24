@@ -31,9 +31,4 @@ export class ErrorPluggyDataProvider implements FinancialDataProvider {
         return left(new UnexpectedError('erro inesperado'))
     }
 
-    public async getInstitution(providerConnectorId: number): Promise<Either<UnexpectedError, InstitutionData>> {
-        return left(new UnexpectedError("erro inesperado"))
-    }
-
-
 }

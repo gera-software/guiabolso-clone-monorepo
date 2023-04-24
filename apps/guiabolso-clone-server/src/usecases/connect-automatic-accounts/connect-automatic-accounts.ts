@@ -24,14 +24,15 @@ export class ConnectAutomaticAccounts implements UseCase {
         const accounts = accountsOrError.value as AccountData[] 
 
 
-        // update institutions list
-        const providerConnectorId: number = +accounts[0].institution.providerConnectorId
-        const institution = await this.financialDataProvider.getInstitution(providerConnectorId)
-
+        // update institution
+        const institutionData = await this.institutionRepo.findByProviderConnectorIdAndUpdate(accounts[0].institution)
+        
 
         const results = []
         for(let i = 0; i < accounts.length; i++) {
             let res
+
+            accounts[i].institution = institutionData
             switch(accounts[i].type) {
                 case 'BANK':
                     res = await this.createAutomaticBankAccount.perform(accounts[i])
@@ -44,7 +45,7 @@ export class ConnectAutomaticAccounts implements UseCase {
             if(res && res.isRight()) {
                 results.push(res.value)
             } else {
-                // results.push(res.value)
+                results.push(res.value)
             }
         }
 
