@@ -75,4 +75,62 @@ describe('Mongodb Institution repository', () => {
         expect(result.length).toBe(1)
     })
 
+    describe('findByProviderConnectorIdAndUpdate', () => {
+        test('if found institution by provider connector id, should updated it', async () => {
+            const sut = new MongodbInstitutionRepository()
+
+            const updatedName = 'institution 1 updated'
+            const updatedType = 'PERSONAL_BANK'
+            const updatedImage = 'url 1 updated'
+            const updatedColor = 'color 1 updated'
+            const providerConnectorId = 'connector 1'
+
+            const institution: InstitutionData = {
+                id: null,
+                name: updatedName, 
+                type: updatedType, 
+                imageUrl: updatedImage, 
+                primaryColor: updatedColor,
+                providerConnectorId,
+            }
+
+            const result = await sut.findByProviderConnectorIdAndUpdate(institution)
+            expect(result.id).toBe(institutionsArray[1]._id.toString())
+            expect(result.name).toBe(updatedName)
+            expect(result.type).toBe(updatedType)
+            expect(result.imageUrl).toBe(updatedImage)
+            expect(result.primaryColor).toBe(updatedColor)
+            expect(result.providerConnectorId).toBe(providerConnectorId)
+        })
+
+        test('if not found institution by provider connector id, should create it', async () => {
+            const sut = new MongodbInstitutionRepository()
+
+            const updatedName = 'new institution'
+            const updatedType = 'PERSONAL_BANK'
+            const updatedImage = 'new url'
+            const updatedColor = 'new color'
+            const providerConnectorId = 'new connector'
+
+            const institution: InstitutionData = {
+                id: null,
+                name: updatedName, 
+                type: updatedType, 
+                imageUrl: updatedImage, 
+                primaryColor: updatedColor,
+                providerConnectorId,
+            }
+
+            const result = await sut.findByProviderConnectorIdAndUpdate(institution)
+            expect(result.id).toBeDefined()
+            expect(result.name).toBe(updatedName)
+            expect(result.type).toBe(updatedType)
+            expect(result.imageUrl).toBe(updatedImage)
+            expect(result.primaryColor).toBe(updatedColor)
+            expect(result.providerConnectorId).toBe(providerConnectorId)
+        })
+
+
+    })
+
 })

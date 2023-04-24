@@ -39,8 +39,29 @@ export class MongodbInstitutionRepository implements InstitutionRepository {
         return false
     }
 
-    async findByProviderConnectorIdAndUpdate(institution: InstitutionData): Promise<InstitutionData> {
-        throw new Error("Method findByProviderConnectorIdAndUpdate not implemented.")
+    async findByProviderConnectorIdAndUpdate(institutionData: InstitutionData): Promise<InstitutionData> {
+        const institutionCollection = MongoHelper.getCollection('institutions')
+        const institution = await institutionCollection.findOneAndUpdate(
+            { providerConnectorId: institutionData.providerConnectorId }, 
+            { $set: {
+                name: institutionData.name,
+                type: institutionData.type,
+                imageUrl: institutionData.imageUrl,
+                primaryColor: institutionData.primaryColor,
+                } 
+            },
+            {
+                upsert: true,
+                returnDocument: 'after'
+            }
+        )
+
+        if(institution) {
+            return this.withApplicationId(institution.value as MongodbInstitution)
+        } else {
+            return null
+        }
+
     }
 
     private withApplicationId (dbInstitution: MongodbInstitution): InstitutionData {
