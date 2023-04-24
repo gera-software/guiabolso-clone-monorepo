@@ -2,6 +2,7 @@ import { Express, Router } from 'express'
 import { adaptRoute } from '@/main/adapters'
 import { 
     makeAddManualTransactionController, 
+    makeConnectAutomaticAccountsController, 
     makeCreateManualAccountController, 
     makeListAllCategoriesController, 
     makeListAvailableAutomaticInstitutionsController, 
@@ -30,6 +31,7 @@ export default (app: Express): void => {
 
     router.get('/available-automatic-institutions', adaptRoute(makeListAvailableAutomaticInstitutionsController()))
     router.get('/pluggy/create-token', adaptRoute(makePluggyConnectWidgetCreateTokenController()))
+    router.post('/connect-accounts', adaptRoute(makeConnectAutomaticAccountsController()))
 
 
     router.post('/manual-transaction', adaptRoute(makeAddManualTransactionController()))

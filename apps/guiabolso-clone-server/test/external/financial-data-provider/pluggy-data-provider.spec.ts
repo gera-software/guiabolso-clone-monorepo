@@ -244,7 +244,7 @@ describe('Pluggy Data Provider', () => {
             }
 
             const creditAccount: PluggyAccount = {
-                "id": "a658c848-e475-457b-8565-d1fffba127c4",
+                "id": "a658c848-e475-457b-8565-d1fffba127c5",
                 "type": "CREDIT",
                 "subtype": "CREDIT_CARD",
                 "number": "xxxx8670",

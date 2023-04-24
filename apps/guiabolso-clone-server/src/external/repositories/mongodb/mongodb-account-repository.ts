@@ -11,6 +11,8 @@ export type MongodbCreditCardInfo = {
     dueDay: number,
 }
 
+// TODO providerAccountId
+// TODO synchonization
 export type MongodbAccount = {
     type: string,
     syncType: string,
