@@ -13,7 +13,7 @@ export class ConnectAutomaticAccountsController implements Controller {
 
     async handle(request: HttpRequest): Promise<HttpResponse> {
         try {
-            const requiredParamNames = ['itemId']
+            const requiredParamNames = ['itemId', 'userId']
                 
             const missingParams = requiredParamNames.filter(paramName => {
                 return (!request.body[paramName]) ? true : false
@@ -24,8 +24,9 @@ export class ConnectAutomaticAccountsController implements Controller {
             }
     
             const itemId = request.body.itemId
+            const userId = request.body.userId
     
-            const response = await this.usecase.perform({ itemId })
+            const response = await this.usecase.perform({ itemId, userId })
             
             if(response.isLeft()) {
                 if(response.value instanceof UnexpectedError) {

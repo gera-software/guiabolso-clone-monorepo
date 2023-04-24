@@ -25,19 +25,21 @@ describe('Connect automatic accounts web controller', () => {
 
         const invalidRequest = {
             body: {
-                // itemId: validItemId
+                // itemId: validItemId,
+                // userId: validUserId,
             }
         }
 
         const response: HttpResponse = await sut.handle(invalidRequest)
         expect(response.statusCode).toEqual(400)
         expect(response.body as Error).toBeInstanceOf(MissingParamError)
-        expect(response.body.message).toBe("Missing parameters from request: itemId.")
+        expect(response.body.message).toBe("Missing parameters from request: itemId, userId.")
 
     })
 
     test('should return status code 500 when data provider has an error', async () => {
         const validItemId = 'valid-item-id'
+        const validUserId = 'valid-user-id'
 
         const accountRepository = new InMemoryAccountRepository([])
         const userRepository = new InMemoryUserRepository([])
@@ -53,7 +55,8 @@ describe('Connect automatic accounts web controller', () => {
 
         const validRequest = {
             body: {
-                itemId: validItemId
+                itemId: validItemId,
+                userId: validUserId,
             }
         }
 
@@ -169,7 +172,8 @@ describe('Connect automatic accounts web controller', () => {
 
         const validRequest = {
             body: {
-                itemId: validItemId
+                itemId: validItemId,
+                userId: userId,
             }
         }
 
@@ -181,13 +185,15 @@ describe('Connect automatic accounts web controller', () => {
 
     test('should return status code 500 when server raises', async () => {
         const validItemId = 'valid-item-id'
+        const validUserId = 'valid-user-id'
 
         const errorThrowingUseCaseStub: UseCase = new ErrorThrowingUseCaseStub()
         const sut = new ConnectAutomaticAccountsController(errorThrowingUseCaseStub)
 
         const validRequest = {
             body: {
-                itemId: validItemId
+                itemId: validItemId,
+                userId: validUserId,
             }
         }
 
