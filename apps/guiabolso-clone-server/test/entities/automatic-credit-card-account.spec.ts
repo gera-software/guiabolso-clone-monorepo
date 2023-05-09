@@ -273,8 +273,8 @@ describe("Automatic Credit Card Account entity", () => {
             expect(account.creditCardInfo.closeDay).toEqual(creditCardInfo.closeDay)
             expect(account.creditCardInfo.dueDay).toEqual(creditCardInfo.dueDay)
             expect(account.providerAccountId).toEqual(providerAccountId)
-            expect(account.synchonization.providerItemId).toEqual(providerItemId)
-            expect(account.synchonization.createdAt).toEqual(createdAt)
+            expect(account.synchronization.providerItemId).toEqual(providerItemId)
+            expect(account.synchronization.createdAt).toEqual(createdAt)
 
         })
     })

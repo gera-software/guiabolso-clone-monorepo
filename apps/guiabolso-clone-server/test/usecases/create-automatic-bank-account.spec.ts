@@ -33,7 +33,7 @@ describe('Create automatic bank account use case', () => {
             imageUrl,
             institution,
             providerAccountId,
-            synchonization: {
+            synchronization: {
                 providerItemId,
                 createdAt,
             },
@@ -75,7 +75,7 @@ describe('Create automatic bank account use case', () => {
             imageUrl,
             institution,
             providerAccountId,
-            synchonization: {
+            synchronization: {
                 providerItemId,
                 createdAt,
             },
@@ -117,7 +117,7 @@ describe('Create automatic bank account use case', () => {
             imageUrl,
             institution,
             providerAccountId,
-            synchonization: {
+            synchronization: {
                 providerItemId,
                 createdAt,
             },
@@ -159,7 +159,7 @@ describe('Create automatic bank account use case', () => {
             imageUrl,
             institution,
             providerAccountId,
-            synchonization: {
+            synchronization: {
                 providerItemId,
                 createdAt,
             },
@@ -194,7 +194,7 @@ describe('Create automatic bank account use case', () => {
             imageUrl,
             institution,
             providerAccountId,
-            synchonization: {
+            synchronization: {
                 providerItemId,
                 createdAt,
             },
@@ -236,7 +236,7 @@ describe('Create automatic bank account use case', () => {
             imageUrl,
             institution,
             providerAccountId,
-            synchonization: {
+            synchronization: {
                 providerItemId,
                 createdAt,
             },
@@ -278,7 +278,7 @@ describe('Create automatic bank account use case', () => {
             imageUrl,
             institution,
             providerAccountId,
-            synchonization: {
+            synchronization: {
                 providerItemId,
                 createdAt,
             },
@@ -320,7 +320,7 @@ describe('Create automatic bank account use case', () => {
             imageUrl,
             institution,
             providerAccountId,
-            synchonization: {
+            synchronization: {
                 providerItemId,
                 createdAt,
             },
@@ -362,7 +362,7 @@ describe('Create automatic bank account use case', () => {
             imageUrl,
             institution,
             providerAccountId,
-            synchonization: {
+            synchronization: {
                 providerItemId,
                 createdAt,
             },

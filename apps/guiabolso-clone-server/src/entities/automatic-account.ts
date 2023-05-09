@@ -1,6 +1,6 @@
 import { Account, Institution } from "@/entities";
 
-export interface AccountSynchonization {
+export interface Accountsynchronization {
     providerItemId: string,
     createdAt: Date,
 }
@@ -8,5 +8,5 @@ export interface AccountSynchonization {
 export interface AutomaticAccount extends Account {
     institution: Institution
     providerAccountId: string
-    synchonization: AccountSynchonization
+    synchronization: Accountsynchronization
 }

@@ -1,4 +1,4 @@
-import { AccountSynchonization, AccountType, Amount, AutomaticAccount, CreditCardInfo, Institution, SyncType, User } from "@/entities";
+import { Accountsynchronization, AccountType, Amount, AutomaticAccount, CreditCardInfo, Institution, SyncType, User } from "@/entities";
 import { Either, left, right } from "@/shared";
 import { CreditCardInfoData } from "@/usecases/ports";
 import { InvalidNameError, InvalidBalanceError, InvalidCreditCardError, InvalidInstitutionError, InvalidAccountError } from "./errors";
@@ -14,7 +14,7 @@ export class AutomaticCreditCardAccount implements AutomaticAccount {
     public readonly creditCardInfo: CreditCardInfo
 
     public readonly providerAccountId: string
-    public readonly synchonization: AccountSynchonization
+    public readonly synchronization: Accountsynchronization
 
     private constructor(account: {name: string, balance: Amount, imageUrl?: string, user: User, institution?: Institution, creditCardInfo: CreditCardInfo, providerAccountId: string, providerItemId: string, createdAt: Date }) {
         this.name = account.name
@@ -24,7 +24,7 @@ export class AutomaticCreditCardAccount implements AutomaticAccount {
         this.institution = account.institution
         this.creditCardInfo = account.creditCardInfo
         this.providerAccountId = account.providerAccountId
-        this.synchonization = {
+        this.synchronization = {
             providerItemId: account.providerItemId,
             createdAt: account.createdAt,
         }

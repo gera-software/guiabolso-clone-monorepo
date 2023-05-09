@@ -1,4 +1,4 @@
-import { AccountSynchonization, AccountType, Amount, AutomaticAccount, Institution, ManualBankAccount, SyncType, User } from "@/entities";
+import { Accountsynchronization, AccountType, Amount, AutomaticAccount, Institution, ManualBankAccount, SyncType, User } from "@/entities";
 import { Either, left, right } from "@/shared";
 import { InvalidNameError, InvalidBalanceError, InvalidInstitutionError, InvalidAccountError } from "@/entities/errors";
 
@@ -12,7 +12,7 @@ export class AutomaticBankAccount implements AutomaticAccount {
     public readonly institution: Institution
 
     public readonly providerAccountId: string;
-    public readonly synchonization: AccountSynchonization;
+    public readonly synchronization: Accountsynchronization;
 
     private constructor(account: {name: string, balance: Amount, imageUrl?: string, user: User, institution?: Institution, providerAccountId: string, providerItemId: string, createdAt: Date}) {
         this.name = account.name
@@ -21,7 +21,7 @@ export class AutomaticBankAccount implements AutomaticAccount {
         this.user = account.user
         this.institution = account.institution
         this.providerAccountId = account.providerAccountId
-        this.synchonization = {
+        this.synchronization = {
             providerItemId: account.providerItemId,
             createdAt: account.createdAt,
         }

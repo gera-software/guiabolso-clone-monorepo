@@ -295,7 +295,7 @@ describe('Pluggy Data Provider', () => {
                 "name": bankAccount.name, 
                 "providerAccountId": bankAccount.id, 
                 "syncType": "AUTOMATIC", 
-                "synchonization": {
+                "synchronization": {
                     "createdAt": item.createdAt, 
                     "providerItemId": item.id
                 }, 
@@ -325,7 +325,7 @@ describe('Pluggy Data Provider', () => {
                 "name": creditAccount.name, 
                 "providerAccountId": creditAccount.id, 
                 "syncType": "AUTOMATIC", 
-                "synchonization": {
+                "synchronization": {
                     "createdAt": item.createdAt, 
                     "providerItemId": item.id
                 }, 

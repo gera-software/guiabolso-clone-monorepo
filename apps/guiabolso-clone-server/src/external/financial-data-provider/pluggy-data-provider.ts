@@ -71,7 +71,7 @@ export class PluggyDataProvider implements FinancialDataProvider {
                     dueDay: account.creditData.balanceDueDate.getUTCDate(),
                 },
                 providerAccountId: account.id,
-                synchonization: {
+                synchronization: {
                     providerItemId: item.id,
                     createdAt: item.createdAt,
                 }
