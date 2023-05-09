@@ -1,7 +1,8 @@
 import { InvalidAccountError } from "@/entities/errors"
-import { UnregisteredAccountError } from "@/usecases/errors"
+import { UnexpectedError, UnregisteredAccountError } from "@/usecases/errors"
 import { BankAccountData, UserData } from "@/usecases/ports"
 import { SyncAutomaticBankAccount } from "@/usecases/sync-automatic-bank-account"
+import { ErrorPluggyDataProvider, InMemoryPluggyDataProvider } from "@test/doubles/financial-data-provider"
 import { InMemoryAccountRepository } from "@test/doubles/repositories"
 
 describe('Sync automatic bank account use case', () => {
@@ -45,16 +46,32 @@ describe('Sync automatic bank account use case', () => {
     test('should not sync if account does not exists', async () => {
         const accountId = 'invalid-bank-account-id'
 
+        const dataProvider = new InMemoryPluggyDataProvider({})
         const accountRepository = new InMemoryAccountRepository([])
-        const sut = new SyncAutomaticBankAccount(accountRepository)
+        const sut = new SyncAutomaticBankAccount(accountRepository, dataProvider)
+
         const response = (await sut.perform(accountId)).value as Error
         expect(response).toBeInstanceOf(UnregisteredAccountError)
     })
 
-    test('should not sync if account does not have a provider id', async () => {
+    test('should not sync if account does not have a provider account id or item id', async () => {
+        delete bankAccountData.providerAccountId
+        delete bankAccountData.synchronization
+
+        const dataProvider = new InMemoryPluggyDataProvider({})
         const accountRepository = new InMemoryAccountRepository([bankAccountData])
-        const sut = new SyncAutomaticBankAccount(accountRepository)
+        const sut = new SyncAutomaticBankAccount(accountRepository, dataProvider)
+        
         const response = (await sut.perform(accountId)).value as Error
         expect(response).toBeInstanceOf(InvalidAccountError)
+    })
+
+    test('should not sync if data provided has an error', async () => {
+        const dataProvider = new ErrorPluggyDataProvider({})
+        const accountRepository = new InMemoryAccountRepository([bankAccountData])
+        const sut = new SyncAutomaticBankAccount(accountRepository, dataProvider)
+
+        const response = (await sut.perform(accountId)).value as Error
+        expect(response).toBeInstanceOf(UnexpectedError)
     })
 })
