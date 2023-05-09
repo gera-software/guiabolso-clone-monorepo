@@ -23,7 +23,13 @@ export class SyncAutomaticBankAccount implements UseCase {
             return left(new InvalidAccountError())
         }
 
-        return left(new UnexpectedError())
+        const accountsOrError = await this.financialDataProvider.getAccountsByItemId(foundAccountData.synchronization.providerItemId)
+
+        if(accountsOrError.isLeft()) {
+            return left(accountsOrError.value)
+        }
+
+        return left(new InvalidAccountError())
     }
     
 }

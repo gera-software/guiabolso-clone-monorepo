@@ -74,4 +74,13 @@ describe('Sync automatic bank account use case', () => {
         const response = (await sut.perform(accountId)).value as Error
         expect(response).toBeInstanceOf(UnexpectedError)
     })
+
+    test('should not sync if data provider item does not have the requested account', async () => {
+        const dataProvider = new InMemoryPluggyDataProvider({})
+        const accountRepository = new InMemoryAccountRepository([bankAccountData])
+        const sut = new SyncAutomaticBankAccount(accountRepository, dataProvider)
+        
+        const response = (await sut.perform(accountId)).value as Error
+        expect(response).toBeInstanceOf(InvalidAccountError)
+    })
 })
