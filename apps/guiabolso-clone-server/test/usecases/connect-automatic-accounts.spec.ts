@@ -113,7 +113,7 @@ describe('Connect automatic accounts use case', () => {
                 providerConnectorId: institution.providerConnectorId,
             },
             providerAccountId: providerBankAccountId,
-            synchonization: {
+            synchronization: {
                 providerItemId,
                 createdAt,
             },
@@ -137,7 +137,7 @@ describe('Connect automatic accounts use case', () => {
             },
             creditCardInfo,
             providerAccountId: providerCreditCardAccountId,
-            synchonization: {
+            synchronization: {
                 providerItemId,
                 createdAt,
             },
@@ -238,7 +238,7 @@ describe('Connect automatic accounts use case', () => {
             userId: null,
             institution: institution1,
             providerAccountId: providerBankAccountId,
-            synchonization: {
+            synchronization: {
                 providerItemId,
                 createdAt,
             },
@@ -255,7 +255,7 @@ describe('Connect automatic accounts use case', () => {
             institution: institution1,
             creditCardInfo,
             providerAccountId: providerCreditCardAccountId,
-            synchonization: {
+            synchronization: {
                 providerItemId,
                 createdAt,
             },

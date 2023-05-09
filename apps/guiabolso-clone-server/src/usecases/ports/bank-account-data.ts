@@ -10,7 +10,7 @@ export interface BankAccountData {
     institution?: InstitutionData,
     id?: string,
     providerAccountId?: string,
-    synchonization?: {
+    synchronization?: {
         providerItemId: string,
         createdAt: Date,
     },

@@ -52,7 +52,7 @@ describe('connect automatic accounts route', () => {
             "name": 'bank account', 
             "providerAccountId": "a658c848-e475-457b-8565-d1fffba127c4", 
             "syncType": "AUTOMATIC", 
-            "synchonization": {
+            "synchronization": {
                 "createdAt": new Date("2021-12-28T21:48:02.863Z"), 
                 "providerItemId": validItemId
             }, 
@@ -82,7 +82,7 @@ describe('connect automatic accounts route', () => {
             "name": "credit card account", 
             "providerAccountId": "a658c848-e475-457b-8565-d1fffba127c5", 
             "syncType": "AUTOMATIC", 
-            "synchonization": {
+            "synchronization": {
                 "createdAt": new Date("2021-12-28T21:48:02.863Z"), 
                 "providerItemId": validItemId
             }, 

@@ -11,7 +11,7 @@ export interface AccountData {
     institution?: InstitutionData
     creditCardInfo?: CreditCardInfoData,
     providerAccountId?: string,
-    synchonization?: {
+    synchronization?: {
         providerItemId: string,
         createdAt: Date,
     }

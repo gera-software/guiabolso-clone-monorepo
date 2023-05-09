@@ -41,7 +41,7 @@ describe('Create automatic credit card account use case', () => {
             institution,
             creditCardInfo,
             providerAccountId,
-            synchonization: {
+            synchronization: {
                 providerItemId,
                 createdAt,
             },
@@ -91,7 +91,7 @@ describe('Create automatic credit card account use case', () => {
             institution,
             creditCardInfo,
             providerAccountId,
-            synchonization: {
+            synchronization: {
                 providerItemId,
                 createdAt,
             },
@@ -141,7 +141,7 @@ describe('Create automatic credit card account use case', () => {
             institution,
             creditCardInfo,
             providerAccountId,
-            synchonization: {
+            synchronization: {
                 providerItemId,
                 createdAt,
             },
@@ -191,7 +191,7 @@ describe('Create automatic credit card account use case', () => {
             institution,
             creditCardInfo,
             providerAccountId,
-            synchonization: {
+            synchronization: {
                 providerItemId,
                 createdAt,
             },
@@ -241,7 +241,7 @@ describe('Create automatic credit card account use case', () => {
             institution,
             creditCardInfo,
             providerAccountId,
-            synchonization: {
+            synchronization: {
                 providerItemId,
                 createdAt,
             },
@@ -284,7 +284,7 @@ describe('Create automatic credit card account use case', () => {
             institution,
             creditCardInfo,
             providerAccountId,
-            synchonization: {
+            synchronization: {
                 providerItemId,
                 createdAt,
             },
@@ -334,7 +334,7 @@ describe('Create automatic credit card account use case', () => {
             institution,
             creditCardInfo,
             providerAccountId,
-            synchonization: {
+            synchronization: {
                 providerItemId,
                 createdAt,
             },
@@ -384,7 +384,7 @@ describe('Create automatic credit card account use case', () => {
             institution,
             creditCardInfo,
             providerAccountId,
-            synchonization: {
+            synchronization: {
                 providerItemId,
                 createdAt,
             },
@@ -434,7 +434,7 @@ describe('Create automatic credit card account use case', () => {
             institution,
             creditCardInfo,
             providerAccountId,
-            synchonization: {
+            synchronization: {
                 providerItemId,
                 createdAt,
             },
@@ -484,7 +484,7 @@ describe('Create automatic credit card account use case', () => {
             institution,
             creditCardInfo,
             providerAccountId,
-            synchonization: {
+            synchronization: {
                 providerItemId,
                 createdAt,
             },

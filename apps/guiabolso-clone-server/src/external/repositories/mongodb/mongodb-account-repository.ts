@@ -11,8 +11,11 @@ export type MongodbCreditCardInfo = {
     dueDay: number,
 }
 
-// TODO providerAccountId
-// TODO synchonization
+export type MongodbAccountSynchronization = {
+    providerItemId: string,
+    createdAt: Date,
+}
+
 export type MongodbAccount = {
     type: string,
     syncType: string,
@@ -23,6 +26,8 @@ export type MongodbAccount = {
     _id?: ObjectId,
     institution?: MongodbInstitution,
     creditCardInfo?: MongodbCreditCardInfo,
+    providerAccountId?: string,
+    synchronization?: MongodbAccountSynchronization,
 }
 
 
@@ -40,7 +45,9 @@ export class MongodbAccountRepository implements AccountRepository, UpdateAccoun
             userId: new ObjectId(account.userId),
             institution: null as any,
             creditCardInfo: null as any,
+            providerAccountId: account.providerAccountId,
         }
+
 
         if(account.institution) {
             const institutionClone: MongodbInstitution = {
@@ -57,6 +64,10 @@ export class MongodbAccountRepository implements AccountRepository, UpdateAccoun
 
         if(account.creditCardInfo) {
             accountClone.creditCardInfo = account.creditCardInfo
+        }
+
+        if(account.synchronization) {
+            accountClone.synchronization = account.synchronization
         }
     
         const { insertedId } = await accountCollection.insertOne(accountClone)
@@ -125,6 +136,11 @@ export class MongodbAccountRepository implements AccountRepository, UpdateAccoun
             creditCardInfo = dbAccount.creditCardInfo
         }
 
+        let synchronization: AccountData['synchronization'] = null
+        if(dbAccount.synchronization) {
+            synchronization = dbAccount.synchronization
+        }
+
         return {
             type: dbAccount.type,
             syncType: dbAccount.syncType,
@@ -135,6 +151,8 @@ export class MongodbAccountRepository implements AccountRepository, UpdateAccoun
             id: dbAccount._id.toString(),
             institution,
             creditCardInfo,
+            providerAccountId: dbAccount.providerAccountId,
+            synchronization,
         }
     }
 

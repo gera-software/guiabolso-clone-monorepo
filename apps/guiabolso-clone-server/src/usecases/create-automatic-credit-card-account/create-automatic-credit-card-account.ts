@@ -51,8 +51,8 @@ export class CreateAutomaticCreditCardAccount implements UseCase {
             institution,
             creditCardInfo: accountData.creditCardInfo,
             providerAccountId: accountData.providerAccountId,
-            providerItemId: accountData.synchonization.providerItemId,
-            createdAt: accountData.synchonization.createdAt,
+            providerItemId: accountData.synchronization.providerItemId,
+            createdAt: accountData.synchronization.createdAt,
         }) 
 
         if(creditCardOrError.isLeft()) {

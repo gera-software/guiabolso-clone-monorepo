@@ -38,7 +38,7 @@ describe('Mongodb Account repository', () => {
     })
 
     describe('add account', () => {        
-        test('when a wallet account is added, it should exist', async () => {
+        test('when a manual wallet account is added, it should exist', async () => {
             const sut = new MongodbAccountRepository()
             const account: WalletAccountData = {
                 type: 'WALLET',
@@ -53,7 +53,7 @@ describe('Mongodb Account repository', () => {
             expect(exists).toBeTruthy()
         })
     
-        test('when a bank account is added, it should exist', async () => {
+        test('when a manual bank account is added, it should exist', async () => {
             const sut = new MongodbAccountRepository()
             const account: BankAccountData = {
                 type: 'BANK',
@@ -70,7 +70,7 @@ describe('Mongodb Account repository', () => {
             expect(exists).toBeTruthy()
         })
     
-        test('when a credit card account is added, it should exist', async () => {
+        test('when a manual credit card account is added, it should exist', async () => {
             const sut = new MongodbAccountRepository()
             const account: CreditCardAccountData = {
                 type: 'CREDIT_CARD',
@@ -88,6 +88,62 @@ describe('Mongodb Account repository', () => {
             const exists = await sut.exists(addedAccount.id)
             expect(exists).toBeTruthy()
         })
+
+        test('when a automatic bank account is added, it should exist', async () => {
+            const sut = new MongodbAccountRepository()
+            const account: BankAccountData = {
+                type: 'BANK',
+                syncType: 'AUTOMATIC',
+                name: 'any name',
+                balance: 789,
+                userId: validUserId.toString(),
+                institution: validInstitution,
+                providerAccountId: 'valid-provider-account-id',
+                synchronization: {
+                    providerItemId: 'valid-provider-item-id',
+                    createdAt: new Date(),
+                }
+            }
+            const addedAccount = await sut.add(account)
+            expect(addedAccount.userId).toBe(validUserId.toString())
+            expect(addedAccount.institution.id).toBe(validInstitution.id)
+            expect(addedAccount.providerAccountId).toBe(account.providerAccountId)
+            expect(addedAccount.synchronization).toEqual(account.synchronization)
+
+            const exists = await sut.findById(addedAccount.id)
+            expect(exists.providerAccountId).toBe(addedAccount.providerAccountId)
+            expect(exists.synchronization).toEqual(addedAccount.synchronization)
+        })
+
+        test('when a automatic credit card account is added, it should exist', async () => {
+            const sut = new MongodbAccountRepository()
+            const account: CreditCardAccountData = {
+                type: 'CREDIT_CARD',
+                syncType: 'AUTOMATIC',
+                name: 'any name',
+                balance: 789,
+                userId: validUserId.toString(),
+                institution: validInstitution,
+                creditCardInfo: validCreditCardInfoData,
+                providerAccountId: 'valid-provider-account-id',
+                synchronization: {
+                    providerItemId: 'valid-provider-item-id',
+                    createdAt: new Date(),
+                }
+            }
+            const addedAccount = await sut.add(account)
+            expect(addedAccount.userId).toBe(validUserId.toString())
+            expect(addedAccount.institution.id).toBe(validInstitution.id)
+            expect(addedAccount.creditCardInfo).toEqual(validCreditCardInfoData)
+            expect(addedAccount.providerAccountId).toBe(account.providerAccountId)
+            expect(addedAccount.synchronization).toEqual(account.synchronization)
+
+            const exists = await sut.findById(addedAccount.id)
+            expect(exists.creditCardInfo).toEqual(validCreditCardInfoData)
+            expect(exists.providerAccountId).toBe(addedAccount.providerAccountId)
+            expect(exists.synchronization).toEqual(addedAccount.synchronization)
+        })
+
     })
 
     describe('find by id', () => {

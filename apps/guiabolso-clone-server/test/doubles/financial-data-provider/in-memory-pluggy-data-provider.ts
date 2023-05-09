@@ -28,7 +28,7 @@ export class InMemoryPluggyDataProvider implements FinancialDataProvider {
     }
 
     public async getAccountsByItemId(itemId: string): Promise<Either<UnexpectedError, AccountData[]>> {
-        const accounts = this._accounts.filter(account => account.synchonization?.providerItemId == itemId )
+        const accounts = this._accounts.filter(account => account.synchronization?.providerItemId == itemId )
 
         return right(accounts)
     }

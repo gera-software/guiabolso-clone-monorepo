@@ -135,7 +135,7 @@ describe('Connect automatic accounts web controller', () => {
             userId,
             institution,
             providerAccountId: providerBankAccountId,
-            synchonization: {
+            synchronization: {
                 providerItemId,
                 createdAt,
             },
@@ -152,7 +152,7 @@ describe('Connect automatic accounts web controller', () => {
             institution,
             creditCardInfo,
             providerAccountId: providerCreditCardAccountId,
-            synchonization: {
+            synchronization: {
                 providerItemId,
                 createdAt,
             },
