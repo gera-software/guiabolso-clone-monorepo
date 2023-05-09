@@ -101,8 +101,10 @@ describe('connect automatic accounts route', () => {
             .expect(201)
             .then((res) => {
                 expect(res.body.length).toBe(2)
-                expect(res.body[0].providerAccountId).toBe(3)
-                expect(res.body[0].synchronization).toBe(4)
+                expect(res.body[0].providerAccountId).toBe(bankAccount.providerAccountId)
+                expect(res.body[0].synchronization.providerItemId).toEqual(bankAccount.synchronization.providerItemId)
+                expect(res.body[1].providerAccountId).toBe(creditAccount.providerAccountId)
+                expect(res.body[1].synchronization.providerItemId).toEqual(creditAccount.synchronization.providerItemId)
             })
     })
 
