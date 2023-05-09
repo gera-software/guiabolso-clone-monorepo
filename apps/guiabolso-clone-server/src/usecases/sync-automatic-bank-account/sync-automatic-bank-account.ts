@@ -1,5 +1,5 @@
-import { left } from "@/shared";
-import { FinancialDataProvider, UpdateAccountRepository, UseCase } from "@/usecases/ports";
+import { left, right } from "@/shared";
+import { AccountData, FinancialDataProvider, UpdateAccountRepository, UseCase } from "@/usecases/ports";
 import { UnexpectedError, UnregisteredAccountError } from "@/usecases/errors";
 import { InvalidAccountError } from "@/entities/errors";
 
@@ -12,8 +12,8 @@ export class SyncAutomaticBankAccount implements UseCase {
         this.financialDataProvider = financialDataProvider
     }
     
-    async perform(id: string): Promise<any> {
-        const foundAccountData = await this.accountRepo.findById(id)
+    async perform(accountId: string): Promise<any> {
+        const foundAccountData = await this.accountRepo.findById(accountId)
 
         if(!foundAccountData) {
             return left(new UnregisteredAccountError())
@@ -29,7 +29,18 @@ export class SyncAutomaticBankAccount implements UseCase {
             return left(accountsOrError.value)
         }
 
-        return left(new InvalidAccountError())
+        const accounts = accountsOrError.value as AccountData[]
+
+        const accountDataToSync = accounts.find(account => account.providerAccountId === foundAccountData.providerAccountId)
+
+        if(!accountDataToSync) {
+            return left(new UnexpectedError('data provider item does not have the requested account'))
+        }
+
+        await this.accountRepo.updateBalance(accountId, accountDataToSync.balance)
+
+        const updatedAccount = await this.accountRepo.findById(accountId)
+        return right(updatedAccount)
     }
     
 }

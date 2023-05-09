@@ -1,6 +1,6 @@
 import { InvalidAccountError } from "@/entities/errors"
 import { UnexpectedError, UnregisteredAccountError } from "@/usecases/errors"
-import { BankAccountData, UserData } from "@/usecases/ports"
+import { BankAccountData, InstitutionData, UserData } from "@/usecases/ports"
 import { SyncAutomaticBankAccount } from "@/usecases/sync-automatic-bank-account"
 import { ErrorPluggyDataProvider, InMemoryPluggyDataProvider } from "@test/doubles/financial-data-provider"
 import { InMemoryAccountRepository } from "@test/doubles/repositories"
@@ -13,6 +13,15 @@ describe('Sync automatic bank account use case', () => {
         name: 'any name', 
         email: 'any@email.com', 
         password: '123'
+    }
+
+    const institution: InstitutionData = {
+        id: 'id 0',
+        name: 'institution name',
+        type: 'PERSONAL_BANK',
+        imageUrl: 'url',
+        primaryColor: 'color',
+        providerConnectorId: 'valid id'
     }
     
     const accountId = 'ac0'
@@ -81,6 +90,37 @@ describe('Sync automatic bank account use case', () => {
         const sut = new SyncAutomaticBankAccount(accountRepository, dataProvider)
         
         const response = (await sut.perform(accountId)).value as Error
-        expect(response).toBeInstanceOf(InvalidAccountError)
+        expect(response).toBeInstanceOf(UnexpectedError)
+    })
+
+    test('should update account balance', async () => {
+        const providerAccountData1: BankAccountData = {
+            id: null,
+            type: accountType,
+            syncType,
+            name,
+            balance: balance + 1000,
+            imageUrl,
+            userId: null,
+            institution: {
+                id: null,
+                name: institution.name,
+                type: institution.type,
+                imageUrl: institution.imageUrl,
+                primaryColor: institution.primaryColor,
+                providerConnectorId: institution.providerConnectorId,
+            },
+            providerAccountId,
+            synchronization,
+        }
+
+        const dataProvider = new InMemoryPluggyDataProvider({accounts: [ providerAccountData1 ]})
+        const accountRepository = new InMemoryAccountRepository([bankAccountData])
+        const sut = new SyncAutomaticBankAccount(accountRepository, dataProvider)
+        
+        const response = (await sut.perform(accountId)).value as BankAccountData
+
+        const updatedAccount = await accountRepository.findById(accountId)
+        expect(updatedAccount.balance).toBe(providerAccountData1.balance)
     })
 })
