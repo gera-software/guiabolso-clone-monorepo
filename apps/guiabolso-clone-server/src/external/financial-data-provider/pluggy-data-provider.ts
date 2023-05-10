@@ -1,4 +1,4 @@
-import { PluggyClient } from 'pluggy-sdk'
+import { PluggyClient, TransactionFilters } from 'pluggy-sdk'
 import { AccountData, FinancialDataProvider, InstitutionData, TransactionData, TransactionFilter } from "@/usecases/ports"
 import { Either, left, right } from '@/shared'
 import { DataProviderError } from '@/usecases/errors'
@@ -85,7 +85,34 @@ export class PluggyDataProvider implements FinancialDataProvider {
 
     }
 
+    // TODO tem que saber se a account é BANK ou CREDIT CARD
     public async getTransactionsByProviderAccountId(filter: TransactionFilter): Promise<Either<DataProviderError, TransactionData[]>> {
-        throw new Error('Method getTransactionsByProviderAccountId not implemented.')
+        try {
+            // @ts-ignore
+            const array = []
+
+            const options: TransactionFilters = {
+                page: 1
+            }
+
+            if(filter.from) {
+                options.from = filter.from.toISOString().slice(0, 10)
+            }
+            if(filter.to) {
+                options.to = filter.to.toISOString().slice(0, 10)
+            }
+
+            let results = []
+            do {
+                results = (await this.client.fetchTransactions(filter.providerAccountId, options)).results
+                array.push(...results)
+            } while (results.length)
+
+            // @ts-ignore
+            return right(array)
+
+        } catch (error: any) {
+            return left(new DataProviderError(error.message))
+        }
     }
 }

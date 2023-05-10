@@ -1,7 +1,8 @@
 import { Connector, Item, ItemStatus, Account as PluggyAccount, PluggyClient } from 'pluggy-sdk'
 import { PluggyDataProvider } from "@/external/financial-data-provider"
 import { DataProviderError } from '@/usecases/errors'
-import { AccountData } from '@/usecases/ports'
+import { AccountData, TransactionData } from '@/usecases/ports'
+import { Transaction } from '@/entities'
 jest.mock('pluggy-sdk')
 const mockedPluggyClient = jest.mocked(PluggyClient)
 
@@ -333,5 +334,180 @@ describe('Pluggy Data Provider', () => {
                 "userId": null,
             })
         })
+    })
+
+    describe('getTransactionsByProviderAccountId', () => {
+        test('should return a error if provider api has an internal error', async () => {
+            mockedPluggyClient.prototype.fetchTransactions.mockRejectedValueOnce({ code: 500, message: "Internal Server Error" })
+
+            const validClientId = 'valid-client-id'
+            const validClientSecret = 'valid-client-secret'
+            const sut = new PluggyDataProvider(validClientId, validClientSecret)
+
+            const providerAccountId = 'valid-account-id'
+            const from = new Date('2023-03-01')
+            const result = (await sut.getTransactionsByProviderAccountId({providerAccountId, from })).value as Error
+            expect(result).toBeInstanceOf(DataProviderError)
+
+
+        })
+
+        test('should return an empty array if account not found', async () => {
+            mockedPluggyClient.prototype.fetchTransactions.mockResolvedValueOnce({
+                "results": []
+            })
+
+            const validClientId = 'valid-client-id'
+            const validClientSecret = 'valid-client-secret'
+            const sut = new PluggyDataProvider(validClientId, validClientSecret)
+
+            const providerAccountId = 'valid-account-id'
+            const from = new Date('2023-03-01')
+            const result = (await sut.getTransactionsByProviderAccountId({providerAccountId, from })).value as TransactionData[]
+            expect(result).toHaveLength(0)
+        })
+
+        test('should return a list of transactions from a start date to today', async () => {
+            mockedPluggyClient.prototype.fetchTransactions.mockResolvedValueOnce({
+                "results": [
+                    {
+                        "id": "a8534c85-53ce-4f21-94d7-50e9d2ee4957",
+                        "description": "* PROV * COMPRA TESOURO DIRETO CLIENTES",
+                        "currencyCode": "BRL",
+                        "amount": -212.45,
+                        "date": new Date("2020-10-15T00:00:00.000Z"),
+                        "balance": 4439.4,
+                        "category": "Fixed Income Investment",
+                        "accountId": "562b795d-1653-429f-be86-74ead9502813",
+                        "providerCode": null,
+                        "paymentData": null,
+                      },
+                ]
+            }).mockResolvedValueOnce({ "results": [] })
+
+            const validClientId = 'valid-client-id'
+            const validClientSecret = 'valid-client-secret'
+            const sut = new PluggyDataProvider(validClientId, validClientSecret)
+
+            const providerAccountId = 'valid-account-id'
+            const from = new Date('2023-03-01')
+            const result = (await sut.getTransactionsByProviderAccountId({providerAccountId, from })).value as TransactionData[]
+            expect(mockedPluggyClient.prototype.fetchTransactions).toBeCalledWith(providerAccountId, { page: 1, from: '2023-03-01' })
+            expect(result).toHaveLength(1)
+        })
+
+        test('should return a list of transactions from a start date to a end date', async () => {
+            mockedPluggyClient.prototype.fetchTransactions.mockResolvedValueOnce({
+                "results": [
+                    {
+                        "id": "a8534c85-53ce-4f21-94d7-50e9d2ee4957",
+                        "description": "* PROV * COMPRA TESOURO DIRETO CLIENTES",
+                        "currencyCode": "BRL",
+                        "amount": -212.45,
+                        "date": new Date("2020-10-15T00:00:00.000Z"),
+                        "balance": 4439.4,
+                        "category": "Fixed Income Investment",
+                        "accountId": "562b795d-1653-429f-be86-74ead9502813",
+                        "providerCode": null,
+                        "paymentData": null,
+                      },
+                ]
+            }).mockResolvedValueOnce({ "results": [] })
+
+            const validClientId = 'valid-client-id'
+            const validClientSecret = 'valid-client-secret'
+            const sut = new PluggyDataProvider(validClientId, validClientSecret)
+
+            const providerAccountId = 'valid-account-id'
+            const from = new Date('2023-03-01')
+            const to = new Date('2023-05-10')
+            const result = (await sut.getTransactionsByProviderAccountId({providerAccountId, from, to })).value as TransactionData[]
+            expect(mockedPluggyClient.prototype.fetchTransactions).toBeCalledWith(providerAccountId, { page: 1, from: '2023-03-01', to: '2023-05-10' })
+            expect(result).toHaveLength(1)
+        })
+
+        test('should return a small list of transactions without pagination of results', async () => {
+            mockedPluggyClient.prototype.fetchTransactions.mockResolvedValueOnce({
+                "results": [
+                    {
+                        "id": "a8534c85-53ce-4f21-94d7-50e9d2ee4957",
+                        "description": "* PROV * COMPRA TESOURO DIRETO CLIENTES",
+                        "currencyCode": "BRL",
+                        "amount": -212.45,
+                        "date": new Date("2020-10-15T00:00:00.000Z"),
+                        "balance": 4439.4,
+                        "category": "Fixed Income Investment",
+                        "accountId": "562b795d-1653-429f-be86-74ead9502813",
+                        "providerCode": null,
+                        "paymentData": null,
+                      },
+                ]
+            }).mockResolvedValueOnce({ "results": [] })
+
+            const validClientId = 'valid-client-id'
+            const validClientSecret = 'valid-client-secret'
+            const sut = new PluggyDataProvider(validClientId, validClientSecret)
+
+            const providerAccountId = 'valid-account-id'
+            const from = new Date('2023-03-01')
+            const to = new Date('2023-05-10')
+            const result = (await sut.getTransactionsByProviderAccountId({providerAccountId, from, to })).value as TransactionData[]
+            expect(mockedPluggyClient.prototype.fetchTransactions).toBeCalledTimes(2)
+            expect(mockedPluggyClient.prototype.fetchTransactions).toHaveBeenNthCalledWith(1, providerAccountId, { page: 1, from: '2023-03-01', to: '2023-05-10' })
+            expect(mockedPluggyClient.prototype.fetchTransactions).toHaveBeenNthCalledWith(2, providerAccountId, { page: 1, from: '2023-03-01', to: '2023-05-10' })
+            expect(result).toHaveLength(1)
+        })
+
+        test('should return a big list of transactions with pagination of results', async () => {
+            mockedPluggyClient.prototype.fetchTransactions.mockResolvedValueOnce({
+                "results": [
+                    {
+                        "id": "a8534c85-53ce-4f21-94d7-50e9d2ee4957",
+                        "description": "* PROV * COMPRA TESOURO DIRETO CLIENTES",
+                        "currencyCode": "BRL",
+                        "amount": -212.45,
+                        "date": new Date("2020-10-15T00:00:00.000Z"),
+                        "balance": 4439.4,
+                        "category": "Fixed Income Investment",
+                        "accountId": "562b795d-1653-429f-be86-74ead9502813",
+                        "providerCode": null,
+                        "paymentData": null,
+                      },
+                ]
+            }).mockResolvedValueOnce({
+                "results": [
+                    {
+                        "id": "a8534c85-53ce-4f21-94d7-50e9d2ee4957",
+                        "description": "* PROV * COMPRA TESOURO DIRETO CLIENTES",
+                        "currencyCode": "BRL",
+                        "amount": -212.45,
+                        "date": new Date("2020-10-15T00:00:00.000Z"),
+                        "balance": 4439.4,
+                        "category": "Fixed Income Investment",
+                        "accountId": "562b795d-1653-429f-be86-74ead9502813",
+                        "providerCode": null,
+                        "paymentData": null,
+                      },
+                ]
+            }).mockResolvedValueOnce({ "results": [] })
+
+            const validClientId = 'valid-client-id'
+            const validClientSecret = 'valid-client-secret'
+            const sut = new PluggyDataProvider(validClientId, validClientSecret)
+
+            const providerAccountId = 'valid-account-id'
+            const from = new Date('2023-03-01')
+            const to = new Date('2023-05-10')
+            const result = (await sut.getTransactionsByProviderAccountId({providerAccountId, from, to })).value as TransactionData[]
+            expect(mockedPluggyClient.prototype.fetchTransactions).toBeCalledTimes(3)
+            expect(mockedPluggyClient.prototype.fetchTransactions).toHaveBeenNthCalledWith(1, providerAccountId, { page: 1, from: '2023-03-01', to: '2023-05-10' })
+            expect(mockedPluggyClient.prototype.fetchTransactions).toHaveBeenNthCalledWith(2, providerAccountId, { page: 1, from: '2023-03-01', to: '2023-05-10' })
+            expect(mockedPluggyClient.prototype.fetchTransactions).toHaveBeenNthCalledWith(3, providerAccountId, { page: 1, from: '2023-03-01', to: '2023-05-10' })
+            expect(result).toHaveLength(2)
+
+        })
+
+        test.todo('should return bank transactions')
+        test.todo('should return credit card transactions')
     })
 })
