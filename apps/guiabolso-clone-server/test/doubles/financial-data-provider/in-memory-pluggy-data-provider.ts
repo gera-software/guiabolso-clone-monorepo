@@ -1,3 +1,4 @@
+import { AccountType } from "@/entities"
 import { Either, right } from "@/shared"
 import { DataProviderError } from "@/usecases/errors"
 import { InstitutionData, FinancialDataProvider, AccountData, TransactionFilter, TransactionRequest } from "@/usecases/ports"
@@ -39,7 +40,7 @@ export class InMemoryPluggyDataProvider implements FinancialDataProvider {
         return right(accounts)
     }
 
-    public async getTransactionsByProviderAccountId(filter: TransactionFilter): Promise<Either<DataProviderError, TransactionRequest[]>> {
+    public async getTransactionsByProviderAccountId(accountId: string, accountType: AccountType, filter: TransactionFilter): Promise<Either<DataProviderError, TransactionRequest[]>> {
         return right(this._transactions)
     }
 

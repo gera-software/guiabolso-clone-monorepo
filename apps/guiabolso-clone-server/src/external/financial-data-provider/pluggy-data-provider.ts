@@ -2,6 +2,7 @@ import { PluggyClient, Transaction as PluggyTransaction, TransactionFilters } fr
 import { AccountData, FinancialDataProvider, InstitutionData, TransactionData, TransactionFilter, TransactionRequest } from "@/usecases/ports"
 import { Either, left, right } from '@/shared'
 import { DataProviderError } from '@/usecases/errors'
+import { AccountType } from '@/entities'
 
 export class PluggyDataProvider implements FinancialDataProvider {
     private client: PluggyClient
@@ -85,7 +86,7 @@ export class PluggyDataProvider implements FinancialDataProvider {
 
     }
 
-    public async getTransactionsByProviderAccountId(filter: TransactionFilter): Promise<Either<DataProviderError, TransactionRequest[]>> {
+    public async getTransactionsByProviderAccountId(accountId: string, accountType: AccountType, filter: TransactionFilter): Promise<Either<DataProviderError, TransactionRequest[]>> {
         try {
             const array = []
 

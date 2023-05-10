@@ -2,7 +2,7 @@ import { Connector, Item, ItemStatus, Account as PluggyAccount, PluggyClient } f
 import { PluggyDataProvider } from "@/external/financial-data-provider"
 import { DataProviderError } from '@/usecases/errors'
 import { AccountData, TransactionData } from '@/usecases/ports'
-import { Transaction } from '@/entities'
+import { AccountType, Transaction } from '@/entities'
 jest.mock('pluggy-sdk')
 const mockedPluggyClient = jest.mocked(PluggyClient)
 
@@ -344,9 +344,11 @@ describe('Pluggy Data Provider', () => {
             const validClientSecret = 'valid-client-secret'
             const sut = new PluggyDataProvider(validClientId, validClientSecret)
 
+            const accountId = 'valid-account-id'
+            const accountType: AccountType = 'BANK'
             const providerAccountId = 'valid-account-id'
             const from = new Date('2023-03-01')
-            const result = (await sut.getTransactionsByProviderAccountId({providerAccountId, from })).value as Error
+            const result = (await sut.getTransactionsByProviderAccountId(accountId, accountType, {providerAccountId, from })).value as Error
             expect(result).toBeInstanceOf(DataProviderError)
 
 
@@ -361,9 +363,11 @@ describe('Pluggy Data Provider', () => {
             const validClientSecret = 'valid-client-secret'
             const sut = new PluggyDataProvider(validClientId, validClientSecret)
 
+            const accountId = 'valid-account-id'
+            const accountType: AccountType = 'BANK'
             const providerAccountId = 'valid-account-id'
             const from = new Date('2023-03-01')
-            const result = (await sut.getTransactionsByProviderAccountId({providerAccountId, from })).value as TransactionData[]
+            const result = (await sut.getTransactionsByProviderAccountId(accountId, accountType, {providerAccountId, from })).value as TransactionData[]
             expect(result).toHaveLength(0)
         })
 
@@ -389,9 +393,11 @@ describe('Pluggy Data Provider', () => {
             const validClientSecret = 'valid-client-secret'
             const sut = new PluggyDataProvider(validClientId, validClientSecret)
 
+            const accountId = 'valid-account-id'
+            const accountType: AccountType = 'BANK'
             const providerAccountId = 'valid-account-id'
             const from = new Date('2023-03-01')
-            const result = (await sut.getTransactionsByProviderAccountId({providerAccountId, from })).value as TransactionData[]
+            const result = (await sut.getTransactionsByProviderAccountId(accountId, accountType, {providerAccountId, from })).value as TransactionData[]
             expect(mockedPluggyClient.prototype.fetchTransactions).toBeCalledWith(providerAccountId, { page: 1, from: '2023-03-01' })
             expect(result).toHaveLength(1)
         })
@@ -418,10 +424,12 @@ describe('Pluggy Data Provider', () => {
             const validClientSecret = 'valid-client-secret'
             const sut = new PluggyDataProvider(validClientId, validClientSecret)
 
+            const accountId = 'valid-account-id'
+            const accountType: AccountType = 'BANK'
             const providerAccountId = 'valid-account-id'
             const from = new Date('2023-03-01')
             const to = new Date('2023-05-10')
-            const result = (await sut.getTransactionsByProviderAccountId({providerAccountId, from, to })).value as TransactionData[]
+            const result = (await sut.getTransactionsByProviderAccountId(accountId, accountType, {providerAccountId, from, to })).value as TransactionData[]
             expect(mockedPluggyClient.prototype.fetchTransactions).toBeCalledWith(providerAccountId, { page: 1, from: '2023-03-01', to: '2023-05-10' })
             expect(result).toHaveLength(1)
         })
@@ -448,10 +456,12 @@ describe('Pluggy Data Provider', () => {
             const validClientSecret = 'valid-client-secret'
             const sut = new PluggyDataProvider(validClientId, validClientSecret)
 
+            const accountId = 'valid-account-id'
+            const accountType: AccountType = 'BANK'
             const providerAccountId = 'valid-account-id'
             const from = new Date('2023-03-01')
             const to = new Date('2023-05-10')
-            const result = (await sut.getTransactionsByProviderAccountId({providerAccountId, from, to })).value as TransactionData[]
+            const result = (await sut.getTransactionsByProviderAccountId(accountId, accountType, {providerAccountId, from, to })).value as TransactionData[]
             expect(mockedPluggyClient.prototype.fetchTransactions).toBeCalledTimes(2)
             expect(mockedPluggyClient.prototype.fetchTransactions).toHaveBeenNthCalledWith(1, providerAccountId, { page: 1, from: '2023-03-01', to: '2023-05-10' })
             expect(mockedPluggyClient.prototype.fetchTransactions).toHaveBeenNthCalledWith(2, providerAccountId, { page: 1, from: '2023-03-01', to: '2023-05-10' })
@@ -495,10 +505,12 @@ describe('Pluggy Data Provider', () => {
             const validClientSecret = 'valid-client-secret'
             const sut = new PluggyDataProvider(validClientId, validClientSecret)
 
+            const accountId = 'valid-account-id'
+            const accountType: AccountType = 'BANK'
             const providerAccountId = 'valid-account-id'
             const from = new Date('2023-03-01')
             const to = new Date('2023-05-10')
-            const result = (await sut.getTransactionsByProviderAccountId({providerAccountId, from, to })).value as TransactionData[]
+            const result = (await sut.getTransactionsByProviderAccountId(accountId, accountType, {providerAccountId, from, to })).value as TransactionData[]
             expect(mockedPluggyClient.prototype.fetchTransactions).toBeCalledTimes(3)
             expect(mockedPluggyClient.prototype.fetchTransactions).toHaveBeenNthCalledWith(1, providerAccountId, { page: 1, from: '2023-03-01', to: '2023-05-10' })
             expect(mockedPluggyClient.prototype.fetchTransactions).toHaveBeenNthCalledWith(2, providerAccountId, { page: 1, from: '2023-03-01', to: '2023-05-10' })
@@ -541,10 +553,12 @@ describe('Pluggy Data Provider', () => {
             const validClientSecret = 'valid-client-secret'
             const sut = new PluggyDataProvider(validClientId, validClientSecret)
 
+            const accountId = 'valid-account-id'
+            const accountType: AccountType = 'BANK'
             const providerAccountId = 'valid-account-id'
             const from = new Date('2023-03-01')
             const to = new Date('2023-05-10')
-            const result = (await sut.getTransactionsByProviderAccountId({providerAccountId, from, to })).value as TransactionData[]
+            const result = (await sut.getTransactionsByProviderAccountId(accountId, accountType, {providerAccountId, from, to })).value as TransactionData[]
             expect(result).toEqual([
                 {
                     id: null,
