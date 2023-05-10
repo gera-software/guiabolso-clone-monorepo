@@ -1,7 +1,7 @@
 import { ConnectAutomaticAccounts } from "@/usecases/connect-automatic-accounts"
 import { CreateAutomaticBankAccount } from "@/usecases/create-automatic-bank-account"
 import { CreateAutomaticCreditCardAccount } from "@/usecases/create-automatic-credit-card-account"
-import { UnexpectedError } from "@/usecases/errors"
+import { DataProviderError, UnexpectedError } from "@/usecases/errors"
 import { BankAccountData, CategoryData, CreditCardAccountData, CreditCardInfoData, InstitutionData, UseCase, UserData } from "@/usecases/ports"
 import { ConnectAutomaticAccountsController } from "@/web-controllers"
 import { MissingParamError } from "@/web-controllers/errors"
@@ -62,7 +62,7 @@ describe('Connect automatic accounts web controller', () => {
 
         const response: HttpResponse = await sut.handle(validRequest)
         expect(response.statusCode).toEqual(500)
-        expect(response.body as Error).toBeInstanceOf(UnexpectedError)
+        expect(response.body as Error).toBeInstanceOf(DataProviderError)
         expect(response.body.message).toBe("erro inesperado")
     })
 

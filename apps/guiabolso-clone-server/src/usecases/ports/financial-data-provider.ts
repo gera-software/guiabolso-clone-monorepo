@@ -5,5 +5,5 @@ import { DataProviderError, UnexpectedError } from "@/usecases/errors"
 export interface FinancialDataProvider {
     getAvailableAutomaticInstitutions(): Promise<InstitutionData[]>
     getConnectToken(itemId?: string): Promise<Either<DataProviderError, string>>
-    getAccountsByItemId(itemId: string): Promise<Either<UnexpectedError, AccountData[]>>
+    getAccountsByItemId(itemId: string): Promise<Either<DataProviderError, AccountData[]>>
 }

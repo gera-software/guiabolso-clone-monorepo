@@ -1,7 +1,7 @@
 import { ConnectAutomaticAccounts } from "@/usecases/connect-automatic-accounts"
 import { CreateAutomaticBankAccount } from "@/usecases/create-automatic-bank-account"
 import { CreateAutomaticCreditCardAccount } from "@/usecases/create-automatic-credit-card-account"
-import { UnexpectedError } from "@/usecases/errors"
+import { DataProviderError } from "@/usecases/errors"
 import { AccountData, BankAccountData, CategoryData, CreditCardAccountData, CreditCardInfoData, InstitutionData, UserData } from "@/usecases/ports"
 import { ErrorPluggyDataProvider, InMemoryPluggyDataProvider } from "@test/doubles/financial-data-provider"
 import { InMemoryAccountRepository, InMemoryInstitutionRepository, InMemoryUserRepository } from "@test/doubles/repositories"
@@ -34,7 +34,7 @@ describe('Connect automatic accounts use case', () => {
         }
 
         const response = (await sut.perform(connectRequest)).value as Error
-        expect(response).toBeInstanceOf(UnexpectedError)
+        expect(response).toBeInstanceOf(DataProviderError)
     })
 
     test('should create all accounts linked to an item in data provider', async () => {

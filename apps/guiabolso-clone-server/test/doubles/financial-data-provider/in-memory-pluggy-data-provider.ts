@@ -1,5 +1,5 @@
 import { Either, right } from "@/shared"
-import { DataProviderError, UnexpectedError } from "@/usecases/errors"
+import { DataProviderError } from "@/usecases/errors"
 import { InstitutionData, FinancialDataProvider, AccountData } from "@/usecases/ports"
 
 export class InMemoryPluggyDataProvider implements FinancialDataProvider {
@@ -27,7 +27,7 @@ export class InMemoryPluggyDataProvider implements FinancialDataProvider {
         return right('valid-access-token')
     }
 
-    public async getAccountsByItemId(itemId: string): Promise<Either<UnexpectedError, AccountData[]>> {
+    public async getAccountsByItemId(itemId: string): Promise<Either<DataProviderError, AccountData[]>> {
         const accounts = this._accounts.filter(account => account.synchronization?.providerItemId == itemId )
 
         return right(accounts)

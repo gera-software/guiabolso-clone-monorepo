@@ -1,5 +1,5 @@
 import { InvalidAccountError } from "@/entities/errors"
-import { UnexpectedError, UnregisteredAccountError } from "@/usecases/errors"
+import { DataProviderError, UnexpectedError, UnregisteredAccountError } from "@/usecases/errors"
 import { CreditCardAccountData, InstitutionData, UserData } from "@/usecases/ports"
 import { SyncAutomaticCreditCardAccount } from "@/usecases/sync-automatic-credit-card-account"
 import { ErrorPluggyDataProvider, InMemoryPluggyDataProvider } from "@test/doubles/financial-data-provider"
@@ -89,7 +89,7 @@ describe('Sync automatic credit card account use case', () => {
         const sut = new SyncAutomaticCreditCardAccount(accountRepository, dataProvider)
 
         const response = (await sut.perform(accountId)).value as Error
-        expect(response).toBeInstanceOf(UnexpectedError)
+        expect(response).toBeInstanceOf(DataProviderError)
     })
 
     test('should not sync if data provider item does not have the requested account', async () => {

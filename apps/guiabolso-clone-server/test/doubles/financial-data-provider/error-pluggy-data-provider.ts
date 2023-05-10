@@ -1,5 +1,5 @@
 import { Either, left } from "@/shared"
-import { DataProviderError, UnexpectedError } from "@/usecases/errors"
+import { DataProviderError } from "@/usecases/errors"
 import { InstitutionData, FinancialDataProvider, AccountData } from "@/usecases/ports"
 
 export class ErrorPluggyDataProvider implements FinancialDataProvider {
@@ -27,8 +27,8 @@ export class ErrorPluggyDataProvider implements FinancialDataProvider {
         return left(new DataProviderError('erro inesperado'))
     }
 
-    public async getAccountsByItemId(itemId: string): Promise<Either<UnexpectedError, AccountData[]>> {
-        return left(new UnexpectedError('erro inesperado'))
+    public async getAccountsByItemId(itemId: string): Promise<Either<DataProviderError, AccountData[]>> {
+        return left(new DataProviderError('erro inesperado'))
     }
 
 }

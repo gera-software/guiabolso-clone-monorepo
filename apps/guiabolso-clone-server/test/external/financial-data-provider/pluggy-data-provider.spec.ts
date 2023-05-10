@@ -1,6 +1,6 @@
 import { Connector, Item, ItemStatus, Account as PluggyAccount, PluggyClient } from 'pluggy-sdk'
 import { PluggyDataProvider } from "@/external/financial-data-provider"
-import { DataProviderError, UnexpectedError } from '@/usecases/errors'
+import { DataProviderError } from '@/usecases/errors'
 import { AccountData } from '@/usecases/ports'
 jest.mock('pluggy-sdk')
 const mockedPluggyClient = jest.mocked(PluggyClient)
@@ -123,7 +123,7 @@ describe('Pluggy Data Provider', () => {
 
             const itemId = 'invalid-item-id'
             const result = (await sut.getAccountsByItemId(itemId)).value as Error
-            expect(result).toBeInstanceOf(UnexpectedError)
+            expect(result).toBeInstanceOf(DataProviderError)
         })
 
         test('should return a error if provider api has an internal error', async () => {
@@ -134,7 +134,7 @@ describe('Pluggy Data Provider', () => {
 
             const itemId = 'valid-item-id'
             const result = (await sut.getAccountsByItemId(itemId)).value as Error
-            expect(result).toBeInstanceOf(UnexpectedError)
+            expect(result).toBeInstanceOf(DataProviderError)
         })
 
         test('should return a list of accounts', async () => {

@@ -2,7 +2,7 @@ import { UseCase } from "@/usecases/ports";
 import { Controller, HttpRequest, HttpResponse } from "@/web-controllers/ports";
 import { MissingParamError } from "@/web-controllers/errors";
 import { badRequest, created, serverError } from "@/web-controllers/util";
-import { UnexpectedError } from "@/usecases/errors";
+import { DataProviderError } from "@/usecases/errors";
 
 export class ConnectAutomaticAccountsController implements Controller {
     private readonly usecase: UseCase
@@ -29,7 +29,7 @@ export class ConnectAutomaticAccountsController implements Controller {
             const response = await this.usecase.perform({ itemId, userId })
             
             if(response.isLeft()) {
-                if(response.value instanceof UnexpectedError) {
+                if(response.value instanceof DataProviderError) {
                     throw response.value
                 }
                 return badRequest(response.value)

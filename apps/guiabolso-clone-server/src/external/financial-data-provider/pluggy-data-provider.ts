@@ -1,7 +1,7 @@
 import { PluggyClient } from 'pluggy-sdk'
 import { AccountData, FinancialDataProvider, InstitutionData } from "@/usecases/ports"
 import { Either, left, right } from '@/shared'
-import { DataProviderError, UnexpectedError } from '@/usecases/errors'
+import { DataProviderError } from '@/usecases/errors'
 
 export class PluggyDataProvider implements FinancialDataProvider {
     private client: PluggyClient
@@ -39,7 +39,7 @@ export class PluggyDataProvider implements FinancialDataProvider {
         }
     }
 
-    public async getAccountsByItemId(itemId: string): Promise<Either<UnexpectedError, AccountData[]>> { 
+    public async getAccountsByItemId(itemId: string): Promise<Either<DataProviderError, AccountData[]>> { 
         try {
             const item = await this.client.fetchItem(itemId)
 
@@ -80,7 +80,7 @@ export class PluggyDataProvider implements FinancialDataProvider {
     
             return right(results)
         } catch (error: any) {
-            return left(new UnexpectedError(error.message))
+            return left(new DataProviderError(error.message))
         }
 
     }
