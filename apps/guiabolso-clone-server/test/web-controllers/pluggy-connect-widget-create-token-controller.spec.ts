@@ -1,5 +1,5 @@
 import { left, right } from "@/shared"
-import { UnexpectedError } from "@/usecases/errors"
+import { DataProviderError } from "@/usecases/errors"
 import { PluggyConnectWidgetCreateToken } from "@/usecases/pluggy-connect-widget-create-token"
 import { UseCase } from "@/usecases/ports"
 import { PluggyConnectWidgetCreateTokenController } from "@/web-controllers"
@@ -51,7 +51,7 @@ describe('Pluggy Connect Widget - create token controller', () => {
     })
 
     test('should return status 400 when data provider returns error', async () => {
-        mockedDataProvider.prototype.getConnectToken.mockResolvedValueOnce(left(new UnexpectedError()))
+        mockedDataProvider.prototype.getConnectToken.mockResolvedValueOnce(left(new DataProviderError()))
 
         const financialDataProvider = new InMemoryPluggyDataProvider({ institutions: [] })
         const usecase = new PluggyConnectWidgetCreateToken(financialDataProvider)
@@ -68,7 +68,7 @@ describe('Pluggy Connect Widget - create token controller', () => {
 
         const response: HttpResponse = await sut.handle(validRequest)
         expect(response.statusCode).toEqual(400)
-        expect(response.body).toBeInstanceOf(UnexpectedError)
+        expect(response.body).toBeInstanceOf(DataProviderError)
     })
 
     test('should return status 500 when server raises', async () => {

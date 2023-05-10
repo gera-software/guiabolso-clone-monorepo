@@ -1,9 +1,9 @@
 import { Either } from "@/shared"
 import { AccountData, InstitutionData } from "@/usecases/ports"
-import { UnexpectedError } from "@/usecases/errors"
+import { DataProviderError, UnexpectedError } from "@/usecases/errors"
 
 export interface FinancialDataProvider {
     getAvailableAutomaticInstitutions(): Promise<InstitutionData[]>
-    getConnectToken(itemId?: string): Promise<Either<UnexpectedError, string>>
+    getConnectToken(itemId?: string): Promise<Either<DataProviderError, string>>
     getAccountsByItemId(itemId: string): Promise<Either<UnexpectedError, AccountData[]>>
 }

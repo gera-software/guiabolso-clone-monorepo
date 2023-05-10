@@ -1,5 +1,5 @@
 import { Either, right } from "@/shared"
-import { UnexpectedError } from "@/usecases/errors"
+import { DataProviderError, UnexpectedError } from "@/usecases/errors"
 import { InstitutionData, FinancialDataProvider, AccountData } from "@/usecases/ports"
 
 export class InMemoryPluggyDataProvider implements FinancialDataProvider {
@@ -23,7 +23,7 @@ export class InMemoryPluggyDataProvider implements FinancialDataProvider {
         return this._institutions
     }
 
-    public async getConnectToken(itemId?: string): Promise<Either<UnexpectedError, string>> {
+    public async getConnectToken(itemId?: string): Promise<Either<DataProviderError, string>> {
         return right('valid-access-token')
     }
 

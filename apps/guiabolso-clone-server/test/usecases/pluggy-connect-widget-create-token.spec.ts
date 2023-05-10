@@ -1,5 +1,5 @@
 import { left, right } from "@/shared"
-import { UnexpectedError } from "@/usecases/errors"
+import { DataProviderError } from "@/usecases/errors"
 import { PluggyConnectWidgetCreateToken } from "@/usecases/pluggy-connect-widget-create-token"
 import { InMemoryPluggyDataProvider } from "@test/doubles/financial-data-provider"
 
@@ -29,13 +29,13 @@ describe('Pluggy Connect Widget - create a connect token use case', () => {
     })
 
     test('should return an UnexpectedError error', async () => {
-        mockedDataProvider.prototype.getConnectToken.mockResolvedValueOnce(left(new UnexpectedError()))
+        mockedDataProvider.prototype.getConnectToken.mockResolvedValueOnce(left(new DataProviderError()))
 
         const finantialDataProvider = new InMemoryPluggyDataProvider({ institutions: [] })
         const sut = new PluggyConnectWidgetCreateToken(finantialDataProvider)
 
         const response = (await sut.perform({ itemId: ''})).value as Error
 
-        expect(response).toBeInstanceOf(UnexpectedError)
+        expect(response).toBeInstanceOf(DataProviderError)
     })
 })

@@ -1,7 +1,7 @@
 import { PluggyClient } from 'pluggy-sdk'
 import { AccountData, FinancialDataProvider, InstitutionData } from "@/usecases/ports"
 import { Either, left, right } from '@/shared'
-import { UnexpectedError } from '@/usecases/errors'
+import { DataProviderError, UnexpectedError } from '@/usecases/errors'
 
 export class PluggyDataProvider implements FinancialDataProvider {
     private client: PluggyClient
@@ -30,12 +30,12 @@ export class PluggyDataProvider implements FinancialDataProvider {
                 })
     }
 
-    public async getConnectToken(itemId?: string): Promise<Either<UnexpectedError, string>> {
+    public async getConnectToken(itemId?: string): Promise<Either<DataProviderError, string>> {
         try {
             const result = await this.client.createConnectToken(itemId)
             return right(result.accessToken)
         } catch(error) {
-            return left(new UnexpectedError())
+            return left(new DataProviderError(error.toString()))
         }
     }
 
