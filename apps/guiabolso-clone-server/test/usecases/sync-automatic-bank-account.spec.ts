@@ -93,7 +93,7 @@ describe('Sync automatic bank account use case', () => {
         expect(response).toBeInstanceOf(UnexpectedError)
     })
 
-    test('should update account balance', async () => {
+    test('should update account balance and synchronization status', async () => {
         const providerAccountData1: BankAccountData = {
             id: null,
             type: accountType,
@@ -119,8 +119,11 @@ describe('Sync automatic bank account use case', () => {
         const sut = new SyncAutomaticBankAccount(accountRepository, dataProvider)
         
         const response = (await sut.perform(accountId)).value as BankAccountData
+        expect(response.synchronization.lastSyncAt).toBeInstanceOf(Date)
+        expect(response.synchronization.lastSyncAt).toBeInstanceOf(Date)
 
         const updatedAccount = await accountRepository.findById(accountId)
         expect(updatedAccount.balance).toBe(providerAccountData1.balance)
+        expect(updatedAccount.synchronization.lastSyncAt).toBeInstanceOf(Date)
     })
 })

@@ -39,6 +39,8 @@ export class SyncAutomaticBankAccount implements UseCase {
 
         await this.accountRepo.updateBalance(accountId, accountDataToSync.balance)
 
+        await this.accountRepo.updateSynchronizationStatus(accountId, { lastSyncAt: new Date() })
+
         const updatedAccount = await this.accountRepo.findById(accountId)
         return right(updatedAccount)
     }
