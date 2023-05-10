@@ -1,5 +1,5 @@
 import { PluggyClient } from 'pluggy-sdk'
-import { AccountData, FinancialDataProvider, InstitutionData } from "@/usecases/ports"
+import { AccountData, FinancialDataProvider, InstitutionData, TransactionData, TransactionFilter } from "@/usecases/ports"
 import { Either, left, right } from '@/shared'
 import { DataProviderError } from '@/usecases/errors'
 
@@ -83,5 +83,9 @@ export class PluggyDataProvider implements FinancialDataProvider {
             return left(new DataProviderError(error.message))
         }
 
+    }
+
+    public async getTransactionsByProviderAccountId(filter: TransactionFilter): Promise<Either<DataProviderError, TransactionData[]>> {
+        throw new Error('Method getTransactionsByProviderAccountId not implemented.')
     }
 }
