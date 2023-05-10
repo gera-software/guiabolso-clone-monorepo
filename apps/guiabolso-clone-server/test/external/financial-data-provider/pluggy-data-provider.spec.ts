@@ -579,6 +579,64 @@ describe('Pluggy Data Provider', () => {
             ])
         })
 
-        test.todo('should return credit card transactions')
+        test('should return credit card transactions', async () => {
+            mockedPluggyClient.prototype.fetchTransactions.mockResolvedValueOnce({
+                "results": [
+                    {
+                        "id": "a8534c85-53ce-4f21-94d7-50e9d2ee4957",
+                        "description": "Pagamento recebido",
+                        "currencyCode": "BRL",
+                        "amount": -1416.22,
+                        "date": new Date("2020-10-15T00:00:00.000Z"),
+                        "balance": null,
+                        "category": null,
+                        "accountId": "562b795d-1653-429f-be86-74ead9502813",
+                        "providerCode": null,
+                        "paymentData": null,
+                    },
+                    {
+                        "id": "ff9ed929-edc4-408c-a959-d51f79ab1814",
+                        "description": "Compra online",
+                        "currencyCode": "BRL",
+                        "amount": 159.2,
+                        "date": new Date("2020-10-14T00:00:00.000Z"),
+                        "balance": null,
+                        "category": null,
+                        "accountId": "562b795d-1653-429f-be86-74ead9502813",
+                        "providerCode": null,
+                        "paymentData": null,
+                    }
+                ]
+            }).mockResolvedValueOnce({ "results": [] })
+
+            const validClientId = 'valid-client-id'
+            const validClientSecret = 'valid-client-secret'
+            const sut = new PluggyDataProvider(validClientId, validClientSecret)
+
+            const accountId = 'valid-account-id'
+            const accountType: AccountType = 'CREDIT_CARD'
+            const providerAccountId = 'valid-account-id'
+            const from = new Date('2023-03-01')
+            const to = new Date('2023-05-10')
+            const result = (await sut.getTransactionsByProviderAccountId(accountId, accountType, {providerAccountId, from, to })).value as TransactionData[]
+            expect(result).toEqual([
+                {
+                    id: null,
+                    accountId,
+                    amount: 141622,
+                    descriptionOriginal: "Pagamento recebido",
+                    date: new Date("2020-10-15T00:00:00.000Z"),
+                    providerId: "a8534c85-53ce-4f21-94d7-50e9d2ee4957",
+                },
+                {
+                    id: null,
+                    accountId,
+                    amount: -15920,
+                    descriptionOriginal: "Compra online",
+                    date: new Date("2020-10-14T00:00:00.000Z"),
+                    providerId: "ff9ed929-edc4-408c-a959-d51f79ab1814",
+                }
+            ])
+        })
     })
 })

@@ -107,11 +107,12 @@ export class PluggyDataProvider implements FinancialDataProvider {
                 array.push(...results)
             } while (results.length)
 
+            const signal = accountType == 'CREDIT_CARD' ? -1 : 1
 
             const transactions: TransactionRequest[] = array.map((transaction: PluggyTransaction) => ({
                 id: null,
                 accountId,
-                amount: +(transaction.amount * 100).toFixed(0),
+                amount: +(transaction.amount * 100).toFixed(0) * signal,
                 descriptionOriginal: transaction.description,
                 date: transaction.date,
                 providerId: transaction.id,
