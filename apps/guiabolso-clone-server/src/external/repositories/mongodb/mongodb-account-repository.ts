@@ -116,6 +116,10 @@ export class MongodbAccountRepository implements AccountRepository, UpdateAccoun
         await accountCollection.updateOne({ _id: new ObjectId(accountId) }, updateDoc)
     }
 
+    async updateSynchronizationStatus(accountId: string, syncronization: { lastSyncAt: Date }): Promise<void> {
+        throw new Error("Method updateSynchronizationStatus not implemented.")
+    }
+
     private withApplicationId (dbAccount: MongodbAccount): AccountData {
         let institution: InstitutionData = null
 

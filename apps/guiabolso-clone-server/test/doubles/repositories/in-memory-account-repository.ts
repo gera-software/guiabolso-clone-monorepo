@@ -48,4 +48,11 @@ export class InMemoryAccountRepository implements AccountRepository, UpdateAccou
             account.creditCardInfo.availableCreditLimit = limit
         }
     }
+
+    async updateSynchronizationStatus(accountId: string, syncronization: { lastSyncAt: Date; }): Promise<void> {
+        const account = await this.findById(accountId)
+        if(account && account.synchronization) {
+            account.synchronization.lastSyncAt = syncronization.lastSyncAt
+        }
+    }
 }

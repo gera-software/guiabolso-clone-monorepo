@@ -13,5 +13,6 @@ export interface BankAccountData {
     synchronization?: {
         providerItemId: string,
         createdAt: Date,
+        lastSyncAt?: Date,
     },
 }

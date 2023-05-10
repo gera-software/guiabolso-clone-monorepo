@@ -14,5 +14,6 @@ export interface AccountData {
     synchronization?: {
         providerItemId: string,
         createdAt: Date,
+        lastSyncAt?: Date,
     }
 }
