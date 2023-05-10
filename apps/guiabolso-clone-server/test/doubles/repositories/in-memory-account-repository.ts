@@ -1,4 +1,4 @@
-import { AccountRepository, AccountData, UpdateAccountRepository } from "@/usecases/ports";
+import { AccountRepository, AccountData, UpdateAccountRepository, CreditCardInfoData } from "@/usecases/ports";
 
 export class InMemoryAccountRepository implements AccountRepository, UpdateAccountRepository {
     private readonly _data: AccountData[]
@@ -53,6 +53,13 @@ export class InMemoryAccountRepository implements AccountRepository, UpdateAccou
         const account = await this.findById(accountId)
         if(account && account.synchronization) {
             account.synchronization.lastSyncAt = syncronization.lastSyncAt
+        }
+    }
+
+    async updateCreditCardInfo(accountId: string, creditCardInfoData: CreditCardInfoData): Promise<void> {
+        const account = await this.findById(accountId)
+        if(account && account.creditCardInfo) {
+            account.creditCardInfo = creditCardInfoData
         }
     }
 }
