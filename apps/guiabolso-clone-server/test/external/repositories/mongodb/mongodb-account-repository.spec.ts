@@ -268,6 +268,37 @@ describe('Mongodb Account repository', () => {
         expect((await sut.findById(addedAccount.id)).creditCardInfo.availableCreditLimit).toBe(newAvailableCreditLimit)
     })
 
+    test('should update credit card info', async () => {
+        const sut = new MongodbAccountRepository()
+        const account: CreditCardAccountData = {
+            type: 'CREDIT_CARD',
+            syncType: 'AUTOMATIC',
+            name: 'any name',
+            balance: 789,
+            userId: validUserId.toString(),
+            creditCardInfo: {
+                brand: 'master',
+                creditLimit: 100000,
+                availableCreditLimit: 50000,
+                closeDay: 3,
+                dueDay: 10,
+            }
+        }
+        const addedAccount = await sut.add(account)
+        
+        const newCreditCardInfo = {
+            brand: 'visa',
+            creditLimit: 500000,
+            availableCreditLimit: 25000,
+            closeDay: 5,
+            dueDay: 12
+        }
+        await sut.updateCreditCardInfo(addedAccount.id, newCreditCardInfo)
+
+        
+        expect((await sut.findById(addedAccount.id)).creditCardInfo).toEqual(newCreditCardInfo)
+    })
+
     test('should update synchronization status', async () => {
         const sut = new MongodbAccountRepository()
         const account: BankAccountData = {

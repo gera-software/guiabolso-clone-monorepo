@@ -105,6 +105,18 @@ export class MongodbAccountRepository implements AccountRepository, UpdateAccoun
         await accountCollection.updateOne({ _id: new ObjectId(accountId) }, updateDoc)
     }
 
+    async updateCreditCardInfo(accountId: string, creditCardInfoData: CreditCardInfoData): Promise<void> {
+        const accountCollection = MongoHelper.getCollection('accounts')
+
+        const updateDoc = {
+            $set: {
+                creditCardInfo: creditCardInfoData,
+            },
+        };
+
+        await accountCollection.updateOne({ _id: new ObjectId(accountId) }, updateDoc)
+    }
+
     async updateAvaliableCreditCardLimit(accountId: string, limit: number): Promise<void> {
         const accountCollection = MongoHelper.getCollection('accounts')
 
@@ -129,9 +141,6 @@ export class MongodbAccountRepository implements AccountRepository, UpdateAccoun
         await accountCollection.updateOne({ _id: new ObjectId(accountId) }, updateDoc)
     }
 
-    async updateCreditCardInfo(accountId: string, creditCardInfoData: CreditCardInfoData): Promise<void> {
-        throw new Error("Method not implemented.")
-    }
 
     private withApplicationId (dbAccount: MongodbAccount): AccountData {
         let institution: InstitutionData = null
