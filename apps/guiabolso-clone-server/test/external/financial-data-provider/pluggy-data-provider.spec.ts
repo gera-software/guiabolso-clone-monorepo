@@ -2,7 +2,7 @@ import { Connector, Item, ItemStatus, Account as PluggyAccount, PluggyClient } f
 import { PluggyDataProvider } from "@/external/financial-data-provider"
 import { DataProviderError } from '@/usecases/errors'
 import { AccountData, TransactionData } from '@/usecases/ports'
-import { AccountType, Transaction } from '@/entities'
+import { AccountType } from '@/entities'
 jest.mock('pluggy-sdk')
 const mockedPluggyClient = jest.mocked(PluggyClient)
 
@@ -562,7 +562,7 @@ describe('Pluggy Data Provider', () => {
             expect(result).toEqual([
                 {
                     id: null,
-                    accountId: null, // TODO,
+                    accountId,
                     amount: -21245,
                     descriptionOriginal: "* PROV * COMPRA TESOURO DIRETO CLIENTES",
                     date: new Date("2020-10-15T00:00:00.000Z"),
@@ -570,7 +570,7 @@ describe('Pluggy Data Provider', () => {
                 },
                 {
                     id: null,
-                    accountId: null,// TODO
+                    accountId,
                     amount: 15920,
                     descriptionOriginal: "AJUSTE NA POSIÇÃO PR. 14/10/2020 NC. 870947",
                     date: new Date("2020-10-14T00:00:00.000Z"),

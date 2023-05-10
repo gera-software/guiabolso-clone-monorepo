@@ -1,5 +1,5 @@
 import { PluggyClient, Transaction as PluggyTransaction, TransactionFilters } from 'pluggy-sdk'
-import { AccountData, FinancialDataProvider, InstitutionData, TransactionData, TransactionFilter, TransactionRequest } from "@/usecases/ports"
+import { AccountData, FinancialDataProvider, InstitutionData, TransactionFilter, TransactionRequest } from "@/usecases/ports"
 import { Either, left, right } from '@/shared'
 import { DataProviderError } from '@/usecases/errors'
 import { AccountType } from '@/entities'
@@ -110,7 +110,7 @@ export class PluggyDataProvider implements FinancialDataProvider {
 
             const transactions: TransactionRequest[] = array.map((transaction: PluggyTransaction) => ({
                 id: null,
-                accountId: null,// TODO
+                accountId,
                 amount: +(transaction.amount * 100).toFixed(0),
                 descriptionOriginal: transaction.description,
                 date: transaction.date,
