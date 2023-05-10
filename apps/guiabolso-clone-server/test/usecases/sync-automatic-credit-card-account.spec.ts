@@ -101,7 +101,7 @@ describe('Sync automatic credit card account use case', () => {
         expect(response).toBeInstanceOf(UnexpectedError)
     })
 
-    test('should update account balance and synchronization status', async () => {
+    test('should update account balance, credit card info and synchronization status', async () => {
         const providerAccountData1: CreditCardAccountData = {
             id: null,
             type: accountType,
@@ -119,11 +119,11 @@ describe('Sync automatic credit card account use case', () => {
                 providerConnectorId: institution.providerConnectorId,
             },
             creditCardInfo: {
-                brand: 'master card',
-                creditLimit: 100000,
-                availableCreditLimit: availableCreditLimit,
-                closeDay: 3,
-                dueDay: 10
+                brand: 'visa',
+                creditLimit: 500000,
+                availableCreditLimit: 25000,
+                closeDay: 5,
+                dueDay: 12
             },
             providerAccountId,
             synchronization,
@@ -140,7 +140,6 @@ describe('Sync automatic credit card account use case', () => {
         const updatedAccount = await accountRepository.findById(accountId)
         expect(updatedAccount.balance).toBe(providerAccountData1.balance)
         expect(updatedAccount.synchronization.lastSyncAt).toBeInstanceOf(Date)
-
-        // TODO credit card info
+        expect(updatedAccount.creditCardInfo).toEqual(providerAccountData1.creditCardInfo)
     })
 })

@@ -38,7 +38,7 @@ export class SyncAutomaticCreditCardAccount implements UseCase {
         }
 
         await this.accountRepo.updateBalance(accountId, accountDataToSync.balance)
-
+        await this.accountRepo.updateCreditCardInfo(accountId, accountDataToSync.creditCardInfo)
         await this.accountRepo.updateSynchronizationStatus(accountId, { lastSyncAt: new Date() })
 
         const updatedAccount = await this.accountRepo.findById(accountId)
