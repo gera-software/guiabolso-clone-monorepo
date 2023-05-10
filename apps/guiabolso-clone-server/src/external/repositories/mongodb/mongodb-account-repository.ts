@@ -14,6 +14,7 @@ export type MongodbCreditCardInfo = {
 export type MongodbAccountSynchronization = {
     providerItemId: string,
     createdAt: Date,
+    lastSyncAt?: Date,
 }
 
 export type MongodbAccount = {
@@ -117,7 +118,15 @@ export class MongodbAccountRepository implements AccountRepository, UpdateAccoun
     }
 
     async updateSynchronizationStatus(accountId: string, syncronization: { lastSyncAt: Date }): Promise<void> {
-        throw new Error("Method updateSynchronizationStatus not implemented.")
+        const accountCollection = MongoHelper.getCollection('accounts')
+
+        const updateDoc = {
+            $set: {
+                'synchronization.lastSyncAt': syncronization.lastSyncAt,
+            },
+        };
+
+        await accountCollection.updateOne({ _id: new ObjectId(accountId) }, updateDoc)
     }
 
     private withApplicationId (dbAccount: MongodbAccount): AccountData {

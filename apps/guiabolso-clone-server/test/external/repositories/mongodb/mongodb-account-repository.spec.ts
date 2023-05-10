@@ -267,4 +267,28 @@ describe('Mongodb Account repository', () => {
         
         expect((await sut.findById(addedAccount.id)).creditCardInfo.availableCreditLimit).toBe(newAvailableCreditLimit)
     })
+
+    test('should update synchronization status', async () => {
+        const sut = new MongodbAccountRepository()
+        const account: BankAccountData = {
+            type: 'BANK',
+            syncType: 'AUTOMATIC',
+            name: 'any name',
+            balance: 789,
+            userId: validUserId.toString(),
+            institution: validInstitution,
+            providerAccountId: 'valid-provider-account-id',
+            synchronization: {
+                providerItemId: 'valid-provider-item-id',
+                createdAt: new Date('2023-03-05'),
+            }
+        }
+        const addedAccount = await sut.add(account)
+        
+        const lastSyncAt = new Date('2023-03-07')
+        await sut.updateSynchronizationStatus(addedAccount.id, { lastSyncAt })
+
+        
+        expect((await sut.findById(addedAccount.id)).synchronization.lastSyncAt).toEqual(lastSyncAt)
+    })
 })
