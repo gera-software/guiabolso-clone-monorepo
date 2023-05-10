@@ -8,4 +8,5 @@ export interface TransactionRequest {
     date: Date,
     comment?: string,
     ignored?: boolean,
+    providerId?: string,
 }

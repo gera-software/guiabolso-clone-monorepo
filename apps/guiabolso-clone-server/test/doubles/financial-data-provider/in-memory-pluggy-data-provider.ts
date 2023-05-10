@@ -1,13 +1,13 @@
 import { Either, right } from "@/shared"
 import { DataProviderError } from "@/usecases/errors"
-import { InstitutionData, FinancialDataProvider, AccountData, TransactionData, TransactionFilter } from "@/usecases/ports"
+import { InstitutionData, FinancialDataProvider, AccountData, TransactionFilter, TransactionRequest } from "@/usecases/ports"
 
 export class InMemoryPluggyDataProvider implements FinancialDataProvider {
     private readonly _institutions: InstitutionData[]
     private readonly _accounts: AccountData[]
-    private readonly _transactions: TransactionData[]
+    private readonly _transactions: TransactionRequest[]
 
-    constructor(options: { institutions?: InstitutionData[], accounts?: AccountData[], transactions?: TransactionData[] }) {
+    constructor(options: { institutions?: InstitutionData[], accounts?: AccountData[], transactions?: TransactionRequest[] }) {
         this._institutions = options.institutions ?? []
         this._accounts = options.accounts ?? []
         this._transactions = options.transactions ?? []
@@ -39,7 +39,7 @@ export class InMemoryPluggyDataProvider implements FinancialDataProvider {
         return right(accounts)
     }
 
-    public async getTransactionsByProviderAccountId(filter: TransactionFilter): Promise<Either<DataProviderError, TransactionData[]>> {
+    public async getTransactionsByProviderAccountId(filter: TransactionFilter): Promise<Either<DataProviderError, TransactionRequest[]>> {
         return right(this._transactions)
     }
 

@@ -1,5 +1,5 @@
-import { PluggyClient, TransactionFilters } from 'pluggy-sdk'
-import { AccountData, FinancialDataProvider, InstitutionData, TransactionData, TransactionFilter } from "@/usecases/ports"
+import { PluggyClient, Transaction as PluggyTransaction, TransactionFilters } from 'pluggy-sdk'
+import { AccountData, FinancialDataProvider, InstitutionData, TransactionData, TransactionFilter, TransactionRequest } from "@/usecases/ports"
 import { Either, left, right } from '@/shared'
 import { DataProviderError } from '@/usecases/errors'
 
@@ -85,10 +85,8 @@ export class PluggyDataProvider implements FinancialDataProvider {
 
     }
 
-    // TODO tem que saber se a account é BANK ou CREDIT CARD
-    public async getTransactionsByProviderAccountId(filter: TransactionFilter): Promise<Either<DataProviderError, TransactionData[]>> {
+    public async getTransactionsByProviderAccountId(filter: TransactionFilter): Promise<Either<DataProviderError, TransactionRequest[]>> {
         try {
-            // @ts-ignore
             const array = []
 
             const options: TransactionFilters = {
@@ -108,8 +106,17 @@ export class PluggyDataProvider implements FinancialDataProvider {
                 array.push(...results)
             } while (results.length)
 
-            // @ts-ignore
-            return right(array)
+
+            const transactions: TransactionRequest[] = array.map((transaction: PluggyTransaction) => ({
+                id: null,
+                accountId: null,// TODO
+                amount: +(transaction.amount * 100).toFixed(0),
+                descriptionOriginal: transaction.description,
+                date: transaction.date,
+                providerId: transaction.id,
+            }))
+            
+            return right(transactions)
 
         } catch (error: any) {
             return left(new DataProviderError(error.message))

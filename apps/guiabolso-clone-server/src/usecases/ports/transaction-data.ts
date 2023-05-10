@@ -17,4 +17,5 @@ export interface TransactionData {
     comment?: string,
     ignored?: boolean,
     _isDeleted?: boolean,
+    providerId?: string,
 }
