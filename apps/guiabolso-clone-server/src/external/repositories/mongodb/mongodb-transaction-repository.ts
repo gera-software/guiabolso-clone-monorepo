@@ -163,7 +163,7 @@ export class MongodbTransactionRepository implements TransactionRepository {
             },
         }))
 
-        const result = await transactionCollection.bulkWrite(operations)
+        const result = await transactionCollection.bulkWrite(operations, { ordered: false })
 
         return result
     }

@@ -1,7 +1,7 @@
 import { MongodbTransaction, MongodbTransactionRepository } from "@/external/repositories/mongodb"
 import { MongoHelper } from "@/external/repositories/mongodb/helper"
 import { CategoryData, TransactionData } from "@/usecases/ports"
-import { ObjectId } from "mongodb"
+import { MongoClient, ObjectId } from "mongodb"
 
 describe('Mongodb Transaction repository', () => { 
     const validUserId = new ObjectId()
