@@ -1,5 +1,5 @@
 import { CategoryData, TransactionData, TransactionRepository } from "@/usecases/ports";
-import { ObjectId } from "mongodb";
+import { AnyBulkWriteOperation, BulkWriteResult, Document, ObjectId } from "mongodb";
 import { MongodbCategory } from "@/external/repositories/mongodb";
 import { MongoHelper } from "@/external/repositories/mongodb/helper";
 
@@ -20,6 +20,7 @@ export type MongodbTransaction = {
     ignored?: boolean,
     category?: MongodbCategory,
     _isDeleted?: boolean,
+    providerId?: string,
 }
 
 export class MongodbTransactionRepository implements TransactionRepository {
@@ -133,6 +134,37 @@ export class MongodbTransactionRepository implements TransactionRepository {
         return null
     }
 
+    async mergeTransactions(transactions: TransactionData[]): Promise<BulkWriteResult> {
+        const transactionCollection = MongoHelper.getCollection('transactions')
+
+        const operations: AnyBulkWriteOperation<Document>[] = transactions.map(transaction => ({
+            insertOne: {
+                document: {
+                    accountId: new ObjectId(transaction.accountId),
+                    accountType: transaction.accountType,
+                    syncType: transaction.syncType,
+                    userId: new ObjectId(transaction.userId),
+                    amount: transaction.amount,
+                    // description: transaction.description,
+                    descriptionOriginal: transaction.descriptionOriginal,
+                    date: transaction.date,
+                    // invoiceDate: transaction.invoiceDate ?? null,
+                    // invoiceId: transaction.invoiceId ? new ObjectId(transaction.invoiceId) : null,
+                    type: transaction.type,
+                    // comment: transaction.comment,
+                    // ignored: transaction.ignored,
+                    // _isDeleted: transaction._isDeleted,
+                    providerId: transaction.providerId,
+                },
+            },
+        }))
+
+        const result = await transactionCollection.bulkWrite(operations)
+
+        return result
+    }
+
+
     private withApplicationId (dbTransaction: MongodbTransaction): TransactionData {
         let category: CategoryData = null
 
@@ -164,6 +196,7 @@ export class MongodbTransactionRepository implements TransactionRepository {
             ignored: dbTransaction.ignored,
             _isDeleted: dbTransaction._isDeleted,
             category,
+            providerId: dbTransaction.providerId,
         }
     }
     

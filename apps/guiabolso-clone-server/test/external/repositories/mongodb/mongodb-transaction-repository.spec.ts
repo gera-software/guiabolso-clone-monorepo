@@ -501,5 +501,48 @@ describe('Mongodb Transaction repository', () => {
         })
     })
     
+    describe('merge automatic bank transactions', () => {
+        test('se uma transação ainda não existir, deve inserir a transação', async () => {
+            const sut = new MongodbTransactionRepository()
 
+            const transactionData: TransactionData = {
+                accountId: validBankAccountId.toString(),
+                accountType: 'BANK',
+                syncType: 'AUTOMATIC',
+                userId: validUserId.toString(),
+                amount: 2345,
+                descriptionOriginal: 'valid description',
+                date: new Date('2023-05-18'),
+                type: 'INCOME',
+                providerId: 'valid-provider-transaction-id'
+            }
+
+            const result = await sut.mergeTransactions([transactionData])
+
+            expect(result.insertedIds[0]).toBeDefined()
+            const transaction = await sut.findById(result.insertedIds[0].toString())
+            expect(transaction).toEqual({
+                id: result.insertedIds[0].toString(),
+                accountId: validBankAccountId.toString(),
+                accountType: 'BANK',
+                syncType: 'AUTOMATIC',
+                userId: validUserId.toString(),
+                amount: 2345,
+                description: undefined,
+                descriptionOriginal: 'valid description',
+                date: new Date('2023-05-18'),
+                type: 'INCOME',
+                comment: undefined,
+                ignored: undefined,
+                category: null,
+                _isDeleted: undefined,
+                invoiceDate: undefined,
+                invoiceId: null,
+                providerId: 'valid-provider-transaction-id',
+            })
+        })
+
+        test.todo('se uma transação já existir, deve fazer um merge (atualizar sem sobrescrever campos já personalizados pelo usuário)')
+        test.todo('deve executar em paralelo, continuando as operações, mesmo que alguma de erro')
+    })
 })

@@ -1,4 +1,5 @@
 import { TransactionRequest, TransactionRepository, TransactionData } from "@/usecases/ports";
+import { BulkWriteResult } from "mongodb";
 
 export class InMemoryTransactionRepository implements TransactionRepository {
     private readonly _data: TransactionData[]
@@ -61,6 +62,10 @@ export class InMemoryTransactionRepository implements TransactionRepository {
 
 
         return transactionToUpdate
+    }
+
+    async mergeTransactions(transactions: TransactionData[]): Promise<BulkWriteResult> {
+        throw new Error("Method not implemented.");
     }
 
 }
