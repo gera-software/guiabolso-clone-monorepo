@@ -1,7 +1,7 @@
 import { MongodbTransaction, MongodbTransactionRepository } from "@/external/repositories/mongodb"
 import { MongoHelper } from "@/external/repositories/mongodb/helper"
 import { CategoryData, TransactionData } from "@/usecases/ports"
-import { MongoClient, ObjectId } from "mongodb"
+import { ObjectId } from "mongodb"
 
 describe('Mongodb Transaction repository', () => { 
     const validUserId = new ObjectId()
@@ -10,6 +10,8 @@ describe('Mongodb Transaction repository', () => {
     const validCreditCardAccountId = new ObjectId()
     const validCategory0Id = new ObjectId()
     const validCategory1Id = new ObjectId()
+    const validInvoiceId1 = new ObjectId()
+    const validInvoiceId2 = new ObjectId()
 
     let validCategory0: CategoryData = {
         id: validCategory0Id.toString(),
@@ -538,7 +540,7 @@ describe('Mongodb Transaction repository', () => {
                 ignored: undefined,
                 category: null,
                 _isDeleted: undefined,
-                invoiceDate: undefined,
+                invoiceDate: null,
                 invoiceId: null,
                 providerId: 'valid-provider-transaction-id',
             })
@@ -606,6 +608,8 @@ describe('Mongodb Transaction repository', () => {
                 descriptionOriginal: transactionData.descriptionOriginal,
                 date: transactionData.date,
                 type: transactionData.type,
+                invoiceDate: null,
+                invoiceId: null,
                 description: transactionBefore.description,
                 comment: transactionBefore.comment,
                 ignored: transactionBefore.ignored,
@@ -618,12 +622,135 @@ describe('Mongodb Transaction repository', () => {
                     ignored: transactionBefore.category.ignored
                 },
                 _isDeleted: transactionBefore._isDeleted,
-                invoiceDate: transactionBefore.invoiceDate,
-                invoiceId: transactionBefore.invoiceId,
                 providerId: transactionBefore.providerId,
             })
         })
 
-        test.todo('deve executar em paralelo, continuando as operações, mesmo que alguma de erro')
+        // TODO 'deve executar em paralelo, continuando as operações, mesmo que alguma de erro'
+    })
+
+    describe('merge automatic credit card transactions', () => {
+        test('se uma transação ainda não existir, deve inserir a transação', async () => {
+            const sut = new MongodbTransactionRepository()
+
+            const transactionData: TransactionData = {
+                accountId: validCreditCardAccountId.toString(),
+                accountType: 'CREDIT_CARD',
+                syncType: 'AUTOMATIC',
+                userId: validUserId.toString(),
+                amount: -2345,
+                descriptionOriginal: 'valid description',
+                date: new Date('2023-05-03'),
+                invoiceDate: new Date('2023-04-18'),
+                invoiceId: validInvoiceId1.toString(),
+                type: 'EXPENSE',
+                providerId: 'valid-provider-transaction-id'
+            }
+
+            const result = await sut.mergeTransactions([transactionData])
+            expect(result.upsertedIds[0]).toBeDefined()
+            const transaction = await sut.findById(result.upsertedIds[0].toString())
+            expect(transaction).toEqual({
+                id: result.upsertedIds[0].toString(),
+                accountId: validCreditCardAccountId.toString(),
+                accountType: 'CREDIT_CARD',
+                syncType: 'AUTOMATIC',
+                userId: validUserId.toString(),
+                amount: -2345,
+                description: undefined,
+                descriptionOriginal: 'valid description',
+                date: new Date('2023-05-03'),
+                invoiceDate: new Date('2023-04-18'),
+                invoiceId: validInvoiceId1.toString(),
+                type: 'EXPENSE',
+                comment: undefined,
+                ignored: undefined,
+                category: null,
+                _isDeleted: undefined,
+                providerId: 'valid-provider-transaction-id',
+            })
+
+        })
+
+        test('se uma transação já existir, deve fazer um merge (atualizar sem sobrescrever campos já personalizados pelo usuário)', async () => {
+            const transactionCollection = MongoHelper.getCollection('transactions')
+            
+            const transactionBefore: MongodbTransaction = {
+                accountId: validCreditCardAccountId,
+                accountType: 'CREDIT_CARD',
+                syncType: 'AUTOMATIC',
+                userId: validUserId,
+                amount: -2345,
+                description: 'valid description',
+                descriptionOriginal: '',
+                date: new Date('2023-05-06'),
+                invoiceDate: new Date('2023-04-20'),
+                invoiceId: validInvoiceId2,
+                type: 'EXPENSE',
+                category: {
+                    _id: validCategory0Id,
+                    name: validCategory0.name,
+                    group: validCategory0.group,
+                    iconName: validCategory0.iconName,
+                    primaryColor: validCategory0.primaryColor,
+                    ignored: validCategory0.ignored
+                },
+                comment: 'valid comment',
+                ignored: true,
+                _isDeleted: true,
+                providerId: 'valid-provider-transaction-id',
+            }
+
+            const { insertedId } = await transactionCollection.insertOne(transactionBefore)
+
+
+
+            const sut = new MongodbTransactionRepository()
+
+            const transactionData: TransactionData = {
+                accountId: validCreditCardAccountId.toString(),
+                accountType: 'CREDIT_CARD',
+                syncType: 'AUTOMATIC',
+                userId: validUserId.toString(),
+                amount: 5678,
+                descriptionOriginal: 'valid original description',
+                date: new Date('2023-05-03'),
+                invoiceDate: new Date('2023-04-15'),
+                invoiceId: validInvoiceId1.toString(),
+                type: 'INCOME',
+                providerId: 'valid-provider-transaction-id'
+            }
+
+            const result = await sut.mergeTransactions([transactionData])
+
+            expect(result.modifiedCount).toEqual(1)
+            const transactionModified = await sut.findById(insertedId.toString())
+            expect(transactionModified).toEqual({
+                id: insertedId.toString(),
+                accountId: transactionData.accountId,
+                accountType: transactionData.accountType,
+                syncType: transactionData.syncType,
+                userId: transactionData.userId,
+                amount: transactionData.amount,
+                descriptionOriginal: transactionData.descriptionOriginal,
+                date: transactionData.date,
+                type: transactionData.type,
+                invoiceDate: transactionData.invoiceDate,
+                invoiceId: transactionData.invoiceId,
+                description: transactionBefore.description,
+                comment: transactionBefore.comment,
+                ignored: transactionBefore.ignored,
+                category: {
+                    id: transactionBefore.category._id.toString(),
+                    name: transactionBefore.category.name,
+                    group: transactionBefore.category.group,
+                    iconName: transactionBefore.category.iconName,
+                    primaryColor: transactionBefore.category.primaryColor,
+                    ignored: transactionBefore.category.ignored
+                },
+                _isDeleted: transactionBefore._isDeleted,
+                providerId: transactionBefore.providerId,
+            })
+        })
     })
 })
