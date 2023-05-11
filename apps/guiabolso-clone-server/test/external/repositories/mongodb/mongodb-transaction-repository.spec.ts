@@ -1,4 +1,4 @@
-import { MongodbTransactionRepository } from "@/external/repositories/mongodb"
+import { MongodbTransaction, MongodbTransactionRepository } from "@/external/repositories/mongodb"
 import { MongoHelper } from "@/external/repositories/mongodb/helper"
 import { CategoryData, TransactionData } from "@/usecases/ports"
 import { ObjectId } from "mongodb"
@@ -8,9 +8,11 @@ describe('Mongodb Transaction repository', () => {
     const validWalletAccountId = new ObjectId()
     const validBankAccountId = new ObjectId()
     const validCreditCardAccountId = new ObjectId()
+    const validCategory0Id = new ObjectId()
+    const validCategory1Id = new ObjectId()
 
     let validCategory0: CategoryData = {
-        id: new ObjectId().toString(),
+        id: validCategory0Id.toString(),
         name: "category 0",
         group: "VALIDGROUP",
         iconName: "ICON 0",
@@ -19,7 +21,7 @@ describe('Mongodb Transaction repository', () => {
     }
 
     let validCategory1: CategoryData = {
-        id: new ObjectId().toString(),
+        id: validCategory1Id.toString(),
         name: "category 1",
         group: "VALIDGROUP",
         iconName: "ICON 1",
@@ -519,10 +521,10 @@ describe('Mongodb Transaction repository', () => {
 
             const result = await sut.mergeTransactions([transactionData])
 
-            expect(result.insertedIds[0]).toBeDefined()
-            const transaction = await sut.findById(result.insertedIds[0].toString())
+            expect(result.upsertedIds[0]).toBeDefined()
+            const transaction = await sut.findById(result.upsertedIds[0].toString())
             expect(transaction).toEqual({
-                id: result.insertedIds[0].toString(),
+                id: result.upsertedIds[0].toString(),
                 accountId: validBankAccountId.toString(),
                 accountType: 'BANK',
                 syncType: 'AUTOMATIC',
@@ -542,7 +544,86 @@ describe('Mongodb Transaction repository', () => {
             })
         })
 
-        test.todo('se uma transação já existir, deve fazer um merge (atualizar sem sobrescrever campos já personalizados pelo usuário)')
+        test('se uma transação já existir, deve fazer um merge (atualizar sem sobrescrever campos já personalizados pelo usuário)', async () => {
+            const transactionCollection = MongoHelper.getCollection('transactions')
+            
+            const transactionBefore: MongodbTransaction = {
+                accountId: validBankAccountId,
+                accountType: 'BANK',
+                syncType: 'AUTOMATIC',
+                userId: validUserId,
+                amount: 2345,
+                description: 'valid description',
+                descriptionOriginal: '',
+                date: new Date('2023-05-18'),
+                invoiceDate: null,
+                invoiceId: null,
+                type: 'INCOME',
+                category: {
+                    _id: validCategory0Id,
+                    name: validCategory0.name,
+                    group: validCategory0.group,
+                    iconName: validCategory0.iconName,
+                    primaryColor: validCategory0.primaryColor,
+                    ignored: validCategory0.ignored
+                },
+                comment: 'valid comment',
+                ignored: true,
+                _isDeleted: true,
+                providerId: 'valid-provider-transaction-id',
+            }
+
+            const { insertedId } = await transactionCollection.insertOne(transactionBefore)
+
+
+            const sut = new MongodbTransactionRepository()
+
+
+            const transactionData: TransactionData = {
+                accountId: validBankAccountId.toString(),
+                accountType: 'BANK',
+                syncType: 'AUTOMATIC',
+                userId: validUserId.toString(),
+                amount: -5678,
+                descriptionOriginal: 'valid original description',
+                date: new Date('2023-03-06'),
+                type: 'EXPENSE',
+                providerId: 'valid-provider-transaction-id'
+            }
+
+            const result = await sut.mergeTransactions([transactionData])
+
+            
+            expect(result.modifiedCount).toEqual(1)
+            const transactionModified = await sut.findById(insertedId.toString())
+            expect(transactionModified).toEqual({
+                id: insertedId.toString(),
+                accountId: transactionData.accountId,
+                accountType: transactionData.accountType,
+                syncType: transactionData.syncType,
+                userId: transactionData.userId,
+                amount: transactionData.amount,
+                descriptionOriginal: transactionData.descriptionOriginal,
+                date: transactionData.date,
+                type: transactionData.type,
+                description: transactionBefore.description,
+                comment: transactionBefore.comment,
+                ignored: transactionBefore.ignored,
+                category: {
+                    id: transactionBefore.category._id.toString(),
+                    name: transactionBefore.category.name,
+                    group: transactionBefore.category.group,
+                    iconName: transactionBefore.category.iconName,
+                    primaryColor: transactionBefore.category.primaryColor,
+                    ignored: transactionBefore.category.ignored
+                },
+                _isDeleted: transactionBefore._isDeleted,
+                invoiceDate: transactionBefore.invoiceDate,
+                invoiceId: transactionBefore.invoiceId,
+                providerId: transactionBefore.providerId,
+            })
+        })
+
         test.todo('deve executar em paralelo, continuando as operações, mesmo que alguma de erro')
     })
 })

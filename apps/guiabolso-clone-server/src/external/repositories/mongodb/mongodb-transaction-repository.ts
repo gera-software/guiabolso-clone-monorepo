@@ -138,24 +138,28 @@ export class MongodbTransactionRepository implements TransactionRepository {
         const transactionCollection = MongoHelper.getCollection('transactions')
 
         const operations: AnyBulkWriteOperation<Document>[] = transactions.map(transaction => ({
-            insertOne: {
-                document: {
-                    accountId: new ObjectId(transaction.accountId),
-                    accountType: transaction.accountType,
-                    syncType: transaction.syncType,
-                    userId: new ObjectId(transaction.userId),
-                    amount: transaction.amount,
-                    // description: transaction.description,
-                    descriptionOriginal: transaction.descriptionOriginal,
-                    date: transaction.date,
-                    // invoiceDate: transaction.invoiceDate ?? null,
-                    // invoiceId: transaction.invoiceId ? new ObjectId(transaction.invoiceId) : null,
-                    type: transaction.type,
-                    // comment: transaction.comment,
-                    // ignored: transaction.ignored,
-                    // _isDeleted: transaction._isDeleted,
-                    providerId: transaction.providerId,
+            updateOne: {
+                filter: { providerId: transaction.providerId },
+                update: {
+                    $set: {
+                        accountId: new ObjectId(transaction.accountId),
+                        accountType: transaction.accountType,
+                        syncType: transaction.syncType,
+                        userId: new ObjectId(transaction.userId),
+                        amount: transaction.amount,
+                        // description: transaction.description,
+                        descriptionOriginal: transaction.descriptionOriginal,
+                        date: transaction.date,
+                        // invoiceDate: transaction.invoiceDate ?? null,
+                        // invoiceId: transaction.invoiceId ? new ObjectId(transaction.invoiceId) : null,
+                        type: transaction.type,
+                        // comment: transaction.comment,
+                        // ignored: transaction.ignored,
+                        // _isDeleted: transaction._isDeleted,
+                        providerId: transaction.providerId,
+                    },
                 },
+                upsert: true,
             },
         }))
 
