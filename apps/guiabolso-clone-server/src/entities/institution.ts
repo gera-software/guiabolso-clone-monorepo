@@ -1,4 +1,4 @@
-import { left, right } from "@/shared"
+import { Either, left, right } from "@/shared"
 import { InvalidNameError, InvalidTypeError } from "./errors"
 
 export type InstitutionType = 'INVESTMENT' | 'PERSONAL_BANK' | 'BUSINESS_BANK'
@@ -20,7 +20,7 @@ export class Institution {
         this.providerConnectorId = institutionData.providerConnectorId
     }
 
-    public static create(institutionData: {id: string, name: string, type: string, imageUrl?: string, primaryColor?: string, providerConnectorId?: string}) {
+    public static create(institutionData: {id: string, name: string, type: string, imageUrl?: string, primaryColor?: string, providerConnectorId?: string}): Either<InvalidNameError | InvalidTypeError, Institution> {
         const { name, type } = institutionData
 
         if(!name) {

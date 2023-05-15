@@ -74,7 +74,7 @@ export class InMemoryTransactionRepository implements TransactionRepository {
             amount: transaction.amount,
             descriptionOriginal: transaction.descriptionOriginal,
             date: transaction.date,
-            // invoiceDate: transaction.invoiceDate ?? null,
+            invoiceDate: transaction.invoiceDate ?? null,
             // invoiceId: transaction.invoiceId ? transaction.invoiceId : null,
             type: transaction.type,
             providerId: transaction.providerId,

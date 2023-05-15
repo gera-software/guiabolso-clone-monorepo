@@ -1,18 +1,67 @@
-import { left, right } from "@/shared";
-import { AccountData, FinancialDataProvider, TransactionRepository, UpdateAccountRepository, UseCase } from "@/usecases/ports";
-import { UnexpectedError, UnregisteredAccountError } from "@/usecases/errors";
-import { InvalidAccountError } from "@/entities/errors";
-import { AccountType } from "@/entities";
+import { Either, left, right } from "@/shared";
+import { AccountData, FinancialDataProvider, InstitutionRepository, TransactionRepository, UpdateAccountRepository, UseCase, UserData, UserRepository } from "@/usecases/ports";
+import { UnexpectedError, UnregisteredAccountError, UnregisteredInstitutionError } from "@/usecases/errors";
+import { InvalidAccountError, InvalidBalanceError, InvalidCreditCardError, InvalidEmailError, InvalidInstitutionError, InvalidNameError, InvalidPasswordError, InvalidTypeError } from "@/entities/errors";
+import { AccountType, AutomaticCreditCardAccount, Institution, ManualCreditCardAccount, NubankCreditCardInvoiceStrategy, User } from "@/entities";
 
 export class SyncAutomaticCreditCardAccount implements UseCase {
     private readonly financialDataProvider: FinancialDataProvider
     private readonly accountRepo: UpdateAccountRepository
+    private readonly userRepo: UserRepository
+    private readonly institutionRepo: InstitutionRepository
     private readonly transactionRepo: TransactionRepository
     
-    constructor(accountRepository: UpdateAccountRepository, transactionRepository: TransactionRepository, financialDataProvider: FinancialDataProvider) {
+    constructor(accountRepository: UpdateAccountRepository, userRepository: UserRepository, institutionRepository: InstitutionRepository, transactionRepository: TransactionRepository, financialDataProvider: FinancialDataProvider) {
         this.accountRepo = accountRepository
+        this.userRepo = userRepository
+        this.institutionRepo = institutionRepository
         this.transactionRepo = transactionRepository
         this.financialDataProvider = financialDataProvider
+    }
+
+    private async createCreditCardAccount(accountData: AccountData, userData: UserData): Promise<Either<InvalidNameError | InvalidEmailError | InvalidPasswordError | InvalidBalanceError | InvalidCreditCardError | InvalidInstitutionError | InvalidAccountError | UnregisteredInstitutionError | InvalidTypeError, AutomaticCreditCardAccount>> {
+        const userOrError = User.create(userData)
+        if(userOrError.isLeft()) {
+            return left(userOrError.value)
+        }
+
+        const user = userOrError.value as User
+
+        let institution: Institution = null
+        if(accountData.institution && accountData.institution.id) {
+            const foundInstitutionData = await this.institutionRepo.findById(accountData.institution.id)
+            if(!foundInstitutionData) {
+                return left(new UnregisteredInstitutionError())
+            }
+            accountData.institution = foundInstitutionData
+
+            const institutionOrError = Institution.create(foundInstitutionData)
+            if(institutionOrError.isLeft()) {
+                return left(institutionOrError.value)
+            }
+
+            institution = institutionOrError.value as Institution
+        }
+
+        const accountOrError = AutomaticCreditCardAccount.create(
+            { 
+                name: accountData.name, 
+                balance: accountData.balance, 
+                imageUrl: accountData.imageUrl, 
+                user,
+                institution,
+                creditCardInfo: accountData.creditCardInfo,
+                providerAccountId: accountData.providerAccountId, 
+                providerItemId: accountData.synchronization.providerItemId, 
+                createdAt: accountData.synchronization.createdAt,
+            },
+            new NubankCreditCardInvoiceStrategy()
+        )
+        if(accountOrError.isLeft()) {
+            return left(accountOrError.value)
+        }
+
+        return right(accountOrError.value as AutomaticCreditCardAccount)
     }
     
     async perform(accountId: string): Promise<any> {
@@ -26,13 +75,13 @@ export class SyncAutomaticCreditCardAccount implements UseCase {
             return left(new InvalidAccountError())
         }
 
-        const accountsOrError = await this.financialDataProvider.getAccountsByItemId(foundAccountData.synchronization.providerItemId)
+        const dataProviderAccountsOrError = await this.financialDataProvider.getAccountsByItemId(foundAccountData.synchronization.providerItemId)
 
-        if(accountsOrError.isLeft()) {
-            return left(accountsOrError.value)
+        if(dataProviderAccountsOrError.isLeft()) {
+            return left(dataProviderAccountsOrError.value)
         }
 
-        const accounts = accountsOrError.value as AccountData[]
+        const accounts = dataProviderAccountsOrError.value as AccountData[]
 
         const accountDataToSync = accounts.find(account => account.providerAccountId === foundAccountData.providerAccountId)
 
@@ -42,6 +91,16 @@ export class SyncAutomaticCreditCardAccount implements UseCase {
 
         await this.accountRepo.updateBalance(accountId, accountDataToSync.balance)
         await this.accountRepo.updateCreditCardInfo(accountId, accountDataToSync.creditCardInfo)
+
+
+        const userData = await this.userRepo.findUserById(foundAccountData.userId)
+
+        const accountOrError = await this.createCreditCardAccount(foundAccountData, userData)
+        if(accountOrError.isLeft()) {
+            return left(accountOrError.value)
+        }
+
+        const creditCardAccount = accountOrError.value as AutomaticCreditCardAccount
 
         // merge transactions
         const transactionRequestsOrError = await this.financialDataProvider.getTransactionsByProviderAccountId(accountId, accountDataToSync.type as AccountType, {
@@ -54,25 +113,28 @@ export class SyncAutomaticCreditCardAccount implements UseCase {
 
         const transactionRequests = transactionRequestsOrError.value
 
-        const transactionsData = transactionRequests.map(transaction => ({
-            id: transaction.id,
-            accountId: transaction.accountId,
-            accountType: foundAccountData.type,
-            syncType: foundAccountData.syncType,
-            userId: foundAccountData.userId,
-            // category: CategoryData,
-            amount: transaction.amount,
-            // description: string,
-            descriptionOriginal: transaction.descriptionOriginal,
-            date: transaction.date,
-            // invoiceDate: Date,
-            // invoiceId: string,
-            type: transaction.amount >= 0 ? 'INCOME' : 'EXPENSE',
-            // comment?: string,
-            // ignored?: boolean,
-            // _isDeleted?: boolean,
-            providerId: transaction.providerId,
-        }))
+        const transactionsData = transactionRequests.map(transaction => {
+            const { invoiceDueDate } = creditCardAccount.calculateInvoiceDatesFromTransaction(transaction.date)
+            return {
+                id: transaction.id,
+                accountId: transaction.accountId,
+                accountType: foundAccountData.type,
+                syncType: foundAccountData.syncType,
+                userId: foundAccountData.userId,
+                // category: CategoryData,
+                amount: transaction.amount,
+                // description: string,
+                descriptionOriginal: transaction.descriptionOriginal,
+                date: invoiceDueDate,
+                invoiceDate: transaction.date,
+                // invoiceId: string,
+                type: transaction.amount >= 0 ? 'INCOME' : 'EXPENSE',
+                // comment?: string,
+                // ignored?: boolean,
+                // _isDeleted?: boolean,
+                providerId: transaction.providerId,
+            }
+        })
 
         await this.transactionRepo.mergeTransactions(transactionsData)
 

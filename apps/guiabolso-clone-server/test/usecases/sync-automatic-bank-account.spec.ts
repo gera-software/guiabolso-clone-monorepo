@@ -134,7 +134,7 @@ describe('Sync automatic bank account use case', () => {
 
     describe('merge transactions', () => {
 
-        test('should insert all transactions from data provided', async () => {
+        test('should insert all transactions from data provider', async () => {
             const providerAccountData1: BankAccountData = {
                 id: null,
                 type: accountType,
@@ -189,6 +189,7 @@ describe('Sync automatic bank account use case', () => {
                 type: transaction0.amount >= 0 ? 'INCOME' : 'EXPENSE',
                 descriptionOriginal: transaction0.descriptionOriginal,
                 date: transaction0.date,
+                invoiceDate: null,
                 userId,
                 providerId: transaction0.providerId,
             })
@@ -201,6 +202,7 @@ describe('Sync automatic bank account use case', () => {
                 type: transaction1.amount >= 0 ? 'INCOME' : 'EXPENSE',
                 descriptionOriginal: transaction1.descriptionOriginal,
                 date: transaction1.date,
+                invoiceDate: null,
                 userId,
                 providerId: transaction1.providerId,
             })
