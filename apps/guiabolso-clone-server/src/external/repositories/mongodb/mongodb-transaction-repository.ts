@@ -134,7 +134,7 @@ export class MongodbTransactionRepository implements TransactionRepository {
         return null
     }
 
-    async mergeTransactions(transactions: TransactionData[]): Promise<BulkWriteResult> {
+    async mergeTransactions(transactions: TransactionData[]): Promise<{ upsertedIds: string[], modifiedCount: number }> {
         const transactionCollection = MongoHelper.getCollection('transactions')
 
         const operations: AnyBulkWriteOperation<Document>[] = transactions.map(transaction => ({
@@ -165,7 +165,10 @@ export class MongodbTransactionRepository implements TransactionRepository {
 
         const result = await transactionCollection.bulkWrite(operations, { ordered: false })
 
-        return result
+        return {
+            upsertedIds: Object.values(result.upsertedIds).map(id => id.toString()),
+            modifiedCount: result.modifiedCount,
+        }
     }
 
 
