@@ -1,5 +1,5 @@
 import { Either, left, right } from "@/shared";
-import { AccountData, FinancialDataProvider, InstitutionRepository, TransactionRepository, UpdateAccountRepository, UseCase, UserData, UserRepository } from "@/usecases/ports";
+import { AccountData, CreditCardInvoiceRepository, FinancialDataProvider, InstitutionRepository, TransactionData, TransactionRepository, UpdateAccountRepository, UseCase, UserData, UserRepository } from "@/usecases/ports";
 import { UnexpectedError, UnregisteredAccountError, UnregisteredInstitutionError } from "@/usecases/errors";
 import { InvalidAccountError, InvalidBalanceError, InvalidCreditCardError, InvalidEmailError, InvalidInstitutionError, InvalidNameError, InvalidPasswordError, InvalidTypeError } from "@/entities/errors";
 import { AccountType, AutomaticCreditCardAccount, Institution, ManualCreditCardAccount, NubankCreditCardInvoiceStrategy, User } from "@/entities";
@@ -10,12 +10,14 @@ export class SyncAutomaticCreditCardAccount implements UseCase {
     private readonly userRepo: UserRepository
     private readonly institutionRepo: InstitutionRepository
     private readonly transactionRepo: TransactionRepository
+    private readonly invoiceRepo: CreditCardInvoiceRepository
     
-    constructor(accountRepository: UpdateAccountRepository, userRepository: UserRepository, institutionRepository: InstitutionRepository, transactionRepository: TransactionRepository, financialDataProvider: FinancialDataProvider) {
+    constructor(accountRepository: UpdateAccountRepository, userRepository: UserRepository, institutionRepository: InstitutionRepository, transactionRepository: TransactionRepository, invoiceRepository: CreditCardInvoiceRepository, financialDataProvider: FinancialDataProvider) {
         this.accountRepo = accountRepository
         this.userRepo = userRepository
         this.institutionRepo = institutionRepository
         this.transactionRepo = transactionRepository
+        this.invoiceRepo = invoiceRepository
         this.financialDataProvider = financialDataProvider
     }
 
@@ -62,6 +64,22 @@ export class SyncAutomaticCreditCardAccount implements UseCase {
         }
 
         return right(accountOrError.value as AutomaticCreditCardAccount)
+    }
+
+    private async findOrCreateInvoice(invoiceDueDate: Date, invoiceClosingDate: Date, accountData: AccountData) {
+        let invoiceData = await this.invoiceRepo.findByDueDate(invoiceDueDate, accountData.id)
+        if(!invoiceData) {
+            invoiceData = await this.invoiceRepo.add({
+                dueDate: invoiceDueDate,
+                closeDate: invoiceClosingDate,
+                amount: 0,
+                userId: accountData.userId,
+                accountId: accountData.id,
+                _isDeleted: false
+            })
+        }
+
+        return invoiceData
     }
     
     async perform(accountId: string): Promise<any> {
@@ -113,9 +131,13 @@ export class SyncAutomaticCreditCardAccount implements UseCase {
 
         const transactionRequests = transactionRequestsOrError.value
 
-        const transactionsData = transactionRequests.map(transaction => {
-            const { invoiceDueDate } = creditCardAccount.calculateInvoiceDatesFromTransaction(transaction.date)
-            return {
+        const transactionsData: TransactionData[] = []
+        for(let i = 0; i < transactionRequests.length; i++) {
+            const transaction = transactionRequests[i]
+            const { invoiceDueDate, invoiceClosingDate } = creditCardAccount.calculateInvoiceDatesFromTransaction(transaction.date)
+            const { id: invoiceId } = await this.findOrCreateInvoice(invoiceDueDate, invoiceClosingDate, foundAccountData)
+
+            transactionsData.push({
                 id: transaction.id,
                 accountId: transaction.accountId,
                 accountType: foundAccountData.type,
@@ -127,14 +149,15 @@ export class SyncAutomaticCreditCardAccount implements UseCase {
                 descriptionOriginal: transaction.descriptionOriginal,
                 date: invoiceDueDate,
                 invoiceDate: transaction.date,
-                // invoiceId: string,
+                invoiceId: invoiceId,
                 type: transaction.amount >= 0 ? 'INCOME' : 'EXPENSE',
                 // comment?: string,
                 // ignored?: boolean,
                 // _isDeleted?: boolean,
                 providerId: transaction.providerId,
-            }
-        })
+            })
+        }
+        
 
         await this.transactionRepo.mergeTransactions(transactionsData)
 

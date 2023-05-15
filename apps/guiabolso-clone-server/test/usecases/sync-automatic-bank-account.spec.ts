@@ -190,6 +190,7 @@ describe('Sync automatic bank account use case', () => {
                 descriptionOriginal: transaction0.descriptionOriginal,
                 date: transaction0.date,
                 invoiceDate: null,
+                invoiceId: null,
                 userId,
                 providerId: transaction0.providerId,
             })
@@ -203,6 +204,7 @@ describe('Sync automatic bank account use case', () => {
                 descriptionOriginal: transaction1.descriptionOriginal,
                 date: transaction1.date,
                 invoiceDate: null,
+                invoiceId: null,
                 userId,
                 providerId: transaction1.providerId,
             })
