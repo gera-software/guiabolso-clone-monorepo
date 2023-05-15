@@ -1,9 +1,9 @@
 import { InvalidAccountError } from "@/entities/errors"
 import { DataProviderError, UnexpectedError, UnregisteredAccountError } from "@/usecases/errors"
-import { CreditCardAccountData, InstitutionData, UserData } from "@/usecases/ports"
+import { CreditCardAccountData, InstitutionData, TransactionRequest, UserData } from "@/usecases/ports"
 import { SyncAutomaticCreditCardAccount } from "@/usecases/sync-automatic-credit-card-account"
 import { ErrorPluggyDataProvider, InMemoryPluggyDataProvider } from "@test/doubles/financial-data-provider"
-import { InMemoryAccountRepository } from "@test/doubles/repositories"
+import { InMemoryAccountRepository, InMemoryTransactionRepository } from "@test/doubles/repositories"
 
 describe('Sync automatic credit card account use case', () => {
     const userId = 'u0'
@@ -65,7 +65,8 @@ describe('Sync automatic credit card account use case', () => {
 
         const dataProvider = new InMemoryPluggyDataProvider({})
         const accountRepository = new InMemoryAccountRepository([])
-        const sut = new SyncAutomaticCreditCardAccount(accountRepository, dataProvider)
+        const transactionRepository = new InMemoryTransactionRepository([])
+        const sut = new SyncAutomaticCreditCardAccount(accountRepository, transactionRepository, dataProvider)
 
         const response = (await sut.perform(accountId)).value as Error
         expect(response).toBeInstanceOf(UnregisteredAccountError)
@@ -77,7 +78,8 @@ describe('Sync automatic credit card account use case', () => {
 
         const dataProvider = new InMemoryPluggyDataProvider({})
         const accountRepository = new InMemoryAccountRepository([creditCardAccountData])
-        const sut = new SyncAutomaticCreditCardAccount(accountRepository, dataProvider)
+        const transactionRepository = new InMemoryTransactionRepository([])
+        const sut = new SyncAutomaticCreditCardAccount(accountRepository, transactionRepository, dataProvider)
 
         const response = (await sut.perform(accountId)).value as Error
         expect(response).toBeInstanceOf(InvalidAccountError)
@@ -86,7 +88,8 @@ describe('Sync automatic credit card account use case', () => {
     test('should not sync if data provided has an error', async () => {
         const dataProvider = new ErrorPluggyDataProvider({})
         const accountRepository = new InMemoryAccountRepository([creditCardAccountData])
-        const sut = new SyncAutomaticCreditCardAccount(accountRepository, dataProvider)
+        const transactionRepository = new InMemoryTransactionRepository([])
+        const sut = new SyncAutomaticCreditCardAccount(accountRepository, transactionRepository, dataProvider)
 
         const response = (await sut.perform(accountId)).value as Error
         expect(response).toBeInstanceOf(DataProviderError)
@@ -95,7 +98,8 @@ describe('Sync automatic credit card account use case', () => {
     test('should not sync if data provider item does not have the requested account', async () => {
         const dataProvider = new InMemoryPluggyDataProvider({})
         const accountRepository = new InMemoryAccountRepository([creditCardAccountData])
-        const sut = new SyncAutomaticCreditCardAccount(accountRepository, dataProvider)
+        const transactionRepository = new InMemoryTransactionRepository([])
+        const sut = new SyncAutomaticCreditCardAccount(accountRepository, transactionRepository, dataProvider)
 
         const response = (await sut.perform(accountId)).value as Error
         expect(response).toBeInstanceOf(UnexpectedError)
@@ -131,7 +135,8 @@ describe('Sync automatic credit card account use case', () => {
 
         const dataProvider = new InMemoryPluggyDataProvider({accounts: [ providerAccountData1 ]})
         const accountRepository = new InMemoryAccountRepository([creditCardAccountData])
-        const sut = new SyncAutomaticCreditCardAccount(accountRepository, dataProvider)
+        const transactionRepository = new InMemoryTransactionRepository([])
+        const sut = new SyncAutomaticCreditCardAccount(accountRepository, transactionRepository, dataProvider)
 
         const response = (await sut.perform(accountId)).value as CreditCardAccountData
         expect(response.balance).toBe(providerAccountData1.balance)
@@ -141,5 +146,85 @@ describe('Sync automatic credit card account use case', () => {
         expect(updatedAccount.balance).toBe(providerAccountData1.balance)
         expect(updatedAccount.synchronization.lastSyncAt).toBeInstanceOf(Date)
         expect(updatedAccount.creditCardInfo).toEqual(providerAccountData1.creditCardInfo)
+    })
+
+    describe('merge transactions', () => {
+        test('should insert all transactions from data provided', async () => {
+            const providerAccountData1: CreditCardAccountData = {
+                id: null,
+                type: accountType,
+                syncType,
+                name,
+                balance: balance - 1000,
+                imageUrl,
+                userId: null,
+                institution: {
+                    id: null,
+                    name: institution.name,
+                    type: institution.type,
+                    imageUrl: institution.imageUrl,
+                    primaryColor: institution.primaryColor,
+                    providerConnectorId: institution.providerConnectorId,
+                },
+                creditCardInfo: {
+                    brand: 'visa',
+                    creditLimit: 500000,
+                    availableCreditLimit: 25000,
+                    closeDay: 5,
+                    dueDay: 12
+                },
+                providerAccountId,
+                synchronization,
+            }
+
+            const transaction0: TransactionRequest = {
+                id: null,
+                accountId: accountId,
+                amount: -6789,
+                descriptionOriginal: 'Compra online',
+                date: new Date(),
+                providerId: 'valid-transaction-id0',
+            }
+            const transaction1: TransactionRequest = {
+                id: null,
+                accountId: accountId,
+                amount: 1234,
+                descriptionOriginal: 'pagamento recebido',
+                date: new Date(),
+                providerId: 'valid-transaction-id1',
+            }
+    
+            const dataProvider = new InMemoryPluggyDataProvider({accounts: [ providerAccountData1 ], transactions: [transaction0, transaction1]})
+            const accountRepository = new InMemoryAccountRepository([creditCardAccountData])
+            const transactionRepository = new InMemoryTransactionRepository([])
+            const sut = new SyncAutomaticCreditCardAccount(accountRepository, transactionRepository, dataProvider)
+
+            const response = (await sut.perform(accountId)).value as CreditCardAccountData
+            expect(transactionRepository.data).toHaveLength(2)
+            expect(transactionRepository.data[0]).toEqual({
+                id: '0',
+                accountId: transaction0.accountId,
+                accountType,
+                syncType,
+                amount: transaction0.amount,
+                type: transaction0.amount >= 0 ? 'INCOME' : 'EXPENSE',
+                descriptionOriginal: transaction0.descriptionOriginal,
+                date: transaction0.date,
+                userId,
+                providerId: transaction0.providerId,
+            })
+            expect(transactionRepository.data[1]).toEqual({
+                id: '1',
+                accountId: transaction1.accountId,
+                accountType,
+                syncType,
+                amount: transaction1.amount,
+                type: transaction1.amount >= 0 ? 'INCOME' : 'EXPENSE',
+                descriptionOriginal: transaction1.descriptionOriginal,
+                date: transaction1.date,
+                userId,
+                providerId: transaction1.providerId,
+            })
+        })
     })
 })
