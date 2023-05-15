@@ -167,7 +167,7 @@ describe('Sync automatic bank account use case', () => {
                 id: null,
                 accountId: accountId,
                 amount: 1234,
-                descriptionOriginal: 'Transaferencia recebida',
+                descriptionOriginal: 'Transferencia recebida',
                 date: new Date(),
                 providerId: 'valid-transaction-id1',
             }
