@@ -1,6 +1,4 @@
 import { TransactionRequest, TransactionRepository, TransactionData } from "@/usecases/ports";
-import { BulkWriteResult } from "mongodb";
-import { v4 as uuidv4 } from 'uuid';
 
 export class InMemoryTransactionRepository implements TransactionRepository {
     private readonly _data: TransactionData[]
@@ -67,8 +65,8 @@ export class InMemoryTransactionRepository implements TransactionRepository {
 
     async mergeTransactions(transactions: TransactionData[]): Promise<{ upsertedIds: string[], modifiedCount: number }> {
 
-        const transactionsData = transactions.map(transaction => ({
-            id: uuidv4(),
+        const transactionsData = transactions.map((transaction, index) => ({
+            id: ''+index,
             accountId: transaction.accountId,
             accountType: transaction.accountType,
             syncType: transaction.syncType,
@@ -76,8 +74,8 @@ export class InMemoryTransactionRepository implements TransactionRepository {
             amount: transaction.amount,
             descriptionOriginal: transaction.descriptionOriginal,
             date: transaction.date,
-            invoiceDate: transaction.invoiceDate ?? null,
-            invoiceId: transaction.invoiceId ? transaction.invoiceId : null,
+            // invoiceDate: transaction.invoiceDate ?? null,
+            // invoiceId: transaction.invoiceId ? transaction.invoiceId : null,
             type: transaction.type,
             providerId: transaction.providerId,
             // description: transaction.description,
