@@ -1,4 +1,4 @@
-import { ManualAccount, AccountType, Amount, CreditCardInfo, CreditCardTransaction, Institution, SyncType, User } from "@/entities"
+import { ManualAccount, AccountType, Amount, CreditCardInfo, CreditCardTransaction, Institution, SyncType, User, CreditCardInvoiceStrategy } from "@/entities"
 import { Either, left, right } from "@/shared"
 import { InvalidBalanceError, InvalidCreditCardError, InvalidNameError } from "@/entities/errors"
 import { CreditCardInfoData } from "@/usecases/ports"
@@ -13,17 +13,21 @@ export class ManualCreditCardAccount implements ManualAccount {
     public readonly institution: Institution
     public readonly creditCardInfo: CreditCardInfo
 
+    private readonly creditCardInvoiceStrategy: CreditCardInvoiceStrategy
+
     
-    private constructor(account: {name: string, balance: Amount, imageUrl?: string, user: User, institution?: Institution, creditCardInfo: CreditCardInfo }) {
+    private constructor(account: {name: string, balance: Amount, imageUrl?: string, user: User, institution?: Institution, creditCardInfo: CreditCardInfo }, creditCardInvoiceStrategy: CreditCardInvoiceStrategy) {
         this.name = account.name
         this.balance = account.balance
         this.imageUrl = account.imageUrl
         this.user = account.user
         this.institution = account.institution
         this.creditCardInfo = account.creditCardInfo
+
+        this.creditCardInvoiceStrategy = creditCardInvoiceStrategy
     }
 
-    public static create(account: { name: string, balance: number, imageUrl?: string, user: User, institution?: Institution, creditCardInfo: CreditCardInfoData}): Either<InvalidNameError | InvalidBalanceError | InvalidCreditCardError , ManualCreditCardAccount> {
+    public static create(account: { name: string, balance: number, imageUrl?: string, user: User, institution?: Institution, creditCardInfo: CreditCardInfoData}, creditCardInvoiceStrategy: CreditCardInvoiceStrategy): Either<InvalidNameError | InvalidBalanceError | InvalidCreditCardError , ManualCreditCardAccount> {
         const { name, balance, imageUrl, user, institution, creditCardInfo } = account
         
         if(!name) {
@@ -44,43 +48,11 @@ export class ManualCreditCardAccount implements ManualAccount {
 
         const creditCard = creditCardInfoOrError.value as CreditCardInfo
 
-        return right(new ManualCreditCardAccount({name, balance: amount, imageUrl, user, institution, creditCardInfo: creditCard}))
+        return right(new ManualCreditCardAccount({name, balance: amount, imageUrl, user, institution, creditCardInfo: creditCard}, creditCardInvoiceStrategy))
     }
 
-    /**
-     * All transactions carried out from the invoice closing date onwards will belong to the next month's invoice.
-     * All transactions made before the invoice closing date will belong to the current month's invoice.
-     * 
-     * Using Nubank rules as a reference. Other banks have different rules.
-     * A fatura do cartão Nubank fecha 7 dias corridos antes do vencimento.
-     * Todas as compras feitas a partir do dia de fechamento só entram na fatura seguinte.
-     * Por isso, o melhor dia para compra é no dia do fechamento.
-     * 
-     * @param transactionDate 
-     * @returns invoiceDates { invoiceClosingDate: Date, invoiceDueDate: Date } 
-     * @deprecated
-     */
     public calculateInvoiceDatesFromTransaction(transactionDate: Date) {
-        let year = transactionDate.getUTCFullYear()
-        let month = transactionDate.getUTCMonth() // between 0 and 11
-
-        // current invoice
-        const invoiceClosingDate = new Date(Date.UTC(year, month, this.creditCardInfo.closeDay, 0, 0, 0))
-        const invoiceDueDate = new Date(Date.UTC(year, month, this.creditCardInfo.dueDay, 0, 0, 0))
-        if(invoiceDueDate < invoiceClosingDate) { // ie. the diference between due date and closing date has to be 7 days
-            invoiceDueDate.setUTCMonth(invoiceDueDate.getUTCMonth() + 1)
-        }
-
-        // next invoice
-        if(transactionDate.getUTCDate() >= this.creditCardInfo.closeDay) {
-            invoiceDueDate.setUTCMonth(invoiceDueDate.getUTCMonth() + 1)
-            invoiceClosingDate.setUTCMonth(invoiceClosingDate.getUTCMonth() + 1)
-        }
-
-        return {
-            invoiceClosingDate,
-            invoiceDueDate,
-        }
+        return this.creditCardInvoiceStrategy.calculateInvoiceDatesFromTransaction(transactionDate, this.creditCardInfo.closeDay, this.creditCardInfo.dueDay)
     }
 
     public addTransaction(transaction: CreditCardTransaction) {

@@ -1,4 +1,4 @@
-import { ManualCreditCardAccount, Institution, User } from '@/entities'
+import { ManualCreditCardAccount, Institution, User, NubankCreditCardInvoiceStrategy } from '@/entities'
 import { left, right } from '@/shared'
 import { AccountRepository, CreditCardAccountData, InstitutionRepository, UseCase, UserRepository } from '@/usecases/ports'
 import { UnregisteredInstitutionError, UnregisteredUserError } from '@/usecases/errors'
@@ -43,14 +43,17 @@ export class CreateManualCreditCardAccount implements UseCase {
             institution = institutionOrError.value as Institution
         }
 
-        const creditCardOrError = ManualCreditCardAccount.create({
-            name: accountData.name,
-            balance: accountData.balance,
-            imageUrl: accountData.imageUrl,
-            user,
-            institution,
-            creditCardInfo: accountData.creditCardInfo,
-        }) 
+        const creditCardOrError = ManualCreditCardAccount.create(
+            {
+                name: accountData.name,
+                balance: accountData.balance,
+                imageUrl: accountData.imageUrl,
+                user,
+                institution,
+                creditCardInfo: accountData.creditCardInfo,
+            },
+            new NubankCreditCardInvoiceStrategy()
+        ) 
 
         if(creditCardOrError.isLeft()) {
             return left(creditCardOrError.value)

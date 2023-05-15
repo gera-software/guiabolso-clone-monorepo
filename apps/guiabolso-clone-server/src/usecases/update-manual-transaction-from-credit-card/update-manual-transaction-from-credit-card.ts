@@ -1,4 +1,4 @@
-import { Category, ManualCreditCardAccount, CreditCardInvoice, CreditCardTransaction, User } from "@/entities";
+import { Category, ManualCreditCardAccount, CreditCardInvoice, CreditCardTransaction, User, NubankCreditCardInvoiceStrategy } from "@/entities";
 import { InvalidTransactionError, InvalidAmountError, InvalidBalanceError, InvalidEmailError, InvalidNameError, InvalidPasswordError, InvalidCreditCardError, InvalidCreditCardInvoiceError } from "@/entities/errors";
 import { Either, left, right } from "@/shared";
 import { AccountData, CreditCardInvoiceData, CreditCardInvoiceRepository, TransactionData, TransactionRepository, UpdateAccountRepository, UseCase, UserData } from "@/usecases/ports";
@@ -72,13 +72,16 @@ export class UpdateManualTransactionFromCreditCard implements UseCase {
 
         const user = userOrError.value as User
 
-        const accountOrError = ManualCreditCardAccount.create({ 
-            name: accountData.name, 
-            balance: accountData.balance, 
-            imageUrl: accountData.imageUrl, 
-            user,
-            creditCardInfo: accountData.creditCardInfo
-        })
+        const accountOrError = ManualCreditCardAccount.create(
+            { 
+                name: accountData.name, 
+                balance: accountData.balance, 
+                imageUrl: accountData.imageUrl, 
+                user,
+                creditCardInfo: accountData.creditCardInfo
+            },
+            new NubankCreditCardInvoiceStrategy()
+        )
         if(accountOrError.isLeft()) {
             return left(accountOrError.value)
         }

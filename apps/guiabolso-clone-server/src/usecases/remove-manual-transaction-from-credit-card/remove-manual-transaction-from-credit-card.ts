@@ -1,4 +1,4 @@
-import { ManualCreditCardAccount, CreditCardInvoice, CreditCardTransaction, User } from "@/entities";
+import { ManualCreditCardAccount, CreditCardInvoice, CreditCardTransaction, User, NubankCreditCardInvoiceStrategy } from "@/entities";
 import { left, right } from "@/shared";
 import { CreditCardInvoiceRepository, TransactionRepository, UpdateAccountRepository, UseCase, UserRepository } from "@/usecases/ports";
 
@@ -25,13 +25,16 @@ export class RemoveManualTransactionFromCreditCard implements UseCase {
 
         const user = userOrError.value as User
 
-        const accountOrError = ManualCreditCardAccount.create({
-            name: foundAccountData.name,
-            balance: foundAccountData.balance,
-            imageUrl: foundAccountData.imageUrl,
-            user,
-            creditCardInfo: foundAccountData.creditCardInfo,
-        })
+        const accountOrError = ManualCreditCardAccount.create(
+            {
+                name: foundAccountData.name,
+                balance: foundAccountData.balance,
+                imageUrl: foundAccountData.imageUrl,
+                user,
+                creditCardInfo: foundAccountData.creditCardInfo,
+            },
+            new NubankCreditCardInvoiceStrategy()
+        )
 
         const creditCardAccount = accountOrError.value as ManualCreditCardAccount
 

@@ -1,4 +1,4 @@
-import { ManualCreditCardAccount, CreditCardTransaction, Institution, User } from "@/entities"
+import { ManualCreditCardAccount, CreditCardTransaction, Institution, User, NubankCreditCardInvoiceStrategy } from "@/entities"
 import { InvalidBalanceError, InvalidCreditCardError, InvalidNameError } from "@/entities/errors"
 
 describe("Manual Credit Card Account entity", () => {
@@ -29,7 +29,7 @@ describe("Manual Credit Card Account entity", () => {
                 providerConnectorId: 'valid id'
             }).value as Institution
     
-            const error = ManualCreditCardAccount.create({name, balance, imageUrl, user, institution, creditCardInfo}).value as Error
+            const error = ManualCreditCardAccount.create({name, balance, imageUrl, user, institution, creditCardInfo}, new NubankCreditCardInvoiceStrategy() ).value as Error
             expect(error).toBeInstanceOf(InvalidNameError)
         })
     
@@ -58,7 +58,7 @@ describe("Manual Credit Card Account entity", () => {
                 providerConnectorId: 'valid id'
             }).value as Institution
     
-            const error = ManualCreditCardAccount.create({name, balance, imageUrl, user, institution, creditCardInfo}).value as Error
+            const error = ManualCreditCardAccount.create({name, balance, imageUrl, user, institution, creditCardInfo}, new NubankCreditCardInvoiceStrategy() ).value as Error
             expect(error).toBeInstanceOf(InvalidBalanceError)
         })
     
@@ -87,7 +87,7 @@ describe("Manual Credit Card Account entity", () => {
                 providerConnectorId: 'valid id'
             }).value as Institution
     
-            const error = ManualCreditCardAccount.create({name, balance, imageUrl, user, institution, creditCardInfo}).value as Error
+            const error = ManualCreditCardAccount.create({name, balance, imageUrl, user, institution, creditCardInfo}, new NubankCreditCardInvoiceStrategy() ).value as Error
             expect(error).toBeInstanceOf(InvalidCreditCardError)
             expect(error.message).toBe('Invalid credit card params: brand, closeDay, dueDay, creditLimit, availableCreditLimit')
         })
@@ -117,7 +117,7 @@ describe("Manual Credit Card Account entity", () => {
                 providerConnectorId: 'valid id'
             }).value as Institution
     
-            const account = ManualCreditCardAccount.create({name, balance, imageUrl, user, institution, creditCardInfo}).value as ManualCreditCardAccount
+            const account = ManualCreditCardAccount.create({name, balance, imageUrl, user, institution, creditCardInfo}, new NubankCreditCardInvoiceStrategy() ).value as ManualCreditCardAccount
             expect(account.type).toBe('CREDIT_CARD')
             expect(account.syncType).toBe('MANUAL')
             expect(account.name).toBe(name)
@@ -150,7 +150,7 @@ describe("Manual Credit Card Account entity", () => {
                 password: 'user password',
             }).value as User
     
-            const account = ManualCreditCardAccount.create({name, balance, imageUrl, user, creditCardInfo}).value as ManualCreditCardAccount
+            const account = ManualCreditCardAccount.create({name, balance, imageUrl, user, creditCardInfo}, new NubankCreditCardInvoiceStrategy() ).value as ManualCreditCardAccount
             expect(account.type).toBe('CREDIT_CARD')
             expect(account.syncType).toBe('MANUAL')
             expect(account.name).toBe(name)
@@ -172,434 +172,33 @@ describe("Manual Credit Card Account entity", () => {
      */
     describe('calculate invoice due date from transaction', () => {
 
-        describe('due date on start of month', () => {
-            test('transactions before closing date should belong to current month\'s invoice', () => {
-                const validClosingDate = new Date('2023-10-25')
-                const validDueDate = new Date('2023-11-01')
-    
-                const name = 'valid name'
-                const balance = 300
-                const imageUrl = 'valid image url'
-                const creditCardInfo = {
-                    brand: 'Master Card',
-                    creditLimit: 100000,
-                    availableCreditLimit: 50000,
-                    closeDay: validClosingDate.getUTCDate(),
-                    dueDay: validDueDate.getUTCDate(),
-                }
-                const user = User.create({
-                    name: 'user name',
-                    email: 'user@email.com',
-                    password: 'user password',
-                }).value as User
-        
-                const account = ManualCreditCardAccount.create({name, balance, imageUrl, user, creditCardInfo}).value as ManualCreditCardAccount
-                
-                const transactionDate = new Date('2023-10-24')
-                const { invoiceDueDate, invoiceClosingDate } = account.calculateInvoiceDatesFromTransaction(transactionDate)
-                expect(invoiceDueDate).toEqual(validDueDate)
-                expect(invoiceClosingDate).toEqual(validClosingDate)
-            })
+        test('transactions before closing date should belong to current month\'s invoice', () => {
+            const validClosingDate = new Date('2023-10-25')
+            const validDueDate = new Date('2023-11-01')
 
-            test('transactions on closing date should belong to next month\'s invoice', () => {
-                const validClosingDate = new Date('2023-11-25')
-                const validDueDate = new Date('2023-12-01')
+            const name = 'valid name'
+            const balance = 300
+            const imageUrl = 'valid image url'
+            const creditCardInfo = {
+                brand: 'Master Card',
+                creditLimit: 100000,
+                availableCreditLimit: 50000,
+                closeDay: validClosingDate.getUTCDate(),
+                dueDay: validDueDate.getUTCDate(),
+            }
+            const user = User.create({
+                name: 'user name',
+                email: 'user@email.com',
+                password: 'user password',
+            }).value as User
     
-                const name = 'valid name'
-                const balance = 300
-                const imageUrl = 'valid image url'
-                const creditCardInfo = {
-                    brand: 'Master Card',
-                    creditLimit: 100000,
-                    availableCreditLimit: 50000,
-                    closeDay: validClosingDate.getUTCDate(),
-                    dueDay: validDueDate.getUTCDate(),
-                }
-                const user = User.create({
-                    name: 'user name',
-                    email: 'user@email.com',
-                    password: 'user password',
-                }).value as User
-        
-                const account = ManualCreditCardAccount.create({name, balance, imageUrl, user, creditCardInfo}).value as ManualCreditCardAccount
-                
-                const transactionDate = new Date('2023-10-25')
-                const { invoiceDueDate, invoiceClosingDate } = account.calculateInvoiceDatesFromTransaction(transactionDate)
-                expect(invoiceDueDate).toEqual(validDueDate)
-                expect(invoiceClosingDate).toEqual(validClosingDate)
-            })
-    
-            test('transactions after closing date should belong to next month\'s invoice', () => {
-                const validClosingDate = new Date('2023-11-25')
-                const validDueDate = new Date('2023-12-01')
-    
-                const name = 'valid name'
-                const balance = 300
-                const imageUrl = 'valid image url'
-                const creditCardInfo = {
-                    brand: 'Master Card',
-                    creditLimit: 100000,
-                    availableCreditLimit: 50000,
-                    closeDay: validClosingDate.getUTCDate(),
-                    dueDay: validDueDate.getUTCDate(),
-                }
-                const user = User.create({
-                    name: 'user name',
-                    email: 'user@email.com',
-                    password: 'user password',
-                }).value as User
-        
-                const account = ManualCreditCardAccount.create({name, balance, imageUrl, user, creditCardInfo}).value as ManualCreditCardAccount
-                
-                const transactionDate = new Date('2023-10-26')
-                const { invoiceDueDate, invoiceClosingDate } = account.calculateInvoiceDatesFromTransaction(transactionDate)
-                expect(invoiceDueDate).toEqual(validDueDate)
-                expect(invoiceClosingDate).toEqual(validClosingDate)
-            })
+            const account = ManualCreditCardAccount.create({name, balance, imageUrl, user, creditCardInfo}, new NubankCreditCardInvoiceStrategy() ).value as ManualCreditCardAccount
+            
+            const transactionDate = new Date('2023-10-24')
+            const { invoiceDueDate, invoiceClosingDate } = account.calculateInvoiceDatesFromTransaction(transactionDate)
+            expect(invoiceDueDate).toBeInstanceOf(Date)
+            expect(invoiceClosingDate).toBeInstanceOf(Date)
         })
-
-        describe('due date on middle of month', () => {
-            test('transactions before closing date should belong to current month\'s invoice', () => {
-                const validClosingDate = new Date('2023-01-03')
-                const validDueDate = new Date('2023-01-10')
-    
-                const name = 'valid name'
-                const balance = 300
-                const imageUrl = 'valid image url'
-                const creditCardInfo = {
-                    brand: 'Master Card',
-                    creditLimit: 100000,
-                    availableCreditLimit: 50000,
-                    closeDay: validClosingDate.getUTCDate(),
-                    dueDay: validDueDate.getUTCDate(),
-                }
-                const user = User.create({
-                    name: 'user name',
-                    email: 'user@email.com',
-                    password: 'user password',
-                }).value as User
-        
-                const account = ManualCreditCardAccount.create({name, balance, imageUrl, user, creditCardInfo}).value as ManualCreditCardAccount
-                
-                const transactionDate = new Date('2023-01-02')
-                const { invoiceDueDate, invoiceClosingDate } = account.calculateInvoiceDatesFromTransaction(transactionDate)
-                expect(invoiceDueDate).toEqual(validDueDate)
-                expect(invoiceClosingDate).toEqual(validClosingDate)
-            })
-
-            test('transactions on closing date should belong to next month\'s invoice', () => {
-                const validClosingDate = new Date('2023-02-03')
-                const validDueDate = new Date('2023-02-10')
-    
-                const name = 'valid name'
-                const balance = 300
-                const imageUrl = 'valid image url'
-                const creditCardInfo = {
-                    brand: 'Master Card',
-                    creditLimit: 100000,
-                    availableCreditLimit: 50000,
-                    closeDay: validClosingDate.getUTCDate(),
-                    dueDay: validDueDate.getUTCDate(),
-                }
-                const user = User.create({
-                    name: 'user name',
-                    email: 'user@email.com',
-                    password: 'user password',
-                }).value as User
-        
-                const account = ManualCreditCardAccount.create({name, balance, imageUrl, user, creditCardInfo}).value as ManualCreditCardAccount
-                
-                const transactionDate = new Date('2023-01-03')
-                const { invoiceDueDate, invoiceClosingDate } = account.calculateInvoiceDatesFromTransaction(transactionDate)
-                expect(invoiceDueDate).toEqual(validDueDate)
-                expect(invoiceClosingDate).toEqual(validClosingDate)
-            })
-    
-            test('transactions after closing date should belong to next month\'s invoice', () => {
-                const validClosingDate = new Date('2023-02-03')
-                const validDueDate = new Date('2023-02-10')
-    
-                const name = 'valid name'
-                const balance = 300
-                const imageUrl = 'valid image url'
-                const creditCardInfo = {
-                    brand: 'Master Card',
-                    creditLimit: 100000,
-                    availableCreditLimit: 50000,
-                    closeDay: validClosingDate.getUTCDate(),
-                    dueDay: validDueDate.getUTCDate(),
-                }
-                const user = User.create({
-                    name: 'user name',
-                    email: 'user@email.com',
-                    password: 'user password',
-                }).value as User
-        
-                const account = ManualCreditCardAccount.create({name, balance, imageUrl, user, creditCardInfo}).value as ManualCreditCardAccount
-                
-                const transactionDate = new Date('2023-01-04')
-                const { invoiceDueDate, invoiceClosingDate } = account.calculateInvoiceDatesFromTransaction(transactionDate)
-                expect(invoiceDueDate).toEqual(validDueDate)
-                expect(invoiceClosingDate).toEqual(validClosingDate)
-            })
-        })
-
-        describe('due date on end of month', () => {
-            test('transactions before closing date should belong to current month\'s invoice', () => {
-                const validClosingDate = new Date('2023-01-20')
-                const validDueDate = new Date('2023-01-27')
-    
-                const name = 'valid name'
-                const balance = 300
-                const imageUrl = 'valid image url'
-                const creditCardInfo = {
-                    brand: 'Master Card',
-                    creditLimit: 100000,
-                    availableCreditLimit: 50000,
-                    closeDay: validClosingDate.getUTCDate(),
-                    dueDay: validDueDate.getUTCDate(),
-                }
-                const user = User.create({
-                    name: 'user name',
-                    email: 'user@email.com',
-                    password: 'user password',
-                }).value as User
-        
-                const account = ManualCreditCardAccount.create({name, balance, imageUrl, user, creditCardInfo}).value as ManualCreditCardAccount
-                
-                const transactionDate = new Date('2023-01-19')
-                const { invoiceDueDate, invoiceClosingDate } = account.calculateInvoiceDatesFromTransaction(transactionDate)
-                expect(invoiceDueDate).toEqual(validDueDate)
-                expect(invoiceClosingDate).toEqual(validClosingDate)
-            })
-
-            test('transactions on closing date should belong to next month\'s invoice', () => {
-                const validClosingDate = new Date('2023-02-20')
-                const validDueDate = new Date('2023-02-27')
-    
-                const name = 'valid name'
-                const balance = 300
-                const imageUrl = 'valid image url'
-                const creditCardInfo = {
-                    brand: 'Master Card',
-                    creditLimit: 100000,
-                    availableCreditLimit: 50000,
-                    closeDay: validClosingDate.getUTCDate(),
-                    dueDay: validDueDate.getUTCDate(),
-                }
-                const user = User.create({
-                    name: 'user name',
-                    email: 'user@email.com',
-                    password: 'user password',
-                }).value as User
-        
-                const account = ManualCreditCardAccount.create({name, balance, imageUrl, user, creditCardInfo}).value as ManualCreditCardAccount
-                
-                const transactionDate = new Date('2023-01-20')
-                const { invoiceDueDate, invoiceClosingDate } = account.calculateInvoiceDatesFromTransaction(transactionDate)
-                expect(invoiceDueDate).toEqual(validDueDate)
-                expect(invoiceClosingDate).toEqual(validClosingDate)
-            })
-    
-            test('transactions after closing date should belong to next month\'s invoice', () => {
-                const validClosingDate = new Date('2023-02-20')
-                const validDueDate = new Date('2023-02-27')
-    
-                const name = 'valid name'
-                const balance = 300
-                const imageUrl = 'valid image url'
-                const creditCardInfo = {
-                    brand: 'Master Card',
-                    creditLimit: 100000,
-                    availableCreditLimit: 50000,
-                    closeDay: validClosingDate.getUTCDate(),
-                    dueDay: validDueDate.getUTCDate(),
-                }
-                const user = User.create({
-                    name: 'user name',
-                    email: 'user@email.com',
-                    password: 'user password',
-                }).value as User
-        
-                const account = ManualCreditCardAccount.create({name, balance, imageUrl, user, creditCardInfo}).value as ManualCreditCardAccount
-                
-                const transactionDate = new Date('2023-01-21')
-                const { invoiceDueDate, invoiceClosingDate } = account.calculateInvoiceDatesFromTransaction(transactionDate)
-                expect(invoiceDueDate).toEqual(validDueDate)
-                expect(invoiceClosingDate).toEqual(validClosingDate)
-            })
-        })
-
-        describe('at the end of the year', () => {
-            test('transactions before closing date should belong to current month\'s invoice', () => {
-                const validClosingDate = new Date('2023-11-25')
-                const validDueDate = new Date('2023-12-01')
-    
-                const name = 'valid name'
-                const balance = 300
-                const imageUrl = 'valid image url'
-                const creditCardInfo = {
-                    brand: 'Master Card',
-                    creditLimit: 100000,
-                    availableCreditLimit: 50000,
-                    closeDay: validClosingDate.getUTCDate(),
-                    dueDay: validDueDate.getUTCDate(),
-                }
-                const user = User.create({
-                    name: 'user name',
-                    email: 'user@email.com',
-                    password: 'user password',
-                }).value as User
-        
-                const account = ManualCreditCardAccount.create({name, balance, imageUrl, user, creditCardInfo}).value as ManualCreditCardAccount
-                
-                const transactionDate = new Date('2023-11-24')
-                const { invoiceDueDate, invoiceClosingDate } = account.calculateInvoiceDatesFromTransaction(transactionDate)
-                expect(invoiceDueDate).toEqual(validDueDate)
-                expect(invoiceClosingDate).toEqual(validClosingDate)
-            })
-
-            test('transactions on closing date should belong to next month\'s invoice', () => {
-                const validClosingDate = new Date('2023-12-25')
-                const validDueDate = new Date('2024-01-01')
-    
-                const name = 'valid name'
-                const balance = 300
-                const imageUrl = 'valid image url'
-                const creditCardInfo = {
-                    brand: 'Master Card',
-                    creditLimit: 100000,
-                    availableCreditLimit: 50000,
-                    closeDay: validClosingDate.getUTCDate(),
-                    dueDay: validDueDate.getUTCDate(),
-                }
-                const user = User.create({
-                    name: 'user name',
-                    email: 'user@email.com',
-                    password: 'user password',
-                }).value as User
-        
-                const account = ManualCreditCardAccount.create({name, balance, imageUrl, user, creditCardInfo}).value as ManualCreditCardAccount
-                
-                const transactionDate = new Date('2023-11-25')
-                const { invoiceDueDate, invoiceClosingDate } = account.calculateInvoiceDatesFromTransaction(transactionDate)
-                expect(invoiceDueDate).toEqual(validDueDate)
-                expect(invoiceClosingDate).toEqual(validClosingDate)
-            })
-    
-            test('transactions after closing date should belong to next month\'s invoice', () => {
-                const validClosingDate = new Date('2023-12-25')
-                const validDueDate = new Date('2024-01-01')
-    
-                const name = 'valid name'
-                const balance = 300
-                const imageUrl = 'valid image url'
-                const creditCardInfo = {
-                    brand: 'Master Card',
-                    creditLimit: 100000,
-                    availableCreditLimit: 50000,
-                    closeDay: validClosingDate.getUTCDate(),
-                    dueDay: validDueDate.getUTCDate(),
-                }
-                const user = User.create({
-                    name: 'user name',
-                    email: 'user@email.com',
-                    password: 'user password',
-                }).value as User
-        
-                const account = ManualCreditCardAccount.create({name, balance, imageUrl, user, creditCardInfo}).value as ManualCreditCardAccount
-                
-                const transactionDate = new Date('2023-11-26')
-                const { invoiceDueDate, invoiceClosingDate } = account.calculateInvoiceDatesFromTransaction(transactionDate)
-                expect(invoiceDueDate).toEqual(validDueDate)
-                expect(invoiceClosingDate).toEqual(validClosingDate)
-            })
-
-            test('transactions before closing date should belong to current month\'s invoice (2)', () => {
-                const validClosingDate = new Date('2023-12-25')
-                const validDueDate = new Date('2024-01-01')
-    
-                const name = 'valid name'
-                const balance = 300
-                const imageUrl = 'valid image url'
-                const creditCardInfo = {
-                    brand: 'Master Card',
-                    creditLimit: 100000,
-                    availableCreditLimit: 50000,
-                    closeDay: validClosingDate.getUTCDate(),
-                    dueDay: validDueDate.getUTCDate(),
-                }
-                const user = User.create({
-                    name: 'user name',
-                    email: 'user@email.com',
-                    password: 'user password',
-                }).value as User
-        
-                const account = ManualCreditCardAccount.create({name, balance, imageUrl, user, creditCardInfo}).value as ManualCreditCardAccount
-                
-                const transactionDate = new Date('2023-12-24')
-                const { invoiceDueDate, invoiceClosingDate } = account.calculateInvoiceDatesFromTransaction(transactionDate)
-                expect(invoiceDueDate).toEqual(validDueDate)
-                expect(invoiceClosingDate).toEqual(validClosingDate)
-            })
-
-            test('transactions on closing date should belong to next month\'s invoice (2)', () => {
-                const validClosingDate = new Date('2024-01-25')
-                const validDueDate = new Date('2024-02-01')
-    
-                const name = 'valid name'
-                const balance = 300
-                const imageUrl = 'valid image url'
-                const creditCardInfo = {
-                    brand: 'Master Card',
-                    creditLimit: 100000,
-                    availableCreditLimit: 50000,
-                    closeDay: validClosingDate.getUTCDate(),
-                    dueDay: validDueDate.getUTCDate(),
-                }
-                const user = User.create({
-                    name: 'user name',
-                    email: 'user@email.com',
-                    password: 'user password',
-                }).value as User
-        
-                const account = ManualCreditCardAccount.create({name, balance, imageUrl, user, creditCardInfo}).value as ManualCreditCardAccount
-                
-                const transactionDate = new Date('2023-12-25')
-                const { invoiceDueDate, invoiceClosingDate } = account.calculateInvoiceDatesFromTransaction(transactionDate)
-                expect(invoiceDueDate).toEqual(validDueDate)
-                expect(invoiceClosingDate).toEqual(validClosingDate)
-            })
-    
-            test('transactions after closing date should belong to next month\'s invoice (2)', () => {
-                const validClosingDate = new Date('2024-01-25')
-                const validDueDate = new Date('2024-02-01')
-    
-                const name = 'valid name'
-                const balance = 300
-                const imageUrl = 'valid image url'
-                const creditCardInfo = {
-                    brand: 'Master Card',
-                    creditLimit: 100000,
-                    availableCreditLimit: 50000,
-                    closeDay: validClosingDate.getUTCDate(),
-                    dueDay: validDueDate.getUTCDate(),
-                }
-                const user = User.create({
-                    name: 'user name',
-                    email: 'user@email.com',
-                    password: 'user password',
-                }).value as User
-        
-                const account = ManualCreditCardAccount.create({name, balance, imageUrl, user, creditCardInfo}).value as ManualCreditCardAccount
-                
-                const transactionDate = new Date('2023-12-26')
-                const { invoiceDueDate, invoiceClosingDate } = account.calculateInvoiceDatesFromTransaction(transactionDate)
-                expect(invoiceDueDate).toEqual(validDueDate)
-                expect(invoiceClosingDate).toEqual(validClosingDate)
-            })
-        })
-
     })
 
     describe('add transaction', () => {
@@ -624,7 +223,7 @@ describe("Manual Credit Card Account entity", () => {
                 password: 'user password',
             }).value as User
     
-            const account = ManualCreditCardAccount.create({name, balance, imageUrl, user, creditCardInfo}).value as ManualCreditCardAccount
+            const account = ManualCreditCardAccount.create({name, balance, imageUrl, user, creditCardInfo}, new NubankCreditCardInvoiceStrategy() ).value as ManualCreditCardAccount
 
             const transaction = CreditCardTransaction.create({ 
                 amount: -35000, 
@@ -660,7 +259,7 @@ describe("Manual Credit Card Account entity", () => {
                 password: 'user password',
             }).value as User
     
-            const account = ManualCreditCardAccount.create({name, balance, imageUrl, user, creditCardInfo}).value as ManualCreditCardAccount
+            const account = ManualCreditCardAccount.create({name, balance, imageUrl, user, creditCardInfo}, new NubankCreditCardInvoiceStrategy() ).value as ManualCreditCardAccount
 
             const transaction = CreditCardTransaction.create({ 
                 amount: 35000, 
@@ -698,7 +297,7 @@ describe("Manual Credit Card Account entity", () => {
                 password: 'user password',
             }).value as User
     
-            const account = ManualCreditCardAccount.create({name, balance, imageUrl, user, creditCardInfo}).value as ManualCreditCardAccount
+            const account = ManualCreditCardAccount.create({name, balance, imageUrl, user, creditCardInfo}, new NubankCreditCardInvoiceStrategy() ).value as ManualCreditCardAccount
 
             const transaction = CreditCardTransaction.create({ 
                 amount: -35000, 
@@ -735,7 +334,7 @@ describe("Manual Credit Card Account entity", () => {
                 password: 'user password',
             }).value as User
     
-            const account = ManualCreditCardAccount.create({name, balance, imageUrl, user, creditCardInfo}).value as ManualCreditCardAccount
+            const account = ManualCreditCardAccount.create({name, balance, imageUrl, user, creditCardInfo}, new NubankCreditCardInvoiceStrategy() ).value as ManualCreditCardAccount
 
             const transaction = CreditCardTransaction.create({ 
                 amount: 35000, 

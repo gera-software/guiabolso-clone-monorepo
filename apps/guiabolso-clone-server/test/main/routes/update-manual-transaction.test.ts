@@ -3,7 +3,6 @@ import app from '@/main/config/app'
 import { MongoHelper } from "@/external/repositories/mongodb/helper"
 import { makeUserRepository, makeAccountRepository, makeTransactionRepository, makeCategoryRepository, makeCreditCardInvoiceRepository } from "@/main/factories"
 import { BankAccountData, CategoryData, CreditCardAccountData, CreditCardInvoiceData, TransactionData, UserData, WalletAccountData } from "@/usecases/ports"
-import { ManualCreditCardAccount } from '@/entities'
 
 describe('update manual transaction route', () => {
     const amount = -1294
