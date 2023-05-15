@@ -1,4 +1,4 @@
-import { AutomaticCreditCardAccount, Institution, User } from "@/entities"
+import { AutomaticCreditCardAccount, Institution, NubankCreditCardInvoiceStrategy, User } from "@/entities"
 import { InvalidAccountError, InvalidBalanceError, InvalidCreditCardError, InvalidInstitutionError, InvalidNameError } from "@/entities/errors"
 
 describe("Automatic Credit Card Account entity", () => {
@@ -31,7 +31,7 @@ describe("Automatic Credit Card Account entity", () => {
             const providerItemId = 'valid-item-id'
             const createdAt = new Date()
     
-            const error = AutomaticCreditCardAccount.create({name, balance, imageUrl, user, institution, creditCardInfo, providerAccountId, providerItemId, createdAt}).value as Error
+            const error = AutomaticCreditCardAccount.create({name, balance, imageUrl, user, institution, creditCardInfo, providerAccountId, providerItemId, createdAt}, new NubankCreditCardInvoiceStrategy() ).value as Error
             expect(error).toBeInstanceOf(InvalidNameError)
         })
 
@@ -63,7 +63,7 @@ describe("Automatic Credit Card Account entity", () => {
             const providerItemId = 'valid-item-id'
             const createdAt = new Date()
     
-            const error = AutomaticCreditCardAccount.create({name, balance, imageUrl, user, institution, creditCardInfo, providerAccountId, providerItemId, createdAt}).value as Error
+            const error = AutomaticCreditCardAccount.create({name, balance, imageUrl, user, institution, creditCardInfo, providerAccountId, providerItemId, createdAt}, new NubankCreditCardInvoiceStrategy() ).value as Error
             expect(error).toBeInstanceOf(InvalidBalanceError)
 
         })
@@ -96,7 +96,7 @@ describe("Automatic Credit Card Account entity", () => {
             const providerItemId = 'valid-item-id'
             const createdAt = new Date()
     
-            const error = AutomaticCreditCardAccount.create({name, balance, imageUrl, user, institution, creditCardInfo, providerAccountId, providerItemId, createdAt}).value as Error
+            const error = AutomaticCreditCardAccount.create({name, balance, imageUrl, user, institution, creditCardInfo, providerAccountId, providerItemId, createdAt}, new NubankCreditCardInvoiceStrategy() ).value as Error
             expect(error).toBeInstanceOf(InvalidCreditCardError)
             expect(error.message).toBe('Invalid credit card params: brand, closeDay, dueDay, creditLimit, availableCreditLimit')
 
@@ -123,7 +123,7 @@ describe("Automatic Credit Card Account entity", () => {
             const providerItemId = 'valid-item-id'
             const createdAt = new Date()
     
-            const error = AutomaticCreditCardAccount.create({name, balance, imageUrl, user, institution, creditCardInfo, providerAccountId, providerItemId, createdAt}).value as Error
+            const error = AutomaticCreditCardAccount.create({name, balance, imageUrl, user, institution, creditCardInfo, providerAccountId, providerItemId, createdAt}, new NubankCreditCardInvoiceStrategy() ).value as Error
             expect(error).toBeInstanceOf(InvalidInstitutionError)
 
         })
@@ -156,7 +156,7 @@ describe("Automatic Credit Card Account entity", () => {
             const providerItemId = 'valid-item-id'
             const createdAt = new Date()
     
-            const error = AutomaticCreditCardAccount.create({name, balance, imageUrl, user, institution, creditCardInfo, providerAccountId, providerItemId, createdAt}).value as Error
+            const error = AutomaticCreditCardAccount.create({name, balance, imageUrl, user, institution, creditCardInfo, providerAccountId, providerItemId, createdAt}, new NubankCreditCardInvoiceStrategy() ).value as Error
             expect(error).toBeInstanceOf(InvalidAccountError)
             expect(error.message).toBe('providerAccountId is required')
 
@@ -190,7 +190,7 @@ describe("Automatic Credit Card Account entity", () => {
             const providerItemId = ''
             const createdAt = new Date()
     
-            const error = AutomaticCreditCardAccount.create({name, balance, imageUrl, user, institution, creditCardInfo, providerAccountId, providerItemId, createdAt}).value as Error
+            const error = AutomaticCreditCardAccount.create({name, balance, imageUrl, user, institution, creditCardInfo, providerAccountId, providerItemId, createdAt}, new NubankCreditCardInvoiceStrategy() ).value as Error
             expect(error).toBeInstanceOf(InvalidAccountError)
             expect(error.message).toBe('providerItemId is required')
 
@@ -224,7 +224,7 @@ describe("Automatic Credit Card Account entity", () => {
             const providerItemId = 'valid-item-id'
             const createdAt: Date = null
     
-            const error = AutomaticCreditCardAccount.create({name, balance, imageUrl, user, institution, creditCardInfo, providerAccountId, providerItemId, createdAt}).value as Error
+            const error = AutomaticCreditCardAccount.create({name, balance, imageUrl, user, institution, creditCardInfo, providerAccountId, providerItemId, createdAt}, new NubankCreditCardInvoiceStrategy() ).value as Error
             expect(error).toBeInstanceOf(InvalidAccountError)
             expect(error.message).toBe('createdAt is required')
 
@@ -258,7 +258,7 @@ describe("Automatic Credit Card Account entity", () => {
             const providerItemId = 'valid-item-id'
             const createdAt = new Date()
     
-            const account = AutomaticCreditCardAccount.create({name, balance, imageUrl, user, institution, creditCardInfo, providerAccountId, providerItemId, createdAt}).value as AutomaticCreditCardAccount
+            const account = AutomaticCreditCardAccount.create({name, balance, imageUrl, user, institution, creditCardInfo, providerAccountId, providerItemId, createdAt}, new NubankCreditCardInvoiceStrategy() ).value as AutomaticCreditCardAccount
             expect(account.type).toBe('CREDIT_CARD')
             expect(account.syncType).toBe('AUTOMATIC')
             expect(account.name).toBe(name)
@@ -278,4 +278,43 @@ describe("Automatic Credit Card Account entity", () => {
 
         })
     })
+
+    test('should calculate invoice due date from transaction', () => {
+        const validClosingDate = new Date('2023-10-3')
+        const validDueDate = new Date('2023-10-10')
+
+        const name = 'valid name'
+        const balance = -6789
+        const imageUrl = 'valid image url'
+        const creditCardInfo = {
+            brand: 'Master Card',
+            creditLimit: 100000,
+            availableCreditLimit: 50000,
+            closeDay: validClosingDate.getUTCDate(),
+            dueDay: validDueDate.getUTCDate(),
+        }
+        const user = User.create({
+            name: 'user name',
+            email: 'user@email.com',
+            password: 'user password',
+        }).value as User
+        const institution = Institution.create({
+            id: 'valid id', 
+            name: 'valid name', 
+            type: "PERSONAL_BANK", 
+            imageUrl: 'valid url', 
+            primaryColor: 'valid color', 
+            providerConnectorId: 'valid id'
+        }).value as Institution
+        const providerAccountId = 'valid-account-id'
+        const providerItemId = 'valid-item-id'
+        const createdAt = new Date()
+
+        const account = AutomaticCreditCardAccount.create({name, balance, imageUrl, user, institution, creditCardInfo, providerAccountId, providerItemId, createdAt}, new NubankCreditCardInvoiceStrategy() ).value as AutomaticCreditCardAccount
+        const transactionDate = new Date('2023-10-24')
+        const { invoiceDueDate, invoiceClosingDate } = account.calculateInvoiceDatesFromTransaction(transactionDate)
+        expect(invoiceDueDate).toBeInstanceOf(Date)
+        expect(invoiceClosingDate).toBeInstanceOf(Date)
+    })
+
 })

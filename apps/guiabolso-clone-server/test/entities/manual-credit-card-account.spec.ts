@@ -167,38 +167,32 @@ describe("Manual Credit Card Account entity", () => {
         })
     })
 
-    /**
-     * OBS: rules valid to nubank credit cards, other banks could have diferent rules
-     */
-    describe('calculate invoice due date from transaction', () => {
+    test('should calculate invoice due date from transaction', () => {
+        const validClosingDate = new Date('2023-10-25')
+        const validDueDate = new Date('2023-11-01')
 
-        test('transactions before closing date should belong to current month\'s invoice', () => {
-            const validClosingDate = new Date('2023-10-25')
-            const validDueDate = new Date('2023-11-01')
+        const name = 'valid name'
+        const balance = 300
+        const imageUrl = 'valid image url'
+        const creditCardInfo = {
+            brand: 'Master Card',
+            creditLimit: 100000,
+            availableCreditLimit: 50000,
+            closeDay: validClosingDate.getUTCDate(),
+            dueDay: validDueDate.getUTCDate(),
+        }
+        const user = User.create({
+            name: 'user name',
+            email: 'user@email.com',
+            password: 'user password',
+        }).value as User
 
-            const name = 'valid name'
-            const balance = 300
-            const imageUrl = 'valid image url'
-            const creditCardInfo = {
-                brand: 'Master Card',
-                creditLimit: 100000,
-                availableCreditLimit: 50000,
-                closeDay: validClosingDate.getUTCDate(),
-                dueDay: validDueDate.getUTCDate(),
-            }
-            const user = User.create({
-                name: 'user name',
-                email: 'user@email.com',
-                password: 'user password',
-            }).value as User
-    
-            const account = ManualCreditCardAccount.create({name, balance, imageUrl, user, creditCardInfo}, new NubankCreditCardInvoiceStrategy() ).value as ManualCreditCardAccount
-            
-            const transactionDate = new Date('2023-10-24')
-            const { invoiceDueDate, invoiceClosingDate } = account.calculateInvoiceDatesFromTransaction(transactionDate)
-            expect(invoiceDueDate).toBeInstanceOf(Date)
-            expect(invoiceClosingDate).toBeInstanceOf(Date)
-        })
+        const account = ManualCreditCardAccount.create({name, balance, imageUrl, user, creditCardInfo}, new NubankCreditCardInvoiceStrategy() ).value as ManualCreditCardAccount
+        
+        const transactionDate = new Date('2023-10-24')
+        const { invoiceDueDate, invoiceClosingDate } = account.calculateInvoiceDatesFromTransaction(transactionDate)
+        expect(invoiceDueDate).toBeInstanceOf(Date)
+        expect(invoiceClosingDate).toBeInstanceOf(Date)
     })
 
     describe('add transaction', () => {

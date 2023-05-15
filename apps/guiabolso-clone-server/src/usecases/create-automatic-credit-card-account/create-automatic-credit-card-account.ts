@@ -1,7 +1,7 @@
 import { AccountRepository, CreditCardAccountData, InstitutionRepository, UseCase, UserRepository } from "@/usecases/ports";
 import { UnregisteredInstitutionError, UnregisteredUserError } from "@/usecases/errors";
 import { left, right } from "@/shared";
-import { AutomaticCreditCardAccount, Institution, User } from "@/entities";
+import { AutomaticCreditCardAccount, Institution, NubankCreditCardInvoiceStrategy, User } from "@/entities";
 
 export class CreateAutomaticCreditCardAccount implements UseCase {
     private readonly accountRepo: AccountRepository
@@ -43,17 +43,20 @@ export class CreateAutomaticCreditCardAccount implements UseCase {
             institution = institutionOrError.value as Institution
         }
 
-        const creditCardOrError = AutomaticCreditCardAccount.create({
-            name: accountData.name,
-            balance: accountData.balance,
-            imageUrl: accountData.imageUrl,
-            user,
-            institution,
-            creditCardInfo: accountData.creditCardInfo,
-            providerAccountId: accountData.providerAccountId,
-            providerItemId: accountData.synchronization.providerItemId,
-            createdAt: accountData.synchronization.createdAt,
-        }) 
+        const creditCardOrError = AutomaticCreditCardAccount.create(
+            {
+                name: accountData.name,
+                balance: accountData.balance,
+                imageUrl: accountData.imageUrl,
+                user,
+                institution,
+                creditCardInfo: accountData.creditCardInfo,
+                providerAccountId: accountData.providerAccountId,
+                providerItemId: accountData.synchronization.providerItemId,
+                createdAt: accountData.synchronization.createdAt,
+            },
+            new NubankCreditCardInvoiceStrategy()
+        ) 
 
         if(creditCardOrError.isLeft()) {
             return left(creditCardOrError.value)
