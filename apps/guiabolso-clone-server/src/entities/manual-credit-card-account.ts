@@ -58,6 +58,7 @@ export class ManualCreditCardAccount implements ManualAccount {
      * 
      * @param transactionDate 
      * @returns invoiceDates { invoiceClosingDate: Date, invoiceDueDate: Date } 
+     * @deprecated
      */
     public calculateInvoiceDatesFromTransaction(transactionDate: Date) {
         let year = transactionDate.getUTCFullYear()
