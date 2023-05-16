@@ -180,6 +180,8 @@ export class MongodbTransactionRepository implements TransactionRepository {
             {
                 $match: { 
                     invoiceId: { $in: invoicesObjectIds },
+                    // TODO hardcoded string, use environment variable with category id
+                    'category.name': { $ne: 'Pagamento de cartão' }
                 }
             }, 
             {

@@ -37,12 +37,14 @@ export class CreditCardInvoice {
     }
 
     public addTransaction(transaction: CreditCardTransaction) {
+        // TODO hardcoded string, use environment variable with category id
         if(transaction.category?.name !== 'Pagamento de cartão') {
             this.amount.add(transaction.amount.value)
         }
     }
 
     public removeTransaction(transaction: CreditCardTransaction) {
+        // TODO hardcoded string, use environment variable with category id
         if(transaction.category?.name !== 'Pagamento de cartão') {
             this.amount.subtract(transaction.amount.value)
         }

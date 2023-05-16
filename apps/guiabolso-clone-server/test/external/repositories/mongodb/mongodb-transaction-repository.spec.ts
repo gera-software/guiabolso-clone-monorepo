@@ -10,6 +10,7 @@ describe('Mongodb Transaction repository', () => {
     const validCreditCardAccountId = new ObjectId()
     const validCategory0Id = new ObjectId()
     const validCategory1Id = new ObjectId()
+    const pagamentoCartaoCategoryId = new ObjectId()
     const validInvoiceId1 = new ObjectId()
     const validInvoiceId2 = new ObjectId()
 
@@ -29,6 +30,15 @@ describe('Mongodb Transaction repository', () => {
         iconName: "ICON 1",
         primaryColor: "COLOR 1",
         ignored: false
+    }
+
+    let pagamentoCartaoCategory: CategoryData = {
+        id: pagamentoCartaoCategoryId.toString(),
+        name: "Pagamento de cartão",
+        group: "VALIDGROUP",
+        iconName: "ICON 1",
+        primaryColor: "COLOR 1",
+        ignored: true
     }
 
     beforeAll(async () => {
@@ -850,6 +860,97 @@ describe('Mongodb Transaction repository', () => {
             // expect(results.find(r => r.invoiceId == invoiceId2)).toEqual({ invoiceId: invoiceId2, amount: -5623 })
         })
 
-        test.todo('should return the sum of transactions amounts (ignoring "pagamento de cartão" category)')
+        test('should return the sum of transactions amounts (ignoring "Pagamento de cartão" category)', async () => {
+            const sut = new MongodbTransactionRepository()
+
+            const invoiceId1 = new ObjectId().toString()
+            const invoiceId2 = new ObjectId().toString()
+
+            const transactionData1: TransactionData = {
+                accountId: validCreditCardAccountId.toString(),
+                accountType: 'CREDIT_CARD',
+                syncType: 'AUTOMATIC',
+                userId: validUserId.toString(),
+                amount: -2345,
+                description: 'valid description',
+                descriptionOriginal: '',
+                date: new Date('2023-06-10'),
+                invoiceDate: new Date('2023-05-18'),
+                invoiceId: invoiceId1,
+                type: 'EXPENSE',
+                comment: 'valid comment',
+                ignored: false,
+                category: validCategory0,
+                _isDeleted: false,
+            }
+            const transactionData2: TransactionData = {
+                accountId: validCreditCardAccountId.toString(),
+                accountType: 'CREDIT_CARD',
+                syncType: 'AUTOMATIC',
+                userId: validUserId.toString(),
+                amount: 8970,
+                description: 'valid description',
+                descriptionOriginal: '',
+                date: new Date('2023-06-10'),
+                invoiceDate: new Date('2023-05-18'),
+                invoiceId: invoiceId1,
+                type: 'INCOME',
+                comment: 'valid comment',
+                ignored: false,
+                category: validCategory1,
+                _isDeleted: false,
+            }
+            const transactionData3: TransactionData = {
+                accountId: validCreditCardAccountId.toString(),
+                accountType: 'CREDIT_CARD',
+                syncType: 'AUTOMATIC',
+                userId: validUserId.toString(),
+                amount: -5623,
+                description: 'valid description',
+                descriptionOriginal: '',
+                date: new Date('2023-06-10'),
+                invoiceDate: new Date('2023-05-18'),
+                invoiceId: invoiceId2,
+                type: 'EXPENSE',
+                comment: 'valid comment',
+                ignored: false,
+                category: validCategory1,
+                _isDeleted: false,
+            }
+            const transactionData4: TransactionData = {
+                accountId: validCreditCardAccountId.toString(),
+                accountType: 'CREDIT_CARD',
+                syncType: 'AUTOMATIC',
+                userId: validUserId.toString(),
+                amount: 5624,
+                description: 'pagamento de cartão',
+                descriptionOriginal: '',
+                date: new Date('2023-06-10'),
+                invoiceDate: new Date('2023-05-18'),
+                invoiceId: invoiceId2,
+                type: 'INCOME',
+                comment: 'valid comment',
+                ignored: false,
+                category: pagamentoCartaoCategory,
+                _isDeleted: false,
+            }
+    
+            await sut.add(transactionData1)
+            await sut.add(transactionData2)
+            await sut.add(transactionData3)
+            await sut.add(transactionData4)
+
+            const invoicesIds = [
+                invoiceId1,
+                invoiceId2,
+            ]
+
+            const results = await sut.recalculateInvoicesAmount(invoicesIds)
+            expect(results).toHaveLength(2)
+            expect(results).toEqual([
+                { invoiceId: invoiceId1, amount: 6625 },
+                { invoiceId: invoiceId2, amount: -5623 },
+            ])
+        })
     })
 })
