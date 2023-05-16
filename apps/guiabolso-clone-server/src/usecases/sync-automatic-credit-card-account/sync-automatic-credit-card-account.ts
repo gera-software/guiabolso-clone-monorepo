@@ -1,8 +1,8 @@
 import { Either, left, right } from "@/shared";
-import { AccountData, CreditCardInvoiceData, CreditCardInvoiceRepository, FinancialDataProvider, InstitutionRepository, TransactionData, TransactionRepository, UpdateAccountRepository, UseCase, UserData, UserRepository } from "@/usecases/ports";
+import { AccountData, CreditCardInvoiceRepository, FinancialDataProvider, InstitutionRepository, TransactionData, TransactionRepository, UpdateAccountRepository, UseCase, UserData, UserRepository } from "@/usecases/ports";
 import { UnexpectedError, UnregisteredAccountError, UnregisteredInstitutionError } from "@/usecases/errors";
 import { InvalidAccountError, InvalidBalanceError, InvalidCreditCardError, InvalidEmailError, InvalidInstitutionError, InvalidNameError, InvalidPasswordError, InvalidTypeError } from "@/entities/errors";
-import { AccountType, AutomaticCreditCardAccount, Institution, ManualCreditCardAccount, NubankCreditCardInvoiceStrategy, User } from "@/entities";
+import { AccountType, AutomaticCreditCardAccount, Institution, NubankCreditCardInvoiceStrategy, User } from "@/entities";
 
 export class SyncAutomaticCreditCardAccount implements UseCase {
     private readonly financialDataProvider: FinancialDataProvider
@@ -100,7 +100,7 @@ export class SyncAutomaticCreditCardAccount implements UseCase {
             return left(new InvalidAccountError())
         }
 
-        // TODO create getAccountByProviderAccountId
+        // TODO create getAccountByProviderAccountId?
         const dataProviderAccountsOrError = await this.financialDataProvider.getAccountsByItemId(foundAccountData.synchronization.providerItemId)
 
         if(dataProviderAccountsOrError.isLeft()) {

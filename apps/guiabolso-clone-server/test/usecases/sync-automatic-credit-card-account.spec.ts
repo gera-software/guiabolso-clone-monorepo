@@ -1,6 +1,6 @@
 import { InvalidAccountError } from "@/entities/errors"
 import { DataProviderError, UnexpectedError, UnregisteredAccountError } from "@/usecases/errors"
-import { CreditCardAccountData, CreditCardInvoiceData, InstitutionData, TransactionRequest, UserData } from "@/usecases/ports"
+import { CreditCardAccountData, InstitutionData, TransactionRequest, UserData } from "@/usecases/ports"
 import { SyncAutomaticCreditCardAccount } from "@/usecases/sync-automatic-credit-card-account"
 import { ErrorPluggyDataProvider, InMemoryPluggyDataProvider } from "@test/doubles/financial-data-provider"
 import { InMemoryAccountRepository, InMemoryCreditCardInvoiceRepository, InMemoryInstitutionRepository, InMemoryTransactionRepository, InMemoryUserRepository } from "@test/doubles/repositories"
@@ -205,7 +205,6 @@ describe('Sync automatic credit card account use case', () => {
                 date: new Date('2023-02-04'),
                 providerId: 'valid-transaction-id0',
             }
-            // TODO how to ignore 'pagamento de cartão' in invoices?
             const transaction1: TransactionRequest = {
                 id: null,
                 accountId: accountId,
