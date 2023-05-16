@@ -753,4 +753,103 @@ describe('Mongodb Transaction repository', () => {
             })
         })
     })
+
+    describe('recalculateInvoicesAmount', () => {
+        test('should return 0 if no transaction has found for a invoice', async () => {
+            const sut = new MongodbTransactionRepository()
+
+            const invoiceId1 = new ObjectId().toString()
+            const invoiceId2 = new ObjectId().toString()
+
+            const invoicesIds = [
+                invoiceId1,
+                invoiceId2,
+            ]
+
+            const results = await sut.recalculateInvoicesAmount(invoicesIds)
+            expect(results).toEqual([
+                { invoiceId: invoiceId1, amount: 0 }, 
+                { invoiceId: invoiceId2, amount: 0 }, 
+            ])
+        })
+
+        test('should return the sum of transactions amounts of each invoice', async () => {
+            const sut = new MongodbTransactionRepository()
+
+            const invoiceId1 = new ObjectId().toString()
+            const invoiceId2 = new ObjectId().toString()
+
+            const transactionData1: TransactionData = {
+                accountId: validCreditCardAccountId.toString(),
+                accountType: 'CREDIT_CARD',
+                syncType: 'AUTOMATIC',
+                userId: validUserId.toString(),
+                amount: -2345,
+                description: 'valid description',
+                descriptionOriginal: '',
+                date: new Date('2023-06-10'),
+                invoiceDate: new Date('2023-05-18'),
+                invoiceId: invoiceId1,
+                type: 'EXPENSE',
+                comment: 'valid comment',
+                ignored: false,
+                category: validCategory0,
+                _isDeleted: false,
+            }
+            const transactionData2: TransactionData = {
+                accountId: validCreditCardAccountId.toString(),
+                accountType: 'CREDIT_CARD',
+                syncType: 'AUTOMATIC',
+                userId: validUserId.toString(),
+                amount: 8970,
+                description: 'valid description',
+                descriptionOriginal: '',
+                date: new Date('2023-06-10'),
+                invoiceDate: new Date('2023-05-18'),
+                invoiceId: invoiceId1,
+                type: 'INCOME',
+                comment: 'valid comment',
+                ignored: false,
+                category: validCategory1,
+                _isDeleted: false,
+            }
+            const transactionData3: TransactionData = {
+                accountId: validCreditCardAccountId.toString(),
+                accountType: 'CREDIT_CARD',
+                syncType: 'AUTOMATIC',
+                userId: validUserId.toString(),
+                amount: -5623,
+                description: 'valid description',
+                descriptionOriginal: '',
+                date: new Date('2023-06-10'),
+                invoiceDate: new Date('2023-05-18'),
+                invoiceId: invoiceId2,
+                type: 'EXPENSE',
+                comment: 'valid comment',
+                ignored: false,
+                category: validCategory1,
+                _isDeleted: false,
+            }
+    
+            await sut.add(transactionData1)
+            await sut.add(transactionData2)
+            await sut.add(transactionData3)
+
+            const invoicesIds = [
+                invoiceId1,
+                invoiceId2,
+            ]
+
+            const results = await sut.recalculateInvoicesAmount(invoicesIds)
+            expect(results).toHaveLength(2)
+            expect(results).toEqual([
+                { invoiceId: invoiceId1, amount: 6625 },
+                { invoiceId: invoiceId2, amount: -5623 },
+            ])
+            // expect(results.find(r => r.invoiceId == invoiceId1)).toEqual({ invoiceId: invoiceId1, amount: 6625 })
+            // expect(results.find(r => r.invoiceId == invoiceId2)).toEqual({ invoiceId: invoiceId2, amount: -5623 })
+        })
+
+        test.todo('should return the sum of transactions amounts (ignoring "pagamento de cartão" category)')
+    })
 })

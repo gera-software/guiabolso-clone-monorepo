@@ -171,6 +171,36 @@ export class MongodbTransactionRepository implements TransactionRepository {
         }
     }
 
+    async recalculateInvoicesAmount(invoicesIds: string[]): Promise<{ invoiceId: string; amount: number; }[]> {
+        const transactionCollection = MongoHelper.getCollection('transactions')
+        
+        const invoicesObjectIds = invoicesIds.map(i => new ObjectId(i))
+
+        const results = await transactionCollection.aggregate([
+            {
+                $match: { 
+                    invoiceId: { $in: invoicesObjectIds },
+                }
+            }, 
+            {
+                $group: {
+                    '_id': '$invoiceId',
+                    'amount': { $sum: '$amount' }
+                }
+            },
+            {
+                $addFields: {
+                  "invoiceId": { $toString: "$_id" },
+                }
+            },
+        ]).toArray() 
+
+        return invoicesObjectIds.map(invoiceId => ({
+            invoiceId: invoiceId.toString(),
+            amount: results.find(e => e.invoiceId == invoiceId.toString())?.amount ?? 0,
+        }))
+    }
+
 
     private withApplicationId (dbTransaction: MongodbTransaction): TransactionData {
         let category: CategoryData = null

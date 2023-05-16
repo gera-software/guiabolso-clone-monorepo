@@ -7,4 +7,5 @@ export interface TransactionRepository {
     remove(id: string): Promise<TransactionData>
     update(transaction: TransactionData): Promise<TransactionData>
     mergeTransactions(transactions: TransactionData[]): Promise<{ upsertedIds: string[], modifiedCount: number }>
+    recalculateInvoicesAmount(invoicesIds: string[]): Promise<{ invoiceId: string, amount: number }[]>
 }
