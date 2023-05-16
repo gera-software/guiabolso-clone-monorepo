@@ -1,5 +1,5 @@
 import { CategoryData, TransactionData, TransactionRepository } from "@/usecases/ports";
-import { AnyBulkWriteOperation, BulkWriteResult, Document, ObjectId } from "mongodb";
+import { AnyBulkWriteOperation, Document, ObjectId } from "mongodb";
 import { MongodbCategory } from "@/external/repositories/mongodb";
 import { MongoHelper } from "@/external/repositories/mongodb/helper";
 

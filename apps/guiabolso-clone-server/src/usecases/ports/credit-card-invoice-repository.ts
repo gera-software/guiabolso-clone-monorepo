@@ -7,5 +7,5 @@ export interface CreditCardInvoiceRepository {
     getLastClosedInvoice(accountId: string): Promise<CreditCardInvoiceData>
     exists(id: string): Promise<boolean>
     updateAmount(id: string, amount: number): Promise<void>
-    batchUpdateAmount(data: { invoiceId: string, amount: number }[]): Promise<void>
+    batchUpdateAmount(invoices: { invoiceId: string, amount: number }[]): Promise<void>
 }

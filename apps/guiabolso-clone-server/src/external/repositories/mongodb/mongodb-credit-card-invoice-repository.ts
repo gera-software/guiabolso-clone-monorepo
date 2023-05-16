@@ -1,5 +1,5 @@
 import { CreditCardInvoiceData, CreditCardInvoiceRepository } from "@/usecases/ports";
-import { ObjectId } from "mongodb";
+import { AnyBulkWriteOperation, Document, ObjectId } from "mongodb";
 import { MongoHelper } from "@/external/repositories/mongodb/helper";
 
 export type MongodbCreditCardInvoice = {
@@ -109,8 +109,21 @@ export class MongodbCreditCardInvoiceRepository implements CreditCardInvoiceRepo
         await invoiceCollection.updateOne({ _id: new ObjectId(id) }, updateDoc)
     }
 
-    async batchUpdateAmount(data: { invoiceId: string; amount: number; }[]): Promise<void> {
-        throw new Error("Method batchUpdateAmount not implemented.");
+    async batchUpdateAmount(invoices: { invoiceId: string; amount: number; }[]): Promise<void> {
+        const invoiceCollection = MongoHelper.getCollection('invoices')
+
+        const operations: AnyBulkWriteOperation<Document>[] = invoices.map(invoice => ({
+            updateOne: {
+                filter: { _id: new ObjectId(invoice.invoiceId) },
+                update: {
+                    $set: {
+                        amount: invoice.amount
+                    },
+                },
+            },
+        }))
+
+        const result = await invoiceCollection.bulkWrite(operations)
     }
 
     private withApplicationId(dbInvoice: MongodbCreditCardInvoice): CreditCardInvoiceData {

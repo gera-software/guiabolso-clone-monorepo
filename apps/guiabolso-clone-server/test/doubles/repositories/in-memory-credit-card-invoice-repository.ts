@@ -65,8 +65,8 @@ export class InMemoryCreditCardInvoiceRepository implements CreditCardInvoiceRep
         return invoices[0] || null
     }
 
-    async batchUpdateAmount(data: { invoiceId: string; amount: number }[]): Promise<void> {
-        for(const invoice of data) {
+    async batchUpdateAmount(invoices: { invoiceId: string; amount: number }[]): Promise<void> {
+        for(const invoice of invoices) {
             await this.updateAmount(invoice.invoiceId, invoice.amount)
         }
     }

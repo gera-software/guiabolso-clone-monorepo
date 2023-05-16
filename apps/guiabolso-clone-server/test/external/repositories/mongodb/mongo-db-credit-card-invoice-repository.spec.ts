@@ -90,6 +90,27 @@ describe('Mongodb Credit Card Invoice repository', () => {
         expect(updatedInvoice.amount).toBe(newAmount)
     })
 
+    test('should batch update amounts', async () => {
+        const sut = new MongodbCreditCardInvoiceRepository()
+        const invoice0: CreditCardInvoiceData = {
+            dueDate: validDueDate,
+            closeDate: validClosingDate,
+            amount: 0,
+            userId: validUserId.toString(),
+            accountId: validAccountId.toString(),
+            _isDeleted: false
+        }
+        const addedInvoice0 = await sut.add(invoice0)
+        const newAmount = 4567
+
+        await sut.batchUpdateAmount([
+            { invoiceId: addedInvoice0.id, amount: newAmount }
+        ])
+
+        const updatedInvoice0 = await sut.findById(addedInvoice0.id)
+        expect(updatedInvoice0.amount).toBe(newAmount)
+    })
+
     test('should find invoice by month\'s due date', async () => {
         const sut = new MongodbCreditCardInvoiceRepository()
         const invoice1: CreditCardInvoiceData = {
