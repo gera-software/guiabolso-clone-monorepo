@@ -100,6 +100,7 @@ export class SyncAutomaticCreditCardAccount implements UseCase {
             return left(new InvalidAccountError())
         }
 
+        // TODO create getAccountByProviderAccountId
         const dataProviderAccountsOrError = await this.financialDataProvider.getAccountsByItemId(foundAccountData.synchronization.providerItemId)
 
         if(dataProviderAccountsOrError.isLeft()) {
@@ -167,6 +168,10 @@ export class SyncAutomaticCreditCardAccount implements UseCase {
         
 
         await this.transactionRepo.mergeTransactions(transactionsData)
+
+        // recalculate invoices amounts
+        const invoicesAmount = await this.transactionRepo.recalculateInvoicesAmount(Object.values(Object.fromEntries(this.invoicesIdLookupTable)))
+        await this.invoiceRepo.batchUpdateAmount(invoicesAmount)
 
         await this.accountRepo.updateSynchronizationStatus(accountId, { lastSyncAt: new Date() })
 

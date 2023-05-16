@@ -109,6 +109,10 @@ export class MongodbCreditCardInvoiceRepository implements CreditCardInvoiceRepo
         await invoiceCollection.updateOne({ _id: new ObjectId(id) }, updateDoc)
     }
 
+    async batchUpdateAmount(data: { invoiceId: string; amount: number; }[]): Promise<void> {
+        throw new Error("Method batchUpdateAmount not implemented.");
+    }
+
     private withApplicationId(dbInvoice: MongodbCreditCardInvoice): CreditCardInvoiceData {
         return {
             id: dbInvoice._id.toString(),

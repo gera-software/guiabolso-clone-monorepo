@@ -205,6 +205,7 @@ describe('Sync automatic credit card account use case', () => {
                 date: new Date('2023-02-04'),
                 providerId: 'valid-transaction-id0',
             }
+            // TODO how to ignore 'pagamento de cartão' in invoices?
             const transaction1: TransactionRequest = {
                 id: null,
                 accountId: accountId,
@@ -279,7 +280,7 @@ describe('Sync automatic credit card account use case', () => {
             expect(invoiceRepository.data[0]).toEqual({
                 id: "0", 
                 accountId: "ac0", 
-                amount: 0, 
+                amount: -6789, 
                 closeDate: new Date('2023-02-05'), 
                 dueDate: new Date('2023-02-12'), 
                 userId: "u0",
@@ -288,7 +289,7 @@ describe('Sync automatic credit card account use case', () => {
             expect(invoiceRepository.data[1]).toEqual({
                 id: "1", 
                 accountId: "ac0", 
-                amount: 0, 
+                amount: 1234 - 9809, 
                 closeDate: new Date('2023-03-05'), 
                 dueDate: new Date('2023-03-12'), 
                 userId: "u0",
