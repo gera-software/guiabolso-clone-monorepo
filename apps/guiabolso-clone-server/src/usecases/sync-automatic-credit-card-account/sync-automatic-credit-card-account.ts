@@ -1,5 +1,5 @@
 import { Either, left, right } from "@/shared";
-import { AccountData, CreditCardInvoiceRepository, FinancialDataProvider, InstitutionRepository, TransactionData, TransactionRepository, UpdateAccountRepository, UseCase, UserData, UserRepository } from "@/usecases/ports";
+import { AccountData, CreditCardInvoiceData, CreditCardInvoiceRepository, FinancialDataProvider, InstitutionRepository, TransactionData, TransactionRepository, UpdateAccountRepository, UseCase, UserData, UserRepository } from "@/usecases/ports";
 import { UnexpectedError, UnregisteredAccountError, UnregisteredInstitutionError } from "@/usecases/errors";
 import { InvalidAccountError, InvalidBalanceError, InvalidCreditCardError, InvalidEmailError, InvalidInstitutionError, InvalidNameError, InvalidPasswordError, InvalidTypeError } from "@/entities/errors";
 import { AccountType, AutomaticCreditCardAccount, Institution, ManualCreditCardAccount, NubankCreditCardInvoiceStrategy, User } from "@/entities";
@@ -11,6 +11,8 @@ export class SyncAutomaticCreditCardAccount implements UseCase {
     private readonly institutionRepo: InstitutionRepository
     private readonly transactionRepo: TransactionRepository
     private readonly invoiceRepo: CreditCardInvoiceRepository
+
+    private readonly invoicesIdLookupTable = new Map<Date, string>();
     
     constructor(accountRepository: UpdateAccountRepository, userRepository: UserRepository, institutionRepository: InstitutionRepository, transactionRepository: TransactionRepository, invoiceRepository: CreditCardInvoiceRepository, financialDataProvider: FinancialDataProvider) {
         this.accountRepo = accountRepository
@@ -66,7 +68,11 @@ export class SyncAutomaticCreditCardAccount implements UseCase {
         return right(accountOrError.value as AutomaticCreditCardAccount)
     }
 
-    private async findOrCreateInvoice(invoiceDueDate: Date, invoiceClosingDate: Date, accountData: AccountData) {
+    private async getInvoiceId(invoiceDueDate: Date, invoiceClosingDate: Date, accountData: AccountData) {
+        if(this.invoicesIdLookupTable.has(invoiceDueDate)) {
+            return this.invoicesIdLookupTable.get(invoiceDueDate)
+        }
+
         let invoiceData = await this.invoiceRepo.findByDueDate(invoiceDueDate, accountData.id)
         if(!invoiceData) {
             invoiceData = await this.invoiceRepo.add({
@@ -79,7 +85,8 @@ export class SyncAutomaticCreditCardAccount implements UseCase {
             })
         }
 
-        return invoiceData
+        this.invoicesIdLookupTable.set(invoiceDueDate, invoiceData.id)
+        return invoiceData.id
     }
     
     async perform(accountId: string): Promise<any> {
@@ -135,7 +142,7 @@ export class SyncAutomaticCreditCardAccount implements UseCase {
         for(let i = 0; i < transactionRequests.length; i++) {
             const transaction = transactionRequests[i]
             const { invoiceDueDate, invoiceClosingDate } = creditCardAccount.calculateInvoiceDatesFromTransaction(transaction.date)
-            const { id: invoiceId } = await this.findOrCreateInvoice(invoiceDueDate, invoiceClosingDate, foundAccountData)
+            const invoiceId = await this.getInvoiceId(invoiceDueDate, invoiceClosingDate, foundAccountData)
 
             transactionsData.push({
                 id: transaction.id,

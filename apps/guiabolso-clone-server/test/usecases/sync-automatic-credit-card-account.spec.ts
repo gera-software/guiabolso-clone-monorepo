@@ -222,16 +222,6 @@ describe('Sync automatic credit card account use case', () => {
                 providerId: 'valid-transaction-id2',
             }
 
-            // const invoice0: CreditCardInvoiceData = {
-            //     id: 'invoice2023-02-12',
-            //     closeDate: new Date('2023-02-05'),
-            //     dueDate: new Date('2023-02-12'),
-            //     amount: 0,
-            //     userId,
-            //     accountId,
-            //     _isDeleted: false
-            // }
-    
             const dataProvider = new InMemoryPluggyDataProvider({accounts: [ providerAccountData1 ], transactions: [transaction0, transaction1, transaction2]})
             const accountRepository = new InMemoryAccountRepository([creditCardAccountData])
             const institutionRepository = new InMemoryInstitutionRepository([institution])
@@ -284,8 +274,27 @@ describe('Sync automatic credit card account use case', () => {
                 userId,
                 providerId: transaction2.providerId,
             })
+
+            expect(invoiceRepository.data).toHaveLength(2)
+            expect(invoiceRepository.data[0]).toEqual({
+                id: "0", 
+                accountId: "ac0", 
+                amount: 0, 
+                closeDate: new Date('2023-02-05'), 
+                dueDate: new Date('2023-02-12'), 
+                userId: "u0",
+                _isDeleted: false,
+            })
+            expect(invoiceRepository.data[1]).toEqual({
+                id: "1", 
+                accountId: "ac0", 
+                amount: 0, 
+                closeDate: new Date('2023-03-05'), 
+                dueDate: new Date('2023-03-12'), 
+                userId: "u0",
+                _isDeleted: false,
+            })
         })
 
-        test.todo('should update or insert all invoices?')
     })
 })
