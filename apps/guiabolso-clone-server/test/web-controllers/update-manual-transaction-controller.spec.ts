@@ -4,7 +4,6 @@ import { UpdateManualTransactionFromBank } from "@/usecases/update-manual-transa
 import { UpdateManualTransactionFromCreditCard } from "@/usecases/update-manual-transaction-from-credit-card"
 import { UpdateManualTransactionFromWallet } from "@/usecases/update-manual-transaction-from-wallet"
 import { UpdateManualTransactionController } from "@/web-controllers"
-import { MissingParamError } from "@/web-controllers/errors"
 import { HttpRequest, HttpResponse } from "@/web-controllers/ports"
 import { InMemoryAccountRepository, InMemoryCategoryRepository, InMemoryCreditCardInvoiceRepository, InMemoryTransactionRepository, InMemoryUserRepository } from "@test/doubles/repositories"
 import { ErrorThrowingUseCaseStub } from "@test/doubles/usecases"
@@ -119,7 +118,7 @@ describe('Update manual transaction web controller', () => {
         const sut = new UpdateManualTransactionController(usecase)
         const response: HttpResponse = await sut.handle(invalidRequest)
         expect(response.statusCode).toEqual(400)
-        expect(response.body as Error).toBeInstanceOf(MissingParamError)
+        expect(response.body.name).toBe('MissingParamError')
         expect(response.body.message).toBe("Missing parameters from request: id, accountId, amount, date, description.")
     })
 

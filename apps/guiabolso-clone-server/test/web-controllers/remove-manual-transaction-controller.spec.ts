@@ -4,7 +4,6 @@ import { RemoveManualTransactionFromBank } from "@/usecases/remove-manual-transa
 import { RemoveManualTransactionFromCreditCard } from "@/usecases/remove-manual-transaction-from-credit-card"
 import { RemoveManualTransactionFromWallet } from "@/usecases/remove-manual-transaction-from-wallet"
 import { RemoveManualTransactionController } from "@/web-controllers"
-import { MissingParamError } from "@/web-controllers/errors"
 import { HttpRequest, HttpResponse } from "@/web-controllers/ports"
 import { InMemoryAccountRepository, InMemoryCreditCardInvoiceRepository, InMemoryTransactionRepository, InMemoryUserRepository } from "@test/doubles/repositories"
 import { ErrorThrowingUseCaseStub } from "@test/doubles/usecases"
@@ -102,7 +101,7 @@ describe('Remove manual transaction web controller', () => {
         const sut = new RemoveManualTransactionController(usecase)
         const response: HttpResponse = await sut.handle(invalidRequest)
         expect(response.statusCode).toEqual(400)
-        expect(response.body as Error).toBeInstanceOf(MissingParamError)
+        expect(response.body.name).toBe('MissingParamError')
         expect(response.body.message).toBe("Missing parameters from request: id.")
 
     })

@@ -4,7 +4,6 @@ import { CreateAutomaticCreditCardAccount } from "@/usecases/create-automatic-cr
 import { DataProviderError, UnexpectedError } from "@/usecases/errors"
 import { BankAccountData, CategoryData, CreditCardAccountData, CreditCardInfoData, InstitutionData, UseCase, UserData } from "@/usecases/ports"
 import { ConnectAutomaticAccountsController } from "@/web-controllers"
-import { MissingParamError } from "@/web-controllers/errors"
 import { HttpResponse } from "@/web-controllers/ports"
 import { ErrorPluggyDataProvider, InMemoryPluggyDataProvider } from "@test/doubles/financial-data-provider"
 import { InMemoryAccountRepository, InMemoryInstitutionRepository, InMemoryUserRepository } from "@test/doubles/repositories"
@@ -32,7 +31,7 @@ describe('Connect automatic accounts web controller', () => {
 
         const response: HttpResponse = await sut.handle(invalidRequest)
         expect(response.statusCode).toEqual(400)
-        expect(response.body as Error).toBeInstanceOf(MissingParamError)
+        expect(response.body.name).toBe('MissingParamError')
         expect(response.body.message).toBe("Missing parameters from request: itemId, userId.")
 
     })

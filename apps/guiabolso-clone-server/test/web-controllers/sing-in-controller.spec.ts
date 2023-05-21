@@ -1,9 +1,7 @@
 import { CustomAuthentication } from "@/usecases/authentication"
-import { UserNotFoundError, WrongPasswordError } from "@/usecases/authentication/errors"
 import { AuthenticationResult } from "@/usecases/authentication/ports"
 import { UseCase, UserData } from "@/usecases/ports"
 import { SignIn } from "@/usecases/sign-in"
-import { MissingParamError } from "@/web-controllers/errors"
 import { HttpRequest, HttpResponse } from "@/web-controllers/ports"
 import { SignInController } from "@/web-controllers/sign-in-controller"
 import { FakeTokenManager } from "@test/doubles/authentication"
@@ -48,7 +46,7 @@ describe('Sign In web controller', () => {
 
         const response: HttpResponse = await sut.handle(invalidRequest)
         expect(response.statusCode).toEqual(400)
-        expect(response.body).toBeInstanceOf(MissingParamError)
+        expect(response.body.name).toBe('MissingParamError')
         expect((response.body as Error).message).toEqual('Missing parameters from request: email, password.')
     })
 
@@ -72,7 +70,7 @@ describe('Sign In web controller', () => {
 
         const response: HttpResponse = await sut.handle(invalidRequest)
         expect(response.statusCode).toEqual(403)
-        expect(response.body).toBeInstanceOf(WrongPasswordError)
+        expect(response.body.name).toBe('WrongPasswordError')
     })
 
     test('should return 400 if user is not found', async () => {
@@ -88,7 +86,8 @@ describe('Sign In web controller', () => {
         }
         const response: HttpResponse = await sut.handle(validRequest)
         expect(response.statusCode).toEqual(400)
-        expect(response.body).toBeInstanceOf(UserNotFoundError)
+        
+        expect(response.body.name).toBe('UserNotFoundError')
 
     })
 

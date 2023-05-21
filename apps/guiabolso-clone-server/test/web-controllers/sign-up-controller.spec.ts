@@ -5,8 +5,6 @@ import { SignUpController } from '@/web-controllers/sign-up-controller'
 import { AuthenticationServiceStub } from "@test/doubles/authentication"
 import { FakeEncoder } from "@test/doubles/encoder"
 import { InMemoryUserRepository } from "@test/doubles/repositories"
-import { InvalidEmailError } from "@/entities/errors"
-import { MissingParamError } from "@/web-controllers/errors"
 import { ErrorThrowingUseCaseStub } from "@test/doubles/usecases"
 
 describe('Sign Up web controller', () => {
@@ -48,7 +46,7 @@ describe('Sign Up web controller', () => {
 
         const response: HttpResponse = await sut.handle(invalidRequest)
         expect(response.statusCode).toEqual(400)
-        expect(response.body as Error).toBeInstanceOf(MissingParamError)
+        expect(response.body.name).toBe('MissingParamError')
     })
 
 
@@ -71,7 +69,7 @@ describe('Sign Up web controller', () => {
 
         const response: HttpResponse = await sut.handle(invalidRequest)
         expect(response.statusCode).toEqual(400)
-        expect(response.body as Error).toBeInstanceOf(InvalidEmailError)
+        expect(response.body.name).toBe('InvalidEmailError')
     })
 
     test('should return status code 400 when request contains invalid password', async () => {
@@ -91,7 +89,7 @@ describe('Sign Up web controller', () => {
 
         const response: HttpResponse = await sut.handle(invalidRequest)
         expect(response.statusCode).toEqual(400)
-        expect(response.body as Error).toBeInstanceOf(MissingParamError)
+        expect(response.body.name).toBe('MissingParamError')
     })
 
 
@@ -112,7 +110,7 @@ describe('Sign Up web controller', () => {
 
         const response: HttpResponse = await sut.handle(invalidRequest)
         expect(response.statusCode).toEqual(400)
-        expect(response.body as Error).toBeInstanceOf(MissingParamError)
+        expect(response.body.name).toBe('MissingParamError')
         expect((response.body as Error).message).toEqual('Missing parameters from request: name.')
     })
 
@@ -131,7 +129,7 @@ describe('Sign Up web controller', () => {
 
         const response: HttpResponse = await sut.handle(invalidRequest)
         expect(response.statusCode).toEqual(400)
-        expect(response.body as Error).toBeInstanceOf(MissingParamError)
+        expect(response.body.name).toBe('MissingParamError')
         expect((response.body as Error).message).toEqual('Missing parameters from request: email, password.')
     })
 

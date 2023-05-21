@@ -12,7 +12,10 @@ export const ok = (data: any): HttpResponse => ({
 
 export const badRequest = (data: any): HttpResponse => ({
   statusCode: 400,
-  body: data
+  body: {
+    name: data.name,
+    message: data.message,
+  }
 })
 
 export const forbidden = (data: any): HttpResponse => ({

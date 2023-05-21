@@ -68,7 +68,7 @@ describe('Pluggy Connect Widget - create token controller', () => {
 
         const response: HttpResponse = await sut.handle(validRequest)
         expect(response.statusCode).toEqual(400)
-        expect(response.body).toBeInstanceOf(DataProviderError)
+        expect(response.body.name).toBe('DataProviderError')
     })
 
     test('should return status 500 when server raises', async () => {

@@ -1,7 +1,6 @@
 import { ListInstitutionsByType } from "@/usecases/list-institutions-by-type"
 import { InstitutionData, UseCase } from "@/usecases/ports"
 import { ListInstitutionsByTypeController } from "@/web-controllers"
-import { MissingParamError } from "@/web-controllers/errors"
 import { HttpRequest, HttpResponse } from "@/web-controllers/ports"
 import { InMemoryInstitutionRepository } from "@test/doubles/repositories"
 import { ErrorThrowingUseCaseStub } from "@test/doubles/usecases"
@@ -47,7 +46,7 @@ describe('List institutions by type web controller', () => {
 
         const response: HttpResponse = await sut.handle(invalidRequest)
         expect(response.statusCode).toEqual(400)
-        expect(response.body as Error).toBeInstanceOf(MissingParamError)
+        expect(response.body.name).toBe('MissingParamError')
         expect(response.body.message).toBe("Missing parameters from request: type.")
     })
 

@@ -2,10 +2,8 @@ import { CreateManualAccount } from "@/usecases/create-manual-account"
 import { CreateManualBankAccount } from "@/usecases/create-manual-bank-account"
 import { CreateManualCreditCardAccount } from "@/usecases/create-manual-credit-card-account"
 import { CreateManualWalletAccount } from "@/usecases/create-manual-wallet-account"
-import { UnregisteredUserError } from "@/usecases/errors"
 import { CreditCardInfoData, InstitutionData, UseCase } from "@/usecases/ports"
 import { CreateManualAccountController } from "@/web-controllers"
-import { MissingParamError } from "@/web-controllers/errors"
 import { HttpRequest, HttpResponse } from "@/web-controllers/ports"
 import { InMemoryUserRepository, InMemoryAccountRepository, InMemoryInstitutionRepository } from "@test/doubles/repositories"
 import { ErrorThrowingUseCaseStub } from "@test/doubles/usecases"
@@ -42,7 +40,7 @@ describe('Create manual account web controller', () => {
     
             const response: HttpResponse = await sut.handle(invalidRequest)
             expect(response.statusCode).toEqual(400)
-            expect(response.body as Error).toBeInstanceOf(MissingParamError)
+            expect(response.body.name).toBe('MissingParamError')
             expect(response.body.message).toBe("Missing parameters from request: type, userId, name, balance.")
         })
     
@@ -96,7 +94,7 @@ describe('Create manual account web controller', () => {
     
             const response: HttpResponse = await sut.handle(invalidRequest)
             expect(response.statusCode).toEqual(400)
-            expect(response.body as Error).toBeInstanceOf(UnregisteredUserError)
+            expect(response.body.name).toBe('UnregisteredUserError')
         })
     
         test('should return status code 500 when server raises', async () => {
@@ -158,7 +156,7 @@ describe('Create manual account web controller', () => {
     
             const response: HttpResponse = await sut.handle(invalidRequest)
             expect(response.statusCode).toEqual(400)
-            expect(response.body as Error).toBeInstanceOf(MissingParamError)
+            expect(response.body.name).toBe('MissingParamError')
             expect(response.body.message).toBe("Missing parameters from request: type, userId, name, balance.")
         })
     
@@ -219,7 +217,7 @@ describe('Create manual account web controller', () => {
     
             const response: HttpResponse = await sut.handle(invalidRequest)
             expect(response.statusCode).toEqual(400)
-            expect(response.body as Error).toBeInstanceOf(UnregisteredUserError)
+            expect(response.body.name).toBe('UnregisteredUserError')
         })
     
         test('should return status code 500 when server raises', async () => {
@@ -288,7 +286,7 @@ describe('Create manual account web controller', () => {
     
             const response: HttpResponse = await sut.handle(invalidRequest)
             expect(response.statusCode).toEqual(400)
-            expect(response.body as Error).toBeInstanceOf(MissingParamError)
+            expect(response.body.name).toBe('MissingParamError')
             expect(response.body.message).toBe("Missing parameters from request: userId, name, balance, creditCardInfo.")
         })
     
@@ -360,7 +358,7 @@ describe('Create manual account web controller', () => {
     
             const response: HttpResponse = await sut.handle(invalidRequest)
             expect(response.statusCode).toEqual(400)
-            expect(response.body as Error).toBeInstanceOf(UnregisteredUserError)
+            expect(response.body.name).toBe('UnregisteredUserError')
         })
     
         test('should return status code 500 when server raises', async () => {
