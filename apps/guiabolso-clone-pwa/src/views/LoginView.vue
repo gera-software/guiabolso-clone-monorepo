@@ -5,7 +5,8 @@
     </div>
     <div class="container">
       <button class="button" @click="openNetlifyModal">Começar</button>
-      v{{ version }} - {{ node_env }}
+      <a href="" class="link">já sou cadastrado</a>
+      <span class="version">v{{ version }} - {{ node_env }}</span>
     </div>
   </div>
 </template>
@@ -87,5 +88,24 @@ onMounted(async () => {
 .button.button-outline {
   background-color: transparent;
   color: #F9386A;
+}
+
+.link {
+  color: #F9386A;
+  text-decoration: none;
+  font-family: 'Open Sans';
+  font-size: 20px;
+  font-weight: 600;
+  text-align: center;
+  padding: 12px 16px;
+}
+
+.version {
+  font-size: .8em;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  margin-right: 30px;
+  margin-bottom: 7px;
 }
 </style>

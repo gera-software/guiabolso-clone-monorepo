@@ -6,7 +6,7 @@
     "apps/*"
   ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "turbo run test",
     "dev": "turbo run dev --no-cache --parallel --continue",
     "build": "turbo run build",
     "changeset-create": "changeset",

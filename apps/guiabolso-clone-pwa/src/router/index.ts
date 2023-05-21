@@ -34,7 +34,7 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      name: 'login',
+      name: 'index',
       component: LoginView,
     },
     {
@@ -127,8 +127,8 @@ router.beforeEach((to, from) => {
 
   // return false
     console.log(to.name, isAuthenticated())
-  if(!isAuthenticated() && to.name !== 'login') {
-    return { name: 'login' }
+  if(!isAuthenticated() && to.name !== 'index') {
+    return { name: 'index' }
   }
 })
 
