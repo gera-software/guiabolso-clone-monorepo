@@ -94,6 +94,7 @@ export const useUserStore = defineStore('user', () => {
     function tokenIsValid() {
         if(user.value.token.access_token) {
             console.log('token is valid', user.value)
+            // TODO verify expiration time of token
             console.log((new Date()).getTime() < (new Date(user.value.token.expires_at)).getTime())
             return true
         } 
@@ -106,6 +107,7 @@ export const useUserStore = defineStore('user', () => {
         logout,
         openModal,
         tokenIsValid,
+        setUser,
     }
   
 })

@@ -2,21 +2,23 @@
   <div class="page">
     <AppBar title="Login" />
     <div class="container">
-      <form>
-        <div class="form-group">
-          <input class="form-input" type="email" placeholder="E-mail" required>
+      <form @submit.prevent="handleSubmit">
+        <div class="alert" v-show="errorMessage">
+          {{ errorMessage }}
         </div>
         <div class="form-group">
-          <input class="form-input" type="password" placeholder="Senha" required>
+          <input class="form-input" type="email" placeholder="E-mail" required v-model="form.email">
+        </div>
+        <div class="form-group">
+          <input class="form-input" type="password" placeholder="Senha" v-model="form.password">
         </div>
         <div class="form-group">
           <a href="#" class="link">Esqueceu a sua senha?</a>
         </div>
         
-        
         <div class="bottom">
           <div class="form-group">
-            <button type="submit" class="button">Entrar</button>
+            <button type="submit" class="button" :disabled="loading">Entrar</button>
           </div>
           <div class="form-group">
             <span>
@@ -29,10 +31,11 @@
   </div>
 </template>
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useUserStore } from '../stores/userStore';
 import AppBar from '@/components/AppBar.vue'
+import api from '../config/axios.js'
 
 
 const router = useRouter()
@@ -47,7 +50,41 @@ const userStore = useUserStore()
 //   }
 // })
 
+const form = ref({
+    email: '',
+    password: '',
+})
 
+const loading = ref(false)
+
+const errorMessage = ref('')
+
+async function handleSubmit() {
+  loading.value = true
+  const payload = {
+    email: form.value.email,
+    password: form.value.password,
+  }
+  console.log('handle submit', payload)
+  await fazerLogin(payload)
+  loading.value = false
+}
+
+async function fazerLogin(payload: any) : Promise<any> {
+    errorMessage.value = ''
+    console.log('fazer login', payload)
+    return api.guiabolsoServer({
+        method: 'post',
+        url: '/signin',
+        data: payload,
+    }).then((response) => {
+        console.log(response)
+        return response.data
+    }).catch(function (error) {
+      console.error(error.response);
+      errorMessage.value = error.response?.data.message ?? 'Ocorreu um erro inesperado'
+    })
+}
 
 onMounted(async () => {
   if(userStore.tokenIsValid()) {
@@ -152,6 +189,15 @@ form {
   font-weight: 600;
   /* text-align: center; */
   /* padding: 12px 16px; */
+}
+
+.alert {
+  margin: 15px;
+  padding: 15px;
+  background-color: red;
+  color: white;
+  border-radius: 4px;
+  font-size: .8em;
 }
 
 </style>

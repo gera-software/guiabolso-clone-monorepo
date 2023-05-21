@@ -7,7 +7,7 @@ const guiabolsoApi = axios.create({
 });
 
 const guiabolsoServer = axios.create({
-    baseURL: import.meta.env.VITE_SERVER_URL ?? '',
+    baseURL: import.meta.env.VITE_SERVER_URL + '/api' ?? '',
     // timeout: 10000,
   //   headers: {'X-Custom-Header': 'CustomHeader1'}
 });
