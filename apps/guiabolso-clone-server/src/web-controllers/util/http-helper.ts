@@ -20,7 +20,10 @@ export const badRequest = (data: any): HttpResponse => ({
 
 export const forbidden = (data: any): HttpResponse => ({
   statusCode: 403,
-  body: data
+  body: {
+    name: data.name,
+    message: data.message,
+  }
 })
 
 export const serverError = (data: any): HttpResponse => ({
