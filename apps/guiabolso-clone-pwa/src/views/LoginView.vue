@@ -2,7 +2,29 @@
   <div class="page">
     <AppBar title="Login" />
     <div class="container">
-      <h1>login</h1>
+      <form>
+        <div class="form-group">
+          <input class="form-input" type="email" placeholder="E-mail" required>
+        </div>
+        <div class="form-group">
+          <input class="form-input" type="password" placeholder="Senha" required>
+        </div>
+        <div class="form-group">
+          <a href="#" class="link">Esqueceu a sua senha?</a>
+        </div>
+        
+        
+        <div class="bottom">
+          <div class="form-group">
+            <button type="submit" class="button">Entrar</button>
+          </div>
+          <div class="form-group">
+            <span>
+              Primeira vez aqui? <a href="#" class="link">Cadastre-se</a>
+            </span>
+          </div>
+        </div>
+      </form>
     </div>
   </div>
 </template>
@@ -40,7 +62,64 @@ onMounted(async () => {
 
 .container {
     padding-top: 57px;
-    padding-bottom: 80px;
+    /* padding-bottom: 80px; */
+    display: flex;
+    width: 100%;
+    min-height: 100%;
+    align-items: center;
+}
+
+.bottom {
+  margin-top: 70px;
+}
+
+form {
+  width: 100%;
+}
+
+.form-group {
+    /* background-color: blue; */
+    padding: 18px 15px;
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group .form-label {
+    /* background-color: green; */
+    font-family: 'Open Sans';
+    font-size: 18px;
+    font-weight: 600;
+    text-align: left;
+    color: #404040;
+    margin-bottom: 16px;
+
+}
+
+.form-input {
+    /* background-color: blueviolet; */
+    font-family: 'Open Sans';
+    font-size: 20px;
+    font-weight: 400;
+    text-align: left;
+    color: #404040;
+    border: none;
+    border-bottom: 1px solid black;
+    background-color: transparent;
+    padding: 8px 0;
+    width: 100%;
+}
+
+.form-input.input-red {
+  color: red;
+}
+
+.form-info {
+  color: #404040;
+  font-family: 'Open Sans';
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.5;
+  margin: 5px 0;
 }
 
 .button {
@@ -61,22 +140,18 @@ onMounted(async () => {
   color: #F9386A;
 }
 
+.button:disabled, .button.disabled {
+    opacity: .35;
+}
+
 .link {
   color: #F9386A;
   text-decoration: none;
   font-family: 'Open Sans';
   font-size: 20px;
   font-weight: 600;
-  text-align: center;
-  padding: 12px 16px;
+  /* text-align: center; */
+  /* padding: 12px 16px; */
 }
 
-.version {
-  font-size: .8em;
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  margin-right: 30px;
-  margin-bottom: 7px;
-}
 </style>
