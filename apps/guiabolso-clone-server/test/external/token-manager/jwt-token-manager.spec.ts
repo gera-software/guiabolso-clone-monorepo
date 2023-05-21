@@ -1,5 +1,5 @@
 import { JwtTokenManager } from "@/external/token-manager"
-import { Payload, PayloadRequest, PayloadResponse } from "@/usecases/authentication/ports"
+import { PayloadRequest, PayloadResponse } from "@/usecases/authentication/ports"
 import { TokenExpiredError } from "jsonwebtoken"
 import * as sinon from 'sinon'
 

@@ -1,5 +1,5 @@
 import { Either, left, right } from "@/shared";
-import { Payload, PayloadRequest, PayloadResponse, TokenManager } from "@/usecases/authentication/ports";
+import { PayloadRequest, PayloadResponse, TokenManager } from "@/usecases/authentication/ports";
 
 export class FakeTokenManager implements TokenManager {
 

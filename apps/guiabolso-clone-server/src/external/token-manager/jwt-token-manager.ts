@@ -1,5 +1,5 @@
 import { Either, left, right } from "@/shared";
-import { Payload, PayloadRequest, PayloadResponse, TokenManager } from "@/usecases/authentication/ports";
+import { PayloadRequest, PayloadResponse, TokenManager } from "@/usecases/authentication/ports";
 import * as jwt from 'jsonwebtoken'
 
 export class JwtTokenManager implements TokenManager {
