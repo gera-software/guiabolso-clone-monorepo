@@ -10,7 +10,7 @@
           <input class="form-input" type="email" placeholder="E-mail" required v-model="form.email">
         </div>
         <div class="form-group">
-          <input class="form-input" type="password" placeholder="Senha" v-model="form.password">
+          <input class="form-input" type="password" placeholder="Senha" required v-model="form.password">
         </div>
         <div class="form-group">
           <a href="#" class="link">Esqueceu a sua senha?</a>
