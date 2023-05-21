@@ -1,4 +1,4 @@
-import { PayloadResponse, TokenManager } from "@/usecases/authentication/ports";
+import { Payload, TokenManager } from "@/usecases/authentication/ports";
 import { Middleware } from "@/web-controllers/middlewares/ports";
 import { HttpResponse } from "@/web-controllers/ports";
 import { forbidden, ok, serverError } from "@/web-controllers/util";
@@ -24,7 +24,7 @@ export class Authentication implements Middleware {
                 return forbidden(new Error('Invalid token.'))
             }
             
-            const payload = payloadOrError.value as PayloadResponse
+            const payload = payloadOrError.value as Payload
             // if(payload.id != requesterId) {
             //     return forbidden(new Error('User not allowed to perform this operation.'))
                 

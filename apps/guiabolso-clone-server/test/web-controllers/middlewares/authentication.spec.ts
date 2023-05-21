@@ -2,7 +2,7 @@ import { HttpResponse } from "@/web-controllers/ports"
 import { FakeTokenManager, ThrowingFakeTokenManager } from "@test/doubles/authentication"
 import { forbidden, ok, serverError } from '@/web-controllers/util'
 import { Authentication } from "@/web-controllers/middlewares"
-import { PayloadRequest } from "@/usecases/authentication/ports"
+import { PayloadData } from "@/usecases/authentication/ports"
 
 describe('Authentication middleware', () => {
     test('should return forbidden with invalid token error if access token is empty', async () => {
@@ -19,7 +19,7 @@ describe('Authentication middleware', () => {
 
     test('should return forbidden with invalid token error if access token is invalid', async () => {
         const tokenManager = new FakeTokenManager()
-        const payload: PayloadRequest = { 
+        const payload: PayloadData = { 
             id: 'my id',
             name: 'any name',
             email: 'any@email.com'
@@ -33,7 +33,7 @@ describe('Authentication middleware', () => {
 
     test.skip('should return forbidden if id on access token is different from requester id', async () => {
         const tokenManager = new FakeTokenManager()
-        const payload: PayloadRequest = { 
+        const payload: PayloadData = { 
             id: 'my id',
             name: 'any name',
             email: 'any@email.com'
@@ -46,7 +46,7 @@ describe('Authentication middleware', () => {
 
     test('should return payload if access token is valid', async () => {
         const tokenManager = new FakeTokenManager()
-        const payload: PayloadRequest = { 
+        const payload: PayloadData = { 
             id: 'my id',
             name: 'fake name',
             email: 'fake@mail.com'
@@ -63,7 +63,7 @@ describe('Authentication middleware', () => {
 
     test('should return server error if server throws', async () => {
         const tokenManager = new ThrowingFakeTokenManager()
-        const payload: PayloadRequest = { 
+        const payload: PayloadData = { 
             id: 'my id',
             name: 'any name',
             email: 'any@email.com'

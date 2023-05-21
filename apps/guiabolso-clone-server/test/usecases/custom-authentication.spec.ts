@@ -1,6 +1,6 @@
 import { CustomAuthentication } from "@/usecases/authentication"
 import { UserNotFoundError, WrongPasswordError } from "@/usecases/authentication/errors"
-import { AuthenticationResult, AuthenticationParams, PayloadResponse } from "@/usecases/authentication/ports"
+import { AuthenticationResult, AuthenticationParams, Payload } from "@/usecases/authentication/ports"
 import { Encoder } from "@/usecases/ports"
 import { FakeTokenManager } from "@test/doubles/authentication"
 import { FakeEncoder } from "@test/doubles/encoder"
@@ -29,7 +29,7 @@ describe('Custom authentication', () => {
         const result = (await authentication.auth(validSignInRequest)).value as AuthenticationResult
 
         expect(result.accessToken).toBeDefined()
-        const verification = (await fakeTokenManager.verify(result.accessToken)).value as PayloadResponse
+        const verification = (await fakeTokenManager.verify(result.accessToken)).value as Payload
         expect(result.data).toEqual(verification.data)
         expect(result.exp).toEqual(verification.exp)
         expect(result.iat).toEqual(verification.iat)

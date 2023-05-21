@@ -1,5 +1,5 @@
 import { JwtTokenManager } from "@/external/token-manager"
-import { PayloadRequest, PayloadResponse } from "@/usecases/authentication/ports"
+import { PayloadData, Payload } from "@/usecases/authentication/ports"
 import { TokenExpiredError } from "jsonwebtoken"
 import * as sinon from 'sinon'
 
@@ -8,7 +8,7 @@ describe('JWT token manager', () => {
         const secret = 'my secret'
         const tokenManager = new JwtTokenManager(secret)
 
-        const info: PayloadRequest = {
+        const info: PayloadData = {
             id: 'my id',
             name: 'user name',
             email: 'email@email.com',
@@ -18,7 +18,7 @@ describe('JWT token manager', () => {
         expect(signedToken).not.toEqual(info)
         expect(response.isRight()).toBeTruthy()
 
-        const result = response.value as PayloadResponse
+        const result = response.value as Payload
         expect(result.data).toEqual(info)
         expect(result.exp).toBeDefined()
         expect(result).toHaveProperty('iat') // issued at (creation date)
@@ -27,7 +27,7 @@ describe('JWT token manager', () => {
     test('should correctly verify invalid json web token', async () => {
       const secret = 'my secret'
       const tokenManager = new JwtTokenManager(secret)
-      const info: PayloadRequest = {
+      const info: PayloadData = {
         id: 'my id',
         name: 'user name',
         email: 'email@email.com',
@@ -41,7 +41,7 @@ describe('JWT token manager', () => {
       const clock = sinon.useFakeTimers()
       const secret = 'my secret'
       const tokenManager = new JwtTokenManager(secret)
-      const info: PayloadRequest = {
+      const info: PayloadData = {
         id: 'my id',
         name: 'user name',
         email: 'email@email.com',
@@ -53,7 +53,7 @@ describe('JWT token manager', () => {
       expect(signedToken).not.toEqual(info)
 
       expect(response.isRight()).toBeTruthy()
-      const result = response.value as PayloadResponse
+      const result = response.value as Payload
       expect(result.data).toEqual(info)
       clock.restore()
     })
@@ -62,7 +62,7 @@ describe('JWT token manager', () => {
       const clock = sinon.useFakeTimers()
       const secret = 'my secret'
       const tokenManager = new JwtTokenManager(secret)
-      const info: PayloadRequest = {
+      const info: PayloadData = {
         id: 'my id',
         name: 'user name',
         email: 'email@email.com',
@@ -82,7 +82,7 @@ describe('JWT token manager', () => {
       const clock = sinon.useFakeTimers()
       const secret = 'my secret'
       const tokenManager = new JwtTokenManager(secret)
-      const info: PayloadRequest = {
+      const info: PayloadData = {
         id: 'my id',
         name: 'user name',
         email: 'email@email.com',
