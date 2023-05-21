@@ -4,7 +4,7 @@
   
     </div>
     <div class="container">
-      <button class="button" @click="openNetlifyModal">Começar</button>
+      <button class="button">Começar</button>
       <router-link class="link" :to="{ name: 'login'}">Já sou cadastrado</router-link>
       <span class="version">v{{ version }} - {{ node_env }}</span>
     </div>
@@ -22,18 +22,6 @@ const userStore = useUserStore()
 // @ts-ignore
 const version: string = __APP_VERSION__;
 const node_env: string = import.meta.env.VITE_APP_MODE
-
-userStore.$subscribe((mutation, state) => {
-  console.log('MUTATED STATE', state)
-  if(state.user._id) {
-    router.push({ name: 'dashboard'})
-  }
-})
-
-function openNetlifyModal() {
-  userStore.openModal()
-
-}
 
 onMounted(async () => {
   if(userStore.tokenIsValid()) {

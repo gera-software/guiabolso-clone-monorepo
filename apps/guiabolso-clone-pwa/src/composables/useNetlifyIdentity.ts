@@ -1,3 +1,7 @@
+/**
+ * @deprecated
+ */
+
 import netlifyIdentity from 'netlify-identity-widget';
 
 

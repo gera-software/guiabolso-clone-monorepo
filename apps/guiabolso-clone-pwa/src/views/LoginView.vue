@@ -43,12 +43,12 @@ const router = useRouter()
 const userStore = useUserStore()
 
 
-// userStore.$subscribe((mutation, state) => {
-//   console.log('MUTATED STATE', state)
-//   if(state.user._id) {
-//     router.push({ name: 'dashboard'})
-//   }
-// })
+userStore.$subscribe((mutation, state) => {
+  console.log('MUTATED STATE', state)
+  if(state.user.accessToken) {
+    router.push({ name: 'dashboard'})
+  }
+})
 
 const form = ref({
     email: '',
@@ -65,20 +65,19 @@ async function handleSubmit() {
     email: form.value.email,
     password: form.value.password,
   }
-  console.log('handle submit', payload)
   await fazerLogin(payload)
   loading.value = false
 }
 
 async function fazerLogin(payload: any) : Promise<any> {
     errorMessage.value = ''
-    console.log('fazer login', payload)
     return api.guiabolsoServer({
         method: 'post',
         url: '/signin',
         data: payload,
     }).then((response) => {
         console.log(response)
+        userStore.setUser(response.data)
         return response.data
     }).catch(function (error) {
       console.error(error.response);
