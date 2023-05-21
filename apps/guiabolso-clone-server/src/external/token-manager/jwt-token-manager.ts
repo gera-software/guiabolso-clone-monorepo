@@ -1,5 +1,5 @@
 import { Either, left, right } from "@/shared";
-import { PayloadRequest, PayloadResponse, TokenManager } from "@/usecases/authentication/ports";
+import { PayloadRequest, PayloadResponse, TokenManager, TimeInSeconds } from "@/usecases/authentication/ports";
 import * as jwt from 'jsonwebtoken'
 
 export class JwtTokenManager implements TokenManager {
@@ -15,7 +15,7 @@ export class JwtTokenManager implements TokenManager {
      * @param expiresIn expiration time in seconds
      * @returns 
      */
-    async sign(info: PayloadRequest, expiresIn: number = 60 * 60 * 24 * 30): Promise<string> {
+    async sign(info: PayloadRequest, expiresIn: TimeInSeconds = 60 * 60 * 24 * 30): Promise<string> {
         return jwt.sign({ data: info }, this.secret, { expiresIn })
     }
 

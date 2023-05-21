@@ -12,7 +12,9 @@ export type PayloadResponse = {
     iat: number,
 }
 
+export type TimeInSeconds = number
+
 export interface TokenManager {
-    sign(info: PayloadRequest, expiresIn?: number): Promise<string>
+    sign(info: PayloadRequest, expiresIn?: TimeInSeconds): Promise<string>
     verify(token: string): Promise<Either<Error, PayloadResponse>>
 }

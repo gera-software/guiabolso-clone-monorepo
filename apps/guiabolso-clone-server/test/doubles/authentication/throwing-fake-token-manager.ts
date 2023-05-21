@@ -1,8 +1,8 @@
 import { Either } from "@/shared"
-import { PayloadRequest, PayloadResponse, TokenManager } from "@/usecases/authentication/ports"
+import { PayloadRequest, PayloadResponse, TokenManager, TimeInSeconds } from "@/usecases/authentication/ports"
 
 export class ThrowingFakeTokenManager implements TokenManager {
-    async sign (info: PayloadRequest, expiresIn?: number): Promise<string> {
+    async sign (info: PayloadRequest, expiresIn?: TimeInSeconds): Promise<string> {
       return 'a token'
     }
 
