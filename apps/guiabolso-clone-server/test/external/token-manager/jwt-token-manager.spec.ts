@@ -1,5 +1,5 @@
 import { JwtTokenManager } from "@/external/token-manager"
-import { Payload } from "@/usecases/authentication/ports"
+import { Payload, PayloadRequest, PayloadResponse } from "@/usecases/authentication/ports"
 import { TokenExpiredError } from "jsonwebtoken"
 import * as sinon from 'sinon'
 
@@ -8,60 +8,73 @@ describe('JWT token manager', () => {
         const secret = 'my secret'
         const tokenManager = new JwtTokenManager(secret)
 
-        const info: Payload = {
-          data: {
+        const info: PayloadRequest = {
             id: 'my id',
             name: 'user name',
             email: 'email@email.com',
-          },
-          // 1 hour expiration
-          exp: Math.floor(Date.now() / 1000) + (60 * 60),
          }
         const signedToken = await tokenManager.sign(info)
         const response = await tokenManager.verify(signedToken)
         expect(signedToken).not.toEqual(info)
         expect(response.isRight()).toBeTruthy()
 
-        const result = response.value as Payload
-        expect(result.data).toEqual(info.data)
-        expect(result.exp).toEqual(info.exp)
+        const result = response.value as PayloadResponse
+        expect(result.data).toEqual(info)
+        expect(result.exp).toBeDefined()
         expect(result).toHaveProperty('iat') // issued at (creation date)
     })
 
     test('should correctly verify invalid json web token', async () => {
       const secret = 'my secret'
       const tokenManager = new JwtTokenManager(secret)
-      const info: Payload = { id: 'my id' }
+      const info: PayloadRequest = {
+        id: 'my id',
+        name: 'user name',
+        email: 'email@email.com',
+     }
       const signedToken = await tokenManager.sign(info)
       const invalidToken = signedToken + 'some trash'
       expect((await tokenManager.verify(invalidToken)).isLeft()).toBeTruthy()
     })
 
-    test.skip('should correctly verify default expiration of json web tokens - not expired', async () => {
+    test('should correctly verify default expiration of json web tokens - not expired', async () => {
       const clock = sinon.useFakeTimers()
       const secret = 'my secret'
       const tokenManager = new JwtTokenManager(secret)
-      const info: Payload = { id: 'my id' }
+      const info: PayloadRequest = {
+        id: 'my id',
+        name: 'user name',
+        email: 'email@email.com',
+     }
       const signedToken = await tokenManager.sign(info)
       const twentyNineDays: number = 3600100 * 24 * 29
       clock.tick(twentyNineDays)
       const response = await tokenManager.verify(signedToken)
       expect(signedToken).not.toEqual(info)
-      expect(response).toHaveProperty('value.id')
+
       expect(response.isRight()).toBeTruthy()
+      const result = response.value as PayloadResponse
+      expect(result.data).toEqual(info)
       clock.restore()
     })
   
-    test.skip('should correctly verify default expiration of json web tokens - expired', async () => {
+    test('should correctly verify default expiration of json web tokens - expired', async () => {
       const clock = sinon.useFakeTimers()
       const secret = 'my secret'
       const tokenManager = new JwtTokenManager(secret)
-      const info: Payload = { id: 'my id' }
+      const info: PayloadRequest = {
+        id: 'my id',
+        name: 'user name',
+        email: 'email@email.com',
+     }
       const signedToken = await tokenManager.sign(info)
       const thirtyOneDays: number = 3600100 * 24 * 31
       clock.tick(thirtyOneDays)
       expect(signedToken).not.toEqual(info)
-      expect(((await (tokenManager.verify(signedToken))).value)).toBeInstanceOf(TokenExpiredError)
+
+      const response = await tokenManager.verify(signedToken)
+      expect(response.isLeft()).toBeTruthy()
+      expect(response.value).toBeInstanceOf(TokenExpiredError)
       clock.restore()
     })
 
@@ -69,12 +82,15 @@ describe('JWT token manager', () => {
       const clock = sinon.useFakeTimers()
       const secret = 'my secret'
       const tokenManager = new JwtTokenManager(secret)
-      const info: Payload = { 
+      const info: PayloadRequest = {
         id: 'my id',
-        // 1 hour expiration
-        exp: Math.floor(Date.now() / 1000) + (60 * 60),
-       }
-      const signedToken = await tokenManager.sign(info)
+        name: 'user name',
+        email: 'email@email.com',
+      // 1 hour expiration
+      // exp: Math.floor(Date.now() / 1000) + (60 * 60),
+     }
+      const oneHour = 60 * 60
+      const signedToken = await tokenManager.sign(info, oneHour)
       // more than one hour has passed
       clock.tick(3600100)
       expect(signedToken).not.toEqual(info)

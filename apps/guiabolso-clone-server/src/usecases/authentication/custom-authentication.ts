@@ -1,6 +1,6 @@
 import { Either, left, right } from "@/shared";
 import { UserNotFoundError, WrongPasswordError } from "@/usecases/authentication/errors";
-import { AuthenticationParams, AuthenticationResult, TokenManager } from "@/usecases/authentication/ports";
+import { AuthenticationParams, AuthenticationResult, PayloadRequest, TokenManager } from "@/usecases/authentication/ports";
 import { Encoder, UserRepository } from "@/usecases/ports";
 import { AuthenticationService } from "@/usecases/authentication/ports";
 
@@ -25,7 +25,12 @@ export class CustomAuthentication implements AuthenticationService {
 
         const matches = await this.encoder.compare(request.password, userFound.password)
         if(matches) {
-            const accessToken = await this.tokenManager.sign({ id: userFound.id ?? ''})
+            const payload: PayloadRequest = {
+                id: userFound.id,
+                name: userFound.name,
+                email: userFound.email,
+            }
+            const accessToken = await this.tokenManager.sign(payload)
             return right({
                 id: userFound.id ?? '',
                 accessToken,

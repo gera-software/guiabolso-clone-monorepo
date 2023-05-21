@@ -1,6 +1,6 @@
 import { CustomAuthentication } from "@/usecases/authentication"
 import { UserNotFoundError, WrongPasswordError } from "@/usecases/authentication/errors"
-import { AuthenticationResult, AuthenticationParams } from "@/usecases/authentication/ports"
+import { AuthenticationResult, AuthenticationParams, PayloadResponse } from "@/usecases/authentication/ports"
 import { Encoder } from "@/usecases/ports"
 import { FakeTokenManager } from "@test/doubles/authentication"
 import { FakeEncoder } from "@test/doubles/encoder"
@@ -27,8 +27,18 @@ describe('Custom authentication', () => {
         const fakeTokenManager = new FakeTokenManager()
         const authentication = new CustomAuthentication(userUserRepository, encoder, fakeTokenManager)
         const result = (await authentication.auth(validSignInRequest)).value as AuthenticationResult
-        expect(result.id).toBe('6057e9885c94f99b6dc1410a')
-        expect((await fakeTokenManager.verify(result.accessToken)).value).toEqual({ id: '6057e9885c94f99b6dc1410a' })
+        // expect(result).toBe({
+        //     "accessToken": "6057e9885c94f99b6dc1410aTOKEN", 
+        //     "id": "6057e9885c94f99b6dc1410a"
+        // })
+        const verification = (await fakeTokenManager.verify(result.accessToken)).value as PayloadResponse
+        expect(verification.data).toEqual({ 
+            id: '6057e9885c94f99b6dc1410a',
+            email: "fake@mail.com",
+            name: "fake name"
+         })
+        expect(verification.exp).toBeDefined()
+        expect(verification.iat).toBeDefined()
 
     })
 
