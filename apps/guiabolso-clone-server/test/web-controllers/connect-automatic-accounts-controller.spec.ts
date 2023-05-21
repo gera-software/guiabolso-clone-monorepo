@@ -61,8 +61,8 @@ describe('Connect automatic accounts web controller', () => {
 
         const response: HttpResponse = await sut.handle(validRequest)
         expect(response.statusCode).toEqual(500)
-        expect(response.body as Error).toBeInstanceOf(DataProviderError)
-        expect(response.body.message).toBe("erro inesperado")
+        expect(response.body.name).toBe('ServerError')
+        expect(response.body.message).toBe("DataProviderError: erro inesperado")
     })
 
     test('should return status 201 created when request is valid and provider has data', async () => {

@@ -105,6 +105,7 @@ describe('Sign In web controller', () => {
 
         const response: HttpResponse = await sut.handle(validRequest)
         expect(response.statusCode).toEqual(500)
-        expect(response.body).toBeInstanceOf(Error)
+        expect(response.body.name).toBe('ServerError')
+        expect(response.body.message).toBe("Error: Error Throwing Use Case Stub")
     })
 })
