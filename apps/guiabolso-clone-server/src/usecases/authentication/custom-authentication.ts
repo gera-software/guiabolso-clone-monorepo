@@ -20,7 +20,7 @@ export class CustomAuthentication implements AuthenticationService {
         const userFound = await this.userRepository.findUserByEmail(request.email)
 
         if(!userFound) {
-            return left(new UserNotFoundError())
+            return left(new UserNotFoundError("E-mail ou senha incorretos"))
         }
 
         const matches = await this.encoder.compare(request.password, userFound.password)
@@ -32,6 +32,6 @@ export class CustomAuthentication implements AuthenticationService {
             })
         }
 
-        return left(new WrongPasswordError())
+        return left(new WrongPasswordError("E-mail ou senha incorretos"))
     }
 }

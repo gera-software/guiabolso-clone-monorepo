@@ -71,6 +71,7 @@ describe('Sign In web controller', () => {
         const response: HttpResponse = await sut.handle(invalidRequest)
         expect(response.statusCode).toEqual(403)
         expect(response.body.name).toBe('WrongPasswordError')
+        expect(response.body.message).toBe('E-mail ou senha incorretos')
     })
 
     test('should return 400 if user is not found', async () => {
@@ -88,6 +89,7 @@ describe('Sign In web controller', () => {
         expect(response.statusCode).toEqual(400)
         
         expect(response.body.name).toBe('UserNotFoundError')
+        expect(response.body.message).toBe('E-mail ou senha incorretos')
 
     })
 
