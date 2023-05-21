@@ -38,7 +38,7 @@ const userStore =  useUserStore()
 userStore.$subscribe((mutation, state) => {
   console.log('MUTATED STATE', state)
   if(!state.user._id) {
-    router.push({ name: 'login'})
+    router.push({ name: 'index'})
   }
 })
 

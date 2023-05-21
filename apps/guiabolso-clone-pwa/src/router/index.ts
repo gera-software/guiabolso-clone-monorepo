@@ -7,14 +7,15 @@ import AddManualTransactionView from '@/views/AddManualTransactionView.vue'
 import TransactionsView from '@/views/TransactionsView.vue'
 import TransactionView from '@/views/TransactionView.vue'
 import DashboardView from '@/views/DashboardView.vue'
-import CalendarView from '../views/CalendarView.vue'
-import AddBillView from '../views/AddBillView.vue'
-import BillView from '../views/BillView.vue'
-import PluggyConnectWidgetView from '../views/PluggyConnectWidgetView.vue'
-import ConnectAccountView from '../views/ConnectAccountView.vue'
-import AddManualAccountView from '../views/AddManualAccountView.vue'
-import LoginView from '../views/LoginView.vue'
-import CreditCardInvoiceView from '../views/CreditCardInvoiceView.vue'
+import CalendarView from '@/views/CalendarView.vue'
+import AddBillView from '@/views/AddBillView.vue'
+import BillView from '@/views/BillView.vue'
+import PluggyConnectWidgetView from '@/views/PluggyConnectWidgetView.vue'
+import ConnectAccountView from '@/views/ConnectAccountView.vue'
+import AddManualAccountView from '@/views/AddManualAccountView.vue'
+import IndexView from '@/views/IndexView.vue'
+import CreditCardInvoiceView from '@/views/CreditCardInvoiceView.vue'
+import LoginView from '@/views/LoginView.vue'
 import { useUserStore } from '../stores/userStore'
 
 
@@ -35,6 +36,11 @@ const router = createRouter({
     {
       path: '/',
       name: 'index',
+      component: IndexView,
+    },
+    {
+      path: '/login',
+      name: 'login',
       component: LoginView,
     },
     {
@@ -127,7 +133,7 @@ router.beforeEach((to, from) => {
 
   // return false
     console.log(to.name, isAuthenticated())
-  if(!isAuthenticated() && to.name !== 'index') {
+  if(!isAuthenticated() && to.name !== 'index' && to.name !== 'login') {
     return { name: 'index' }
   }
 })
