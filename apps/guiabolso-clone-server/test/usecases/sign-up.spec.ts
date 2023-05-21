@@ -21,8 +21,16 @@ describe("Sing up use case", () => {
         }
         const userSignUpResponse = await sut.perform(validUserSignUpRequest)
         const authenticationResponse = userSignUpResponse.value as AuthenticationResult
-        expect(authenticationResponse.id).toBeTruthy()
+
+        expect(authenticationResponse.data).toEqual({
+            id: "valid_id",
+            email: 'valid@email.com',
+            name: 'valid name',
+        })
         expect(authenticationResponse.accessToken).toBeTruthy()
+        expect(authenticationResponse.iat).toBeDefined()
+        expect(authenticationResponse.exp).toBeDefined()
+
         expect((await emptyUserRepository.findUserByEmail(validUserSignUpRequest.email))?.password).toEqual(validUserSignUpRequest.password + 'ENCRYPTED')
     })
 

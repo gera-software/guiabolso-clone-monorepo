@@ -26,8 +26,19 @@ describe('Sign in use case', () => {
         const autenticationService = new CustomAuthentication(userRepository, encoder, tokenManager)
         const sut = new SignIn(autenticationService)
         const userResponse = (await sut.perform(singInRequest)).value as AuthenticationResult
-        expect(userResponse.id).toEqual(validUser.id)
+
+
+        expect(userResponse.data).toEqual({
+            id: validUser.id,
+            email: 'fake@mail.com',
+            name: 'fake name',
+        })
         expect(userResponse.accessToken).toBeTruthy()
+        expect(userResponse.iat).toBeDefined()
+        expect(userResponse.exp).toBeDefined()
+
+        // expect(userResponse.id).toEqual(validUser.id)
+        // expect(userResponse.accessToken).toBeTruthy()
 
     })
 

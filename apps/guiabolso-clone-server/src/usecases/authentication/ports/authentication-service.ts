@@ -7,8 +7,14 @@ export type AuthenticationParams = {
 }
 
 export type AuthenticationResult = {
-    accessToken: string
-    id: string
+    data: {
+        id: string,
+        name: string,
+        email: string,
+    },
+    iat: number,
+    exp: number,
+    accessToken: string,
 }
 
 

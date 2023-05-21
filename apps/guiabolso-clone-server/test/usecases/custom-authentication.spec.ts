@@ -27,18 +27,12 @@ describe('Custom authentication', () => {
         const fakeTokenManager = new FakeTokenManager()
         const authentication = new CustomAuthentication(userUserRepository, encoder, fakeTokenManager)
         const result = (await authentication.auth(validSignInRequest)).value as AuthenticationResult
-        // expect(result).toBe({
-        //     "accessToken": "6057e9885c94f99b6dc1410aTOKEN", 
-        //     "id": "6057e9885c94f99b6dc1410a"
-        // })
+
+        expect(result.accessToken).toBeDefined()
         const verification = (await fakeTokenManager.verify(result.accessToken)).value as PayloadResponse
-        expect(verification.data).toEqual({ 
-            id: '6057e9885c94f99b6dc1410a',
-            email: "fake@mail.com",
-            name: "fake name"
-         })
-        expect(verification.exp).toBeDefined()
-        expect(verification.iat).toBeDefined()
+        expect(result.data).toEqual(verification.data)
+        expect(result.exp).toEqual(verification.exp)
+        expect(result.iat).toEqual(verification.iat)
 
     })
 

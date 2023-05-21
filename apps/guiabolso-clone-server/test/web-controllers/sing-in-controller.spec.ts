@@ -30,8 +30,14 @@ describe('Sign In web controller', () => {
         const response: HttpResponse = await sut.handle(validRequest)
         const authResult = response.body as AuthenticationResult
         expect(response.statusCode).toEqual(200)
-        expect(authResult.id).toEqual(validUser.id)
+        expect(authResult.data).toEqual({
+            id: "valid_id",
+            email: "fake@mail.com",
+            name: "fake name",
+        })
         expect(authResult.accessToken).toBeTruthy()
+        expect(authResult.iat).toBeDefined()
+        expect(authResult.exp).toBeDefined()
     })
 
     test('should return 400 if password and email are missing in the request', async () => {

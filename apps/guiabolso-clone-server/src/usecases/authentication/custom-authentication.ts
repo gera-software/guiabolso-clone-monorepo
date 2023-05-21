@@ -1,6 +1,6 @@
 import { Either, left, right } from "@/shared";
 import { UserNotFoundError, WrongPasswordError } from "@/usecases/authentication/errors";
-import { AuthenticationParams, AuthenticationResult, PayloadRequest, TokenManager } from "@/usecases/authentication/ports";
+import { AuthenticationParams, AuthenticationResult, PayloadRequest, PayloadResponse, TokenManager } from "@/usecases/authentication/ports";
 import { Encoder, UserRepository } from "@/usecases/ports";
 import { AuthenticationService } from "@/usecases/authentication/ports";
 
@@ -31,8 +31,10 @@ export class CustomAuthentication implements AuthenticationService {
                 email: userFound.email,
             }
             const accessToken = await this.tokenManager.sign(payload)
+            
+            const payloadResponse = (await this.tokenManager.verify(accessToken)).value as PayloadResponse
             return right({
-                id: userFound.id ?? '',
+                ...payloadResponse,
                 accessToken,
             })
         }
