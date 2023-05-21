@@ -1,7 +1,20 @@
 import { Either } from "@/shared"
 
 export type Payload = {
-    id: string
+    data?: {
+        id?: string,
+        name?: string,
+        email?: string,
+    }
+    exp?: number,
+    iat?: number,
+    
+
+    // deprecated
+    id?: string,
+    name?: string,
+    email?: string,
+    
 }
 
 export interface TokenManager {
