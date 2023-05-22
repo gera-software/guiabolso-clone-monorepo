@@ -11,8 +11,9 @@
             </div>
           </div>
           <div class="col-2">
-            <button v-if="account.syncType === 'AUTOMATIC'" class="icon-button" @click="requestUpdate(account, $event)">
-              <font-awesome-icon icon="fa-solid fa-arrows-rotate" :spin="account.sync?.syncStatus != SyncStatus.SYNCED"/>
+            <button disabled v-if="account.syncType === 'AUTOMATIC'" class="icon-button" @click="requestUpdate(account, $event)">
+              <font-awesome-icon icon="fa-solid fa-arrows-rotate" />
+              <!-- <font-awesome-icon icon="fa-solid fa-arrows-rotate" :spin="account.sync?.syncStatus != SyncStatus.SYNCED"/> -->
             </button>
             <button class="icon-button" @click="openMoreDialog">
               <font-awesome-icon icon="fa-solid fa-ellipsis-vertical" />
@@ -284,6 +285,10 @@ async function deleteAccount(id: string) {
     width: 30px;
     height: 30px;
     border-radius: 50%;
+}
+
+.icon-button:disabled {
+    opacity: .35;
 }
 
 /**

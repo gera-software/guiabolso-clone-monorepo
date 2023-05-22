@@ -47,35 +47,36 @@ const schema = new Schema<Account>({
 
 const AccountModel = model<Account>('accounts', schema);
 
-export async function fetchByUserId(id: any): Promise<AccountSummaryDTO[]> {
+export async function fetchByUserId(id: any): Promise<Account[]> {
     await connect();
-    const result = await AccountModel.aggregate([
-        { $match: { userId: new Types.ObjectId(id), _isDeleted: { $ne: true } } },
-        { $lookup: {
-                from: 'synchronizations',
-                localField: 'syncId',
-                foreignField: '_id',
-                as: 'sync',
+    // const result = await AccountModel.aggregate([
+    //     { $match: { userId: new Types.ObjectId(id), _isDeleted: { $ne: true } } },
+    //     { $lookup: {
+    //             from: 'synchronizations',
+    //             localField: 'syncId',
+    //             foreignField: '_id',
+    //             as: 'sync',
                 
-            }
-        },
-        { $unwind: { path: '$sync', preserveNullAndEmptyArrays: true } },
-        { $project: {
-                _id: 1,
-                name: 1,
-                imageUrl: 1,
-                syncType: 1,
-                balance: 1,
-                currencyCode: 1,
-                type: 1,
-                userId: 1,
-                syncId: 1,
-                sync: 1,
-            }
-        },
-    ]) as AccountSummaryDTO[];
+    //         }
+    //     },
+    //     { $unwind: { path: '$sync', preserveNullAndEmptyArrays: true } },
+    //     { $project: {
+    //             _id: 1,
+    //             name: 1,
+    //             imageUrl: 1,
+    //             syncType: 1,
+    //             balance: 1,
+    //             currencyCode: 1,
+    //             type: 1,
+    //             userId: 1,
+    //             syncId: 1,
+    //             sync: 1,
+    //         }
+    //     },
+    // ]) as AccountSummaryDTO[];
+    const results = await AccountModel.find({ userId: new Types.ObjectId(id), _isDeleted: { $ne: true } })
     await disconnect();
-    return result;
+    return results;
 }
 
 export async function getById(id: any): Promise<Account | null> {
