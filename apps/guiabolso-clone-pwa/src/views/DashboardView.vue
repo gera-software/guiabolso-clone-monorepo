@@ -37,7 +37,7 @@ const userStore =  useUserStore()
 // logout button
 userStore.$subscribe((mutation, state) => {
   console.log('MUTATED STATE', state)
-  if(!state.user._id) {
+  if(!state.user.accessToken) {
     router.push({ name: 'index'})
   }
 })

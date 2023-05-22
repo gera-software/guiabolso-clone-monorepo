@@ -44,7 +44,7 @@ watch(() => props.transactionType, async (newValue) => {
       );
 
     const [ month, year ] = monthFilterStore.monthFilter.split('-')
-    const id = userStore.user._id;
+    const id = userStore.user.data.id;
     await getBarChartData(id, year, month, props.transactionType)
 });
 
@@ -54,7 +54,7 @@ const monthFilterStore = useMonthFilterStore()
 monthFilterStore.$subscribe(async (mutation, state) => {
   console.log('changed state', state.monthFilter)
   const [ month, year ] = state.monthFilter.split('-')
-  const id = userStore.user._id
+  const id = userStore.user.data.id
   await getBarChartData(id, year, month, props.transactionType)
 })
 
@@ -94,7 +94,7 @@ async function getBarChartData(userId: String, year: String, month: String, tran
 onMounted(async () => {
   console.log('changed state', monthFilterStore.monthFilter)
   const [ month, year ] = monthFilterStore.monthFilter.split('-')
-  const id = userStore.user._id;
+  const id = userStore.user.data.id;
   await getBarChartData(id, year, month, props.transactionType)
 })
 

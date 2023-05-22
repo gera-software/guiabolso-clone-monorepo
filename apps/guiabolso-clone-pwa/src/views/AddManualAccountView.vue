@@ -124,7 +124,7 @@ async function handleSubmit() {
         initialBalance: form.value.type == 'WALLET' || form.value.type == 'BANK' ? form.value.amount : 0,
         // balance: form.value.type == 'WALLET' || form.value.type == 'BANK' ? form.value.amount : 0,
         balance: form.value.amount,
-        userId: userStore.user._id,
+        userId: userStore.user.data.id,
         imageUrl: '',
         syncType: AccountSyncType.MANUAL,
         currencyCode: CurrencyCodes.BRL,

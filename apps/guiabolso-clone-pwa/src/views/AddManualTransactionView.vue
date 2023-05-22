@@ -70,7 +70,7 @@ async function getMyAccounts(): Promise<AccountSummaryDTO[]> {
     console.log('get my accounts')
   return api.guiabolsoApi({
     method: 'get',
-    url: `/accounts-fetch?id=${userStore.user._id}`,
+    url: `/accounts-fetch?id=${userStore.user.data.id}`,
   }).then(function (response) {
     // console.log(response.data)
     accounts.value = response.data
@@ -147,7 +147,7 @@ async function handleSubmit() {
         ignored: form.value.ignored,
         accountId: form.value.accountId,
         accountType: manualAccounts.value.find(account => account._id == form.value.accountId)?.type,
-        userId: userStore.user._id,
+        userId: userStore.user.data.id,
         _isDeleted: false,
     }
 

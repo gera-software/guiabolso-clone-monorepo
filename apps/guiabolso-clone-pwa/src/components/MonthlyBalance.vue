@@ -50,7 +50,7 @@ const monthFilterStore = useMonthFilterStore()
 monthFilterStore.$subscribe(async (mutation, state) => {
   console.log('changed state', state.monthFilter)
   const [ month, year ] = state.monthFilter.split('-')
-  const id = userStore.user._id
+  const id = userStore.user.data.id
   await getUserBalance(id)
 })
 
@@ -68,7 +68,7 @@ async function getUserBalance(userId: String) {
     method: 'get',
     url: `/user-balance?id=${userId}`,
   }).then(function (response) {
-    console.log(response.data)
+    console.log('GET USER BALANCE', response)
     isLoading.value = false
     return response.data
   }).catch(function (error) {
@@ -79,7 +79,7 @@ async function getUserBalance(userId: String) {
 onMounted(async () => {
   console.log('changed state', monthFilterStore.monthFilter)
   const [ month, year ] = monthFilterStore.monthFilter.split('-')
-  const id = userStore.user._id;
+  const id = userStore.user.data.id;
   await getUserBalance(id)
 })
 
