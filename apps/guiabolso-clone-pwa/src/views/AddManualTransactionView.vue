@@ -53,7 +53,7 @@ import api from '../config/axios.js'
 import { ref, watch, computed  } from 'vue'
 import AppBar from '@/components/AppBar.vue'
 import { onMounted } from 'vue';
-import { AccountSummaryDTO, AccountSyncType, AccountType, Category, CurrencyCodes, Transaction, TransactionStatus, TransactionType } from '../config/types';
+import { AccountSummaryDTO, AccountSyncType, AccountType, Category, CurrencyCodes, Transaction, TransactionStatus, TransactionType, TransactionRequest } from '../config/types';
 import { useUserStore } from '../stores/userStore';
 import CurrencyInput from '../components/CurrencyInput.vue'
 import CategoryInput from '../components/CategoryInput.vue'
@@ -133,27 +133,36 @@ const loading = ref(false)
 
 async function handleSubmit() {
   loading.value = true
-    const payload: Transaction = {
-        description: form.value.description,
-        amount: form.value.amount,
-        currencyCode: CurrencyCodes.BRL,
-        date: stringToUTCDate(form.value.date),
-        // TODO refactor, not necessary fetch all categories, use getCategoryById()...
-        category: categories.value.find(category => category._id === form.value.categoryId),
-        type: form.value.amount >= 0 ? TransactionType.INCOME : TransactionType.EXPENSE,
-        syncType: AccountSyncType.MANUAL,
-        status: TransactionStatus.POSTED,
-        comment: form.value.comment,
-        ignored: form.value.ignored,
-        accountId: form.value.accountId,
-        accountType: manualAccounts.value.find(account => account._id == form.value.accountId)?.type,
-        userId: userStore.user.data.id,
-        _isDeleted: false,
+    const payload: TransactionRequest = {
+      accountId: form.value.accountId,
+      categoryId: form.value.categoryId,
+      amount: form.value.amount,
+      date: stringToUTCDate(form.value.date),
+      description: form.value.description,
+      comment: form.value.comment,
+      ignored: form.value.ignored,
+
+
+        // description: form.value.description,
+        // amount: form.value.amount,
+        // currencyCode: CurrencyCodes.BRL,
+        // date: stringToUTCDate(form.value.date),
+        // // TODO refactor, not necessary fetch all categories, use getCategoryById()...
+        // category: categories.value.find(category => category._id === form.value.categoryId),
+        // type: form.value.amount >= 0 ? TransactionType.INCOME : TransactionType.EXPENSE,
+        // syncType: AccountSyncType.MANUAL,
+        // status: TransactionStatus.POSTED,
+        // comment: form.value.comment,
+        // ignored: form.value.ignored,
+        // accountId: form.value.accountId,
+        // accountType: manualAccounts.value.find(account => account._id == form.value.accountId)?.type,
+        // userId: userStore.user.data.id,
+        // _isDeleted: false,
     }
 
-    if(payload.accountType == AccountType.CREDIT_CARD) {
-      payload.creditCardDate = payload.date
-    }
+    // if(payload.accountType == AccountType.CREDIT_CARD) {
+    //   payload.creditCardDate = payload.date
+    // }
 
     console.log('add',payload)
     await saveTransaction(payload)
@@ -162,11 +171,11 @@ async function handleSubmit() {
 
 }
 
-async function saveTransaction(payload: Transaction): Promise<Transaction> {
+async function saveTransaction(payload: TransactionRequest): Promise<Transaction> {
     console.log('save transaction')
-  return api.guiabolsoApi({
+  return api.guiabolsoServer({
     method: 'post',
-    url: `/transaction-create`,
+    url: `/manual-transaction`,
     data: payload,
   }).then(function (response) {
     console.log(response.data)

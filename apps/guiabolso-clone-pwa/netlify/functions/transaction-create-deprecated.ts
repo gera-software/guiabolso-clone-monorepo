@@ -1,3 +1,7 @@
+/**
+ * @deprecated
+ */
+
 import { Handler } from "@netlify/functions";
 import * as TransactionService from "../services/transactionService";
 import { Transaction, AccountType } from "../types";
