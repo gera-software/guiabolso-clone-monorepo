@@ -20,7 +20,7 @@ export async function addCreditCardTransaction(transaction: Transaction): Promis
     
         // link transaction to invoice
         const invoice = await findOrCreateInvoiceToTransaction(transaction, dueDate, closingDate)
-        transaction.creditCardInvoiceId = invoice?._id
+        transaction.invoiceId = invoice?._id
     }
 
     let doc: Transaction | null = await TransactionRepository.create(transaction);
@@ -132,7 +132,7 @@ export async function updateCreditCardTransaction(transaction: Transaction): Pro
     
         // link transaction to invoice
         const invoice = await findOrCreateInvoiceToTransaction(transaction, dueDate, closingDate)
-        transaction.creditCardInvoiceId = invoice?._id
+        transaction.invoiceId = invoice?._id
     }
 
     let docBeforeUpdate: Transaction | null;

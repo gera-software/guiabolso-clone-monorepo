@@ -25,7 +25,7 @@ const schema = new Schema<Transaction>({
     accountId: Types.ObjectId,
     accountType: { type: String, required: false },
     userId: Types.ObjectId,
-    creditCardInvoiceId: { type: Types.ObjectId, required: false },
+    invoiceId: { type: Types.ObjectId, required: false },
     _isDeleted: Boolean,
 });
 

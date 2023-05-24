@@ -125,7 +125,7 @@ export interface Transaction {
     amount: number,
     currencyCode: CurrencyCodes,
     date: Date,
-    invoiceDate?: Date,//invoiceDate
+    invoiceDate?: Date,
     category?: Category,
     type: TransactionType,
     syncType: AccountSyncType,
@@ -135,7 +135,7 @@ export interface Transaction {
     accountId: string,
     accountType?: AccountType,
     userId: string,
-    creditCardInvoiceId?: string,//invoiceId
+    invoiceId?: string,
     _isDeleted?: boolean,
 }
 

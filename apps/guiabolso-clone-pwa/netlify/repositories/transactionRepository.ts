@@ -81,7 +81,7 @@ export async function fetchByAccount(id: any, monthField: string, yearField: str
                         type: 1,
                         imageUrl: 1
                     },
-                    creditCardInvoiceId: 1,
+                    invoiceId: 1,
                 }
             },
             { $sort: { date: -1 } }
@@ -145,7 +145,7 @@ export async function fetchByUser(id: any, monthField: string, yearField: string
                     type: 1,
                     imageUrl: 1
                 },
-                creditCardInvoiceId: 1,
+                invoiceId: 1,
             }
         },
         { $sort: { date: -1 } },
@@ -171,7 +171,7 @@ export async function fetchByCreditCardInvoice(id: any): Promise<Transaction[]> 
 
     const result = await TransactionModel.aggregate([
             { $match: { 
-                creditCardInvoiceId: new Types.ObjectId(id), 
+                invoiceId: new Types.ObjectId(id), 
                 _isDeleted: { $ne: true }, 
               }
             },
@@ -201,7 +201,7 @@ export async function fetchByCreditCardInvoice(id: any): Promise<Transaction[]> 
                         type: 1,
                         imageUrl: 1
                     },
-                    creditCardInvoiceId: 1,
+                    invoiceId: 1,
                 }
             },
             { $sort: { invoiceDate: -1 } }
@@ -252,7 +252,7 @@ export async function updateOne(transaction: Transaction): Promise<Transaction |
         doc.category = transaction.category
         doc.accountId = transaction.accountId
         doc.type = transaction.type
-        doc.creditCardInvoiceId = transaction.creditCardInvoiceId,
+        doc.invoiceId = transaction.invoiceId,
         doc.comment = transaction.comment
         doc.ignored = transaction.ignored
         await doc.save();
@@ -274,7 +274,7 @@ export async function findOneAndUpdate(transaction: Transaction): Promise<Transa
         category: transaction.category,
         accountId: transaction.accountId,
         type: transaction.type,
-        creditCardInvoiceId: transaction.creditCardInvoiceId,
+        invoiceId: transaction.invoiceId,
         comment: transaction.comment,
         ignored: transaction.ignored,
     }
