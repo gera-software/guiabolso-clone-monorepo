@@ -179,6 +179,10 @@ describe('Connect automatic accounts web controller', () => {
         const response: HttpResponse = await sut.handle(validRequest)
         expect(response.statusCode).toEqual(201)
         expect(response.body.length).toBe(2)
+        expect(response.body[0].type).toBe('BANK')
+        expect(response.body[0].syncType).toBe('AUTOMATIC')
+        expect(response.body[1].type).toBe('CREDIT_CARD')
+        expect(response.body[1].syncType).toBe('AUTOMATIC')
 
     })
 
