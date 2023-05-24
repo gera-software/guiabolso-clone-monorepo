@@ -12,7 +12,7 @@
                 <img v-if="account.imageUrl" class="account-logo" :src="account.imageUrl?.toString()" />
                 <img v-else class="account-logo" src="@/assets/ManualAccountIcon.svg" />
                 <div>
-                    <h2 class="title">{{account.institution?.name}} {{account.creditData?.brand}}</h2>
+                    <h2 class="title">{{account.institution?.name}} {{account.creditCardInfo?.brand}}</h2>
                     <h3 class="subtitle">{{account.name}}</h3>
                 </div>
             </div>

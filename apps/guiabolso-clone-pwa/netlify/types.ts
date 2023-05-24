@@ -51,7 +51,7 @@ export interface AccountOwner {
     cpf?: String,
 }
 
-export interface CreditData {
+export interface CreditCardInfo {
     brand: String,
     creditLimit: Number,
     availableCreditLimit?: Number,
@@ -74,7 +74,7 @@ export interface Account {
     syncId?: String,
     sync?: Synchronization,
     institution?: Institution,
-    creditData?: CreditData,
+    creditCardInfo?: CreditCardInfo,
     _isDeleted?: Boolean,
 }
 

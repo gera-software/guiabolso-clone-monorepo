@@ -26,7 +26,7 @@ const schema = new Schema<Account>({
         imageUrl: { type: String, required: false },
         primaryColor: { type: String, required: false },
     },
-    creditData: {
+    creditCardInfo: {
         brand: String,
         creditLimit: Number,
         availableCreditLimit: Number,
@@ -183,8 +183,8 @@ export async function addToAvailableCreditLimit(accountId: string, amount: numbe
     await connect();
     const doc =  await AccountModel.findById(accountId);
 
-    if(doc?.creditData?.availableCreditLimit) {
-        doc.creditData.availableCreditLimit = doc.creditData.availableCreditLimit.valueOf() + amount
+    if(doc?.creditCardInfo?.availableCreditLimit) {
+        doc.creditCardInfo.availableCreditLimit = doc.creditCardInfo.availableCreditLimit.valueOf() + amount
         await doc.save();
     }
     await disconnect();
@@ -196,8 +196,8 @@ export async function subtractFromAvailableCreditLimit(accountId: string, amount
     await connect();
     const doc =  await AccountModel.findById(accountId);
 
-    if(doc?.creditData?.availableCreditLimit) {
-        doc.creditData.availableCreditLimit = doc.creditData.availableCreditLimit.valueOf() - amount
+    if(doc?.creditCardInfo?.availableCreditLimit) {
+        doc.creditCardInfo.availableCreditLimit = doc.creditCardInfo.availableCreditLimit.valueOf() - amount
         await doc.save();
     }
     await disconnect();

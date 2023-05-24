@@ -80,8 +80,8 @@ async function calculateInvoiceDates(transaction: Transaction) {
         let invoiceYear = invoiceDate.getUTCFullYear()
 
         const account = await AccountRepository.getById(transaction.accountId)
-        const closeDay = +(account?.creditData?.closeDay ?? 0)
-        const dueDay = +(account?.creditData?.dueDay ?? 0)
+        const closeDay = +(account?.creditCardInfo?.closeDay ?? 0)
+        const dueDay = +(account?.creditCardInfo?.dueDay ?? 0)
         
         const closingDate = new Date(Date.UTC(+invoiceYear, +invoiceMonth, closeDay, 0, 0, 0))
 

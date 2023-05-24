@@ -49,7 +49,7 @@ export interface AccountOwner {
     cpf?: String,
 }
 
-export interface CreditData {
+export interface CreditCardInfo {
     brand: String,
     creditLimit: Number,
     availableCreditLimit: Number,
@@ -72,7 +72,7 @@ export interface AccountDTO {
     sync?: Synchronization,
     accountOwner?: AccountOwner,
     institution?: Institution,
-    creditData?: CreditData,
+    creditCardInfo?: CreditCardInfo,
     _isDeleted?: Boolean,
 }
 

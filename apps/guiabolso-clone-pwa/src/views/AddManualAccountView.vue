@@ -27,17 +27,17 @@
             <template v-if="form.type == 'CREDIT_CARD'">
               <div class="form-group">
                 <label class="form-label">Qua a bandeira do cartão?</label>
-                <select class="form-input" required v-model="form.creditData.brand">
+                <select class="form-input" required v-model="form.creditCardInfo.brand">
                     <option v-for="brandType in creditCardBrandTypes" :value="brandType.value">{{brandType.label}}</option>
                 </select>
               </div>
               <div class="form-group">
                 <label class="form-label">Qual o limite do cartão?</label>
-                <CurrencyInput class="form-input" required v-model="form.creditData.creditLimit"/>
+                <CurrencyInput class="form-input" required v-model="form.creditCardInfo.creditLimit"/>
               </div>
               <div class="form-group">
                 <label class="form-label">E o limite disponível atualmente?</label>
-                <CurrencyInput class="form-input" required v-model="form.creditData.availableCreditLimit"/>
+                <CurrencyInput class="form-input" required v-model="form.creditCardInfo.availableCreditLimit"/>
               </div>
               <div class="form-group">
                 <label class="form-label">Qual o valor da fatura atual?</label>
@@ -45,15 +45,15 @@
               </div>
               <!-- <div class="form-group">
                 <label class="form-label">E o valor total das próximas faturas?</label>
-                <CurrencyInput class="form-input" required v-model="form.creditData.nextInvoices"/>
+                <CurrencyInput class="form-input" required v-model="form.creditCardInfo.nextInvoices"/>
               </div> -->
               <div class="form-group">
                 <label class="form-label">Qual o dia do vencimento?</label>
-                <input class="form-input" type="number" required v-model="form.creditData.dueDay" min="1" max="31">
+                <input class="form-input" type="number" required v-model="form.creditCardInfo.dueDay" min="1" max="31">
               </div>
               <div class="form-group">
                 <label class="form-label">E o dia do fechamento? (melhor dia de compra)</label>
-                <input class="form-input" type="number" required v-model="form.creditData.closeDay" min="1" max="31">
+                <input class="form-input" type="number" required v-model="form.creditCardInfo.closeDay" min="1" max="31">
               </div>
             </template>
 
@@ -95,7 +95,7 @@ const form = ref({
     name: '',
     type: 'WALLET',
     amount: 0, // multiplied by 100 to remove decimals
-    creditData: {
+    creditCardInfo: {
       brand: 'Mastercard',
       creditLimit: 0,
       availableCreditLimit: 0,
@@ -135,12 +135,12 @@ async function handleSubmit() {
       payload.balance = -form.value.amount, // o balanço do cartão de credito deve ser negativo
 
       //@ts-ignore
-      payload.creditData = {
-        brand: form.value.creditData.brand,
-        closeDay: form.value.creditData.closeDay,
-        dueDay: form.value.creditData.dueDay,
-        creditLimit: form.value.creditData.creditLimit,
-        availableCreditLimit: form.value.creditData.availableCreditLimit + form.value.amount, // descontando do limite disponível o valor das transações do mes atual (que ainda deverão ser cadastradas manualmente)
+      payload.creditCardInfo = {
+        brand: form.value.creditCardInfo.brand,
+        closeDay: form.value.creditCardInfo.closeDay,
+        dueDay: form.value.creditCardInfo.dueDay,
+        creditLimit: form.value.creditCardInfo.creditLimit,
+        availableCreditLimit: form.value.creditCardInfo.availableCreditLimit + form.value.amount, // descontando do limite disponível o valor das transações do mes atual (que ainda deverão ser cadastradas manualmente)
       }
     }
 
