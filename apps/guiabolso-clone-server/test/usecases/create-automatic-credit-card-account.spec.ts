@@ -496,6 +496,9 @@ describe('Create automatic credit card account use case', () => {
         const sut = new CreateAutomaticCreditCardAccount(accountRepository, userRepository, institutionRepository)
         const response = (await sut.perform(createAutomaticCreditCardRequest)).value as AccountData
         expect(response.id).toBeTruthy()
+        expect(response.syncType).toBe('AUTOMATIC')
+        expect(response.type).toBe('CREDIT_CARD')
+
 
         const addedAccount = await accountRepository.exists(response.id)
         expect(addedAccount).toBeTruthy()

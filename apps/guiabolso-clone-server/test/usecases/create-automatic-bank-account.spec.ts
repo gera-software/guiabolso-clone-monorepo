@@ -374,6 +374,9 @@ describe('Create automatic bank account use case', () => {
         const sut = new CreateAutomaticBankAccount(accountRepository, userRepository, institutionRepository)
         const response = (await sut.perform(createAutomaticBankRequest)).value as BankAccountData
         expect(response.id).toBeTruthy()
+        expect(response.syncType).toBe('AUTOMATIC')
+        expect(response.type).toBe('BANK')
+
 
         const addedAccount = await accountRepository.exists(response.id)
         expect(addedAccount).toBe(true)

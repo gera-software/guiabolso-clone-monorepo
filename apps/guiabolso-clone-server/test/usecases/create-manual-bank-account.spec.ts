@@ -176,6 +176,8 @@ describe('Create manual bank account use case', () => {
 
         const addedAccount = await accountRepository.exists(response.id)
         expect(addedAccount).toBeTruthy()
+        expect(response.syncType).toBe('MANUAL')
+        expect(response.type).toBe('BANK')
         expect(response.id).toBeTruthy()
         expect(response.institution).toEqual(institution)
     })

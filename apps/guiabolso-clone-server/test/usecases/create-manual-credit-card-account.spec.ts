@@ -260,6 +260,8 @@ describe('Create manual credit card account use case', () => {
         const addedAccount = await accountRepository.exists(response.id)
         expect(addedAccount).toBeTruthy()
         expect(response.id).toBeTruthy()
+        expect(response.type).toBe('CREDIT_CARD')
+        expect(response.syncType).toBe('MANUAL')
         expect(response.institution).toEqual(institution)
         expect(response.creditCardInfo).toEqual(creditCardInfo)
     })
