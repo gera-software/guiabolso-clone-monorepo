@@ -225,28 +225,28 @@ const loading = ref(false)
 async function handleSubmit() {
   loading.value = true
     const payload = {
-        _id: transaction.value?._id,
-        description: form.value.description,
+        id: transaction.value?._id,
+        accountId: form.value.accountId,
+        categoryId: form.value.categoryId,
         amount: form.value.amount,
-        // currencyCode: CurrencyCodes.BRL,
+        description: form.value.description,
         date: stringToUTCDate(form.value.date),
-        // invoiceDate: null as Date,
-        // TODO refactor, not necessary fetch all categories, use getCategoryById()...
-        category: categories.value.find(category => category._id === form.value.categoryId),
-        type: form.value.amount >= 0 ? TransactionType.INCOME : TransactionType.EXPENSE,
-        // status: TransactionStatus.POSTED,
         comment: form.value.comment,
         ignored: form.value.ignored,
-        accountId: form.value.accountId,
-        accountType: accounts.value.find(account => account._id == form.value.accountId)?.type,
+        // currencyCode: CurrencyCodes.BRL,
+        // invoiceDate: null as Date,
+        // TODO refactor, not necessary fetch all categories, use getCategoryById()...
+        // type: form.value.amount >= 0 ? TransactionType.INCOME : TransactionType.EXPENSE,
+        // status: TransactionStatus.POSTED,
+        // accountType: accounts.value.find(account => account._id == form.value.accountId)?.type,
         // userId: store.user._id,
         // _isDeleted: false,
     }
 
-    if(payload.accountType == AccountType.CREDIT_CARD) {
-      // @ts-ignore
-      payload.invoiceDate = stringToUTCDate(form.value.invoiceDate)
-    }
+    // if(payload.accountType == AccountType.CREDIT_CARD) {
+    //   // @ts-ignore
+    //   payload.invoiceDate = stringToUTCDate(form.value.invoiceDate)
+    // }
 
     console.log(payload)
     await updateTransaction(payload)
@@ -256,10 +256,9 @@ async function handleSubmit() {
 }
 
 async function updateTransaction(payload: Object): Promise<Transaction> {
-    console.log('update transaction')
-  return api.guiabolsoApi({
-    method: 'post',
-    url: `/transaction-update`,
+  return api.guiabolsoServer({
+    method: 'put',
+    url: `/manual-transaction`,
     data: payload,
   }).then(function (response) {
     console.log(response.data)
