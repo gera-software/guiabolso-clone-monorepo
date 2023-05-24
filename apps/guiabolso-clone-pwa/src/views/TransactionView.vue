@@ -97,9 +97,12 @@ async function handleClickExcluirTransacao() {
 
 async function deleteTransaction(id: string) {
   loading.value = true
-  return api.guiabolsoApi({
-    method: 'get',
-    url: `/transaction-delete?id=${id}`,
+  return api.guiabolsoServer({
+    method: 'delete',
+    url: '/manual-transaction',
+    data: {
+      id: id
+    }
   }).then(function (response) {
     console.log(response.data)
     loading.value = false
@@ -230,7 +233,7 @@ async function handleSubmit() {
         categoryId: form.value.categoryId,
         amount: form.value.amount,
         description: form.value.description,
-        date: stringToUTCDate(form.value.date),
+        date: (transaction.value?.accountType == 'CREDIT_CARD') ? stringToUTCDate(form.value.invoiceDate) : stringToUTCDate(form.value.date),
         comment: form.value.comment,
         ignored: form.value.ignored,
         // currencyCode: CurrencyCodes.BRL,
