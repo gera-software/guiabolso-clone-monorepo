@@ -15,7 +15,7 @@ export type MongodbCreditCardInvoice = {
 export class MongodbCreditCardInvoiceRepository implements CreditCardInvoiceRepository {
 
     async add(invoice: CreditCardInvoiceData): Promise<CreditCardInvoiceData> {
-        const invoiceCollection = MongoHelper.getCollection('invoices')
+        const invoiceCollection = MongoHelper.getCollection('credit_card_invoices')
 
         const invoiceClone: MongodbCreditCardInvoice = {
             dueDate: invoice.dueDate,
@@ -33,7 +33,7 @@ export class MongodbCreditCardInvoiceRepository implements CreditCardInvoiceRepo
     }
     
     async findById(id: string): Promise<CreditCardInvoiceData> {
-        const invoiceCollection = MongoHelper.getCollection('invoices')
+        const invoiceCollection = MongoHelper.getCollection('credit_card_invoices')
         const invoice = await invoiceCollection.findOne<MongodbCreditCardInvoice>({ _id: new ObjectId(id) })
         if(invoice) {
             return this.withApplicationId(invoice)
@@ -42,7 +42,7 @@ export class MongodbCreditCardInvoiceRepository implements CreditCardInvoiceRepo
     }
     
     async findByDueDate(date: Date, accountId: string): Promise<CreditCardInvoiceData> {
-        const invoiceCollection = MongoHelper.getCollection('invoices')
+        const invoiceCollection = MongoHelper.getCollection('credit_card_invoices')
 
         const invoice = await invoiceCollection.findOne<MongodbCreditCardInvoice>({ 
             $and: [
@@ -59,7 +59,7 @@ export class MongodbCreditCardInvoiceRepository implements CreditCardInvoiceRepo
     }
     
     async getLastClosedInvoice(accountId: string): Promise<CreditCardInvoiceData> {
-        const invoiceCollection = MongoHelper.getCollection('invoices')
+        const invoiceCollection = MongoHelper.getCollection('credit_card_invoices')
 
         // const c = new Date()
         const currentDate = new Date()
@@ -98,7 +98,7 @@ export class MongodbCreditCardInvoiceRepository implements CreditCardInvoiceRepo
     }
     
     async updateAmount(id: string, amount: number): Promise<void> {
-        const invoiceCollection = MongoHelper.getCollection('invoices')
+        const invoiceCollection = MongoHelper.getCollection('credit_card_invoices')
 
         const updateDoc = {
             $set: {
@@ -110,7 +110,7 @@ export class MongodbCreditCardInvoiceRepository implements CreditCardInvoiceRepo
     }
 
     async batchUpdateAmount(invoices: { invoiceId: string; amount: number; }[]): Promise<void> {
-        const invoiceCollection = MongoHelper.getCollection('invoices')
+        const invoiceCollection = MongoHelper.getCollection('credit_card_invoices')
 
         const operations: AnyBulkWriteOperation<Document>[] = invoices.map(invoice => ({
             updateOne: {
