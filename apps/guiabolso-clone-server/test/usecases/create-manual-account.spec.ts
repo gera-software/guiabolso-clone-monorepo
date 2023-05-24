@@ -37,6 +37,7 @@ describe('Create manual account use case', () => {
     
             const addedAccount = await accountRepository.exists(response.id)
             expect(addedAccount).toBeTruthy()
+            expect(response.syncType).toBe(syncType)
             expect(response.type).toBe(type)
             expect(response.id).toBeTruthy()
         })
@@ -83,6 +84,7 @@ describe('Create manual account use case', () => {
             const addedAccount = await accountRepository.exists(response.id)
             expect(addedAccount).toBeTruthy()
             expect(response.id).toBeTruthy()
+            expect(response.syncType).toBe(syncType)
             expect(response.type).toBe(type)
             expect(response.institution).toEqual(institution)
         })
@@ -136,6 +138,7 @@ describe('Create manual account use case', () => {
             const addedAccount = await accountRepository.exists(response.id)
             expect(addedAccount).toBeTruthy()
             expect(response.id).toBeTruthy()
+            expect(response.syncType).toBe(syncType)
             expect(response.type).toBe(type)
             expect(response.institution).toEqual(institution)
             expect(response.creditCardInfo).toEqual(creditCardInfo)
