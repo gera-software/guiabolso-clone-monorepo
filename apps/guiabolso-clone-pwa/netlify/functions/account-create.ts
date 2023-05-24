@@ -23,7 +23,6 @@ const handler: Handler = async (event, context) => {
     //     accountOwner?: AccountOwner,
     //     syncId?: String,
     //     sync?: Synchronization,
-    //     creditData?: CreditData,
     // }
     const account = JSON.parse(event.body) as Account;
     let doc: Account | null;

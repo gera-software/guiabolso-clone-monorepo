@@ -50,7 +50,6 @@ export interface AccountOwner {
 }
 
 export interface CreditData {
-    institution: Institution,
     brand: String,
     creditLimit: Number,
     availableCreditLimit: Number,

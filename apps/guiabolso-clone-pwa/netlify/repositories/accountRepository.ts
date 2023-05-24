@@ -27,13 +27,6 @@ const schema = new Schema<Account>({
         primaryColor: { type: String, required: false },
     },
     creditData: {
-        institution: {
-            _id: { type: Types.ObjectId, required: false },
-            pluggyConnectorId: { type: Number, required: false },
-            name: String,
-            imageUrl: { type: String, required: false },
-            primaryColor: { type: String, required: false },
-        },
         brand: String,
         creditLimit: Number,
         availableCreditLimit: Number,
