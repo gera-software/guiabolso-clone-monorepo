@@ -121,14 +121,14 @@ async function handleSubmit() {
     const payload = {
         name: form.value.name,
         type: form.value.type,
-        initialBalance: form.value.type == 'WALLET' || form.value.type == 'BANK' ? form.value.amount : 0,
+        // initialBalance: form.value.type == 'WALLET' || form.value.type == 'BANK' ? form.value.amount : 0,
         // balance: form.value.type == 'WALLET' || form.value.type == 'BANK' ? form.value.amount : 0,
         balance: form.value.amount,
         userId: userStore.user.data.id,
         imageUrl: '',
-        syncType: AccountSyncType.MANUAL,
-        currencyCode: CurrencyCodes.BRL,
-        _isDeleted: false,
+        // syncType: AccountSyncType.MANUAL,
+        // currencyCode: CurrencyCodes.BRL,
+        // _isDeleted: false,
     }
 
     if(form.value.type == 'CREDIT_CARD') {
@@ -154,9 +154,9 @@ async function handleSubmit() {
 
 async function saveAccount(payload: Object): Promise<AccountDTO> {
     console.log('save ')
-  return api.guiabolsoApi({
+  return api.guiabolsoServer({
     method: 'post',
-    url: `/account-create`,
+    url: `/manual-account`,
     data: payload,
   }).then(function (response) {
     console.log(response.data)
