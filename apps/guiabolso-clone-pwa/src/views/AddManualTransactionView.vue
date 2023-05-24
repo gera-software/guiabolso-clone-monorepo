@@ -161,7 +161,7 @@ async function handleSubmit() {
     }
 
     // if(payload.accountType == AccountType.CREDIT_CARD) {
-    //   payload.creditCardDate = payload.date
+    //   payload.invoiceDate = payload.date
     // }
 
     console.log('add',payload)

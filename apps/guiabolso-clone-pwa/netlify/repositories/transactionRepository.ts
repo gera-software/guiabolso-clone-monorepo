@@ -70,7 +70,7 @@ export async function fetchByAccount(id: any, monthField: string, yearField: str
                     amount: 1,
                     currencyCode: 1,
                     date: 1,
-                    creditCardDate: 1,
+                    invoiceDate: 1,
                     category: 1,
                     type: 1,
                     status: 1,
@@ -134,7 +134,7 @@ export async function fetchByUser(id: any, monthField: string, yearField: string
                 amount: 1,
                 currencyCode: 1,
                 date: 1,
-                creditCardDate: 1,
+                invoiceDate: 1,
                 category: 1,
                 type: 1,
                 status: 1,
@@ -190,7 +190,7 @@ export async function fetchByCreditCardInvoice(id: any): Promise<Transaction[]> 
                     amount: 1,
                     currencyCode: 1,
                     date: 1,
-                    creditCardDate: 1,
+                    invoiceDate: 1,
                     category: 1,
                     type: 1,
                     status: 1,
@@ -204,7 +204,7 @@ export async function fetchByCreditCardInvoice(id: any): Promise<Transaction[]> 
                     creditCardInvoiceId: 1,
                 }
             },
-            { $sort: { creditCardDate: -1 } }
+            { $sort: { invoiceDate: -1 } }
           ]) as Transaction[];
 
     await disconnect();
@@ -248,7 +248,7 @@ export async function updateOne(transaction: Transaction): Promise<Transaction |
         doc.description = transaction.description
         doc.amount = transaction.amount
         doc.date = transaction.date
-        doc.creditCardDate = transaction.creditCardDate
+        doc.invoiceDate = transaction.invoiceDate
         doc.category = transaction.category
         doc.accountId = transaction.accountId
         doc.type = transaction.type
@@ -270,7 +270,7 @@ export async function findOneAndUpdate(transaction: Transaction): Promise<Transa
         description: transaction.description,
         amount: transaction.amount,
         date: transaction.date,
-        creditCardDate: transaction.creditCardDate,
+        invoiceDate: transaction.invoiceDate,
         category: transaction.category,
         accountId: transaction.accountId,
         type: transaction.type,

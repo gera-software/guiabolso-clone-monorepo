@@ -24,7 +24,7 @@
             <template v-if="transaction?.accountType == 'CREDIT_CARD'">
               <div class="form-group">
                   <label class="form-label">Data da transação</label>
-                  <input class="form-input" type="date" required :disabled="transaction?.syncType === 'AUTOMATIC'" v-model="form.creditCardDate">
+                  <input class="form-input" type="date" required :disabled="transaction?.syncType === 'AUTOMATIC'" v-model="form.invoiceDate">
               </div>
               <div class="form-group" v-if="transaction.category?.name !== 'Pagamento de cartão'">
                   <label class="form-label">Vencimento da fatura</label>
@@ -134,8 +134,8 @@ onMounted(async () => {
     form.value.description = transaction.value.description || transaction.value.descriptionOriginal || ''
     form.value.amount = transaction.value.amount
     form.value.date = dateToUTCString(new Date(transaction.value.date))
-    if(transaction.value.accountType == AccountType.CREDIT_CARD && transaction.value.creditCardDate) {
-      form.value.creditCardDate = dateToUTCString(new Date(transaction.value.creditCardDate))
+    if(transaction.value.accountType == AccountType.CREDIT_CARD && transaction.value.invoiceDate) {
+      form.value.invoiceDate = dateToUTCString(new Date(transaction.value.invoiceDate))
     }
     form.value.accountId = transaction.value.accountId
     form.value.categoryId = transaction.value.category?._id ?? ''
@@ -202,7 +202,7 @@ type TransactionForm = {
   description: string,
   amount: number,
   date: string,
-  creditCardDate: string,
+  invoiceDate: string,
   accountId: string,
   categoryId: string,
   comment: string,
@@ -213,7 +213,7 @@ const form = ref<TransactionForm>({
     description: '',
     amount: 0, // multiplied by 100 to remove decimals
     date: '',
-    creditCardDate: '',
+    invoiceDate: '',
     accountId: '',
     categoryId: '',
     comment: '',
@@ -230,7 +230,7 @@ async function handleSubmit() {
         amount: form.value.amount,
         // currencyCode: CurrencyCodes.BRL,
         date: stringToUTCDate(form.value.date),
-        // creditCardDate: null as Date,
+        // invoiceDate: null as Date,
         // TODO refactor, not necessary fetch all categories, use getCategoryById()...
         category: categories.value.find(category => category._id === form.value.categoryId),
         type: form.value.amount >= 0 ? TransactionType.INCOME : TransactionType.EXPENSE,
@@ -245,7 +245,7 @@ async function handleSubmit() {
 
     if(payload.accountType == AccountType.CREDIT_CARD) {
       // @ts-ignore
-      payload.creditCardDate = stringToUTCDate(form.value.creditCardDate)
+      payload.invoiceDate = stringToUTCDate(form.value.invoiceDate)
     }
 
     console.log(payload)

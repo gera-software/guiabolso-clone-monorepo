@@ -75,9 +75,9 @@ export async function addCashTransaction(transaction: Transaction): Promise<Tran
  * @param transaction 
  */
 async function calculateInvoiceDates(transaction: Transaction) {
-        const creditCardDate = new Date(transaction.creditCardDate ?? '')
-        let invoiceMonth = creditCardDate.getUTCMonth() // between 0 and 11
-        let invoiceYear = creditCardDate.getUTCFullYear()
+        const invoiceDate = new Date(transaction.invoiceDate ?? '')
+        let invoiceMonth = invoiceDate.getUTCMonth() // between 0 and 11
+        let invoiceYear = invoiceDate.getUTCFullYear()
 
         const account = await AccountRepository.getById(transaction.accountId)
         const closeDay = +(account?.creditData?.closeDay ?? 0)
@@ -88,7 +88,7 @@ async function calculateInvoiceDates(transaction: Transaction) {
         const dueDate = new Date(Date.UTC(+invoiceYear, +invoiceMonth, dueDay, 0, 0, 0))
 
         // move a transação para a data de vencimento da fatura correspondente
-        if(creditCardDate >= closingDate) {
+        if(invoiceDate >= closingDate) {
             dueDate.setUTCMonth(dueDate.getUTCMonth() + 1)
             closingDate.setUTCMonth(closingDate.getUTCMonth() + 1)
             // console.log('dentro da fatura do mes que vem', dueDate.toISOString())

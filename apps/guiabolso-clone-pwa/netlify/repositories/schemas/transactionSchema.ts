@@ -8,7 +8,7 @@ const schema = new Schema<Transaction>({
     amount: Number,
     currencyCode: String,
     date: Date,
-    creditCardDate: { type: Date, required: false },
+    invoiceDate: { type: Date, required: false },
     category: {
         _id: Types.ObjectId,
         name: String,

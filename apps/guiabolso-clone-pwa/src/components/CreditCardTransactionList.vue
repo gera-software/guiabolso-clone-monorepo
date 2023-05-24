@@ -2,12 +2,12 @@
       <div class="transactions-container" v-if="!isLoading">
         
         <div v-for="(transaction, index) in transactions">
-          <div class="date-separator" v-if="index === 0 || transactions[index - 1].creditCardDate?.getUTCDate() !== transaction.creditCardDate?.getUTCDate()">
+          <div class="date-separator" v-if="index === 0 || transactions[index - 1].invoiceDate?.getUTCDate() !== transaction.invoiceDate?.getUTCDate()">
             <div class="date">
-              <h2 class="day">{{ transaction.creditCardDate?.getUTCDate() }}</h2>
-              <!-- <h2 class="day">{{ transaction.creditCardDate.toLocaleString('pt-BR', { day: '2-digit'}) }}</h2> -->
-              <!-- <div class="month">{{ transaction.creditCardDate.toLocaleString('pt-BR', { month: 'short'}) }}</div> -->
-              <div class="month">{{ numberToMonth(transaction.creditCardDate?.getUTCMonth() ?? -1) }}</div>
+              <h2 class="day">{{ transaction.invoiceDate?.getUTCDate() }}</h2>
+              <!-- <h2 class="day">{{ transaction.invoiceDate.toLocaleString('pt-BR', { day: '2-digit'}) }}</h2> -->
+              <!-- <div class="month">{{ transaction.invoiceDate.toLocaleString('pt-BR', { month: 'short'}) }}</div> -->
+              <div class="month">{{ numberToMonth(transaction.invoiceDate?.getUTCMonth() ?? -1) }}</div>
             </div>
           </div>
 

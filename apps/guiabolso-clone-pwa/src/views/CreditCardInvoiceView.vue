@@ -137,7 +137,7 @@ async function getTransactionsByInvoice(invoiceId: String) {
   }).then((transaction) => {
     return transaction.map((transaction: Transaction) : Transaction => {
         transaction.date = new Date(transaction.date)
-        transaction.creditCardDate = new Date(transaction.creditCardDate ?? '')
+        transaction.invoiceDate = new Date(transaction.invoiceDate ?? '')
         return transaction
     } )
   })

@@ -125,7 +125,7 @@ export interface Transaction {
     amount: number,
     currencyCode: CurrencyCodes,
     date: Date,
-    creditCardDate?: Date,//invoiceDate
+    invoiceDate?: Date,//invoiceDate
     category?: Category,
     type: TransactionType,
     syncType: AccountSyncType,
