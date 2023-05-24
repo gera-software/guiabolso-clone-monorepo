@@ -19,14 +19,12 @@ const schema = new Schema<Account>({
         cpf: { type: String, required: false },
     },
     syncId: { type: Types.ObjectId, required: false },
-    bankData: {
-        institution: {
-            _id: { type: Types.ObjectId, required: false },
-            pluggyConnectorId: { type: Number, required: false },
-            name: String,
-            imageUrl: { type: String, required: false },
-            primaryColor: { type: String, required: false },
-        } 
+    institution: {
+        _id: { type: Types.ObjectId, required: false },
+        pluggyConnectorId: { type: Number, required: false },
+        name: String,
+        imageUrl: { type: String, required: false },
+        primaryColor: { type: String, required: false },
     },
     creditData: {
         institution: {

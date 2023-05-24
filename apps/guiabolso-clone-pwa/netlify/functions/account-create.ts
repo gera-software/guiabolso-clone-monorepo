@@ -23,7 +23,6 @@ const handler: Handler = async (event, context) => {
     //     accountOwner?: AccountOwner,
     //     syncId?: String,
     //     sync?: Synchronization,
-    //     bankData?: BankData,
     //     creditData?: CreditData,
     // }
     const account = JSON.parse(event.body) as Account;

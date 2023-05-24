@@ -49,10 +49,6 @@ export interface AccountOwner {
     cpf?: String,
 }
 
-export interface BankData {
-    institution: Institution,
-} 
-
 export interface CreditData {
     institution: Institution,
     brand: String,
@@ -76,7 +72,7 @@ export interface AccountDTO {
     syncId?: String,
     sync?: Synchronization,
     accountOwner?: AccountOwner,
-    bankData?: BankData,
+    institution?: Institution,
     creditData?: CreditData,
     _isDeleted?: Boolean,
 }
