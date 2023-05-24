@@ -44,6 +44,7 @@ describe('create manual account route', () => {
                 .then((res) => {
                     expect(res.body.id).toBeTruthy()
                     expect(res.body.type).toBe('WALLET')
+                    expect(res.body.syncType).toBe('MANUAL')
                 })
         })
     })
@@ -103,6 +104,7 @@ describe('create manual account route', () => {
                 .then((res) => {
                     expect(res.body.id).toBeTruthy()
                     expect(res.body.type).toBe('BANK')
+                    expect(res.body.syncType).toBe('MANUAL')
                     expect(res.body.institution.id).toBeTruthy()
                 })
         })
@@ -190,6 +192,7 @@ describe('create manual account route', () => {
                 .then((res) => {
                     expect(res.body.id).toBeTruthy()
                     expect(res.body.type).toBe('CREDIT_CARD')
+                    expect(res.body.syncType).toBe('MANUAL')
                     expect(res.body.institution.id).toBeTruthy()
                     expect(res.body.creditCardInfo).toEqual(validCreditCardInfoData)
                 })

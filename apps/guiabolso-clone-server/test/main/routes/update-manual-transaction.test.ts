@@ -43,7 +43,7 @@ describe('update manual transaction route', () => {
         await MongoHelper.clearCollection('accounts')
         await MongoHelper.clearCollection('transactions')
         await MongoHelper.clearCollection('categories')
-        await MongoHelper.clearCollection('invoices')
+        await MongoHelper.clearCollection('credit_card_invoices')
 
         const userRepo = makeUserRepository()
         const accountRepo = makeAccountRepository()
@@ -190,7 +190,7 @@ describe('update manual transaction route', () => {
         await MongoHelper.clearCollection('accounts')
         await MongoHelper.clearCollection('transactions')
         await MongoHelper.clearCollection('categories')
-        await MongoHelper.clearCollection('invoices')
+        await MongoHelper.clearCollection('credit_card_invoices')
         await MongoHelper.disconnect()
 
     })

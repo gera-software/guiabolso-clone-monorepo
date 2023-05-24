@@ -19,7 +19,7 @@ describe('Mongodb Credit Card Invoice repository', () => {
     })
 
     beforeEach(async () => {
-        await MongoHelper.clearCollection('invoices')
+        await MongoHelper.clearCollection('credit_card_invoices')
     })
 
     test('when invoice is added it should exists', async () => {
