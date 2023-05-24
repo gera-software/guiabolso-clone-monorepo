@@ -28,7 +28,6 @@ export interface User {
     _id?: String,
     name: String,
     email: String,
-    netlifyId: String,
 }
 
 export enum AccountSyncType {
