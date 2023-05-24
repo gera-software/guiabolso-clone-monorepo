@@ -32,6 +32,7 @@ export class CreateManualAccountController implements Controller {
             }
     
             const accountData: AccountData = request.body
+            accountData.syncType = 'MANUAL'
 
             const response = await this.usecase.perform(accountData)
     

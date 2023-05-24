@@ -69,6 +69,7 @@ describe('Create manual account web controller', () => {
             expect(response.statusCode).toEqual(201)
             expect(response.body.id).toBeTruthy()
             expect(response.body.type).toBe('WALLET')
+            expect(response.body.syncType).toBe('MANUAL')
         })
     
         test('should return status code 400 bad request when user is not found', async () => {
@@ -192,6 +193,7 @@ describe('Create manual account web controller', () => {
             expect(response.statusCode).toEqual(201)
             expect(response.body.id).toBeTruthy()
             expect(response.body.type).toBe('BANK')
+            expect(response.body.syncType).toBe('MANUAL')
             expect(response.body.institution).toEqual(validInstitution)
         })
     
@@ -323,6 +325,7 @@ describe('Create manual account web controller', () => {
             expect(response.statusCode).toEqual(201)
             expect(response.body.id).toBeTruthy()
             expect(response.body.type).toBe('CREDIT_CARD')
+            expect(response.body.syncType).toBe('MANUAL')
             expect(response.body.institution).toEqual(validInstitution)
             expect(response.body.creditCardInfo).toEqual(validCreditCardInfoData)
         })
