@@ -7,12 +7,12 @@
             </p>
             <ul class="institutions-list" v-if="!isLoading">
                 <li v-for="institution in personalInstitutions" :key="institution.providerConnectorId.toString()">
-                    <div class="institution breve">
+                    <a href="" class="institution" @click="handleConnect(institution.providerConnectorId.toString(), $event)">
                         <img class="institution-logo" :src="institution.imageUrl?.toString()" />
                         <div>
                             {{institution.name}}
                         </div>
-                    </div>
+                    </a>
                 </li>
             </ul>
             <ul class="institutions-list institutions-list--skeleton" v-if="isLoading">
@@ -51,6 +51,7 @@ const personalInstitutions = computed(() => {
     return institutions.value.filter(institution => institution.type == 'PERSONAL_BANK')
 })
 
+
 const isLoading = ref(true)
 
 async function getAvailableConnectors(): Promise<Institution[]> {
@@ -72,6 +73,55 @@ async function getAvailableConnectors(): Promise<Institution[]> {
 onMounted(async () => {
     await getAvailableConnectors()
 })
+
+async function getConnectToken(itemId?: string | undefined) {
+    return api.guiabolsoServer({
+        method: 'get',
+        url: `/pluggy/create-token${itemId ? '?itemId=' + itemId : ''}`,
+    }).then((response) => {
+        // console.log(response)
+        return response.data.accessToken
+    })
+}
+
+
+async function openPluggyConnectWidget(providerConnectorId: number) {
+    const accessToken: string = await getConnectToken()
+    // console.log('pluggy access token', accessToken)
+
+    // configure the Pluggy Connect widget instance
+    // @ts-ignore
+    const pluggyConnect = new PluggyConnect({
+        connectToken: accessToken,
+        connectorTypes: ['PERSONAL_BANK'],
+        // updateItem: existingItemIdToUpdate, // by specifying the Item id to update here, Pluggy Connect will attempt to trigger an update on it, and/or prompt credentials request if needed.
+        includeSandbox: true, // note: not needed in production
+        selectedConnectorId: providerConnectorId,
+        onSuccess: (itemData: Object) => {
+            // TODO: Implement logic for successful connection
+            // The following line is an example, it should be removed when implemented.
+            console.log('Yay! Pluggy connect success!', itemData);
+            //@ts-ignore
+            // item.value = itemData.item
+        },
+        onError: (error: Object) => {
+            // TODO: Implement logic for error on connection
+            // The following line is an example, it should be removed when implemented.
+            console.error('Whoops! Pluggy Connect error... ', error);
+        },
+        onEvent: (object: Object) => {
+        console.log(object)
+        } 
+    });
+
+    // Open Pluggy Connect widget
+    pluggyConnect.init();
+}
+
+function handleConnect(providerConnectorId: string, e: Event) {
+    e.preventDefault()
+    openPluggyConnectWidget(+providerConnectorId)
+}
 </script>
 
 <style scoped>
