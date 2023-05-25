@@ -5,8 +5,9 @@ export enum InstitutionType {
 }
 
 export interface Institution {
-    _id?: String,
-    pluggyConnectorId?: Number,
+    id?: String,
+    // pluggyConnectorId?: Number,
+    providerConnectorId: Number,
     name: String,
     imageUrl?: String,
     primaryColor?: String,

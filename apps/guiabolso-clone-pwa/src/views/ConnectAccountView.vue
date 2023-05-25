@@ -6,7 +6,7 @@
                 Escolha uma instituição para conectar
             </p>
             <ul class="institutions-list" v-if="!isLoading">
-                <li v-for="institution in institutions" :key="institution._id?.toString()">
+                <li v-for="institution in personalInstitutions" :key="institution.providerConnectorId.toString()">
                     <div class="institution breve">
                         <img class="institution-logo" :src="institution.imageUrl?.toString()" />
                         <div>
@@ -43,22 +43,26 @@
 import api from '../config/axios.js'
 import AppBar from '@/components/AppBar.vue'
 import { Institution } from '../config/types';
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 
 const institutions = ref<Institution[]>([])
+
+const personalInstitutions = computed(() => {
+    return institutions.value.filter(institution => institution.type == 'PERSONAL_BANK')
+})
 
 const isLoading = ref(true)
 
 async function getAvailableConnectors(): Promise<Institution[]> {
     isLoading.value = true
     console.log('get institutions')
-  return api.guiabolsoApi({
+  return api.guiabolsoServer({
     method: 'get',
-    url: `/pluggy-available-connectors`,
+    url: `/available-automatic-institutions`,
   }).then(function (response) {
       institutions.value = response.data
       isLoading.value = false
-      console.log(institutions.value)
+      console.log(personalInstitutions.value)
     return response.data
   }).catch(function (error) {
     console.log(error.response?.data);
