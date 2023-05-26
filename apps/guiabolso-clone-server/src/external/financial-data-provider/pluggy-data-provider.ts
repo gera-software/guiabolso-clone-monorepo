@@ -43,6 +43,7 @@ export class PluggyDataProvider implements FinancialDataProvider {
     public async getAccountsByItemId(itemId: string): Promise<Either<DataProviderError, AccountData[]>> { 
         try {
             const item = await this.client.fetchItem(itemId)
+            console.log('item', item)
 
             const institutionData: InstitutionData = {
                 id: null,
@@ -52,8 +53,12 @@ export class PluggyDataProvider implements FinancialDataProvider {
                 primaryColor: item.connector.primaryColor,
                 providerConnectorId: ''+item.connector.id,
             }
+            console.log('institutionData', institutionData)
 
             const accountsArray = await this.client.fetchAccounts(itemId)
+            for(const account of accountsArray.results) {
+                console.log('accountsArray', account)
+            }
 
             const results = accountsArray.results.map(account => ({
                 id: null,

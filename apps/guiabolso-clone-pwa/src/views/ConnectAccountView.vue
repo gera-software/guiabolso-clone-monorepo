@@ -44,6 +44,8 @@ import api from '../config/axios.js'
 import AppBar from '@/components/AppBar.vue'
 import { Institution } from '../config/types';
 import { ref, onMounted, computed } from 'vue';
+import { useUserStore } from '../stores/userStore';
+import { Item } from 'pluggy-sdk';
 
 const institutions = ref<Institution[]>([])
 
@@ -74,6 +76,10 @@ onMounted(async () => {
     await getAvailableConnectors()
 })
 
+const userStore = useUserStore()
+
+
+
 async function getConnectToken(itemId?: string | undefined) {
     return api.guiabolsoServer({
         method: 'get',
@@ -81,6 +87,20 @@ async function getConnectToken(itemId?: string | undefined) {
     }).then((response) => {
         // console.log(response)
         return response.data.accessToken
+    })
+}
+
+async function connectAutomaticAccounts(itemId: string, userId: string) {
+    return api.guiabolsoServer({
+        method: 'post',
+        url: 'connect-accounts',
+        data: {
+            itemId,
+            userId,
+        }
+    }).then((response) => {
+        console.log(response)
+        return response.data
     })
 }
 
@@ -96,11 +116,13 @@ async function openPluggyConnectWidget(providerConnectorId: number) {
         connectorTypes: ['PERSONAL_BANK'],
         // updateItem: existingItemIdToUpdate, // by specifying the Item id to update here, Pluggy Connect will attempt to trigger an update on it, and/or prompt credentials request if needed.
         includeSandbox: true, // note: not needed in production
-        selectedConnectorId: providerConnectorId,
-        onSuccess: (itemData: Object) => {
+        // selectedConnectorId: providerConnectorId,
+        onSuccess: async ({ item }: {item: Item}) => {
             // TODO: Implement logic for successful connection
             // The following line is an example, it should be removed when implemented.
-            console.log('Yay! Pluggy connect success!', itemData);
+            console.log('Yay! Pluggy connect success!', item);
+            await connectAutomaticAccounts(item.id,  userStore.user.data.id)
+        
             //@ts-ignore
             // item.value = itemData.item
         },

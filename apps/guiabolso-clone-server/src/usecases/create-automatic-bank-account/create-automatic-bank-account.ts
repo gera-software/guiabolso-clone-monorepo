@@ -32,7 +32,7 @@ export class CreateAutomaticBankAccount implements UseCase {
         if(accountData.institution && accountData.institution.id) {
             const foundInstitutionData = await this.institutionRepo.findById(accountData.institution.id)
             if(!foundInstitutionData) {
-                return left(new UnregisteredInstitutionError())
+                return left(new UnregisteredInstitutionError('Instituição não encontrada'))
             }
             accountData.institution = foundInstitutionData
 
