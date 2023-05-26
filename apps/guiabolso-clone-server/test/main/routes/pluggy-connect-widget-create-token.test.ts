@@ -31,4 +31,20 @@ describe('Pluggy Connect Widget - create token route', () => {
                 expect(res.body.accessToken).toBe(validAccessToken + itemId)
             })
     })
+
+    test('should receive an optional clientUserId', async () => {
+        const validAccessToken = 'valid-access-token'
+        const itemId = 'valid-item-id'
+        const clientUserId = 'valid-user-id'
+        mockedDataProvider.prototype.getConnectToken.mockImplementationOnce(async ({itemId}) => { return right(validAccessToken + itemId)})
+
+        await request(app)
+            .get(`/api/pluggy/create-token?itemId=${itemId}&clientUserId=${clientUserId}`)
+            .expect(201)
+            .then((res) => {
+                expect(res.body.accessToken).toBe(validAccessToken + itemId)
+            })
+
+        expect(mockedDataProvider.prototype.getConnectToken).toHaveBeenCalledWith({ itemId, clientUserId })
+    })
 })
