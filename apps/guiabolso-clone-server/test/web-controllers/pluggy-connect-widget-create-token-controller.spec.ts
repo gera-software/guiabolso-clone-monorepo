@@ -50,6 +50,29 @@ describe('Pluggy Connect Widget - create token controller', () => {
         expect(response.body).toEqual({ accessToken:'valid-access-token-' + validItemId })
     })
 
+    test('should receive an optional clientUserId', async () => {
+        mockedDataProvider.prototype.getConnectToken.mockImplementationOnce(async () => { return right('valid-access-token')})
+
+        const financialDataProvider = new InMemoryPluggyDataProvider({ institutions: [] })
+        const usecase = new PluggyConnectWidgetCreateToken(financialDataProvider)
+        const sut = new PluggyConnectWidgetCreateTokenController(usecase)
+
+        const clientUserId = 'valid-user-id'
+        const validRequest: HttpRequest = {
+            body: {
+
+            }, 
+            query: {
+                clientUserId
+            }
+        }
+
+        const response: HttpResponse = await sut.handle(validRequest)
+        expect(response.statusCode).toEqual(201)
+        expect(response.body).toEqual({ accessToken:'valid-access-token' })
+        expect(mockedDataProvider.prototype.getConnectToken).toHaveBeenCalledWith({ clientUserId })
+    })
+
     test('should return status 400 when data provider returns error', async () => {
         mockedDataProvider.prototype.getConnectToken.mockResolvedValueOnce(left(new DataProviderError()))
 
