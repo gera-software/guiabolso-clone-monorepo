@@ -24,7 +24,7 @@ export class ErrorPluggyDataProvider implements FinancialDataProvider {
         return this._institutions
     }
 
-    public async getConnectToken(options: {itemId?: string}): Promise<Either<DataProviderError, string>> {
+    public async getConnectToken(options: {itemId?: string, clientUserId?: string}): Promise<Either<DataProviderError, string>> {
         return left(new DataProviderError('erro inesperado'))
     }
 

@@ -88,6 +88,24 @@ describe('Pluggy Data Provider', () => {
             const itemId = 'valid-item-id'
             const result = (await sut.getConnectToken({itemId})).value
             expect(result).toBe(validAccessToken + itemId)
+            expect(mockedPluggyClient.prototype.createConnectToken).toHaveBeenCalledWith(itemId, {})
+
+        })
+
+        test('should receive an optional clientUserId', async () => {
+            const validAccessToken = 'valid-access-token'
+            mockedPluggyClient.prototype.createConnectToken.mockImplementationOnce(async (itemId, options) => ({ accessToken: validAccessToken + itemId + options.clientUserId}))
+
+            const clientId = 'valid-client-id'
+            const clientSecret = 'valid-client-secret'
+            const sut = new PluggyDataProvider(clientId, clientSecret)
+
+            const itemId = 'valid-item-id'
+            const clientUserId = 'any-user-id'
+            const result = (await sut.getConnectToken({itemId, clientUserId})).value
+            expect(result).toBe(validAccessToken + itemId + clientUserId)
+            expect(mockedPluggyClient.prototype.createConnectToken).toHaveBeenCalledWith(itemId, {clientUserId})
+
         })
 
         test('should returns DataProviderError if invalid authorization token', async () => {

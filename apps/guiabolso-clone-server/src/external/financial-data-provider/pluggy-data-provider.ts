@@ -1,4 +1,4 @@
-import { PluggyClient, Transaction as PluggyTransaction, TransactionFilters } from 'pluggy-sdk'
+import { ConnectTokenOptions, PluggyClient, Transaction as PluggyTransaction, TransactionFilters } from 'pluggy-sdk'
 import { AccountData, FinancialDataProvider, InstitutionData, TransactionFilter, TransactionRequest } from "@/usecases/ports"
 import { Either, left, right } from '@/shared'
 import { DataProviderError } from '@/usecases/errors'
@@ -31,9 +31,13 @@ export class PluggyDataProvider implements FinancialDataProvider {
                 })
     }
 
-    public async getConnectToken({ itemId }: { itemId?: string}): Promise<Either<DataProviderError, string>> {
+    public async getConnectToken({ itemId, clientUserId }: { itemId?: string, clientUserId?: string}): Promise<Either<DataProviderError, string>> {
         try {
-            const result = await this.client.createConnectToken(itemId)
+            const options: ConnectTokenOptions = {}
+            if(clientUserId) {
+                options.clientUserId = clientUserId
+            }
+            const result = await this.client.createConnectToken(itemId, options)
             return right(result.accessToken)
         } catch(error) {
             return left(new DataProviderError(error.toString()))

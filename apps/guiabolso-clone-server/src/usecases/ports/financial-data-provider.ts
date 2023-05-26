@@ -11,7 +11,7 @@ export type TransactionFilter = {
 
 export interface FinancialDataProvider {
     getAvailableAutomaticInstitutions(): Promise<InstitutionData[]>
-    getConnectToken(options: {itemId?: string}): Promise<Either<DataProviderError, string>>
+    getConnectToken(options: {itemId?: string, clientUserId?: string}): Promise<Either<DataProviderError, string>>
     getAccountsByItemId(itemId: string): Promise<Either<DataProviderError, AccountData[]>>
     getTransactionsByProviderAccountId(accountId: string, accountType: AccountType, filter: TransactionFilter): Promise<Either<DataProviderError, TransactionRequest[]>>
 }
