@@ -64,28 +64,35 @@ export class PluggyDataProvider implements FinancialDataProvider {
                 console.log('accountsArray', account)
             }
 
-            const results = accountsArray.results.map(account => ({
-                id: null,
-                type: account.type == 'BANK' ? 'BANK' : 'CREDIT_CARD',
-                syncType: 'AUTOMATIC',
-                name: account.name,
-                balance: account.type == 'BANK' ? account.balance :  -account.balance,
-                imageUrl: item.connector.imageUrl,
-                userId: null,
-                institution: institutionData,
-                creditCardInfo: account.type == 'BANK' ? null : {
-                    brand: account.creditData.brand,
-                    creditLimit: account.creditData.creditLimit,
-                    availableCreditLimit: account.creditData.availableCreditLimit,
-                    closeDay: account.creditData.balanceCloseDate.getUTCDate(),
-                    dueDay: account.creditData.balanceDueDate.getUTCDate(),
-                },
-                providerAccountId: account.id,
-                synchronization: {
-                    providerItemId: item.id,
-                    createdAt: item.createdAt,
+            const results = accountsArray.results.map(account => {
+                const signal = account.type == 'CREDIT' ? -1 : 1
+                return {
+                    id: null,
+                    type: account.type == 'BANK' ? 'BANK' : 'CREDIT_CARD',
+                    syncType: 'AUTOMATIC',
+                    name: account.name,
+                    balance: +(account.balance * 100).toFixed(0) * signal,
+                    imageUrl: item.connector.imageUrl,
+                    userId: null,
+                    institution: institutionData,
+                    creditCardInfo: account.type == 'BANK' ? null : {
+                        brand: account.creditData.brand,
+                        creditLimit: +(account.creditData.creditLimit * 100).toFixed(0),
+                        availableCreditLimit: +(account.creditData.availableCreditLimit * 100).toFixed(0),
+                        closeDay: account.creditData.balanceCloseDate.getUTCDate(),
+                        dueDay: account.creditData.balanceDueDate.getUTCDate(),
+                    },
+                    providerAccountId: account.id,
+                    synchronization: {
+                        providerItemId: item.id,
+                        createdAt: item.createdAt,
+                    }
                 }
-            }))
+            })
+
+            for(const account of results) {
+                console.log('results', account)
+            }
 
     
             return right(results)
