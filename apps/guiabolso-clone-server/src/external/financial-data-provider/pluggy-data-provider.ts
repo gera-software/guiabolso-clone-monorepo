@@ -17,7 +17,7 @@ export class PluggyDataProvider implements FinancialDataProvider {
     public async getAvailableAutomaticInstitutions(): Promise<InstitutionData[]> {
         console.log('[Pluggy] get available automatic institutions...')
         return this.client
-                .fetchConnectors()
+                .fetchConnectors({ types: [ 'PERSONAL_BANK' ], sandbox: true })
                 .then((response) => response.results)
                 .then((connectors) => {
                     return connectors.map((connector) => ({

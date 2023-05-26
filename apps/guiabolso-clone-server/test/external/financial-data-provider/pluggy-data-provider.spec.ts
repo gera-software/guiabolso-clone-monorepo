@@ -70,6 +70,9 @@ describe('Pluggy Data Provider', () => {
                 primaryColor: '#000',
                 type: 'BUSINESS_BANK',
             })
+
+            expect(mockedPluggyClient.prototype.fetchConnectors).toHaveBeenCalledTimes(1)
+            expect(mockedPluggyClient.prototype.fetchConnectors).toHaveBeenCalledWith({ types: [ 'PERSONAL_BANK' ], sandbox: true })
         })
     })
 
