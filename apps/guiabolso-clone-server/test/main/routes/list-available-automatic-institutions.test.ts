@@ -20,6 +20,8 @@ describe('list all available automatic institutions', () => {
                 country: '',
                 credentials: null,
                 hasMFA: false,
+                products: [],
+                createdAt: new Date()
             },
             {
                 id: 202,
@@ -31,9 +33,16 @@ describe('list all available automatic institutions', () => {
                 country: '',
                 credentials: null,
                 hasMFA: false,
+                products: [],
+                createdAt: new Date()
             }
         ]
-        mockedPluggyClient.prototype.fetchConnectors.mockResolvedValueOnce({ results: arrayConnectors })
+        mockedPluggyClient.prototype.fetchConnectors.mockResolvedValueOnce({ 
+            "total": 2,
+            "totalPages": 1,
+            "page": 1,
+            results: arrayConnectors 
+        })
 
     })
 
