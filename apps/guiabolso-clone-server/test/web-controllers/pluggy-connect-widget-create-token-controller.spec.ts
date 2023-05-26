@@ -30,7 +30,7 @@ describe('Pluggy Connect Widget - create token controller', () => {
     })
 
     test('should return status 201 created and specific connect token', async () => {
-        mockedDataProvider.prototype.getConnectToken.mockImplementationOnce(async (itemId) => { return right('valid-access-token-' + itemId)})
+        mockedDataProvider.prototype.getConnectToken.mockImplementationOnce(async ({itemId}) => { return right('valid-access-token-' + itemId)})
 
         const financialDataProvider = new InMemoryPluggyDataProvider({ institutions: [] })
         const usecase = new PluggyConnectWidgetCreateToken(financialDataProvider)

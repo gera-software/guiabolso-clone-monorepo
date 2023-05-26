@@ -31,7 +31,7 @@ export class PluggyDataProvider implements FinancialDataProvider {
                 })
     }
 
-    public async getConnectToken(itemId?: string): Promise<Either<DataProviderError, string>> {
+    public async getConnectToken({ itemId }: { itemId?: string}): Promise<Either<DataProviderError, string>> {
         try {
             const result = await this.client.createConnectToken(itemId)
             return right(result.accessToken)

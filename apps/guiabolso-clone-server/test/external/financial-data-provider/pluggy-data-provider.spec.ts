@@ -73,7 +73,7 @@ describe('Pluggy Data Provider', () => {
             const clientSecret = 'valid-client-secret'
             const sut = new PluggyDataProvider(clientId, clientSecret)
 
-            const result = (await sut.getConnectToken()).value
+            const result = (await sut.getConnectToken({})).value
             expect(result).toBe(validAccessToken)
         })
 
@@ -86,7 +86,7 @@ describe('Pluggy Data Provider', () => {
             const sut = new PluggyDataProvider(clientId, clientSecret)
 
             const itemId = 'valid-item-id'
-            const result = (await sut.getConnectToken(itemId)).value
+            const result = (await sut.getConnectToken({itemId})).value
             expect(result).toBe(validAccessToken + itemId)
         })
 
@@ -98,7 +98,7 @@ describe('Pluggy Data Provider', () => {
             const sut = new PluggyDataProvider(invalidClientId, invalidClientSecret)
 
             const itemId = 'valid-item-id'
-            const result = (await sut.getConnectToken(itemId)).value as Error
+            const result = (await sut.getConnectToken({itemId})).value as Error
             expect(result).toBeInstanceOf(DataProviderError)
         })
 
@@ -110,7 +110,7 @@ describe('Pluggy Data Provider', () => {
             const sut = new PluggyDataProvider(validClientId, validClientSecret)
 
             const itemId = 'valid-item-id'
-            const result = (await sut.getConnectToken(itemId)).value as Error
+            const result = (await sut.getConnectToken({itemId})).value as Error
             expect(result).toBeInstanceOf(DataProviderError)
         })
     })

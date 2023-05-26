@@ -22,7 +22,7 @@ describe('Pluggy Connect Widget - create token route', () => {
     test('should return a specific token', async () => {
         const validAccessToken = 'valid-access-token'
         const itemId = 'valid-item-id'
-        mockedDataProvider.prototype.getConnectToken.mockImplementationOnce(async (itemId) => { return right(validAccessToken + itemId)})
+        mockedDataProvider.prototype.getConnectToken.mockImplementationOnce(async ({itemId}) => { return right(validAccessToken + itemId)})
 
         await request(app)
             .get(`/api/pluggy/create-token?itemId=${itemId}`)

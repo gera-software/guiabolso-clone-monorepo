@@ -30,7 +30,7 @@ export class InMemoryPluggyDataProvider implements FinancialDataProvider {
         return this._institutions
     }
 
-    public async getConnectToken(itemId?: string): Promise<Either<DataProviderError, string>> {
+    public async getConnectToken(options: {itemId?: string}): Promise<Either<DataProviderError, string>> {
         return right('valid-access-token')
     }
 

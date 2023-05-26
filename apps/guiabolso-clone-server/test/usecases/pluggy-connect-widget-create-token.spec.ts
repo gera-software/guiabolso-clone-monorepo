@@ -18,7 +18,7 @@ describe('Pluggy Connect Widget - create a connect token use case', () => {
     })
 
     test('should create a specific connect token to update an item', async () => {
-        mockedDataProvider.prototype.getConnectToken.mockImplementationOnce(async (itemId) => { return right('valid-access-token-' + itemId)})
+        mockedDataProvider.prototype.getConnectToken.mockImplementationOnce(async ({itemId}) => { return right('valid-access-token-' + itemId)})
         
         const finantialDataProvider = new InMemoryPluggyDataProvider({ institutions: [] })
         const sut = new PluggyConnectWidgetCreateToken(finantialDataProvider)
