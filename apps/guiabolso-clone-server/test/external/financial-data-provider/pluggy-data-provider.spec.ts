@@ -24,6 +24,8 @@ describe('Pluggy Data Provider', () => {
                     country: '',
                     credentials: null,
                     hasMFA: false,
+                    products: [],
+                    createdAt: new Date(),
                 },
                 {
                     id: 202,
@@ -35,9 +37,16 @@ describe('Pluggy Data Provider', () => {
                     country: '',
                     credentials: null,
                     hasMFA: false,
+                    products: [],
+                    createdAt: new Date(),
                 }
             ]
-            mockedPluggyClient.prototype.fetchConnectors.mockResolvedValueOnce({ results: arrayConnectors })
+            mockedPluggyClient.prototype.fetchConnectors.mockResolvedValueOnce({
+                total: 2,
+                totalPages: 1,
+                page: 1,
+                results: arrayConnectors
+             })
 
             const clientId = 'valid-client-id'
             const clientSecret = 'valid-client-secret'
@@ -156,13 +165,13 @@ describe('Pluggy Data Provider', () => {
             expect(result).toBeInstanceOf(DataProviderError)
         })
 
-        test('should return a list of accounts', async () => {
+        test('should return a list of accounts without pagination of results', async () => {
             const validItemId = "a5d1ca6c-24c0-41c7-8b44-9272cc868663"
 
             const item: Item = {
                 "id": validItemId,
                 "createdAt": new Date("2021-12-28T21:48:02.863Z"),
-                // "updatedAt": new Date("2021-12-28T21:48:02.952Z"),
+                "updatedAt": new Date("2021-12-28T21:48:02.952Z"),
                 "connector": {
                     "id": 201,
                     "name": "Itaú",
@@ -198,56 +207,49 @@ describe('Pluggy Data Provider', () => {
                     ],
                     "imageUrl": "https://res.cloudinary.com/dkr0vihmp/image/upload/v1588853552/connectors-logos/itau_ntodvn.png",
                     "hasMFA": false,
+                    "products": [],
+                    "createdAt": new Date(),
+
                 },
-                "status": ItemStatus.UPDATING,
+                "status": "UPDATING",
                 "executionStatus": "CREATED",
                 "lastUpdatedAt": null,
                 "webhookUrl": null,
-                // "error": null,
+                "error": null,
                 "clientUserId": "My User App Id",
                 "parameter": null,
-                // "userAction": null,
-                // "statusDetail": {
-                //   "accounts": {
-                //     "isUpdated": true,
-                //     "lastUpdatedAt": "2022-03-08T22:43:04.796Z",
-                //     "warnings": []
-                //   },
-                //   "identity": {
-                //     "isUpdated": false,
-                //     "lastUpdatedAt": null,
-                //     "warnings": []
-                //   },
-                //   "creditCards": {
-                //     "isUpdated": true,
-                //     "lastUpdatedAt": "2022-03-08T22:43:04.796Z",
-                //     "warnings": []
-                //   },
-                //   "investments": {
-                //     "isUpdated": true,
-                //     "lastUpdatedAt": "2022-03-08T22:43:04.796Z",
-                //     "warnings": [
-                //       {
-                //         "code": "001",
-                //         "message": "You lack permissions to view Investments on this account",
-                //         "providerMessage": "Meu perfil não permite visualizar investimentos"
-                //       }
-                //     ]
-                //   },
-                //   "transactions": {
-                //     "isUpdated": true,
-                //     "lastUpdatedAt": "2022-03-08T22:43:04.796Z",
-                //     "warnings": []
-                //   },
-                //   "paymentData": null
-                // },
+                "userAction": null,
+                "statusDetail": {
+                  "accounts": {
+                    "isUpdated": true,
+                    "lastUpdatedAt": new Date("2022-03-08T22:43:04.796Z"),       
+                  },
+                  "identity": {
+                    "isUpdated": false,
+                    "lastUpdatedAt": null,
+                  },
+                  "creditCards": {
+                    "isUpdated": true,
+                    "lastUpdatedAt": new Date("2022-03-08T22:43:04.796Z"),
+                  },
+                  "investments": {
+                    "isUpdated": true,
+                    "lastUpdatedAt": new Date("2022-03-08T22:43:04.796Z"),
+                  },
+                  "transactions": {
+                    "isUpdated": true,
+                    "lastUpdatedAt": new Date("2022-03-08T22:43:04.796Z"),
+                  },
+                  "paymentData": null
+                },
+                "consecutiveFailedLoginAttempts": 0,
                 // "nextAutoSyncAt": null
             }
 
             const bankAccount: PluggyAccount = {
                 "id": "a658c848-e475-457b-8565-d1fffba127c4",
                 "type": "BANK",
-                "subtype": "CHECKINGS_ACCOUNT",
+                "subtype": "CHECKING_ACCOUNT",
                 "number": "0001/12345-0",
                 "name": "Conta Corrente",
                 "marketingName": "GOLD Conta Corrente",
@@ -259,7 +261,8 @@ describe('Pluggy Data Provider', () => {
                 "bankData": {
                   "transferNumber": "0001/12345-0",
                   "closingBalance": 120950
-                }
+                },
+                "creditData": null,
             }
 
             const creditAccount: PluggyAccount = {
@@ -283,12 +286,211 @@ describe('Pluggy Data Provider', () => {
                   "balanceForeignCurrency": 0,
                   "minimumPayment": 16190,
                   "creditLimit": 300000
-                }
+                },
+                "bankData": null,
             }
             
             mockedPluggyClient.prototype.fetchItem.mockResolvedValueOnce(item)
 
             mockedPluggyClient.prototype.fetchAccounts.mockResolvedValueOnce({
+                "total": 2,
+                "totalPages": 1,
+                "page": 1,
+                "results": [ bankAccount, creditAccount ]
+            })
+
+            const validClientId = 'valid-client-id'
+            const validClientSecret = 'valid-client-secret'
+            const sut = new PluggyDataProvider(validClientId, validClientSecret)
+
+            const results = (await sut.getAccountsByItemId(validItemId)).value as AccountData[]
+            expect(results.length).toBe(2)
+            expect(results[0]).toEqual({
+                "balance": bankAccount.balance, 
+                "creditCardInfo": null, 
+                "id": null, 
+                "imageUrl": item.connector.imageUrl, 
+                "institution": {
+                    "id": null, 
+                    "imageUrl": item.connector.imageUrl, 
+                    "name": item.connector.name, 
+                    "primaryColor": item.connector.primaryColor, 
+                    "providerConnectorId": ''+item.connector.id, 
+                    "type": item.connector.type
+                }, 
+                "name": bankAccount.name, 
+                "providerAccountId": bankAccount.id, 
+                "syncType": "AUTOMATIC", 
+                "synchronization": {
+                    "createdAt": item.createdAt, 
+                    "providerItemId": item.id
+                }, 
+                "type": "BANK", 
+                "userId": null,
+            })
+
+            expect(results[1]).toEqual({
+                "balance": -creditAccount.balance, 
+                "creditCardInfo": {
+                    "availableCreditLimit": creditAccount.creditData.availableCreditLimit, 
+                    "creditLimit": 300000, 
+                    "brand": creditAccount.creditData.brand, 
+                    "closeDay": creditAccount.creditData.balanceCloseDate.getUTCDate(), 
+                    "dueDay": creditAccount.creditData.balanceDueDate.getUTCDate()
+                }, 
+                "id": null, 
+                "imageUrl": item.connector.imageUrl, 
+                "institution": {
+                    "id": null, 
+                    "imageUrl": item.connector.imageUrl, 
+                    "name": item.connector.name, 
+                    "primaryColor": item.connector.primaryColor, 
+                    "providerConnectorId": ''+item.connector.id, 
+                    "type": item.connector.type
+                },
+                "name": creditAccount.name, 
+                "providerAccountId": creditAccount.id, 
+                "syncType": "AUTOMATIC", 
+                "synchronization": {
+                    "createdAt": item.createdAt, 
+                    "providerItemId": item.id
+                }, 
+                "type": "CREDIT_CARD", 
+                "userId": null,
+            })
+        })
+
+        test('should return a list of accounts with pagination of results', async () => {
+            const validItemId = "a5d1ca6c-24c0-41c7-8b44-9272cc868663"
+
+            const item: Item = {
+                "id": validItemId,
+                "createdAt": new Date("2021-12-28T21:48:02.863Z"),
+                "updatedAt": new Date("2021-12-28T21:48:02.952Z"),
+                "connector": {
+                    "id": 201,
+                    "name": "Itaú",
+                    "primaryColor": "EC7000",
+                    "institutionUrl": "https://www.itau.com.br",
+                    "country": "BR",
+                    "type": "PERSONAL_BANK",
+                    "credentials": [
+                    {
+                        "label": "Agência",
+                        "name": "agency",
+                        "type": "number",
+                        "placeholder": "Agência",
+                        "validation": "^\\d{4}$",
+                        "validationMessage": "O agencia deve ter 4 dígito"
+                    },
+                    {
+                        "label": "Conta",
+                        "name": "account",
+                        "type": "number",
+                        "placeholder": "Conta",
+                        "validation": "^\\d{4,6}$",
+                        "validationMessage": "O conta deve ter 6 dígito"
+                    },
+                    {
+                        "label": "Senha",
+                        "name": "password",
+                        "type": "number",
+                        "placeholder": "Senha",
+                        "validation": "^\\d{6}$",
+                        "validationMessage": "O senha deve ter 6 dígito"
+                    }
+                    ],
+                    "imageUrl": "https://res.cloudinary.com/dkr0vihmp/image/upload/v1588853552/connectors-logos/itau_ntodvn.png",
+                    "hasMFA": false,
+                    "products": [],
+                    "createdAt": new Date(),
+
+                },
+                "status": "UPDATING",
+                "executionStatus": "CREATED",
+                "lastUpdatedAt": null,
+                "webhookUrl": null,
+                "error": null,
+                "clientUserId": "My User App Id",
+                "parameter": null,
+                "userAction": null,
+                "statusDetail": {
+                  "accounts": {
+                    "isUpdated": true,
+                    "lastUpdatedAt": new Date("2022-03-08T22:43:04.796Z"),
+                  },
+                  "identity": {
+                    "isUpdated": false,
+                    "lastUpdatedAt": null,
+                  },
+                  "creditCards": {
+                    "isUpdated": true,
+                    "lastUpdatedAt": new Date("2022-03-08T22:43:04.796Z"),
+                  },
+                  "investments": {
+                    "isUpdated": true,
+                    "lastUpdatedAt": new Date("2022-03-08T22:43:04.796Z"),
+                  },
+                  "transactions": {
+                    "isUpdated": true,
+                    "lastUpdatedAt": new Date("2022-03-08T22:43:04.796Z"),
+                  },
+                  "paymentData": null
+                },
+                "consecutiveFailedLoginAttempts": 0,
+                // "nextAutoSyncAt": null
+            }
+
+            const bankAccount: PluggyAccount = {
+                "id": "a658c848-e475-457b-8565-d1fffba127c4",
+                "type": "BANK",
+                "subtype": "CHECKING_ACCOUNT",
+                "number": "0001/12345-0",
+                "name": "Conta Corrente",
+                "marketingName": "GOLD Conta Corrente",
+                "balance": 120950,
+                "itemId": validItemId,
+                "taxNumber": "416.799.495-00",
+                "owner": "John Doe",
+                "currencyCode": "BRL",
+                "bankData": {
+                    "transferNumber": "0001/12345-0",
+                    "closingBalance": 120950
+                },
+                creditData: null,
+            }
+
+            const creditAccount: PluggyAccount = {
+                "id": "a658c848-e475-457b-8565-d1fffba127c5",
+                "type": "CREDIT",
+                "subtype": "CREDIT_CARD",
+                "number": "xxxx8670",
+                "name": "Mastercard Black",
+                "marketingName": "PLUGGY UNICLASS MASTERCARD BLACK",
+                "balance": 120950,
+                "itemId": validItemId,
+                "taxNumber": "416.799.495-00",
+                "owner": "John Doe",
+                "currencyCode": "BRL",
+                "creditData": {
+                    "level": "BLACK",
+                    "brand": "MASTERCARD",
+                    "balanceCloseDate": new Date("2022-01-03"),
+                    "balanceDueDate": new Date("2022-01-10"),
+                    "availableCreditLimit": 200000,
+                    "balanceForeignCurrency": 0,
+                    "minimumPayment": 16190,
+                    "creditLimit": 300000
+                },
+                bankData: null,
+            }
+            
+            mockedPluggyClient.prototype.fetchItem.mockResolvedValueOnce(item)
+
+            mockedPluggyClient.prototype.fetchAccounts.mockResolvedValueOnce({
+                "total": 2,
+                "totalPages": 1,
+                "page": 1,
                 "results": [ bankAccount, creditAccount ]
             })
 
@@ -374,6 +576,9 @@ describe('Pluggy Data Provider', () => {
 
         test('should return an empty array if account not found', async () => {
             mockedPluggyClient.prototype.fetchTransactions.mockResolvedValueOnce({
+                "total": 0,
+                "totalPages": 1,
+                "page": 1,
                 "results": []
             })
 
@@ -391,10 +596,15 @@ describe('Pluggy Data Provider', () => {
 
         test('should return a list of transactions from a start date to today', async () => {
             mockedPluggyClient.prototype.fetchTransactions.mockResolvedValueOnce({
+                "total": 1,
+                "totalPages": 1,
+                "page": 1,
                 "results": [
                     {
                         "id": "a8534c85-53ce-4f21-94d7-50e9d2ee4957",
                         "description": "* PROV * COMPRA TESOURO DIRETO CLIENTES",
+                        "descriptionRaw": null,
+                        "type": "DEBIT",
                         "currencyCode": "BRL",
                         "amount": -212.45,
                         "date": new Date("2020-10-15T00:00:00.000Z"),
@@ -403,9 +613,15 @@ describe('Pluggy Data Provider', () => {
                         "accountId": "562b795d-1653-429f-be86-74ead9502813",
                         "providerCode": null,
                         "paymentData": null,
+                        "creditCardMetadata": null,
                       },
                 ]
-            }).mockResolvedValueOnce({ "results": [] })
+            }).mockResolvedValueOnce({                 
+                "total": 0,
+                "totalPages": 1,
+                "page": 1,
+                "results": [] 
+            })
 
             const validClientId = 'valid-client-id'
             const validClientSecret = 'valid-client-secret'
@@ -422,10 +638,15 @@ describe('Pluggy Data Provider', () => {
 
         test('should return a list of transactions from a start date to a end date', async () => {
             mockedPluggyClient.prototype.fetchTransactions.mockResolvedValueOnce({
+                "total": 1,
+                "totalPages": 1,
+                "page": 1,
                 "results": [
                     {
                         "id": "a8534c85-53ce-4f21-94d7-50e9d2ee4957",
                         "description": "* PROV * COMPRA TESOURO DIRETO CLIENTES",
+                        "descriptionRaw": null,
+                        "type": "DEBIT",
                         "currencyCode": "BRL",
                         "amount": -212.45,
                         "date": new Date("2020-10-15T00:00:00.000Z"),
@@ -434,9 +655,15 @@ describe('Pluggy Data Provider', () => {
                         "accountId": "562b795d-1653-429f-be86-74ead9502813",
                         "providerCode": null,
                         "paymentData": null,
+                        "creditCardMetadata": null,
                       },
                 ]
-            }).mockResolvedValueOnce({ "results": [] })
+            }).mockResolvedValueOnce({ 
+                "total": 0,
+                "totalPages": 1,
+                "page": 1,
+                "results": []
+             })
 
             const validClientId = 'valid-client-id'
             const validClientSecret = 'valid-client-secret'
@@ -454,10 +681,15 @@ describe('Pluggy Data Provider', () => {
 
         test('should return a small list of transactions without pagination of results', async () => {
             mockedPluggyClient.prototype.fetchTransactions.mockResolvedValueOnce({
+                "total": 1,
+                "totalPages": 1,
+                "page": 1,
                 "results": [
                     {
                         "id": "a8534c85-53ce-4f21-94d7-50e9d2ee4957",
                         "description": "* PROV * COMPRA TESOURO DIRETO CLIENTES",
+                        "descriptionRaw": null,
+                        "type": "DEBIT",
                         "currencyCode": "BRL",
                         "amount": -212.45,
                         "date": new Date("2020-10-15T00:00:00.000Z"),
@@ -466,9 +698,15 @@ describe('Pluggy Data Provider', () => {
                         "accountId": "562b795d-1653-429f-be86-74ead9502813",
                         "providerCode": null,
                         "paymentData": null,
+                        "creditCardMetadata": null,
                       },
                 ]
-            }).mockResolvedValueOnce({ "results": [] })
+            }).mockResolvedValueOnce({ 
+                "total": 0,
+                "totalPages": 1,
+                "page": 1,
+                "results": [] 
+            })
 
             const validClientId = 'valid-client-id'
             const validClientSecret = 'valid-client-secret'
@@ -488,10 +726,15 @@ describe('Pluggy Data Provider', () => {
 
         test('should return a big list of transactions with pagination of results', async () => {
             mockedPluggyClient.prototype.fetchTransactions.mockResolvedValueOnce({
+                "total": 2,
+                "totalPages": 2,
+                "page": 1,
                 "results": [
                     {
                         "id": "a8534c85-53ce-4f21-94d7-50e9d2ee4957",
                         "description": "* PROV * COMPRA TESOURO DIRETO CLIENTES",
+                        "descriptionRaw": null,
+                        "type": "DEBIT",
                         "currencyCode": "BRL",
                         "amount": -212.45,
                         "date": new Date("2020-10-15T00:00:00.000Z"),
@@ -500,13 +743,19 @@ describe('Pluggy Data Provider', () => {
                         "accountId": "562b795d-1653-429f-be86-74ead9502813",
                         "providerCode": null,
                         "paymentData": null,
+                        "creditCardMetadata": null,
                       },
                 ]
             }).mockResolvedValueOnce({
+                "total": 2,
+                "totalPages": 2,
+                "page": 2,
                 "results": [
                     {
                         "id": "a8534c85-53ce-4f21-94d7-50e9d2ee4957",
                         "description": "* PROV * COMPRA TESOURO DIRETO CLIENTES",
+                        "descriptionRaw": null,
+                        "type": "DEBIT",
                         "currencyCode": "BRL",
                         "amount": -212.45,
                         "date": new Date("2020-10-15T00:00:00.000Z"),
@@ -515,9 +764,14 @@ describe('Pluggy Data Provider', () => {
                         "accountId": "562b795d-1653-429f-be86-74ead9502813",
                         "providerCode": null,
                         "paymentData": null,
+                        "creditCardMetadata": null,
                       },
                 ]
-            }).mockResolvedValueOnce({ "results": [] })
+            }).mockResolvedValueOnce({ 
+                "total": 2,
+                "totalPages": 2,
+                "page": 3,
+                "results": [] })
 
             const validClientId = 'valid-client-id'
             const validClientSecret = 'valid-client-secret'
@@ -539,10 +793,15 @@ describe('Pluggy Data Provider', () => {
 
         test('should return bank transactions', async () => {
             mockedPluggyClient.prototype.fetchTransactions.mockResolvedValueOnce({
+                "total": 2,
+                "totalPages": 1,
+                "page": 1,
                 "results": [
                     {
                         "id": "a8534c85-53ce-4f21-94d7-50e9d2ee4957",
                         "description": "* PROV * COMPRA TESOURO DIRETO CLIENTES",
+                        "descriptionRaw": null,
+                        "type": "DEBIT",
                         "currencyCode": "BRL",
                         "amount": -212.45,
                         "date": new Date("2020-10-15T00:00:00.000Z"),
@@ -551,10 +810,13 @@ describe('Pluggy Data Provider', () => {
                         "accountId": "562b795d-1653-429f-be86-74ead9502813",
                         "providerCode": null,
                         "paymentData": null,
+                        "creditCardMetadata": null,
                     },
                     {
                         "id": "ff9ed929-edc4-408c-a959-d51f79ab1814",
                         "description": "AJUSTE NA POSIÇÃO PR. 14/10/2020 NC. 870947",
+                        "descriptionRaw": null,
+                        "type": "CREDIT",
                         "currencyCode": "BRL",
                         "amount": 159.2,
                         "date": new Date("2020-10-14T00:00:00.000Z"),
@@ -563,9 +825,15 @@ describe('Pluggy Data Provider', () => {
                         "accountId": "562b795d-1653-429f-be86-74ead9502813",
                         "providerCode": null,
                         "paymentData": null,
+                        "creditCardMetadata": null,
                     }
                 ]
-            }).mockResolvedValueOnce({ "results": [] })
+            }).mockResolvedValueOnce({ 
+                "total": 0,
+                "totalPages": 1,
+                "page": 1,
+                "results": []
+            })
 
             const validClientId = 'valid-client-id'
             const validClientSecret = 'valid-client-secret'
@@ -599,10 +867,15 @@ describe('Pluggy Data Provider', () => {
 
         test('should return credit card transactions', async () => {
             mockedPluggyClient.prototype.fetchTransactions.mockResolvedValueOnce({
+                "total": 2,
+                "totalPages": 1,
+                "page": 1,
                 "results": [
                     {
                         "id": "a8534c85-53ce-4f21-94d7-50e9d2ee4957",
                         "description": "Pagamento recebido",
+                        "descriptionRaw": null,
+                        "type": "CREDIT",
                         "currencyCode": "BRL",
                         "amount": -1416.22,
                         "date": new Date("2020-10-15T00:00:00.000Z"),
@@ -611,10 +884,13 @@ describe('Pluggy Data Provider', () => {
                         "accountId": "562b795d-1653-429f-be86-74ead9502813",
                         "providerCode": null,
                         "paymentData": null,
+                        "creditCardMetadata": null,
                     },
                     {
                         "id": "ff9ed929-edc4-408c-a959-d51f79ab1814",
                         "description": "Compra online",
+                        "descriptionRaw": null,
+                        "type": "DEBIT",
                         "currencyCode": "BRL",
                         "amount": 159.2,
                         "date": new Date("2020-10-14T00:00:00.000Z"),
@@ -623,9 +899,15 @@ describe('Pluggy Data Provider', () => {
                         "accountId": "562b795d-1653-429f-be86-74ead9502813",
                         "providerCode": null,
                         "paymentData": null,
+                        "creditCardMetadata": null,
                     }
                 ]
-            }).mockResolvedValueOnce({ "results": [] })
+            }).mockResolvedValueOnce({ 
+                "total": 0,
+                "totalPages": 1,
+                "page": 1,
+                "results": [] 
+            })
 
             const validClientId = 'valid-client-id'
             const validClientSecret = 'valid-client-secret'
