@@ -15,6 +15,7 @@ describe('Pluggy Connect Widget - create a connect token use case', () => {
 
         const response = (await sut.perform({})).value
         expect(response).toBe('valid-access-token')
+        expect(mockedDataProvider.prototype.getConnectToken).toHaveBeenCalledWith({itemId: undefined, clientUserId: undefined})
     })
 
     test('should create a specific connect token to update an item', async () => {
@@ -26,6 +27,20 @@ describe('Pluggy Connect Widget - create a connect token use case', () => {
         const validItemId = 'valid-item-id'
         const response = (await sut.perform({ itemId: validItemId })).value
         expect(response).toBe('valid-access-token-' + validItemId)
+        expect(mockedDataProvider.prototype.getConnectToken).toHaveBeenCalledWith({itemId: validItemId, clientUserId: undefined})
+
+    })
+
+    test('should receive an optional clientUserId', async () => {
+        mockedDataProvider.prototype.getConnectToken.mockImplementationOnce(async () => { return right('valid-access-token')})
+
+        const finantialDataProvider = new InMemoryPluggyDataProvider({ institutions: [] })
+        const sut = new PluggyConnectWidgetCreateToken(finantialDataProvider)
+
+        const clientUserId = 'valid-user-id'
+        const response = (await sut.perform({ clientUserId })).value
+        expect(response).toBe('valid-access-token')
+        expect(mockedDataProvider.prototype.getConnectToken).toHaveBeenCalledWith({clientUserId, itemId: undefined})
     })
 
     test('should return an UnexpectedError error', async () => {

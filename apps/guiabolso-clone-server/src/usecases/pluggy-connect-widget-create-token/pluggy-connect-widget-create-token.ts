@@ -9,9 +9,9 @@ export class PluggyConnectWidgetCreateToken implements UseCase {
         this.pluggyDataProvider = pluggyDataProvider
     }
 
-    async perform({ itemId }: { itemId?: string }): Promise<Either<DataProviderError, string>> {
+    async perform({ itemId, clientUserId }: { itemId?: string, clientUserId?: string }): Promise<Either<DataProviderError, string>> {
 
-        const connectToken = await this.pluggyDataProvider.getConnectToken({itemId})
+        const connectToken = await this.pluggyDataProvider.getConnectToken({itemId, clientUserId})
         return connectToken
     }
 
