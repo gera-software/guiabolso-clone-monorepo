@@ -172,3 +172,14 @@ Animations on transitions
 
 
 
+/**
+Little hack to made z-index works
+
+Makes a div stacks over the pluggy connect widget modal
+https://coder-coder.com/z-index-isnt-working/
+*/
+[id^="zoid-pluggy-connect-widget-"] {
+  position: relative;
+  z-index: 2;
+  opacity: .999;
+}

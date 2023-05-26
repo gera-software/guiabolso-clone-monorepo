@@ -36,6 +36,11 @@
                 </div>
             </router-link>
         </div>
+        <div class="syncingModal" v-if="showSyncingModal">
+            <font-awesome-icon icon="fa-solid fa-arrows-rotate" :spin="true" size="2xl"></font-awesome-icon>
+            <p>Entendendo sua vida financeira</p>
+            <p>{{ (currentStep / 11 * 100).toFixed(0) }}%</p>
+        </div>
     </div>
 </template>
 
@@ -46,6 +51,12 @@ import { Institution } from '../config/types';
 import { ref, onMounted, computed } from 'vue';
 import { useUserStore } from '../stores/userStore';
 import { Item } from 'pluggy-sdk';
+import { useRouter } from 'vue-router';
+
+// @ts-ignore
+import Toastify from 'toastify-js'
+
+const router = useRouter()
 
 const institutions = ref<Institution[]>([])
 
@@ -74,6 +85,12 @@ async function getAvailableConnectors(): Promise<Institution[]> {
 
 onMounted(async () => {
     await getAvailableConnectors()
+    // Toastify({
+    //         duration: 50000,
+    //         text: `<h4 style='display: inline'>Get connectors.</h4> `,
+    //         escapeMarkup: false,
+    //         gravity: "bottom",
+    //     }).showToast()
 })
 
 const userStore = useUserStore()
@@ -100,10 +117,18 @@ async function connectAutomaticAccounts(itemId: string, userId: string) {
         }
     }).then((response) => {
         console.log(response)
+        // Toastify({
+        //     duration: 5000,
+        //     text: `<h4 style='display: inline'>${response.data.length} contas importadas com sucesso.</h4> `,
+        //     escapeMarkup: false,
+        //     gravity: "top",
+        // }).showToast();
         return response.data
     })
 }
 
+const showSyncingModal = ref(false)
+const currentStep = ref(0)
 
 async function openPluggyConnectWidget(providerConnectorId: number) {
     const accessToken: string = await getConnectToken()
@@ -116,24 +141,40 @@ async function openPluggyConnectWidget(providerConnectorId: number) {
         connectorTypes: ['PERSONAL_BANK'],
         // updateItem: existingItemIdToUpdate, // by specifying the Item id to update here, Pluggy Connect will attempt to trigger an update on it, and/or prompt credentials request if needed.
         includeSandbox: true, // note: not needed in production
-        // selectedConnectorId: providerConnectorId,
+        selectedConnectorId: providerConnectorId,
         onSuccess: async ({ item }: {item: Item}) => {
-            // TODO: Implement logic for successful connection
-            // The following line is an example, it should be removed when implemented.
             console.log('Yay! Pluggy connect success!', item);
+ 
             await connectAutomaticAccounts(item.id,  userStore.user.data.id)
-        
-            //@ts-ignore
-            // item.value = itemData.item
+            currentStep.value = 11
+            showSyncingModal.value = false
         },
         onError: (error: Object) => {
-            // TODO: Implement logic for error on connection
-            // The following line is an example, it should be removed when implemented.
             console.error('Whoops! Pluggy Connect error... ', error);
+            currentStep.value = 0
+            showSyncingModal.value = false
         },
-        onEvent: (object: Object) => {
-        console.log(object)
-        } 
+        onEvent: (object: any) => {
+            console.log(object)
+            if(object.event == 'LOGIN_STEP_COMPLETED') {
+                console.log('LOGIN_STEP_COMPLETED')
+                showSyncingModal.value = true
+            }
+            if(object.event == "ITEM_RESPONSE" && (object.item.status == 'UPDATING' || object.item.status == 'UPDATED')) {
+                currentStep.value++
+                console.log(currentStep.value)
+            }
+            // else if(object.event == "ITEM_RESPONSE" && object.item.status == "UPDATED") {
+            //     console.log("UPDATED")
+            //     currentStep.value = 10
+            // }
+        },
+        onClose: () => {
+            console.log('pluggy modal closed')
+            router.push({
+                name: 'accounts'
+            })
+        }
     });
 
     // Open Pluggy Connect widget
@@ -208,5 +249,17 @@ function handleConnect(providerConnectorId: string, e: Event) {
     height: 22px;
     width: 60%;
     animation: pulse-bg 1s infinite;
+}
+
+.syncingModal {
+    background-color: #3f1b68e3;
+    position: fixed;
+    inset: 0;
+    z-index: 3;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
  </style>
