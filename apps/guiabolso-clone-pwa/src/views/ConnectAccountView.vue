@@ -39,7 +39,7 @@
         <div class="syncingModal" v-if="showSyncingModal">
             <font-awesome-icon icon="fa-solid fa-arrows-rotate" :spin="true" size="2xl"></font-awesome-icon>
             <p>Entendendo sua vida financeira</p>
-            <p>{{ (currentStep / 11 * 100).toFixed(0) }}%</p>
+            <p>{{ currentStep }}</p>
         </div>
     </div>
 </template>
@@ -117,12 +117,19 @@ async function connectAutomaticAccounts(itemId: string, userId: string) {
         }
     }).then((response) => {
         console.log(response)
-        // Toastify({
-        //     duration: 5000,
-        //     text: `<h4 style='display: inline'>${response.data.length} contas importadas com sucesso.</h4> `,
-        //     escapeMarkup: false,
-        //     gravity: "top",
-        // }).showToast();
+        return response.data
+    })
+}
+
+async function syncAutomaticAccount(accountId: string) {
+    return api.guiabolsoServer({
+        method: 'post',
+        url: 'sync-accounts',
+        data: {
+            accountId
+        }
+    }).then((response) => {
+        console.log(response)
         return response.data
     })
 }
@@ -145,8 +152,15 @@ async function openPluggyConnectWidget(providerConnectorId: number) {
         onSuccess: async ({ item }: {item: Item}) => {
             console.log('Yay! Pluggy connect success!', item);
  
-            await connectAutomaticAccounts(item.id,  userStore.user.data.id)
+            const accounts = await connectAutomaticAccounts(item.id,  userStore.user.data.id)
             currentStep.value = 11
+
+            for(const acc of accounts) {
+                console.log('start sync account', acc.id)
+                await syncAutomaticAccount(acc.id)
+                console.log('end sync account', acc.id)
+                currentStep.value++
+            }
             showSyncingModal.value = false
         },
         onError: (error: Object) => {
