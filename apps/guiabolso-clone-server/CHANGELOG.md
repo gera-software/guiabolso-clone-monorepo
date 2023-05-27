@@ -1,5 +1,11 @@
 # @gera-software/guiabolso-clone-server
 
+## 1.12.0
+
+### Minor Changes
+
+- Updated Pluggy SDK version
+
 ## 1.11.0
 
 ### Minor Changes
