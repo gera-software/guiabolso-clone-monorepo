@@ -168,7 +168,7 @@ export interface Synchronization {
     createdAt: Date,
     // itemStatus: string,
     // syncStatus: SyncStatus,
-    // lastSyncAt: Date,
+    lastSyncAt: Date,
     // userId: string,
 }
 
