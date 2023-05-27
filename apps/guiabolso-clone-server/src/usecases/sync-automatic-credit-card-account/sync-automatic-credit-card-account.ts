@@ -1,6 +1,6 @@
 import { Either, left, right } from "@/shared";
 import { AccountData, CreditCardInvoiceRepository, FinancialDataProvider, InstitutionRepository, TransactionData, TransactionRepository, UpdateAccountRepository, UseCase, UserData, UserRepository } from "@/usecases/ports";
-import { UnexpectedError, UnregisteredAccountError, UnregisteredInstitutionError } from "@/usecases/errors";
+import { DataProviderError, UnexpectedError, UnregisteredAccountError, UnregisteredInstitutionError } from "@/usecases/errors";
 import { InvalidAccountError, InvalidBalanceError, InvalidCreditCardError, InvalidEmailError, InvalidInstitutionError, InvalidNameError, InvalidPasswordError, InvalidTypeError } from "@/entities/errors";
 import { AccountType, AutomaticCreditCardAccount, Institution, NubankCreditCardInvoiceStrategy, User } from "@/entities";
 
@@ -89,7 +89,7 @@ export class SyncAutomaticCreditCardAccount implements UseCase {
         return invoiceData.id
     }
     
-    async perform(accountId: string): Promise<any> {
+    async perform(accountId: string): Promise<Either<UnregisteredAccountError | InvalidAccountError | DataProviderError | UnexpectedError | InvalidNameError | InvalidEmailError | InvalidPasswordError | InvalidBalanceError | InvalidCreditCardError | InvalidInstitutionError | UnregisteredInstitutionError | InvalidTypeError, AccountData>> {
         const foundAccountData = await this.accountRepo.findById(accountId)
 
         if(!foundAccountData) {
