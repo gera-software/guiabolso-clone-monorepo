@@ -12,6 +12,7 @@ export class SyncAutomaticAccountController implements Controller {
     }
 
     async handle(request: HttpRequest): Promise<HttpResponse> {
+        console.log('[SYNC CONTROLLER]', request.body)
         try {
             const requiredParamNames = ['accountId']
     

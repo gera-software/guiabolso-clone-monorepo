@@ -104,28 +104,33 @@ export class PluggyDataProvider implements FinancialDataProvider {
 
     public async getTransactionsByProviderAccountId(accountId: string, accountType: AccountType, filter: TransactionFilter): Promise<Either<DataProviderError, TransactionRequest[]>> {
         try {
-            const array = []
+            const buffer = []
 
-            const options: TransactionFilters = {
-                page: 1
+            
+            let numeroTotalPages = 1
+            for(let currentPage = 1; currentPage <= numeroTotalPages; currentPage++) {
+                const options: TransactionFilters = {
+                    page: currentPage
+                }
+    
+                if(filter.from) {
+                    options.from = filter.from.toISOString().slice(0, 10)
+                }
+                if(filter.to) {
+                    options.to = filter.to.toISOString().slice(0, 10)
+                }
+                const { results, page, totalPages, total } = await this.client.fetchTransactions(filter.providerAccountId, options)
+                buffer.push(...results)
+                console.log(`[Pluggy] Fetching transactions. total processado: ${buffer.length}, total estimado: ${total}, currentPage: ${page}/${totalPages}`)
+                
+                numeroTotalPages = totalPages
             }
 
-            if(filter.from) {
-                options.from = filter.from.toISOString().slice(0, 10)
-            }
-            if(filter.to) {
-                options.to = filter.to.toISOString().slice(0, 10)
-            }
-
-            let results = []
-            do {
-                results = (await this.client.fetchTransactions(filter.providerAccountId, options)).results
-                array.push(...results)
-            } while (results.length)
+           
 
             const signal = accountType == 'CREDIT_CARD' ? -1 : 1
 
-            const transactions: TransactionRequest[] = array.map((transaction: PluggyTransaction) => ({
+            const transactions: TransactionRequest[] = buffer.map((transaction: PluggyTransaction) => ({
                 id: null,
                 accountId,
                 amount: +(transaction.amount * 100).toFixed(0) * signal,

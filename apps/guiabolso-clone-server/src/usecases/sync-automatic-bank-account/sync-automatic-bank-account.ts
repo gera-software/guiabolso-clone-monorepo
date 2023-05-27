@@ -16,6 +16,7 @@ export class SyncAutomaticBankAccount implements UseCase {
     }
     
     async perform(accountId: string): Promise<Either<UnregisteredAccountError | InvalidAccountError | UnexpectedError | DataProviderError, AccountData>> {
+        console.time('sync-bank')
         const foundAccountData = await this.accountRepo.findById(accountId)
 
         if(!foundAccountData) {
@@ -78,6 +79,7 @@ export class SyncAutomaticBankAccount implements UseCase {
         await this.accountRepo.updateSynchronizationStatus(accountId, { lastSyncAt: new Date() })
 
         const updatedAccount = await this.accountRepo.findById(accountId)
+        console.timeEnd('sync-bank')
         return right(updatedAccount)
     }
     

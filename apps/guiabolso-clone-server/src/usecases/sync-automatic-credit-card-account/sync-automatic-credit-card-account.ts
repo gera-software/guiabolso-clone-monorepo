@@ -90,6 +90,7 @@ export class SyncAutomaticCreditCardAccount implements UseCase {
     }
     
     async perform(accountId: string): Promise<Either<UnregisteredAccountError | InvalidAccountError | DataProviderError | UnexpectedError | InvalidNameError | InvalidEmailError | InvalidPasswordError | InvalidBalanceError | InvalidCreditCardError | InvalidInstitutionError | UnregisteredInstitutionError | InvalidTypeError, AccountData>> {
+        console.time('syn-credit-card')
         const foundAccountData = await this.accountRepo.findById(accountId)
 
         if(!foundAccountData) {
@@ -176,6 +177,7 @@ export class SyncAutomaticCreditCardAccount implements UseCase {
         await this.accountRepo.updateSynchronizationStatus(accountId, { lastSyncAt: new Date() })
 
         const updatedAccount = await this.accountRepo.findById(accountId)
+        console.timeEnd('syn-credit-card')
         return right(updatedAccount)
     }
 
