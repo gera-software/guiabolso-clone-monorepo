@@ -7,7 +7,7 @@ const schema = new Schema<Account>({
     name: String,
     imageUrl: { type: String, required: false },
     syncType: String,
-    pluggyAccountId: { type: String, required: false },
+    providerAccountId: { type: String, required: false },
     initialBalance: { type: Number, required: false },
     balance: Number,
     currencyCode: String,
@@ -18,7 +18,7 @@ const schema = new Schema<Account>({
         pluggyIdentityId: { type: String, required: false },
         cpf: { type: String, required: false },
     },
-    syncId: { type: Types.ObjectId, required: false },
+    // syncId: { type: Types.ObjectId, required: false },
     institution: {
         _id: { type: Types.ObjectId, required: false },
         pluggyConnectorId: { type: Number, required: false },
@@ -33,6 +33,10 @@ const schema = new Schema<Account>({
         closeDay: Number,
         dueDay: Number,
     },
+    synchronization: {
+        providerItemId: String,
+        createdAt: Date,
+    },
     _isDeleted: { type: Boolean, required: false },
 });
 
@@ -40,31 +44,6 @@ const AccountModel = model<Account>('accounts', schema);
 
 export async function fetchByUserId(id: any): Promise<Account[]> {
     await connect();
-    // const result = await AccountModel.aggregate([
-    //     { $match: { userId: new Types.ObjectId(id), _isDeleted: { $ne: true } } },
-    //     { $lookup: {
-    //             from: 'synchronizations',
-    //             localField: 'syncId',
-    //             foreignField: '_id',
-    //             as: 'sync',
-                
-    //         }
-    //     },
-    //     { $unwind: { path: '$sync', preserveNullAndEmptyArrays: true } },
-    //     { $project: {
-    //             _id: 1,
-    //             name: 1,
-    //             imageUrl: 1,
-    //             syncType: 1,
-    //             balance: 1,
-    //             currencyCode: 1,
-    //             type: 1,
-    //             userId: 1,
-    //             syncId: 1,
-    //             sync: 1,
-    //         }
-    //     },
-    // ]) as AccountSummaryDTO[];
     const results = await AccountModel.find({ userId: new Types.ObjectId(id), _isDeleted: { $ne: true } })
     await disconnect();
     return results;

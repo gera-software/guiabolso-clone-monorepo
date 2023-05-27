@@ -10,10 +10,10 @@ import { AccountSyncType, CurrencyCodes, Transaction, TransactionStatus, Transac
 
 
 
-export async function updateStatus(sync: Synchronization) {
-    console.log('UPDATE STATUS: ', sync)
-    return await SynchronizationRepository.updateOne(sync)
-}
+// export async function updateStatus(sync: Synchronization) {
+//     console.log('UPDATE STATUS: ', sync)
+//     return await SynchronizationRepository.updateOne(sync)
+// }
 
 // TODO e se for uma transação de cartão de crédito, tem que inverter os valores...
 /**
@@ -36,7 +36,7 @@ export async function importTransactions(accountId: string, from: string): Promi
     let transactions: Transaction[] = []
 
     if(account) {
-        const pluggyAccountId = account.pluggyAccountId ?? ''
+        const pluggyAccountId = account.providerAccountId ?? ''
   
         const provider = new PluggyDataProvider()
 
@@ -69,14 +69,14 @@ export async function importTransactions(accountId: string, from: string): Promi
 
 
         // update syncronization status to SYNCED
-        let sync = await SynchronizationRepository.getById(account.syncId)
-        if(sync) {
-            sync.syncStatus = SyncStatus.SYNCED
-            sync.lastSyncAt = new Date()
-            sync = await updateStatus(sync)
+        // let sync = await SynchronizationRepository.getById(account.syncId)
+        // if(sync) {
+        //     sync.syncStatus = SyncStatus.SYNCED
+        //     sync.lastSyncAt = new Date()
+        //     sync = await updateStatus(sync)
             
 
-        }
+        // }
 
         // get account summary
         const accountSummary: AccountSummaryDTO | null = await AccountRepository.getSummaryById(account._id)

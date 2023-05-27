@@ -64,15 +64,15 @@ export interface Account {
     name: String,
     imageUrl?: String,
     syncType: AccountSyncType,
-    pluggyAccountId?: string,
+    providerAccountId?: string,
     initialBalance?: Number,
     balance: Number,
     currencyCode: CurrencyCodes,
     type: AccountType,
     userId: String,
     accountOwner?: AccountOwner,
-    syncId?: String,
-    sync?: Synchronization,
+    // syncId?: String,
+    synchronization?: Synchronization,
     institution?: Institution,
     creditCardInfo?: CreditCardInfo,
     _isDeleted?: Boolean,
@@ -87,8 +87,8 @@ export interface AccountSummaryDTO {
     currencyCode: CurrencyCodes,
     type: AccountType,
     userId: String,
-    syncId?: String,
-    sync?: Synchronization,
+    // syncId?: String,
+    synchronization?: Synchronization,
     _isDeleted?: Boolean,
 }
 
@@ -153,13 +153,13 @@ export enum SyncStatus {
 }
 
 export interface Synchronization {
-    _id?: string,
-    pluggyItemId: string,
-    itemStatus: string,
-    syncStatus: SyncStatus,
+    // _id?: string,
+    providerItemId: string,
     createdAt: Date,
-    lastSyncAt: Date,
-    userId: string,
+    // itemStatus: string,
+    // syncStatus: SyncStatus,
+    // lastSyncAt: Date,
+    // userId: string,
 }
 
 export enum BillStatus {

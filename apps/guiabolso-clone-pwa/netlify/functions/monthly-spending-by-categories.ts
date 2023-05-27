@@ -12,9 +12,9 @@ type Item = {
 
 const handler :Handler = async (event, context) => {
     const userId = event.queryStringParameters?.id
-    const monthField = event.queryStringParameters?.month
-    const yearField = event.queryStringParameters?.year
-    const transactionType = event.queryStringParameters?.transactionType
+    const monthField = event.queryStringParameters?.month ?? ''
+    const yearField = event.queryStringParameters?.year ?? ''
+    const transactionType = event.queryStringParameters?.transactionType ?? ''
     const spendingsByCategories = await TransactionRepository.fetchSpendingsByCategories(userId, monthField, yearField, transactionType)
 
     const items: Item[] = []

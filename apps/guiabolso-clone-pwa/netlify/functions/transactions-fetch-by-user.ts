@@ -4,8 +4,8 @@ import { Transaction, TransactionSummary } from "../types";
 
 const handler :Handler = async (event, context) => {
     const userId = event.queryStringParameters?.id
-    const monthField = event.queryStringParameters?.month
-    const yearField = event.queryStringParameters?.year
+    const monthField = event.queryStringParameters?.month ?? ''
+    const yearField = event.queryStringParameters?.year ?? ''
     const limit = +(event.queryStringParameters?.limit ?? 0)
     const transactionType = event.queryStringParameters?.transactionType ?? 'ALL'
 

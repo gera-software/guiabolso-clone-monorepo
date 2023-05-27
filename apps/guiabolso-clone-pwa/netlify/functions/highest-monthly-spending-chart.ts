@@ -12,8 +12,8 @@ const handler :Handler = async (event: HandlerEvent, context: HandlerContext) =>
     const { identity, user } = context.clientContext;
     console.log(user)
     const userId = event.queryStringParameters?.id
-    const monthField = event.queryStringParameters?.month
-    const yearField = event.queryStringParameters?.year
+    const monthField = event.queryStringParameters?.month ?? ''
+    const yearField = event.queryStringParameters?.year ?? ''
     const spendingsByCategories = await DashboardRepository.getHighestMonthlySpendings(userId, monthField, yearField)
     
     const result: item[] = [];

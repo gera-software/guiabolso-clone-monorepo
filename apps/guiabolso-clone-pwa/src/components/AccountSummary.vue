@@ -6,7 +6,10 @@
             <div>
               <div class="name">{{account.name}}</div>
               <div class="balance">R$ {{ (+account.balance / 100).toFixed(2) }}</div>
-              <div class="date" v-if="account.syncType === 'AUTOMATIC'"><font-awesome-icon icon="fa-solid fa-arrows-rotate" /> Atualizado em {{ (new Date(""+account.sync?.lastSyncAt)).toLocaleString() }} <span class="badge" v-if="account.sync">{{account.sync.syncStatus}}</span> </div>
+              <div class="date" v-if="account.syncType === 'AUTOMATIC'">
+                <font-awesome-icon icon="fa-solid fa-arrows-rotate" /> Criado em {{ (new Date(""+account.synchronization?.createdAt)).toLocaleString() }} 
+                <!-- <span class="badge" v-if="account.synchronization">{{account.synchronization.syncStatus}}</span>  -->
+              </div>
               <div class="date" v-else><font-awesome-icon icon="fa-solid fa-user" /> Conta manual</div>
             </div>
           </div>
@@ -107,17 +110,17 @@ async function openPluggyConnectWidget(account: AccountSummaryDTO) {
       updateItem: existingItemIdToUpdate, // by specifying the Item id to update here, Pluggy Connect will attempt to trigger an update on it, and/or prompt credentials request if needed.
       includeSandbox: true, // note: not needed in production
       onSuccess: async (itemData: Object) => {
-          if(account.sync) {
+          if(account.synchronization) {
             // @ts-ignore
-            account.sync.itemStatus = itemData.item.status
-            // account.sync.lastSyncAt = itemData.item.lastUpdatedAt
-            account.sync.syncStatus = SyncStatus.READY
+            // account.synchronization.itemStatus = itemData.item.status
+            // account.synchronization.lastSyncAt = itemData.item.lastUpdatedAt
+            // account.synchronization.syncStatus = SyncStatus.READY
 
             console.log('PLUGGY CONNECT SUCCESS', itemData);
-            account.sync = await synchronizationReady(account.sync)
-            console.log('SYNCRONIZATION READY ', account.sync)
+            account.synchronization = await synchronizationReady(account.synchronization)
+            console.log('SYNCRONIZATION READY ', account.synchronization)
             const { sync, balance } = await startSynchronization(account)
-            account.sync = sync
+            account.synchronization = sync
             account.balance = balance
             console.log('SYNCRONIZATION endend ', account)
           }
@@ -163,7 +166,8 @@ async function synchronizationReady(sync: Synchronization) {
 async function startSynchronization(account: AccountSummaryDTO) {
   console.time('synchronization')
   // start syncronization from 7 days before the last sync date, for guarantee 
-  const fromDate = new Date(account.sync?.lastSyncAt ?? '')
+  // const fromDate = new Date(account.synchronization?.lastSyncAt ?? '')
+  const fromDate = new Date(account.synchronization?.createdAt ?? '')
   fromDate.setDate(fromDate.getDate() - 7)
 
   return api.guiabolsoServer({

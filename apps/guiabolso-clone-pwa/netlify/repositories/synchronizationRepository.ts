@@ -3,13 +3,14 @@ import { Schema, Types, model } from 'mongoose';
 import { Synchronization } from '../types'
 
 const schema = new Schema<Synchronization>({
-    _id: Types.ObjectId,
-    pluggyItemId: String,
-    itemStatus: String,
-    syncStatus: String,
+    // _id: Types.ObjectId,
+    // pluggyItemId: String,
+    // itemStatus: String,
+    // syncStatus: String,
+    providerItemId: String,
     createdAt: Date,
-    lastSyncAt: Date,
-    userId: Types.ObjectId,
+    // lastSyncAt: Date,
+    // userId: Types.ObjectId,
 });
 
 const SynchronizationModel = model<Synchronization>('synchronizations', schema);
@@ -28,18 +29,18 @@ export async function getById(id: any): Promise<Synchronization | null> {
     return result;
 }
 
-export async function updateOne(sync: Synchronization): Promise<Synchronization | null> {
-    await connect();
-    const doc = await SynchronizationModel.findById(sync._id);
+// export async function updateOne(sync: Synchronization): Promise<Synchronization | null> {
+//     await connect();
+//     const doc = await SynchronizationModel.findById(sync._id);
 
-    if(doc) {
-        doc.itemStatus = sync.itemStatus
-        doc.lastSyncAt = sync.lastSyncAt
-        doc.syncStatus = sync.syncStatus
-        await doc.save();
-    }
+//     if(doc) {
+//         doc.itemStatus = sync.itemStatus
+//         doc.lastSyncAt = sync.lastSyncAt
+//         doc.syncStatus = sync.syncStatus
+//         await doc.save();
+//     }
 
-    await disconnect();
+//     await disconnect();
 
-    return doc;
-}
+//     return doc;
+// }
