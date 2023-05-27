@@ -149,5 +149,47 @@ describe('Sync automatic account web controller', () => {
             expect(response.statusCode).toEqual(500)
         })
 
+        test('should return status code 200 ok when request is valid', async () => {
+            const providerAccountData1: BankAccountData = {
+                id: null,
+                type: bankAccountType,
+                syncType,
+                name,
+                balance: bankBalance + 1000,
+                imageUrl,
+                userId: null,
+                institution: {
+                    id: null,
+                    name: institution.name,
+                    type: institution.type,
+                    imageUrl: institution.imageUrl,
+                    primaryColor: institution.primaryColor,
+                    providerConnectorId: institution.providerConnectorId,
+                },
+                providerAccountId: providerBankAccountId,
+                synchronization: bankSynchronization,
+            }
+    
+            const dataProvider = new InMemoryPluggyDataProvider({accounts: [ providerAccountData1 ]})
+            const accountRepository = new InMemoryAccountRepository([bankAccountData])
+            const institutionRepository = new InMemoryInstitutionRepository([institution])
+            const userRepository = new InMemoryUserRepository([userData])
+            const transactionRepository = new InMemoryTransactionRepository([])
+            const invoiceRepository = new InMemoryCreditCardInvoiceRepository([])
+            const syncAutomaticBankAccount = new SyncAutomaticBankAccount(accountRepository, transactionRepository, dataProvider)
+            const syncAutomaticCreditCardAccount = new SyncAutomaticCreditCardAccount(accountRepository, userRepository, institutionRepository, transactionRepository, invoiceRepository, dataProvider)
+            const usecase = new SyncAutomaticAccount(accountRepository, syncAutomaticBankAccount, syncAutomaticCreditCardAccount)
+
+            const validRequest: HttpRequest = {
+                body: {
+                    accountId: bankAccountData.id
+                }
+            }
+            const sut = new SyncAutomaticAccountController(usecase)
+            const response: HttpResponse = await sut.handle(validRequest)
+            expect(response.statusCode).toEqual(200)
+            expect(response.body.synchronization.lastSyncAt).toBeDefined()
+        })
+
     })
 })

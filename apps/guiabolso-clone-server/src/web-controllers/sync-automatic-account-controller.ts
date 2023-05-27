@@ -1,6 +1,6 @@
 import { UseCase } from "@/usecases/ports";
 import { Controller, HttpRequest, HttpResponse } from "@/web-controllers/ports";
-import { badRequest, serverError } from "@/web-controllers/util";
+import { badRequest, ok, serverError } from "@/web-controllers/util";
 import { MissingParamError } from "@/web-controllers/errors";
 import { DataProviderError } from "@/usecases/errors";
 
@@ -32,6 +32,8 @@ export class SyncAutomaticAccountController implements Controller {
                 } 
                 return badRequest(response.value)
             }
+
+            return ok(response.value)
         } catch(error) {
             console.log(error)
             return serverError(error)
