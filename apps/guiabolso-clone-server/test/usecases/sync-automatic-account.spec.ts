@@ -73,9 +73,41 @@ describe('Sync automatic account use case', () => {
             const transactionRepository = new InMemoryTransactionRepository([])
             const syncAutomaticBankAccount = new SyncAutomaticBankAccount(accountRepository, transactionRepository, dataProvider)
             const sut = new SyncAutomaticAccount(accountRepository, syncAutomaticBankAccount)
-            
+
             const response = (await sut.perform(accountId)).value as Error
             expect(response).toBeInstanceOf(DataProviderError)
+        })
+
+        test('should sync if account is valid', async () => {
+            const providerAccountData1: BankAccountData = {
+                id: null,
+                type: accountType,
+                syncType,
+                name,
+                balance: balance + 1000,
+                imageUrl,
+                userId: null,
+                institution: {
+                    id: null,
+                    name: institution.name,
+                    type: institution.type,
+                    imageUrl: institution.imageUrl,
+                    primaryColor: institution.primaryColor,
+                    providerConnectorId: institution.providerConnectorId,
+                },
+                providerAccountId,
+                synchronization,
+            }
+    
+            const dataProvider = new InMemoryPluggyDataProvider({accounts: [ providerAccountData1 ]})
+            const accountRepository = new InMemoryAccountRepository([bankAccountData])
+            const transactionRepository = new InMemoryTransactionRepository([])
+            const syncAutomaticBankAccount = new SyncAutomaticBankAccount(accountRepository, transactionRepository, dataProvider)
+            const sut = new SyncAutomaticAccount(accountRepository, syncAutomaticBankAccount)
+
+            const response = (await sut.perform(accountId)).value as BankAccountData
+            expect(response.balance).toBe(providerAccountData1.balance)
+            expect(response.synchronization.lastSyncAt).toBeInstanceOf(Date)
         })
     })
 
