@@ -78,7 +78,7 @@ describe('Sync automatic bank account use case', () => {
         expect(response).toBeInstanceOf(InvalidAccountError)
     })
 
-    test('should not sync if data provided has an error', async () => {
+    test('should not sync if data provider has an error', async () => {
         const dataProvider = new ErrorPluggyDataProvider({})
         const accountRepository = new InMemoryAccountRepository([bankAccountData])
         const transactionRepository = new InMemoryTransactionRepository([])

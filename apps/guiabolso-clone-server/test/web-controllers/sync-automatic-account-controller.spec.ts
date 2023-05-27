@@ -4,7 +4,7 @@ import { SyncAutomaticBankAccount } from "@/usecases/sync-automatic-bank-account
 import { SyncAutomaticCreditCardAccount } from "@/usecases/sync-automatic-credit-card-account"
 import { SyncAutomaticAccountController } from "@/web-controllers"
 import { HttpRequest, HttpResponse } from "@/web-controllers/ports"
-import { InMemoryPluggyDataProvider } from "@test/doubles/financial-data-provider"
+import { ErrorPluggyDataProvider, InMemoryPluggyDataProvider } from "@test/doubles/financial-data-provider"
 import { InMemoryAccountRepository, InMemoryInstitutionRepository, InMemoryUserRepository, InMemoryTransactionRepository, InMemoryCreditCardInvoiceRepository } from "@test/doubles/repositories"
 import { ErrorThrowingUseCaseStub } from "@test/doubles/usecases"
 
@@ -123,5 +123,31 @@ describe('Sync automatic account web controller', () => {
         const sut = new SyncAutomaticAccountController(errorThrowingUseCaseStub)
         const response: HttpResponse = await sut.handle(validRequest)
         expect(response.statusCode).toEqual(500)
+    })
+
+    describe('sync bank account', () => {
+
+        test('should return status 500 when data provider has an error', async () => {
+            const dataProvider = new ErrorPluggyDataProvider({})
+            const accountRepository = new InMemoryAccountRepository([bankAccountData])
+            const institutionRepository = new InMemoryInstitutionRepository([institution])
+            const userRepository = new InMemoryUserRepository([userData])
+            const transactionRepository = new InMemoryTransactionRepository([])
+            const invoiceRepository = new InMemoryCreditCardInvoiceRepository([])
+            const syncAutomaticBankAccount = new SyncAutomaticBankAccount(accountRepository, transactionRepository, dataProvider)
+            const syncAutomaticCreditCardAccount = new SyncAutomaticCreditCardAccount(accountRepository, userRepository, institutionRepository, transactionRepository, invoiceRepository, dataProvider)
+            const usecase = new SyncAutomaticAccount(accountRepository, syncAutomaticBankAccount, syncAutomaticCreditCardAccount)
+
+            const sut = new SyncAutomaticAccountController(usecase)
+            
+            const validRequest: HttpRequest = {
+                body: {
+                    accountId: bankAccountData.id
+                }
+            }
+            const response: HttpResponse = await sut.handle(validRequest)
+            expect(response.statusCode).toEqual(500)
+        })
+
     })
 })
