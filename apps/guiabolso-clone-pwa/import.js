@@ -18,7 +18,7 @@ export async function fetchAllCategories() {
 
 
 const transactionSchema = new Schema({
-    pluggyTransactionId: { type: String, required: false },
+    providerId: { type: String, required: false },
     description: String,
     amount: Number,
     currencyCode: String,

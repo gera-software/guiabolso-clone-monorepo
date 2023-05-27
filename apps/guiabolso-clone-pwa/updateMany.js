@@ -16,7 +16,7 @@ const mongoUri = 'mongodb://localhost:27017/development_guiabolso'
 
 
 const transactionSchema = new Schema({
-    pluggyTransactionId: { type: String, required: false },
+    providerId: { type: String, required: false },
     description: String,
     descriptionOriginal: String,
     amount: Number,

@@ -114,7 +114,7 @@ export interface TransactionRequest {
 
 export interface Transaction {
     _id?: string,
-    pluggyTransactionId?: string,
+    providerId?: string,
     description?: string,
     descriptionOriginal?: string,
     amount: number,

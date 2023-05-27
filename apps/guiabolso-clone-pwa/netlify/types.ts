@@ -104,7 +104,7 @@ export enum TransactionStatus {
 
 export interface Transaction {
     _id?: String,
-    pluggyTransactionId?: String,
+    providerId?: String,
     description?: String,
     descriptionOriginal?: String,
     amount: Number,

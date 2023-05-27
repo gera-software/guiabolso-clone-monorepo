@@ -291,7 +291,7 @@ export async function batchUpdate(transactions: Transaction[]) {
 
     const updateArray = transactions.map(transaction => ({
         updateOne: {
-            filter: { pluggyTransactionId: transaction.pluggyTransactionId },
+            filter: { providerId: transaction.providerId },
             // If you were using the MongoDB driver directly, you'd need to do
             // `update: { $set: { title: ... } }` but mongoose adds $set for
             // you.

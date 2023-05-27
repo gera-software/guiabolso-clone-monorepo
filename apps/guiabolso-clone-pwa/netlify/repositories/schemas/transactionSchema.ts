@@ -2,7 +2,7 @@ import { Schema, model, Types } from 'mongoose';
 import {  Transaction } from '../../types'
 
 const schema = new Schema<Transaction>({
-    pluggyTransactionId: { type: String, required: false },
+    providerId: { type: String, required: false },
     description: String,
     descriptionOriginal: String,
     amount: Number,

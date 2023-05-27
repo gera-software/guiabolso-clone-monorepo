@@ -51,7 +51,7 @@ export async function importTransactions(accountId: string, from: string): Promi
         console.log('TRANSACTIONS FOUND: ' + pluggyTransactions.length)
 
         transactions = pluggyTransactions.map(transaction => ({
-            pluggyTransactionId: transaction.id,
+            providerId: transaction.id,
             syncType: AccountSyncType.AUTOMATIC,
             descriptionOriginal: transaction.description,
             amount: Math.trunc(transaction.amount * 100),
