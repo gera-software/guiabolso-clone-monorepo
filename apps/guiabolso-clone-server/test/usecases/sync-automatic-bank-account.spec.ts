@@ -64,6 +64,7 @@ describe('Sync automatic bank account use case', () => {
         expect(response).toBeInstanceOf(UnregisteredAccountError)
     })
 
+    // TODO should not sync if account doesnot have type AUTOMATIC?
     test('should not sync if account does not have a provider account id or item id', async () => {
         delete bankAccountData.providerAccountId
         delete bankAccountData.synchronization

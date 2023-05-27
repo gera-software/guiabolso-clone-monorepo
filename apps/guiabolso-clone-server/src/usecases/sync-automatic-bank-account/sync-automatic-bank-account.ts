@@ -1,6 +1,6 @@
-import { left, right } from "@/shared";
+import { Either, left, right } from "@/shared";
 import { AccountData, FinancialDataProvider, TransactionRepository, UpdateAccountRepository, UseCase } from "@/usecases/ports";
-import { UnexpectedError, UnregisteredAccountError } from "@/usecases/errors";
+import { DataProviderError, UnexpectedError, UnregisteredAccountError } from "@/usecases/errors";
 import { InvalidAccountError } from "@/entities/errors";
 import { AccountType } from "@/entities";
 
@@ -15,7 +15,7 @@ export class SyncAutomaticBankAccount implements UseCase {
         this.financialDataProvider = financialDataProvider
     }
     
-    async perform(accountId: string): Promise<any> {
+    async perform(accountId: string): Promise<Either<UnregisteredAccountError | InvalidAccountError | UnexpectedError | DataProviderError, AccountData>> {
         const foundAccountData = await this.accountRepo.findById(accountId)
 
         if(!foundAccountData) {
