@@ -24,14 +24,14 @@ describe('Sync automatic account use case', () => {
         providerConnectorId: 'valid id'
     }
     
-    const accountId = 'ac0'
-    const accountType = 'BANK'
+    const bankAccountId = 'ac0'
+    const bankAccountType = 'BANK'
     const syncType = 'AUTOMATIC'
     const name = 'valid account'
-    const balance = 678
+    const bankBalance = 678
     const imageUrl = 'valid image url'
-    const providerAccountId = 'valid-provider-account-id'
-    const synchronization = {
+    const providerBankAccountId = 'valid-provider-account-id'
+    const bankSynchronization = {
         providerItemId: 'valid-provider-item-id',
         createdAt: new Date(),
     }
@@ -40,15 +40,15 @@ describe('Sync automatic account use case', () => {
 
     beforeEach(() => {
         bankAccountData = {
-            id: accountId,
-            type: accountType,
+            id: bankAccountId,
+            type: bankAccountType,
             syncType,
             name,
-            balance,
+            balance: bankBalance,
             imageUrl,
             userId,
-            providerAccountId,
-            synchronization,
+            providerAccountId: providerBankAccountId,
+            synchronization: bankSynchronization,
         }
     })
 
@@ -74,17 +74,17 @@ describe('Sync automatic account use case', () => {
             const syncAutomaticBankAccount = new SyncAutomaticBankAccount(accountRepository, transactionRepository, dataProvider)
             const sut = new SyncAutomaticAccount(accountRepository, syncAutomaticBankAccount)
 
-            const response = (await sut.perform(accountId)).value as Error
+            const response = (await sut.perform(bankAccountId)).value as Error
             expect(response).toBeInstanceOf(DataProviderError)
         })
 
         test('should sync if account is valid', async () => {
             const providerAccountData1: BankAccountData = {
                 id: null,
-                type: accountType,
+                type: bankAccountType,
                 syncType,
                 name,
-                balance: balance + 1000,
+                balance: bankBalance + 1000,
                 imageUrl,
                 userId: null,
                 institution: {
@@ -95,8 +95,8 @@ describe('Sync automatic account use case', () => {
                     primaryColor: institution.primaryColor,
                     providerConnectorId: institution.providerConnectorId,
                 },
-                providerAccountId,
-                synchronization,
+                providerAccountId: providerBankAccountId,
+                synchronization: bankSynchronization,
             }
     
             const dataProvider = new InMemoryPluggyDataProvider({accounts: [ providerAccountData1 ]})
@@ -105,7 +105,7 @@ describe('Sync automatic account use case', () => {
             const syncAutomaticBankAccount = new SyncAutomaticBankAccount(accountRepository, transactionRepository, dataProvider)
             const sut = new SyncAutomaticAccount(accountRepository, syncAutomaticBankAccount)
 
-            const response = (await sut.perform(accountId)).value as BankAccountData
+            const response = (await sut.perform(bankAccountId)).value as BankAccountData
             expect(response.balance).toBe(providerAccountData1.balance)
             expect(response.synchronization.lastSyncAt).toBeInstanceOf(Date)
         })
