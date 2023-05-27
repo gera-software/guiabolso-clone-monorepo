@@ -1,5 +1,11 @@
 # guiabolso-clone-pwa
 
+## 1.0.0
+
+### Major Changes
+
+- Automatic accounts connection
+
 ## 0.8.9
 
 ### Patch Changes
