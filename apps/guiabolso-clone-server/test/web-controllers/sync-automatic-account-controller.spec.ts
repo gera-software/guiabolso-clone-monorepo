@@ -113,6 +113,30 @@ describe('Sync automatic account web controller', () => {
         expect(response.body.message).toBe("Missing parameters from request: accountId.")
     })
 
+    test('should return status code 400 bad request when account does not exists', async () => {
+        const invalidRequest: HttpRequest = {
+            body: {
+                accountId: 'invalid-id'
+            }
+        }
+
+        const dataProvider = new InMemoryPluggyDataProvider({})
+        const accountRepository = new InMemoryAccountRepository([])
+        const institutionRepository = new InMemoryInstitutionRepository([institution])
+        const userRepository = new InMemoryUserRepository([userData])
+        const transactionRepository = new InMemoryTransactionRepository([])
+        const invoiceRepository = new InMemoryCreditCardInvoiceRepository([])
+        const syncAutomaticBankAccount = new SyncAutomaticBankAccount(accountRepository, transactionRepository, dataProvider)
+        const syncAutomaticCreditCardAccount = new SyncAutomaticCreditCardAccount(accountRepository, userRepository, institutionRepository, transactionRepository, invoiceRepository, dataProvider)
+        const usecase = new SyncAutomaticAccount(accountRepository, syncAutomaticBankAccount, syncAutomaticCreditCardAccount)
+
+        const sut = new SyncAutomaticAccountController(usecase)
+        const response: HttpResponse = await sut.handle(invalidRequest)
+        expect(response.statusCode).toEqual(400)
+        expect(response.body.name).toBe('UnregisteredAccountError')
+        expect(response.body.message).toBe("Conta não encontrada")
+    })
+
     test('should return status code 500 when server raises', async () => {
         const validRequest: HttpRequest = {
             body: {
