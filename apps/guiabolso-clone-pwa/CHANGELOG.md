@@ -1,5 +1,11 @@
 # guiabolso-clone-pwa
 
+## 1.1.0
+
+### Minor Changes
+
+- Sync automatic transactions after account connection
+
 ## 1.0.0
 
 ### Major Changes
