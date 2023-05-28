@@ -137,7 +137,7 @@ const showSyncingModal = ref(false)
 const currentStep = ref('Conectando com a instituição financeira')
 
 async function openPluggyConnectWidget(providerConnectorId: number) {
-    const currentStep = ref('Conectando com a instituição financeira')
+    currentStep.value = 'Conectando com a instituição financeira'
     const accessToken: string = await getConnectToken()
     // console.log('pluggy access token', accessToken)
 
