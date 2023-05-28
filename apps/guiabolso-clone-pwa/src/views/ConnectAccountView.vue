@@ -38,7 +38,6 @@
         </div>
         <div class="syncingModal" v-if="showSyncingModal">
             <font-awesome-icon icon="fa-solid fa-arrows-rotate" :spin="true" size="2xl"></font-awesome-icon>
-            <p>Entendendo sua vida financeira</p>
             <p>{{ currentStep }}</p>
         </div>
     </div>
@@ -135,9 +134,10 @@ async function syncAutomaticAccount(accountId: string) {
 }
 
 const showSyncingModal = ref(false)
-const currentStep = ref(0)
+const currentStep = ref('Conectando com a instituição financeira')
 
 async function openPluggyConnectWidget(providerConnectorId: number) {
+    const currentStep = ref('Conectando com a instituição financeira')
     const accessToken: string = await getConnectToken()
     // console.log('pluggy access token', accessToken)
 
@@ -150,22 +150,21 @@ async function openPluggyConnectWidget(providerConnectorId: number) {
         includeSandbox: true, // note: not needed in production
         selectedConnectorId: providerConnectorId,
         onSuccess: async ({ item }: {item: Item}) => {
-            console.log('Yay! Pluggy connect success!', item);
- 
+            currentStep.value = 'Importando suas contas'
             const accounts = await connectAutomaticAccounts(item.id,  userStore.user.data.id)
-            currentStep.value = 11
+            // currentStep.value = 11
 
-            for(const acc of accounts) {
-                console.log('start sync account', acc.id)
-                await syncAutomaticAccount(acc.id)
-                console.log('end sync account', acc.id)
-                currentStep.value++
+            for(const [i, account] of accounts.entries()) {
+                currentStep.value = `Importando seu histórico de transações (${i+1}/${accounts.length})`
+                console.log('start sync account', account.id)
+                await syncAutomaticAccount(account.id)
+                console.log('end sync account', account.id)
             }
             showSyncingModal.value = false
         },
         onError: (error: Object) => {
             console.error('Whoops! Pluggy Connect error... ', error);
-            currentStep.value = 0
+            currentStep.value = 'Conectando com a instituição financeira'
             showSyncingModal.value = false
         },
         onEvent: (object: any) => {
@@ -174,11 +173,11 @@ async function openPluggyConnectWidget(providerConnectorId: number) {
                 console.log('LOGIN_STEP_COMPLETED')
                 showSyncingModal.value = true
             }
-            if(object.event == "ITEM_RESPONSE" && (object.item.status == 'UPDATING' || object.item.status == 'UPDATED')) {
-                currentStep.value++
-                console.log(currentStep.value)
-            }
-            // else if(object.event == "ITEM_RESPONSE" && object.item.status == "UPDATED") {
+            // if(object.event == "ITEM_RESPONSE" && (object.item.status == 'UPDATING' || object.item.status == 'UPDATED')) {
+            //     currentStep.value++
+            //     console.log(currentStep.value)
+            // }
+            // if(object.event == "ITEM_RESPONSE" && object.item.status == "UPDATED") {
             //     console.log("UPDATED")
             //     currentStep.value = 10
             // }
