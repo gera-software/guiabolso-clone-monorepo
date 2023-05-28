@@ -1,5 +1,11 @@
 # @gera-software/guiabolso-clone-server
 
+## 1.13.0
+
+### Minor Changes
+
+- Sync automatic transactions after account connection
+
 ## 1.12.0
 
 ### Minor Changes
