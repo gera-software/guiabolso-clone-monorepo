@@ -15,6 +15,10 @@ async function connectAutomaticAccounts(itemId: string, userId: string) {
     })
 }
 
+export function sum(a: number, b: number) {
+    return a + b
+}
+
 export async function createAutomaticAccounts(item: Item, userId: string) {
     console.log('createAutomaticAccounts')
     if(item.status == 'UPDATED') {

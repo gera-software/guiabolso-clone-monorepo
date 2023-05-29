@@ -1,3 +1,5 @@
+/// <reference types="vitest" />
+
 import { fileURLToPath, URL } from 'url'
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
@@ -78,5 +80,9 @@ export default defineConfig({
   },
   define: {
     '__APP_VERSION__': '"' + version +  '"'
+  },
+  test: {
+    globals: true,
+    environment: 'jsdom'
   }
 })
