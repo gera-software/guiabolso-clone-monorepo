@@ -81,6 +81,7 @@ describe("create automatic accounts unit test", () => {
 
         const data = await createAutomaticAccounts(item, userId)
         expect(data).toEqual([{ account: 's'},{ account: 'b'},])
+        expect(spy).toHaveBeenCalledWith(item.id, userId)
     })
 
     test('Should return another accounts', async () => {
@@ -147,11 +148,11 @@ describe("create automatic accounts unit test", () => {
             "userAction": null,
             // "nextAutoSyncAt": null
         }
-        spy.mockResolvedValueOnce([{ account: 'v'},{ account: 'b'},])
+        spy.mockResolvedValueOnce([{ account: 'v'},{ account: 'b'}])
 
         const userId = 'valid'
 
         const data = await createAutomaticAccounts(item, userId)
-        expect(data).toEqual([{ account: 'v'},{ account: 'b'},])
+        expect(data).toEqual([{ account: 'v'},{ account: 'b'}])
     })
 })
