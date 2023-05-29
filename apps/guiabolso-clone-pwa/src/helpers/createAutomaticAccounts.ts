@@ -1,19 +1,6 @@
 import { Item } from "pluggy-sdk"
-import api from '../config/axios.js'
+import serverApiWrapper from "./serverApiWrapper"
 
-async function connectAutomaticAccounts(itemId: string, userId: string) {
-    return api.guiabolsoServer({
-        method: 'post',
-        url: 'connect-accounts',
-        data: {
-            itemId,
-            userId,
-        }
-    }).then((response) => {
-        console.log(response)
-        return response.data
-    })
-}
 
 export function sum(a: number, b: number) {
     return a + b
@@ -30,5 +17,5 @@ export async function createAutomaticAccounts(item: Item, userId: string) {
         }
     }
 
-    return connectAutomaticAccounts(item.id,  userId)
+    return serverApiWrapper.connectAutomaticAccounts(item.id,  userId)
 }

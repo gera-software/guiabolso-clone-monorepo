@@ -29,7 +29,7 @@
     "mongoose": "^6.7.1",
     "netlify-identity-widget": "^1.9.2",
     "pinia": "^2.0.23",
-    "pluggy-sdk": "^0.9.0",
+    "pluggy-sdk": "^0.30.0",
     "toastify-js": "^1.12.0",
     "vue": "^3.2.41",
     "vue-currency-input": "^3.0.2",
