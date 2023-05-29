@@ -15,6 +15,7 @@
     "types": [
       "vite/client",
       "vite-plugin-pwa/client",
+      "jest",
     ],
   },
   "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue"],

@@ -51,6 +51,7 @@ import { ref, onMounted, computed } from 'vue';
 import { useUserStore } from '../stores/userStore';
 import { Item } from 'pluggy-sdk';
 import { useRouter } from 'vue-router';
+import { createAutomaticAccounts } from '../helpers/createAutomaticAccounts'
 
 // @ts-ignore
 import Toastify from 'toastify-js'
@@ -106,19 +107,20 @@ async function getConnectToken(itemId?: string | undefined) {
     })
 }
 
-async function connectAutomaticAccounts(itemId: string, userId: string) {
-    return api.guiabolsoServer({
-        method: 'post',
-        url: 'connect-accounts',
-        data: {
-            itemId,
-            userId,
-        }
-    }).then((response) => {
-        console.log(response)
-        return response.data
-    })
-}
+
+// async function connectAutomaticAccounts(itemId: string, userId: string) {
+//     return api.guiabolsoServer({
+//         method: 'post',
+//         url: 'connect-accounts',
+//         data: {
+//             itemId,
+//             userId,
+//         }
+//     }).then((response) => {
+//         console.log(response)
+//         return response.data
+//     })
+// }
 
 async function syncAutomaticAccount(accountId: string) {
     return api.guiabolsoServer({
@@ -139,7 +141,6 @@ const currentStep = ref('Conectando com a instituição financeira')
 async function openPluggyConnectWidget(providerConnectorId: number) {
     currentStep.value = 'Conectando com a instituição financeira'
     const accessToken: string = await getConnectToken()
-    // console.log('pluggy access token', accessToken)
 
     // configure the Pluggy Connect widget instance
     // @ts-ignore
@@ -151,8 +152,8 @@ async function openPluggyConnectWidget(providerConnectorId: number) {
         selectedConnectorId: providerConnectorId,
         onSuccess: async ({ item }: {item: Item}) => {
             currentStep.value = 'Importando suas contas'
-            const accounts = await connectAutomaticAccounts(item.id,  userStore.user.data.id)
-            // currentStep.value = 11
+
+            const accounts = await createAutomaticAccounts(item,  userStore.user.data.id)
 
             for(const [i, account] of accounts.entries()) {
                 currentStep.value = `Importando seu histórico de transações (${i+1}/${accounts.length})`
@@ -170,9 +171,10 @@ async function openPluggyConnectWidget(providerConnectorId: number) {
         onEvent: (object: any) => {
             console.log(object)
             if(object.event == 'LOGIN_STEP_COMPLETED') {
-                console.log('LOGIN_STEP_COMPLETED')
+                console.log('[PLUGGY] LOGIN_STEP_COMPLETED')
                 showSyncingModal.value = true
             }
+
             // if(object.event == "ITEM_RESPONSE" && (object.item.status == 'UPDATING' || object.item.status == 'UPDATED')) {
             //     currentStep.value++
             //     console.log(currentStep.value)
