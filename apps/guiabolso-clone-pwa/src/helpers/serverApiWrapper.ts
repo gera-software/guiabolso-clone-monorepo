@@ -1,6 +1,18 @@
 import api from '../config/axios.js'
 
-async function connectAutomaticAccounts(itemId: string, userId: string) {
+type ProviderExecutionStatus = 'SUCCESS' | 'PENDENTE'
+
+type ProviderAccountStatus = {
+    executionStatus: ProviderExecutionStatus,
+    lastUpdatedAt: Date | null | undefined,
+}
+
+export type ProviderItemStatus = {
+    bankAccounts: ProviderAccountStatus,
+    creditCardAccounts: ProviderAccountStatus,
+}
+
+async function connectAutomaticAccounts(itemId: string, userId: string, syncStatus?: ProviderItemStatus) {
     return api.guiabolsoServer({
         method: 'post',
         url: 'connect-accounts',
