@@ -7,7 +7,7 @@ export enum InstitutionType {
 export interface Institution {
     id?: String,
     // pluggyConnectorId?: Number,
-    providerConnectorId: Number,
+    providerConnectorId: String,
     name: String,
     imageUrl?: String,
     primaryColor?: String,

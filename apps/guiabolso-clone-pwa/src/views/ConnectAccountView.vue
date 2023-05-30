@@ -7,12 +7,12 @@
             </p>
             <ul class="institutions-list" v-if="!isLoading">
                 <li v-for="institution in personalInstitutions" :key="institution.providerConnectorId.toString()">
-                    <a href="" class="institution" @click="handleConnect(institution.providerConnectorId.toString(), $event)">
+                    <button class="institution" @click="handleConnect(institution.providerConnectorId.toString(), $event)" :class="{ 'breve': institution.providerConnectorId == '219'}" :disabled="institution.providerConnectorId == '219'">
                         <img class="institution-logo" :src="institution.imageUrl?.toString()" />
                         <div>
                             {{institution.name}}
                         </div>
-                    </a>
+                    </button>
                 </li>
             </ul>
             <ul class="institutions-list institutions-list--skeleton" v-if="isLoading">
@@ -175,6 +175,12 @@ async function openPluggyConnectWidget(providerConnectorId: number) {
                 showSyncingModal.value = true
             }
 
+            if(object.event == 'ITEM_RESPONSE' && (object.item.status == "OUTDATED")) {
+                if(object.item.executionStatus == "USER_AUTHORIZATION_PENDING") {
+                    console.warn('Infelizmente o fluxo de conexão com a Caixa ainda não é suportado')
+                }
+            }
+
             // if(object.event == "ITEM_RESPONSE" && (object.item.status == 'UPDATING' || object.item.status == 'UPDATED')) {
             //     currentStep.value++
             //     console.log(currentStep.value)
@@ -225,6 +231,11 @@ function handleConnect(providerConnectorId: string, e: Event) {
     font-weight: 600;
     color: #111111;
     text-decoration: none;
+    width: 100%;
+    border: 0;
+    background-color: transparent;
+    font-family: "Open Sans", sans-serif;
+    font-size: 1em;
 }
 
 .institution .institution-logo {
@@ -238,7 +249,10 @@ function handleConnect(providerConnectorId: string, e: Event) {
 
 .institution.breve {
     color: #11111167;
+    pointer-events: none;
 }
+
+
 .institution.breve .institution-logo {
     opacity: .5;
 }
@@ -253,6 +267,11 @@ function handleConnect(providerConnectorId: string, e: Event) {
     font-size: .6em;
     font-weight: 600;
     margin-left: 10px;
+}
+
+.institution:hover,
+.institution:focus {
+    background-color: rgb(0 0 0 / 5%);
 }
 
 .institutions-list--skeleton .institution-logo {
