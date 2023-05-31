@@ -35,6 +35,8 @@ describe('Sync automatic credit card account use case', () => {
     const synchronization = {
         providerItemId: 'valid-provider-item-id',
         createdAt: new Date(),
+        syncStatus: 'UPDATED',
+        lastSyncAt: new Date(),
     }
 
     let creditCardAccountData: CreditCardAccountData

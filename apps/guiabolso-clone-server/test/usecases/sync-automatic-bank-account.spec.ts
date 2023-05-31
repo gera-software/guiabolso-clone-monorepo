@@ -34,6 +34,8 @@ describe('Sync automatic bank account use case', () => {
     const synchronization = {
         providerItemId: 'valid-provider-item-id',
         createdAt: new Date(),
+        syncStatus: 'UPDATED',
+        lastSyncAt: new Date(),
     }
     
     let bankAccountData: BankAccountData

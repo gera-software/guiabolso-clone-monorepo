@@ -32,6 +32,8 @@ describe('Sync automatic account use case', () => {
     const bankSynchronization = {
         providerItemId: 'valid-provider-item-id',
         createdAt: new Date(),
+        syncStatus: 'UPDATED',
+        lastSyncAt: new Date(),
     }
     
     const creditAccountId = 'ac1'
@@ -42,6 +44,8 @@ describe('Sync automatic account use case', () => {
     const creditSynchronization = {
         providerItemId: 'valid-provider-item-id',
         createdAt: new Date(),
+        syncStatus: 'UPDATED',
+        lastSyncAt: new Date(),
     }
 
 
