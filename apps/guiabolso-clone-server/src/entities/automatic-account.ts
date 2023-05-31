@@ -1,6 +1,7 @@
 import { Account, Institution } from "@/entities";
 
-export type ProviderSyncStatus = 'UPDATED' | 'OUTDATED'
+export type ProviderSyncStatus = 'OUTDATED' | 'UPDATING' | 'UPDATED' | 'LOGIN_ERROR' | 'WAITING_USER_INPUT'
+
 
 export interface Accountsynchronization {
     providerItemId: string,
