@@ -14,7 +14,7 @@
             </div>
           </div>
           <div class="col-2">
-            <button disabled v-if="account.syncType === 'AUTOMATIC'" class="icon-button" @click="requestUpdate(account, $event)">
+            <button v-if="account.syncType === 'AUTOMATIC'" class="icon-button" @click="requestUpdate(account, $event)">
               <font-awesome-icon icon="fa-solid fa-arrows-rotate" />
               <!-- <font-awesome-icon icon="fa-solid fa-arrows-rotate" :spin="account.sync?.syncStatus != SyncStatus.SYNCED"/> -->
             </button>
@@ -40,11 +40,14 @@
               </div>
             </BottomSheet>
         </Teleport>
-
+        <div class="syncingModal" v-if="showSyncingModal">
+            <font-awesome-icon icon="fa-solid fa-arrows-rotate" :spin="true" size="2xl"></font-awesome-icon>
+            <p>{{ currentStep }}</p>
+        </div>
 
 </template>
 <script setup lang="ts">
-import { AccountSummaryDTO, AccountType, Synchronization, ProviderSyncStatus } from '../config/types';
+import { AccountSummaryDTO, AccountType, Synchronization } from '../config/types';
 import { useRouter } from 'vue-router';
 import api from '../config/axios.js'
 import BottomSheet from '@/components/BottomSheet.vue'
@@ -54,6 +57,9 @@ import { dateToUTCString } from '../config/dateHelper';
 const props = defineProps<{
     account: AccountSummaryDTO
 }>()
+
+const showSyncingModal = ref(false)
+const currentStep = ref('Conectando com a instituição financeira')
 
 // function closeModal(e: any) {
 //   console.log('fehcar o modal')
@@ -81,59 +87,82 @@ function goToExtract(account: AccountSummaryDTO) {
   }
 }
 
-async function getConnectToken(itemId?: string | undefined) {
-    return api.guiabolsoApi({
+async function getConnectToken(clientUserId: string, itemId?: string) {
+  let params = new URLSearchParams();
+  if(clientUserId) {
+    params.set('clientUserId', clientUserId)
+  }
+  if(itemId) {
+    params.set('itemId', itemId)
+  }
+
+  return api.guiabolsoServer({
         method: 'get',
-        url: '/pluggy-connect-token',
-        params: {
-            itemId: itemId ?? ''
-        }
-    }).then((response) => {
-        // console.log(response)
-        return response.data.accessToken
-    })
+        url: `/pluggy/create-token?${params.toString()}`,
+  }).then((response) => {
+      // console.log(response)
+      return response.data.accessToken
+  })
 }
 
-async function openPluggyConnectWidget(account: AccountSummaryDTO) {
-    //@ts-ignore
-    const existingItemIdToUpdate = account.sync?.pluggyItemId
-    //@ts-ignore
-    account.sync.syncStatus = SyncStatus.PREPARING
+async function openPluggyUpdateWidget(account: AccountSummaryDTO) {
+    currentStep.value = 'Conectando com a instituição financeira'
+
+    const existingItemIdToUpdate = account.synchronization?.providerItemId
+    // //@ts-ignore
+    // account.sync.syncStatus = SyncStatus.PREPARING
     console.log('update account', account._id, existingItemIdToUpdate)
     //@ts-ignore
-    const accessToken: string = await getConnectToken(existingItemIdToUpdate)
+    const accessToken: string = await getConnectToken(account.userId, existingItemIdToUpdate)
 
     // configure the Pluggy Connect widget instance
     // @ts-ignore
     const pluggyConnect = new PluggyConnect({
       connectToken: accessToken,
+      connectorTypes: ['PERSONAL_BANK'],
       updateItem: existingItemIdToUpdate, // by specifying the Item id to update here, Pluggy Connect will attempt to trigger an update on it, and/or prompt credentials request if needed.
       includeSandbox: true, // note: not needed in production
       onSuccess: async (itemData: Object) => {
-          if(account.synchronization) {
-            // @ts-ignore
-            // account.synchronization.itemStatus = itemData.item.status
-            // account.synchronization.lastSyncAt = itemData.item.lastUpdatedAt
-            // account.synchronization.syncStatus = SyncStatus.READY
+          // if(account.synchronization) {
+          //   // @ts-ignore
+          //   // account.synchronization.itemStatus = itemData.item.status
+          //   // account.synchronization.lastSyncAt = itemData.item.lastUpdatedAt
+          //   // account.synchronization.syncStatus = SyncStatus.READY
 
-            console.log('PLUGGY CONNECT SUCCESS', itemData);
-            account.synchronization = await synchronizationReady(account.synchronization)
-            console.log('SYNCRONIZATION READY ', account.synchronization)
-            const { sync, balance } = await startSynchronization(account)
-            account.synchronization = sync
-            account.balance = balance
-            console.log('SYNCRONIZATION endend ', account)
-          }
-
+          //   console.log('PLUGGY CONNECT SUCCESS', itemData);
+          //   account.synchronization = await synchronizationReady(account.synchronization)
+          //   console.log('SYNCRONIZATION READY ', account.synchronization)
+          //   const { sync, balance } = await startSynchronization(account)
+          //   account.synchronization = sync
+          //   account.balance = balance
+          //   console.log('SYNCRONIZATION endend ', account)
+          // }
+          showSyncingModal.value = false
       },
       onError: (error: Object) => {
-          // TODO: Implement logic for error on connection
-          // The following line is an example, it should be removed when implemented.
-          console.error('Whoops! Pluggy Connect error... ', account, error);
+        console.error('Whoops! Pluggy Connect error... ', error);
+          currentStep.value = 'Conectando com a instituição financeira'
+          showSyncingModal.value = false
       },
-      onEvent: (object: Object) => {
-        console.log(object)
-      } 
+      onEvent: (object: any) => {
+          console.log(object)
+          if(object.event == 'LOGIN_STEP_COMPLETED') {
+              console.log('[PLUGGY] LOGIN_STEP_COMPLETED')
+              showSyncingModal.value = true
+          }
+
+          if(object.event == 'ITEM_RESPONSE' && (object.item.status == "OUTDATED")) {
+              if(object.item.executionStatus == "USER_AUTHORIZATION_PENDING") {
+                  console.warn('Infelizmente o fluxo de conexão com a Caixa ainda não é suportado')
+              }
+          }
+      },
+      onClose: () => {
+        console.log('pluggy modal closed')
+        // router.push({
+        //     name: 'accounts'
+        // })
+      }
     });
 
     // Open Pluggy Connect widget
@@ -142,7 +171,7 @@ async function openPluggyConnectWidget(account: AccountSummaryDTO) {
 
 async function requestUpdate(account: AccountSummaryDTO, event: Event) {
   event.stopImmediatePropagation()
-  await openPluggyConnectWidget(account)
+  await openPluggyUpdateWidget(account)
 }
 
 /**
@@ -328,6 +357,21 @@ Bottom sheet
 .menu-options li {
   border-top: 1px solid #F2F2F2;
   padding: 15px;
+}
+
+/**
+Syncing modal
+ */
+.syncingModal {
+    background-color: #3f1b68e3;
+    position: fixed;
+    inset: 0;
+    z-index: 3;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
 </style>
