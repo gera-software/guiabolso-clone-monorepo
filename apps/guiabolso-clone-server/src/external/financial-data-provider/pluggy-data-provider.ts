@@ -86,6 +86,8 @@ export class PluggyDataProvider implements FinancialDataProvider {
                     synchronization: {
                         providerItemId: item.id,
                         createdAt: item.createdAt,
+                        syncStatus: 'UPDATED',
+                        lastSyncAt: item.lastUpdatedAt,
                     }
                 }
             })

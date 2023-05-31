@@ -14,7 +14,7 @@ export interface CreditCardAccountData {
     synchronization?: {
         providerItemId: string,
         createdAt: Date,
-        syncStatus: "UPDATED" | "OUTDATED",
+        syncStatus: string,
         lastSyncAt?: Date,
     },
 }

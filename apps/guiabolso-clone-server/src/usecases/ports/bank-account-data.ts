@@ -13,7 +13,7 @@ export interface BankAccountData {
     synchronization?: {
         providerItemId: string,
         createdAt: Date,
-        syncStatus: 'UPDATED' | 'OUTDATED',
+        syncStatus: string,
         lastSyncAt?: Date,
     },
 }
