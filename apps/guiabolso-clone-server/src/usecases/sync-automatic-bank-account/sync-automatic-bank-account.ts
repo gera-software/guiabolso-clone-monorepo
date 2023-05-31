@@ -40,49 +40,53 @@ export class SyncAutomaticBankAccount implements UseCase {
         if(!accountDataToSync) {
             return left(new UnexpectedError('data provider item does not have the requested account'))
         }
-        // TODO verificar status de sincronização da account, em caso de insucesso interromper o fluxo de atualização e importação das transações
-
-        await this.accountRepo.updateBalance(accountId, accountDataToSync.balance)
-
-        // merge transactions
-        const transactionRequestsOrError = await this.financialDataProvider.getTransactionsByProviderAccountId(accountId, accountDataToSync.type as AccountType, {
-            providerAccountId: accountDataToSync.providerAccountId,
-            from: undefined
-        })
-        if(transactionRequestsOrError.isLeft()) {
-            return left(transactionRequestsOrError.value)
-        }
-
-        const transactionRequests = transactionRequestsOrError.value
-
-        const transactionsData = transactionRequests.map(transaction => ({
-            id: transaction.id,
-            accountId: transaction.accountId,
-            accountType: foundAccountData.type,
-            syncType: foundAccountData.syncType,
-            userId: foundAccountData.userId,
-            // category: CategoryData,
-            amount: transaction.amount,
-            // description: string,
-            descriptionOriginal: transaction.descriptionOriginal,
-            date: transaction.date,
-            // invoiceDate: Date,
-            // invoiceId: string,
-            type: transaction.amount >= 0 ? 'INCOME' : 'EXPENSE',
-            // comment?: string,
-            // ignored?: boolean,
-            // _isDeleted?: boolean,
-            providerId: transaction.providerId,
-        }))
-
-        await this.transactionRepo.mergeTransactions(transactionsData)
 
         const synchronization = {
             syncStatus: accountDataToSync.synchronization.syncStatus,
             lastSyncAt: accountDataToSync.synchronization.lastSyncAt,
         }
-        await this.accountRepo.updateSynchronizationStatus(accountId, synchronization)
 
+        if(accountDataToSync.synchronization.syncStatus == 'UPDATED') {
+            await this.accountRepo.updateBalance(accountId, accountDataToSync.balance)
+
+            // merge transactions
+            const transactionRequestsOrError = await this.financialDataProvider.getTransactionsByProviderAccountId(accountId, accountDataToSync.type as AccountType, {
+                providerAccountId: accountDataToSync.providerAccountId,
+                from: undefined
+            })
+            if(transactionRequestsOrError.isLeft()) {
+                return left(transactionRequestsOrError.value)
+            }
+
+            const transactionRequests = transactionRequestsOrError.value
+
+            const transactionsData = transactionRequests.map(transaction => ({
+                id: transaction.id,
+                accountId: transaction.accountId,
+                accountType: foundAccountData.type,
+                syncType: foundAccountData.syncType,
+                userId: foundAccountData.userId,
+                // category: CategoryData,
+                amount: transaction.amount,
+                // description: string,
+                descriptionOriginal: transaction.descriptionOriginal,
+                date: transaction.date,
+                // invoiceDate: Date,
+                // invoiceId: string,
+                type: transaction.amount >= 0 ? 'INCOME' : 'EXPENSE',
+                // comment?: string,
+                // ignored?: boolean,
+                // _isDeleted?: boolean,
+                providerId: transaction.providerId,
+            }))
+
+            await this.transactionRepo.mergeTransactions(transactionsData)
+
+
+
+        }
+        await this.accountRepo.updateSynchronizationStatus(accountId, synchronization)
+        
         const updatedAccount = await this.accountRepo.findById(accountId)
         console.timeEnd('sync-bank')
         return right(updatedAccount)

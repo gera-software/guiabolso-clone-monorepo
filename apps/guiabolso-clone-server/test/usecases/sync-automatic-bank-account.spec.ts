@@ -31,11 +31,14 @@ describe('Sync automatic bank account use case', () => {
     const balance = 678
     const imageUrl = 'valid image url'
     const providerAccountId = 'valid-provider-account-id'
+
+    const syncStatus = 'UPDATED'
+    const lastSyncAt = new Date()
     const synchronization = {
         providerItemId: 'valid-provider-item-id',
         createdAt: new Date(),
-        syncStatus: 'UPDATED',
-        lastSyncAt: new Date(),
+        syncStatus,
+        lastSyncAt,
     }
     
     let bankAccountData: BankAccountData
@@ -100,41 +103,218 @@ describe('Sync automatic bank account use case', () => {
         expect(response).toBeInstanceOf(UnexpectedError)
     })
 
-    // TODO considerar os casos de sincronização mal sucedida
-    test('should update account balance and synchronization status', async () => {
-        const providerAccountData1: BankAccountData = {
-            id: null,
-            type: accountType,
-            syncType,
-            name,
-            balance: balance + 1000,
-            imageUrl,
-            userId: null,
-            institution: {
+    describe('first synchronization', () => {
+        test('UPDATED: should update account balance and synchronization status', async () => {
+            const providerAccountData1: BankAccountData = {
                 id: null,
-                name: institution.name,
-                type: institution.type,
-                imageUrl: institution.imageUrl,
-                primaryColor: institution.primaryColor,
-                providerConnectorId: institution.providerConnectorId,
-            },
-            providerAccountId,
-            synchronization,
-        }
+                type: accountType,
+                syncType,
+                name,
+                balance: balance + 1000,
+                imageUrl,
+                userId: null,
+                institution: {
+                    id: null,
+                    name: institution.name,
+                    type: institution.type,
+                    imageUrl: institution.imageUrl,
+                    primaryColor: institution.primaryColor,
+                    providerConnectorId: institution.providerConnectorId,
+                },
+                providerAccountId,
+                synchronization: {
+                    providerItemId: 'valid-provider-item-id',
+                    createdAt: new Date(),
+                    syncStatus: 'UPDATED',
+                    lastSyncAt: null,
+                },
+            }
 
-        const dataProvider = new InMemoryPluggyDataProvider({accounts: [ providerAccountData1 ]})
-        const accountRepository = new InMemoryAccountRepository([bankAccountData])
-        const transactionRepository = new InMemoryTransactionRepository([])
-        const sut = new SyncAutomaticBankAccount(accountRepository, transactionRepository, dataProvider)
-        
-        const response = (await sut.perform(accountId)).value as BankAccountData
-        expect(response.balance).toBe(providerAccountData1.balance)
-        expect(response.synchronization.lastSyncAt).toBeInstanceOf(Date)
+            bankAccountData.synchronization.syncStatus = 'OUTDATED'
+            bankAccountData.synchronization.lastSyncAt = null
+    
+            const dataProvider = new InMemoryPluggyDataProvider({accounts: [ providerAccountData1 ]})
+            const accountRepository = new InMemoryAccountRepository([bankAccountData])
+            const transactionRepository = new InMemoryTransactionRepository([])
+            const sut = new SyncAutomaticBankAccount(accountRepository, transactionRepository, dataProvider)
+            
+            const response = (await sut.perform(accountId)).value as BankAccountData
+            expect(response.balance).toBe(providerAccountData1.balance)
+            expect(response.synchronization.lastSyncAt).toBeNull()
+    
+            const updatedAccount = await accountRepository.findById(accountId)
+            expect(updatedAccount.balance).toBe(providerAccountData1.balance)
+            expect(updatedAccount.synchronization.syncStatus).toBe(providerAccountData1.synchronization.syncStatus)
+            expect(updatedAccount.synchronization.lastSyncAt).toBe(providerAccountData1.synchronization.lastSyncAt)
+        })
 
-        const updatedAccount = await accountRepository.findById(accountId)
-        expect(updatedAccount.balance).toBe(providerAccountData1.balance)
-        expect(updatedAccount.synchronization.syncStatus).toBe(providerAccountData1.synchronization.syncStatus)
-        expect(updatedAccount.synchronization.lastSyncAt).toBe(providerAccountData1.synchronization.lastSyncAt)
+        test('OUTDATED: should update synchronization status', async () => {
+            const providerAccountData1: BankAccountData = {
+                id: null,
+                type: accountType,
+                syncType,
+                name,
+                balance: balance + 1000,
+                imageUrl,
+                userId: null,
+                institution: {
+                    id: null,
+                    name: institution.name,
+                    type: institution.type,
+                    imageUrl: institution.imageUrl,
+                    primaryColor: institution.primaryColor,
+                    providerConnectorId: institution.providerConnectorId,
+                },
+                providerAccountId,
+                synchronization: {
+                    providerItemId: 'valid-provider-item-id',
+                    createdAt: new Date(),
+                    syncStatus: 'OUTDATED',
+                    lastSyncAt: null,
+                },
+            }
+
+            bankAccountData.synchronization.syncStatus = 'UPDATED'
+            bankAccountData.synchronization.lastSyncAt = null
+    
+            const dataProvider = new InMemoryPluggyDataProvider({accounts: [ providerAccountData1 ]})
+            const accountRepository = new InMemoryAccountRepository([bankAccountData])
+            const transactionRepository = new InMemoryTransactionRepository([])
+            const sut = new SyncAutomaticBankAccount(accountRepository, transactionRepository, dataProvider)
+            
+            const response = (await sut.perform(accountId)).value as BankAccountData
+    
+            const updatedAccount = await accountRepository.findById(accountId)
+            expect(updatedAccount.balance).toBe(balance)
+            expect(updatedAccount.synchronization.syncStatus).toBe(providerAccountData1.synchronization.syncStatus)
+            expect(updatedAccount.synchronization.lastSyncAt).toBe(bankAccountData.synchronization.lastSyncAt)
+        })
+
+        test('UPDATING: should update synchronization status', async () => {
+            const providerAccountData1: BankAccountData = {
+                id: null,
+                type: accountType,
+                syncType,
+                name,
+                balance: balance + 1000,
+                imageUrl,
+                userId: null,
+                institution: {
+                    id: null,
+                    name: institution.name,
+                    type: institution.type,
+                    imageUrl: institution.imageUrl,
+                    primaryColor: institution.primaryColor,
+                    providerConnectorId: institution.providerConnectorId,
+                },
+                providerAccountId,
+                synchronization: {
+                    providerItemId: 'valid-provider-item-id',
+                    createdAt: new Date(),
+                    syncStatus: 'UPDATING',
+                    lastSyncAt: null,
+                },
+            }
+
+            bankAccountData.synchronization.syncStatus = 'UPDATED'
+            bankAccountData.synchronization.lastSyncAt = null
+    
+            const dataProvider = new InMemoryPluggyDataProvider({accounts: [ providerAccountData1 ]})
+            const accountRepository = new InMemoryAccountRepository([bankAccountData])
+            const transactionRepository = new InMemoryTransactionRepository([])
+            const sut = new SyncAutomaticBankAccount(accountRepository, transactionRepository, dataProvider)
+            
+            const response = (await sut.perform(accountId)).value as BankAccountData
+    
+            const updatedAccount = await accountRepository.findById(accountId)
+            expect(updatedAccount.balance).toBe(balance)
+            expect(updatedAccount.synchronization.syncStatus).toBe(providerAccountData1.synchronization.syncStatus)
+            expect(updatedAccount.synchronization.lastSyncAt).toBe(bankAccountData.synchronization.lastSyncAt)
+        })
+
+        test('LOGIN_ERROR: should update synchronization status', async () => {
+            const providerAccountData1: BankAccountData = {
+                id: null,
+                type: accountType,
+                syncType,
+                name,
+                balance: balance + 1000,
+                imageUrl,
+                userId: null,
+                institution: {
+                    id: null,
+                    name: institution.name,
+                    type: institution.type,
+                    imageUrl: institution.imageUrl,
+                    primaryColor: institution.primaryColor,
+                    providerConnectorId: institution.providerConnectorId,
+                },
+                providerAccountId,
+                synchronization: {
+                    providerItemId: 'valid-provider-item-id',
+                    createdAt: new Date(),
+                    syncStatus: 'LOGIN_ERROR',
+                    lastSyncAt: null,
+                },
+            }
+
+            bankAccountData.synchronization.syncStatus = 'UPDATED'
+            bankAccountData.synchronization.lastSyncAt = null
+    
+            const dataProvider = new InMemoryPluggyDataProvider({accounts: [ providerAccountData1 ]})
+            const accountRepository = new InMemoryAccountRepository([bankAccountData])
+            const transactionRepository = new InMemoryTransactionRepository([])
+            const sut = new SyncAutomaticBankAccount(accountRepository, transactionRepository, dataProvider)
+            
+            const response = (await sut.perform(accountId)).value as BankAccountData
+    
+            const updatedAccount = await accountRepository.findById(accountId)
+            expect(updatedAccount.balance).toBe(balance)
+            expect(updatedAccount.synchronization.syncStatus).toBe(providerAccountData1.synchronization.syncStatus)
+            expect(updatedAccount.synchronization.lastSyncAt).toBe(bankAccountData.synchronization.lastSyncAt)
+        })
+
+        test('WAITING_USER_INPUT: should update synchronization status', async () => {
+            const providerAccountData1: BankAccountData = {
+                id: null,
+                type: accountType,
+                syncType,
+                name,
+                balance: balance + 1000,
+                imageUrl,
+                userId: null,
+                institution: {
+                    id: null,
+                    name: institution.name,
+                    type: institution.type,
+                    imageUrl: institution.imageUrl,
+                    primaryColor: institution.primaryColor,
+                    providerConnectorId: institution.providerConnectorId,
+                },
+                providerAccountId,
+                synchronization: {
+                    providerItemId: 'valid-provider-item-id',
+                    createdAt: new Date(),
+                    syncStatus: 'WAITING_USER_INPUT',
+                    lastSyncAt: null,
+                },
+            }
+
+            bankAccountData.synchronization.syncStatus = 'UPDATED'
+            bankAccountData.synchronization.lastSyncAt = null
+    
+            const dataProvider = new InMemoryPluggyDataProvider({accounts: [ providerAccountData1 ]})
+            const accountRepository = new InMemoryAccountRepository([bankAccountData])
+            const transactionRepository = new InMemoryTransactionRepository([])
+            const sut = new SyncAutomaticBankAccount(accountRepository, transactionRepository, dataProvider)
+            
+            const response = (await sut.perform(accountId)).value as BankAccountData
+    
+            const updatedAccount = await accountRepository.findById(accountId)
+            expect(updatedAccount.balance).toBe(balance)
+            expect(updatedAccount.synchronization.syncStatus).toBe(providerAccountData1.synchronization.syncStatus)
+            expect(updatedAccount.synchronization.lastSyncAt).toBe(bankAccountData.synchronization.lastSyncAt)
+        })
     })
 
     describe('merge transactions', () => {
@@ -157,7 +337,12 @@ describe('Sync automatic bank account use case', () => {
                     providerConnectorId: institution.providerConnectorId,
                 },
                 providerAccountId,
-                synchronization,
+                synchronization: {
+                    providerItemId: 'valid-provider-item-id',
+                    createdAt: new Date(),
+                    syncStatus: 'UPDATED',
+                    lastSyncAt: null,
+                },
             }
     
             const transaction0: TransactionRequest = {
