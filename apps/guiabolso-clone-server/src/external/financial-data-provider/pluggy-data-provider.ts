@@ -76,6 +76,8 @@ export class PluggyDataProvider implements FinancialDataProvider {
                     synchronizationStatus.syncStatus = 'LOGIN_ERROR'
                 } else if(item.status == 'OUTDATED') {
                     synchronizationStatus.syncStatus = 'OUTDATED'
+                } else if(item.status == 'WAITING_USER_INPUT') {
+                    synchronizationStatus.syncStatus = 'WAITING_USER_INPUT'
                 } else if(item.status == 'UPDATED') {
                     if(item.executionStatus == 'SUCCESS') {
                         synchronizationStatus.syncStatus = 'UPDATED'

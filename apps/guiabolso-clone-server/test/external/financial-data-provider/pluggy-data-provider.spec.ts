@@ -1525,6 +1525,205 @@ describe('Pluggy Data Provider', () => {
                 })
             })
 
+            describe('item status: WAITING_USER_INPUT (The sync process needs user\'s input to continue)', () => {
+                test('data provider had MFA issues', async () => {
+                    const validItemId = "a5d1ca6c-24c0-41c7-8b44-9272cc868663"
+    
+                    const item: Item = {
+                        "id": validItemId,
+                        "connector": {
+                            "id": 5,
+                            "name": "Pluggy Bank MFA 2-step",
+                            "primaryColor": "ef294b",
+                            "institutionUrl": "https://pluggy.ai",
+                            "country": "BR",
+                            "type": "PERSONAL_BANK",
+                            "credentials": [
+                                {
+                                    "label": "User",
+                                    "name": "user",
+                                    "type": "text",
+                                    "placeholder": "",
+                                    "validation": "^user-.{2,50}$",
+                                    "validationMessage": "O user deve começar com \"user-\"",
+                                    "optional": false
+                                },
+                                {
+                                    "label": "Password",
+                                    "name": "password",
+                                    "type": "password",
+                                    "placeholder": "",
+                                    "validation": "^.{6,20}$",
+                                    "validationMessage": "A senha deve ter entre 6 e 20 caracteres",
+                                    "optional": false
+                                }
+                            ],
+                            "imageUrl": "https://cdn.pluggy.ai/assets/connector-icons/sandbox.svg",
+                            "hasMFA": true,
+                            "health": {
+                                "status": "ONLINE",
+                                "stage": null
+                            },
+                            "products": [
+                                "ACCOUNTS",
+                                "CREDIT_CARDS",
+                                "TRANSACTIONS",
+                                "PAYMENT_DATA",
+                                "INVESTMENTS",
+                                "INVESTMENTS_TRANSACTIONS",
+                                "OPPORTUNITIES",
+                                "IDENTITY",
+                                // "PORTFOLIO",
+                                // "INCOME_REPORTS"
+                            ],
+                            "createdAt": new Date("2021-05-04T13:04:30.105Z")
+                        },
+                        "status": "WAITING_USER_INPUT",
+                        "executionStatus": "WAITING_USER_INPUT",
+                        "webhookUrl": null,
+                        "error": null,
+                        "clientUserId": null,
+                        "consecutiveFailedLoginAttempts": 0,
+                        "statusDetail": null,
+                        "parameter": {
+                            "name": "sms",
+                            "label": "SMS Token",
+                            "type": "number",
+                            "placeholder": "Example: 123456",
+                            "validation": "^\\d{6}$",
+                            "instructions": "Um token único para validar o acesso ao Pluggy, digite-o aqui.",
+                            "assistiveText": "Digite o código do seu celular",
+                            "validationMessage": "Chave de segurança deve ter 6 dígitos",
+                            "expiresAt": new Date("2023-05-31T15:32:29.886Z")
+                        },
+                        "userAction": null,
+                        // "nextAutoSyncAt": null,
+                        // "accounts": [],
+                        // "investments": [],
+                        "lastUpdatedAt": null,
+                        "createdAt": new Date("2023-05-31T15:31:28.769Z"),
+                        "updatedAt": new Date("2023-05-31T15:31:31.233Z")
+                    }
+        
+                    const bankAccount: PluggyAccount = {
+                        "id": "a658c848-e475-457b-8565-d1fffba127c4",
+                        "type": "BANK",
+                        "subtype": "CHECKING_ACCOUNT",
+                        "number": "0001/12345-0",
+                        "name": "Conta Corrente",
+                        "marketingName": "GOLD Conta Corrente",
+                        "balance": 1209.50,
+                        "itemId": validItemId,
+                        "taxNumber": "416.799.495-00",
+                        "owner": "John Doe",
+                        "currencyCode": "BRL",
+                        "bankData": {
+                          "transferNumber": "0001/12345-0",
+                          "closingBalance": 1209.50
+                        },
+                        "creditData": null,
+                    }
+        
+                    const creditAccount: PluggyAccount = {
+                        "id": "a658c848-e475-457b-8565-d1fffba127c5",
+                        "type": "CREDIT",
+                        "subtype": "CREDIT_CARD",
+                        "number": "xxxx8670",
+                        "name": "Mastercard Black",
+                        "marketingName": "PLUGGY UNICLASS MASTERCARD BLACK",
+                        "balance": 1209.50,
+                        "itemId": validItemId,
+                        "taxNumber": "416.799.495-00",
+                        "owner": "John Doe",
+                        "currencyCode": "BRL",
+                        "creditData": {
+                          "level": "BLACK",
+                          "brand": "MASTERCARD",
+                          "balanceCloseDate": new Date("2022-01-03"),
+                          "balanceDueDate": new Date("2022-01-10"),
+                          "availableCreditLimit": 2000.00,
+                          "balanceForeignCurrency": 0,
+                          "minimumPayment": 161.90,
+                          "creditLimit": 3000.00
+                        },
+                        "bankData": null,
+                    }
+                    
+                    mockedPluggyClient.prototype.fetchItem.mockResolvedValueOnce(item)
+        
+                    mockedPluggyClient.prototype.fetchAccounts.mockResolvedValueOnce({
+                        "total": 2,
+                        "totalPages": 1,
+                        "page": 1,
+                        "results": [ bankAccount, creditAccount ]
+                    })
+        
+                    const validClientId = 'valid-client-id'
+                    const validClientSecret = 'valid-client-secret'
+                    const sut = new PluggyDataProvider(validClientId, validClientSecret)
+        
+                    const results = (await sut.getAccountsByItemId(validItemId)).value as AccountData[]
+                    expect(results.length).toBe(2)
+                    expect(results[0]).toEqual({
+                        "balance": 120950, 
+                        "creditCardInfo": null, 
+                        "id": null, 
+                        "imageUrl": item.connector.imageUrl, 
+                        "institution": {
+                            "id": null, 
+                            "imageUrl": item.connector.imageUrl, 
+                            "name": item.connector.name, 
+                            "primaryColor": item.connector.primaryColor, 
+                            "providerConnectorId": ''+item.connector.id, 
+                            "type": item.connector.type
+                        }, 
+                        "name": bankAccount.name, 
+                        "providerAccountId": bankAccount.id, 
+                        "syncType": "AUTOMATIC", 
+                        "synchronization": {
+                            "createdAt": item.createdAt, 
+                            "providerItemId": item.id,
+                            "syncStatus": "WAITING_USER_INPUT",
+                            "lastSyncAt": null,
+                        }, 
+                        "type": "BANK", 
+                        "userId": null,
+                    })
+        
+                    expect(results[1]).toEqual({
+                        "balance": -120950, 
+                        "creditCardInfo": {
+                            "availableCreditLimit": 200000, 
+                            "creditLimit": 300000, 
+                            "brand": creditAccount.creditData.brand, 
+                            "closeDay": creditAccount.creditData.balanceCloseDate.getUTCDate(), 
+                            "dueDay": creditAccount.creditData.balanceDueDate.getUTCDate()
+                        }, 
+                        "id": null, 
+                        "imageUrl": item.connector.imageUrl, 
+                        "institution": {
+                            "id": null, 
+                            "imageUrl": item.connector.imageUrl, 
+                            "name": item.connector.name, 
+                            "primaryColor": item.connector.primaryColor, 
+                            "providerConnectorId": ''+item.connector.id, 
+                            "type": item.connector.type
+                        },
+                        "name": creditAccount.name, 
+                        "providerAccountId": creditAccount.id, 
+                        "syncType": "AUTOMATIC", 
+                        "synchronization": {
+                            "createdAt": item.createdAt, 
+                            "providerItemId": item.id,
+                            "syncStatus": "WAITING_USER_INPUT",
+                            "lastSyncAt": null,
+                        }, 
+                        "type": "CREDIT_CARD", 
+                        "userId": null,
+                    })
+                })
+            })
+
 
         })
     })
