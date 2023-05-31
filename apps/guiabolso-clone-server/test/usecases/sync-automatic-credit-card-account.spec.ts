@@ -124,6 +124,7 @@ describe('Sync automatic credit card account use case', () => {
         expect(response).toBeInstanceOf(UnexpectedError)
     })
 
+    // TODO considerar os casos de sincronização mal sucedida
     test('should update account balance, credit card info and synchronization status', async () => {
         const providerAccountData1: CreditCardAccountData = {
             id: null,
@@ -166,8 +167,9 @@ describe('Sync automatic credit card account use case', () => {
 
         const updatedAccount = await accountRepository.findById(accountId)
         expect(updatedAccount.balance).toBe(providerAccountData1.balance)
-        expect(updatedAccount.synchronization.lastSyncAt).toBeInstanceOf(Date)
         expect(updatedAccount.creditCardInfo).toEqual(providerAccountData1.creditCardInfo)
+        expect(updatedAccount.synchronization.syncStatus).toBe(providerAccountData1.synchronization.syncStatus)
+        expect(updatedAccount.synchronization.lastSyncAt).toBe(providerAccountData1.synchronization.lastSyncAt)
     })
 
     describe('merge transactions', () => {

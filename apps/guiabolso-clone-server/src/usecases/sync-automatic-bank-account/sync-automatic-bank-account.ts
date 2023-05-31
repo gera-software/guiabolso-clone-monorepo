@@ -40,6 +40,7 @@ export class SyncAutomaticBankAccount implements UseCase {
         if(!accountDataToSync) {
             return left(new UnexpectedError('data provider item does not have the requested account'))
         }
+        // TODO verificar status de sincronização da account, em caso de insucesso interromper o fluxo de atualização e importação das transações
 
         await this.accountRepo.updateBalance(accountId, accountDataToSync.balance)
 
@@ -76,7 +77,11 @@ export class SyncAutomaticBankAccount implements UseCase {
 
         await this.transactionRepo.mergeTransactions(transactionsData)
 
-        await this.accountRepo.updateSynchronizationStatus(accountId, { lastSyncAt: new Date() })
+        const synchronization = {
+            syncStatus: accountDataToSync.synchronization.syncStatus,
+            lastSyncAt: accountDataToSync.synchronization.lastSyncAt,
+        }
+        await this.accountRepo.updateSynchronizationStatus(accountId, synchronization)
 
         const updatedAccount = await this.accountRepo.findById(accountId)
         console.timeEnd('sync-bank')

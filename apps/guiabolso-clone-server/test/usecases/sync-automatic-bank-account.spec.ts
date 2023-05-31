@@ -100,6 +100,7 @@ describe('Sync automatic bank account use case', () => {
         expect(response).toBeInstanceOf(UnexpectedError)
     })
 
+    // TODO considerar os casos de sincronização mal sucedida
     test('should update account balance and synchronization status', async () => {
         const providerAccountData1: BankAccountData = {
             id: null,
@@ -132,7 +133,8 @@ describe('Sync automatic bank account use case', () => {
 
         const updatedAccount = await accountRepository.findById(accountId)
         expect(updatedAccount.balance).toBe(providerAccountData1.balance)
-        expect(updatedAccount.synchronization.lastSyncAt).toBeInstanceOf(Date)
+        expect(updatedAccount.synchronization.syncStatus).toBe(providerAccountData1.synchronization.syncStatus)
+        expect(updatedAccount.synchronization.lastSyncAt).toBe(providerAccountData1.synchronization.lastSyncAt)
     })
 
     describe('merge transactions', () => {
