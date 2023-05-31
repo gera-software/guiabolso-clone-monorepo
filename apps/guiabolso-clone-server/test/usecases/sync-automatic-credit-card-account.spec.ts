@@ -124,55 +124,274 @@ describe('Sync automatic credit card account use case', () => {
         expect(response).toBeInstanceOf(UnexpectedError)
     })
 
-    // TODO considerar os casos de sincronização mal sucedida
-    test('should update account balance, credit card info and synchronization status', async () => {
-        const providerAccountData1: CreditCardAccountData = {
-            id: null,
-            type: accountType,
-            syncType,
-            name,
-            balance: balance - 1000,
-            imageUrl,
-            userId: null,
-            institution: {
+    describe('first synchronization', () => {
+        test('UPDATED: should update account balance, credit card info and synchronization status', async () => {
+            const providerAccountData1: CreditCardAccountData = {
                 id: null,
-                name: institution.name,
-                type: institution.type,
-                imageUrl: institution.imageUrl,
-                primaryColor: institution.primaryColor,
-                providerConnectorId: institution.providerConnectorId,
-            },
-            creditCardInfo: {
-                brand: 'visa',
-                creditLimit: 500000,
-                availableCreditLimit: 25000,
-                closeDay: 5,
-                dueDay: 12
-            },
-            providerAccountId,
-            synchronization,
-        }
+                type: accountType,
+                syncType,
+                name,
+                balance: balance - 1000,
+                imageUrl,
+                userId: null,
+                institution: {
+                    id: null,
+                    name: institution.name,
+                    type: institution.type,
+                    imageUrl: institution.imageUrl,
+                    primaryColor: institution.primaryColor,
+                    providerConnectorId: institution.providerConnectorId,
+                },
+                creditCardInfo: {
+                    brand: 'visa',
+                    creditLimit: 500000,
+                    availableCreditLimit: 25000,
+                    closeDay: 5,
+                    dueDay: 12
+                },
+                providerAccountId,
+                synchronization: {
+                    providerItemId: 'valid-provider-item-id',
+                    createdAt: new Date(),
+                    syncStatus: 'UPDATED',
+                    lastSyncAt: null,
+                },
+            }
+    
+            const dataProvider = new InMemoryPluggyDataProvider({accounts: [ providerAccountData1 ]})
+            const accountRepository = new InMemoryAccountRepository([creditCardAccountData])
+            const institutionRepository = new InMemoryInstitutionRepository([institution])
+            const userRepository = new InMemoryUserRepository([userData])
+            const transactionRepository = new InMemoryTransactionRepository([])
+            const invoiceRepository = new InMemoryCreditCardInvoiceRepository([])
+            const sut = new SyncAutomaticCreditCardAccount(accountRepository, userRepository, institutionRepository, transactionRepository, invoiceRepository, dataProvider)
+    
+            const response = (await sut.perform(accountId)).value as CreditCardAccountData
+            expect(response.balance).toBe(providerAccountData1.balance)
+            expect(response.synchronization.lastSyncAt).toBeNull()
+    
+            const updatedAccount = await accountRepository.findById(accountId)
+            expect(updatedAccount.balance).toBe(providerAccountData1.balance)
+            expect(updatedAccount.creditCardInfo).toEqual(providerAccountData1.creditCardInfo)
+            expect(updatedAccount.synchronization.syncStatus).toBe(providerAccountData1.synchronization.syncStatus)
+            expect(updatedAccount.synchronization.lastSyncAt).toBe(providerAccountData1.synchronization.lastSyncAt)
+        })
 
-        const dataProvider = new InMemoryPluggyDataProvider({accounts: [ providerAccountData1 ]})
-        const accountRepository = new InMemoryAccountRepository([creditCardAccountData])
-        const institutionRepository = new InMemoryInstitutionRepository([institution])
-        const userRepository = new InMemoryUserRepository([userData])
-        const transactionRepository = new InMemoryTransactionRepository([])
-        const invoiceRepository = new InMemoryCreditCardInvoiceRepository([])
-        const sut = new SyncAutomaticCreditCardAccount(accountRepository, userRepository, institutionRepository, transactionRepository, invoiceRepository, dataProvider)
+        test('OUTDATED: should update synchronization status', async () => {
+            const providerAccountData1: CreditCardAccountData = {
+                id: null,
+                type: accountType,
+                syncType,
+                name,
+                balance: balance - 1000,
+                imageUrl,
+                userId: null,
+                institution: {
+                    id: null,
+                    name: institution.name,
+                    type: institution.type,
+                    imageUrl: institution.imageUrl,
+                    primaryColor: institution.primaryColor,
+                    providerConnectorId: institution.providerConnectorId,
+                },
+                creditCardInfo: {
+                    brand: 'visa',
+                    creditLimit: 500000,
+                    availableCreditLimit: 25000,
+                    closeDay: 5,
+                    dueDay: 12
+                },
+                providerAccountId,
+                synchronization: {
+                    providerItemId: 'valid-provider-item-id',
+                    createdAt: new Date(),
+                    syncStatus: 'OUTDATED',
+                    lastSyncAt: null,
+                },
+            }
 
-        const response = (await sut.perform(accountId)).value as CreditCardAccountData
-        expect(response.balance).toBe(providerAccountData1.balance)
-        expect(response.synchronization.lastSyncAt).toBeInstanceOf(Date)
+            creditCardAccountData.synchronization.syncStatus = 'UPDATED'
+            creditCardAccountData.synchronization.lastSyncAt = null
+    
+            const dataProvider = new InMemoryPluggyDataProvider({accounts: [ providerAccountData1 ]})
+            const accountRepository = new InMemoryAccountRepository([creditCardAccountData])
+            const institutionRepository = new InMemoryInstitutionRepository([institution])
+            const userRepository = new InMemoryUserRepository([userData])
+            const transactionRepository = new InMemoryTransactionRepository([])
+            const invoiceRepository = new InMemoryCreditCardInvoiceRepository([])
+            const sut = new SyncAutomaticCreditCardAccount(accountRepository, userRepository, institutionRepository, transactionRepository, invoiceRepository, dataProvider)
+    
+            const response = (await sut.perform(accountId)).value as CreditCardAccountData
+    
+            const updatedAccount = await accountRepository.findById(accountId)
+            expect(updatedAccount.balance).toBe(balance)
+            expect(updatedAccount.creditCardInfo).toEqual(creditCardAccountData.creditCardInfo)
+            expect(updatedAccount.synchronization.syncStatus).toBe(providerAccountData1.synchronization.syncStatus)
+            expect(updatedAccount.synchronization.lastSyncAt).toBe(creditCardAccountData.synchronization.lastSyncAt)
+        })
 
-        const updatedAccount = await accountRepository.findById(accountId)
-        expect(updatedAccount.balance).toBe(providerAccountData1.balance)
-        expect(updatedAccount.creditCardInfo).toEqual(providerAccountData1.creditCardInfo)
-        expect(updatedAccount.synchronization.syncStatus).toBe(providerAccountData1.synchronization.syncStatus)
-        expect(updatedAccount.synchronization.lastSyncAt).toBe(providerAccountData1.synchronization.lastSyncAt)
+        test('UPDATING: should update synchronization status', async () => {
+            const providerAccountData1: CreditCardAccountData = {
+                id: null,
+                type: accountType,
+                syncType,
+                name,
+                balance: balance - 1000,
+                imageUrl,
+                userId: null,
+                institution: {
+                    id: null,
+                    name: institution.name,
+                    type: institution.type,
+                    imageUrl: institution.imageUrl,
+                    primaryColor: institution.primaryColor,
+                    providerConnectorId: institution.providerConnectorId,
+                },
+                creditCardInfo: {
+                    brand: 'visa',
+                    creditLimit: 500000,
+                    availableCreditLimit: 25000,
+                    closeDay: 5,
+                    dueDay: 12
+                },
+                providerAccountId,
+                synchronization: {
+                    providerItemId: 'valid-provider-item-id',
+                    createdAt: new Date(),
+                    syncStatus: 'UPDATING',
+                    lastSyncAt: null,
+                },
+            }
+
+            creditCardAccountData.synchronization.syncStatus = 'UPDATED'
+            creditCardAccountData.synchronization.lastSyncAt = null
+    
+            const dataProvider = new InMemoryPluggyDataProvider({accounts: [ providerAccountData1 ]})
+            const accountRepository = new InMemoryAccountRepository([creditCardAccountData])
+            const institutionRepository = new InMemoryInstitutionRepository([institution])
+            const userRepository = new InMemoryUserRepository([userData])
+            const transactionRepository = new InMemoryTransactionRepository([])
+            const invoiceRepository = new InMemoryCreditCardInvoiceRepository([])
+            const sut = new SyncAutomaticCreditCardAccount(accountRepository, userRepository, institutionRepository, transactionRepository, invoiceRepository, dataProvider)
+    
+            const response = (await sut.perform(accountId)).value as CreditCardAccountData
+    
+            const updatedAccount = await accountRepository.findById(accountId)
+            expect(updatedAccount.balance).toBe(balance)
+            expect(updatedAccount.creditCardInfo).toEqual(creditCardAccountData.creditCardInfo)
+            expect(updatedAccount.synchronization.syncStatus).toBe(providerAccountData1.synchronization.syncStatus)
+            expect(updatedAccount.synchronization.lastSyncAt).toBe(creditCardAccountData.synchronization.lastSyncAt)
+        })
+
+        test('LOGIN_ERROR: should update synchronization status', async () => {
+            const providerAccountData1: CreditCardAccountData = {
+                id: null,
+                type: accountType,
+                syncType,
+                name,
+                balance: balance - 1000,
+                imageUrl,
+                userId: null,
+                institution: {
+                    id: null,
+                    name: institution.name,
+                    type: institution.type,
+                    imageUrl: institution.imageUrl,
+                    primaryColor: institution.primaryColor,
+                    providerConnectorId: institution.providerConnectorId,
+                },
+                creditCardInfo: {
+                    brand: 'visa',
+                    creditLimit: 500000,
+                    availableCreditLimit: 25000,
+                    closeDay: 5,
+                    dueDay: 12
+                },
+                providerAccountId,
+                synchronization: {
+                    providerItemId: 'valid-provider-item-id',
+                    createdAt: new Date(),
+                    syncStatus: 'LOGIN_ERROR',
+                    lastSyncAt: null,
+                },
+            }
+
+            creditCardAccountData.synchronization.syncStatus = 'UPDATED'
+            creditCardAccountData.synchronization.lastSyncAt = null
+    
+            const dataProvider = new InMemoryPluggyDataProvider({accounts: [ providerAccountData1 ]})
+            const accountRepository = new InMemoryAccountRepository([creditCardAccountData])
+            const institutionRepository = new InMemoryInstitutionRepository([institution])
+            const userRepository = new InMemoryUserRepository([userData])
+            const transactionRepository = new InMemoryTransactionRepository([])
+            const invoiceRepository = new InMemoryCreditCardInvoiceRepository([])
+            const sut = new SyncAutomaticCreditCardAccount(accountRepository, userRepository, institutionRepository, transactionRepository, invoiceRepository, dataProvider)
+    
+            const response = (await sut.perform(accountId)).value as CreditCardAccountData
+    
+            const updatedAccount = await accountRepository.findById(accountId)
+            expect(updatedAccount.balance).toBe(balance)
+            expect(updatedAccount.creditCardInfo).toEqual(creditCardAccountData.creditCardInfo)
+            expect(updatedAccount.synchronization.syncStatus).toBe(providerAccountData1.synchronization.syncStatus)
+            expect(updatedAccount.synchronization.lastSyncAt).toBe(creditCardAccountData.synchronization.lastSyncAt)
+        })
+
+        test('WAITING_USER_INPUT: should update synchronization status', async () => {
+            const providerAccountData1: CreditCardAccountData = {
+                id: null,
+                type: accountType,
+                syncType,
+                name,
+                balance: balance - 1000,
+                imageUrl,
+                userId: null,
+                institution: {
+                    id: null,
+                    name: institution.name,
+                    type: institution.type,
+                    imageUrl: institution.imageUrl,
+                    primaryColor: institution.primaryColor,
+                    providerConnectorId: institution.providerConnectorId,
+                },
+                creditCardInfo: {
+                    brand: 'visa',
+                    creditLimit: 500000,
+                    availableCreditLimit: 25000,
+                    closeDay: 5,
+                    dueDay: 12
+                },
+                providerAccountId,
+                synchronization: {
+                    providerItemId: 'valid-provider-item-id',
+                    createdAt: new Date(),
+                    syncStatus: 'WAITING_USER_INPUT',
+                    lastSyncAt: null,
+                },
+            }
+
+            creditCardAccountData.synchronization.syncStatus = 'UPDATED'
+            creditCardAccountData.synchronization.lastSyncAt = null
+    
+            const dataProvider = new InMemoryPluggyDataProvider({accounts: [ providerAccountData1 ]})
+            const accountRepository = new InMemoryAccountRepository([creditCardAccountData])
+            const institutionRepository = new InMemoryInstitutionRepository([institution])
+            const userRepository = new InMemoryUserRepository([userData])
+            const transactionRepository = new InMemoryTransactionRepository([])
+            const invoiceRepository = new InMemoryCreditCardInvoiceRepository([])
+            const sut = new SyncAutomaticCreditCardAccount(accountRepository, userRepository, institutionRepository, transactionRepository, invoiceRepository, dataProvider)
+    
+            const response = (await sut.perform(accountId)).value as CreditCardAccountData
+    
+            const updatedAccount = await accountRepository.findById(accountId)
+            expect(updatedAccount.balance).toBe(balance)
+            expect(updatedAccount.creditCardInfo).toEqual(creditCardAccountData.creditCardInfo)
+            expect(updatedAccount.synchronization.syncStatus).toBe(providerAccountData1.synchronization.syncStatus)
+            expect(updatedAccount.synchronization.lastSyncAt).toBe(creditCardAccountData.synchronization.lastSyncAt)
+        })
     })
 
     describe('merge transactions', () => {
+        
         test('should insert all transactions from data provider and update invoices', async () => {
             const providerAccountData1: CreditCardAccountData = {
                 id: null,
@@ -198,7 +417,12 @@ describe('Sync automatic credit card account use case', () => {
                     dueDay: 12
                 },
                 providerAccountId,
-                synchronization,
+                synchronization: {
+                    providerItemId: 'valid-provider-item-id',
+                    createdAt: new Date(),
+                    syncStatus: 'UPDATED',
+                    lastSyncAt: null,
+                },
             }
 
             const transaction0: TransactionRequest = {

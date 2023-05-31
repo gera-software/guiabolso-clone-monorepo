@@ -117,70 +117,69 @@ export class SyncAutomaticCreditCardAccount implements UseCase {
         if(!accountDataToSync) {
             return left(new UnexpectedError('data provider item does not have the requested account'))
         }
-        // TODO verificar status de sincronização da account, em caso de insucesso interromper o fluxo de atualização e importação das transações
-
-        await this.accountRepo.updateBalance(accountId, accountDataToSync.balance)
-        await this.accountRepo.updateCreditCardInfo(accountId, accountDataToSync.creditCardInfo)
-
-
-        const userData = await this.userRepo.findUserById(foundAccountData.userId)
-
-        const accountOrError = await this.createCreditCardAccount(foundAccountData, userData)
-        if(accountOrError.isLeft()) {
-            return left(accountOrError.value)
-        }
-
-        const creditCardAccount = accountOrError.value as AutomaticCreditCardAccount
-
-        // merge transactions
-        const transactionRequestsOrError = await this.financialDataProvider.getTransactionsByProviderAccountId(accountId, accountDataToSync.type as AccountType, {
-            providerAccountId: accountDataToSync.providerAccountId,
-            from: undefined
-        })
-        if(transactionRequestsOrError.isLeft()) {
-            return left(transactionRequestsOrError.value)
-        }
-
-        const transactionRequests = transactionRequestsOrError.value
-
-        const transactionsData: TransactionData[] = []
-        for(let i = 0; i < transactionRequests.length; i++) {
-            const transaction = transactionRequests[i]
-            const { invoiceDueDate, invoiceClosingDate } = creditCardAccount.calculateInvoiceDatesFromTransaction(transaction.date)
-            const invoiceId = await this.getInvoiceId(invoiceDueDate, invoiceClosingDate, foundAccountData)
-
-            transactionsData.push({
-                id: transaction.id,
-                accountId: transaction.accountId,
-                accountType: foundAccountData.type,
-                syncType: foundAccountData.syncType,
-                userId: foundAccountData.userId,
-                // category: CategoryData,
-                amount: transaction.amount,
-                // description: string,
-                descriptionOriginal: transaction.descriptionOriginal,
-                date: invoiceDueDate,
-                invoiceDate: transaction.date,
-                invoiceId: invoiceId,
-                type: transaction.amount >= 0 ? 'INCOME' : 'EXPENSE',
-                // comment?: string,
-                // ignored?: boolean,
-                // _isDeleted?: boolean,
-                providerId: transaction.providerId,
-            })
-        }
-        
-
-        await this.transactionRepo.mergeTransactions(transactionsData)
-
-        // recalculate invoices amounts
-        const invoicesAmount = await this.transactionRepo.recalculateInvoicesAmount(Object.values(Object.fromEntries(this.invoicesIdLookupTable)))
-        await this.invoiceRepo.batchUpdateAmount(invoicesAmount)
 
         const synchronization = {
             syncStatus: accountDataToSync.synchronization.syncStatus,
             lastSyncAt: accountDataToSync.synchronization.lastSyncAt,
         }
+        if(accountDataToSync.synchronization.syncStatus == 'UPDATED') {
+            await this.accountRepo.updateBalance(accountId, accountDataToSync.balance)
+            await this.accountRepo.updateCreditCardInfo(accountId, accountDataToSync.creditCardInfo)
+    
+            const userData = await this.userRepo.findUserById(foundAccountData.userId)
+    
+            const accountOrError = await this.createCreditCardAccount(foundAccountData, userData)
+            if(accountOrError.isLeft()) {
+                return left(accountOrError.value)
+            }
+    
+            const creditCardAccount = accountOrError.value as AutomaticCreditCardAccount
+    
+            // merge transactions
+            const transactionRequestsOrError = await this.financialDataProvider.getTransactionsByProviderAccountId(accountId, accountDataToSync.type as AccountType, {
+                providerAccountId: accountDataToSync.providerAccountId,
+                from: undefined
+            })
+            if(transactionRequestsOrError.isLeft()) {
+                return left(transactionRequestsOrError.value)
+            }
+
+            const transactionRequests = transactionRequestsOrError.value
+
+            const transactionsData: TransactionData[] = []
+            for(let i = 0; i < transactionRequests.length; i++) {
+                const transaction = transactionRequests[i]
+                const { invoiceDueDate, invoiceClosingDate } = creditCardAccount.calculateInvoiceDatesFromTransaction(transaction.date)
+                const invoiceId = await this.getInvoiceId(invoiceDueDate, invoiceClosingDate, foundAccountData)
+    
+                transactionsData.push({
+                    id: transaction.id,
+                    accountId: transaction.accountId,
+                    accountType: foundAccountData.type,
+                    syncType: foundAccountData.syncType,
+                    userId: foundAccountData.userId,
+                    // category: CategoryData,
+                    amount: transaction.amount,
+                    // description: string,
+                    descriptionOriginal: transaction.descriptionOriginal,
+                    date: invoiceDueDate,
+                    invoiceDate: transaction.date,
+                    invoiceId: invoiceId,
+                    type: transaction.amount >= 0 ? 'INCOME' : 'EXPENSE',
+                    // comment?: string,
+                    // ignored?: boolean,
+                    // _isDeleted?: boolean,
+                    providerId: transaction.providerId,
+                })
+            }
+            
+            await this.transactionRepo.mergeTransactions(transactionsData)
+
+            // recalculate invoices amounts
+            const invoicesAmount = await this.transactionRepo.recalculateInvoicesAmount(Object.values(Object.fromEntries(this.invoicesIdLookupTable)))
+            await this.invoiceRepo.batchUpdateAmount(invoicesAmount)
+        }
+
         await this.accountRepo.updateSynchronizationStatus(accountId, synchronization)
 
         const updatedAccount = await this.accountRepo.findById(accountId)
