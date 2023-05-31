@@ -53,6 +53,8 @@ export class CreateAutomaticBankAccount implements UseCase {
             providerAccountId: accountData.providerAccountId,
             providerItemId: accountData.synchronization.providerItemId,
             createdAt: accountData.synchronization.createdAt,
+            syncStatus: accountData.synchronization.syncStatus,
+            lastSyncAt: accountData.synchronization.lastSyncAt,
         }) 
 
         if(bankOrError.isLeft()) {

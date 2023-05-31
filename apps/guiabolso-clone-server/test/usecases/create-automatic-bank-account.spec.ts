@@ -1,3 +1,4 @@
+import { ProviderSyncStatus } from "@/entities"
 import { InvalidAccountError, InvalidBalanceError, InvalidInstitutionError, InvalidNameError } from "@/entities/errors"
 import { CreateAutomaticBankAccount } from "@/usecases/create-automatic-bank-account"
 import { UnregisteredInstitutionError, UnregisteredUserError } from "@/usecases/errors"
@@ -23,6 +24,8 @@ describe('Create automatic bank account use case', () => {
         const providerAccountId = 'valid-account-id'
         const providerItemId = 'valid-item-id'
         const createdAt = new Date()
+        const syncStatus: ProviderSyncStatus = 'UPDATED'
+        const lastSyncAt = new Date()
 
         const createAutomaticBankRequest: BankAccountData = {
             type,
@@ -36,6 +39,8 @@ describe('Create automatic bank account use case', () => {
             synchronization: {
                 providerItemId,
                 createdAt,
+                syncStatus,
+                lastSyncAt,
             },
         }
 
@@ -65,6 +70,8 @@ describe('Create automatic bank account use case', () => {
         const providerAccountId = 'valid-account-id'
         const providerItemId = 'valid-item-id'
         const createdAt = new Date()
+        const syncStatus: ProviderSyncStatus = 'UPDATED'
+        const lastSyncAt = new Date()
 
         const createAutomaticBankRequest: BankAccountData = {
             type,
@@ -78,6 +85,8 @@ describe('Create automatic bank account use case', () => {
             synchronization: {
                 providerItemId,
                 createdAt,
+                syncStatus,
+                lastSyncAt,
             },
         }
 
@@ -107,6 +116,8 @@ describe('Create automatic bank account use case', () => {
         const providerAccountId = 'valid-account-id'
         const providerItemId = 'valid-item-id'
         const createdAt = new Date()
+        const syncStatus: ProviderSyncStatus = 'UPDATED'
+        const lastSyncAt = new Date()
 
         const createAutomaticBankRequest: BankAccountData = {
             type,
@@ -120,6 +131,8 @@ describe('Create automatic bank account use case', () => {
             synchronization: {
                 providerItemId,
                 createdAt,
+                syncStatus,
+                lastSyncAt,
             },
         }
 
@@ -149,6 +162,8 @@ describe('Create automatic bank account use case', () => {
         const providerAccountId = 'valid-account-id'
         const providerItemId = 'valid-item-id'
         const createdAt = new Date()
+        const syncStatus: ProviderSyncStatus = 'UPDATED'
+        const lastSyncAt = new Date()
 
         const createAutomaticBankRequest: BankAccountData = {
             type,
@@ -162,6 +177,8 @@ describe('Create automatic bank account use case', () => {
             synchronization: {
                 providerItemId,
                 createdAt,
+                syncStatus,
+                lastSyncAt,
             },
         }
 
@@ -184,6 +201,8 @@ describe('Create automatic bank account use case', () => {
         const providerAccountId = 'valid-account-id'
         const providerItemId = 'valid-item-id'
         const createdAt = new Date()
+        const syncStatus: ProviderSyncStatus = 'UPDATED'
+        const lastSyncAt = new Date()
 
         const createAutomaticBankRequest: BankAccountData = {
             type,
@@ -197,6 +216,8 @@ describe('Create automatic bank account use case', () => {
             synchronization: {
                 providerItemId,
                 createdAt,
+                syncStatus,
+                lastSyncAt,
             },
         }
 
@@ -226,6 +247,8 @@ describe('Create automatic bank account use case', () => {
         const providerAccountId = ''
         const providerItemId = 'valid-item-id'
         const createdAt = new Date()
+        const syncStatus: ProviderSyncStatus = 'UPDATED'
+        const lastSyncAt = new Date()
 
         const createAutomaticBankRequest: BankAccountData = {
             type,
@@ -239,6 +262,8 @@ describe('Create automatic bank account use case', () => {
             synchronization: {
                 providerItemId,
                 createdAt,
+                syncStatus,
+                lastSyncAt,
             },
         }
 
@@ -268,6 +293,8 @@ describe('Create automatic bank account use case', () => {
         const providerAccountId = 'valid-account-id'
         const providerItemId = ''
         const createdAt = new Date()
+        const syncStatus: ProviderSyncStatus = 'UPDATED'
+        const lastSyncAt = new Date()
 
         const createAutomaticBankRequest: BankAccountData = {
             type,
@@ -281,6 +308,8 @@ describe('Create automatic bank account use case', () => {
             synchronization: {
                 providerItemId,
                 createdAt,
+                syncStatus,
+                lastSyncAt,
             },
         }
 
@@ -310,6 +339,8 @@ describe('Create automatic bank account use case', () => {
         const providerAccountId = 'valid-account-id'
         const providerItemId = 'valid-item-id'
         const createdAt: Date = null
+        const syncStatus: ProviderSyncStatus = 'UPDATED'
+        const lastSyncAt = new Date()
 
         const createAutomaticBankRequest: BankAccountData = {
             type,
@@ -323,6 +354,8 @@ describe('Create automatic bank account use case', () => {
             synchronization: {
                 providerItemId,
                 createdAt,
+                syncStatus,
+                lastSyncAt,
             },
         }
 
@@ -352,6 +385,8 @@ describe('Create automatic bank account use case', () => {
         const providerAccountId = 'valid-account-id'
         const providerItemId = 'valid-item-id'
         const createdAt = new Date()
+        const syncStatus: ProviderSyncStatus = 'UPDATED'
+        const lastSyncAt = new Date()
 
         const createAutomaticBankRequest: BankAccountData = {
             type,
@@ -365,6 +400,8 @@ describe('Create automatic bank account use case', () => {
             synchronization: {
                 providerItemId,
                 createdAt,
+                syncStatus,
+                lastSyncAt,
             },
         }
 

@@ -1,3 +1,4 @@
+import { ProviderSyncStatus } from "@/entities"
 import { InvalidAccountError, InvalidBalanceError, InvalidCreditCardError, InvalidInstitutionError, InvalidNameError } from "@/entities/errors"
 import { CreateAutomaticCreditCardAccount } from "@/usecases/create-automatic-credit-card-account"
 import { UnregisteredInstitutionError, UnregisteredUserError } from "@/usecases/errors"
@@ -30,6 +31,8 @@ describe('Create automatic credit card account use case', () => {
         const providerAccountId = 'valid-account-id'
         const providerItemId = 'valid-item-id'
         const createdAt = new Date()
+        const syncStatus: ProviderSyncStatus = 'UPDATED'
+        const lastSyncAt = new Date()
 
         const createAutomaticCreditCardRequest: CreditCardAccountData = {
             type,
@@ -44,6 +47,8 @@ describe('Create automatic credit card account use case', () => {
             synchronization: {
                 providerItemId,
                 createdAt,
+                syncStatus,
+                lastSyncAt,
             },
         }
 
@@ -80,6 +85,8 @@ describe('Create automatic credit card account use case', () => {
         const providerAccountId = 'valid-account-id'
         const providerItemId = 'valid-item-id'
         const createdAt = new Date()
+        const syncStatus: ProviderSyncStatus = 'UPDATED'
+        const lastSyncAt = new Date()
 
         const createAutomaticCreditCardRequest: CreditCardAccountData = {
             type,
@@ -94,6 +101,8 @@ describe('Create automatic credit card account use case', () => {
             synchronization: {
                 providerItemId,
                 createdAt,
+                syncStatus,
+                lastSyncAt,
             },
         }
 
@@ -130,6 +139,8 @@ describe('Create automatic credit card account use case', () => {
         const providerAccountId = 'valid-account-id'
         const providerItemId = 'valid-item-id'
         const createdAt = new Date()
+        const syncStatus: ProviderSyncStatus = 'UPDATED'
+        const lastSyncAt = new Date()
 
         const createAutomaticCreditCardRequest: CreditCardAccountData = {
             type,
@@ -144,6 +155,8 @@ describe('Create automatic credit card account use case', () => {
             synchronization: {
                 providerItemId,
                 createdAt,
+                syncStatus,
+                lastSyncAt,
             },
         }
 
@@ -180,6 +193,8 @@ describe('Create automatic credit card account use case', () => {
         const providerAccountId = 'valid-account-id'
         const providerItemId = 'valid-item-id'
         const createdAt = new Date()
+        const syncStatus: ProviderSyncStatus = 'UPDATED'
+        const lastSyncAt = new Date()
 
         const createAutomaticCreditCardRequest: CreditCardAccountData = {
             type,
@@ -194,6 +209,8 @@ describe('Create automatic credit card account use case', () => {
             synchronization: {
                 providerItemId,
                 createdAt,
+                syncStatus,
+                lastSyncAt,
             },
         }
 
@@ -230,6 +247,8 @@ describe('Create automatic credit card account use case', () => {
         const providerAccountId = 'valid-account-id'
         const providerItemId = 'valid-item-id'
         const createdAt = new Date()
+        const syncStatus: ProviderSyncStatus = 'UPDATED'
+        const lastSyncAt = new Date()
 
         const createAutomaticCreditCardRequest: CreditCardAccountData = {
             type,
@@ -244,6 +263,8 @@ describe('Create automatic credit card account use case', () => {
             synchronization: {
                 providerItemId,
                 createdAt,
+                syncStatus,
+                lastSyncAt,
             },
         }
 
@@ -273,6 +294,8 @@ describe('Create automatic credit card account use case', () => {
         const providerAccountId = 'valid-account-id'
         const providerItemId = 'valid-item-id'
         const createdAt = new Date()
+        const syncStatus: ProviderSyncStatus = 'UPDATED'
+        const lastSyncAt = new Date()
 
         const createAutomaticCreditCardRequest: CreditCardAccountData = {
             type,
@@ -287,6 +310,8 @@ describe('Create automatic credit card account use case', () => {
             synchronization: {
                 providerItemId,
                 createdAt,
+                syncStatus,
+                lastSyncAt,
             },
         }
 
@@ -323,6 +348,8 @@ describe('Create automatic credit card account use case', () => {
         const providerAccountId = ''
         const providerItemId = 'valid-item-id'
         const createdAt = new Date()
+        const syncStatus: ProviderSyncStatus = 'UPDATED'
+        const lastSyncAt = new Date()
 
         const createAutomaticCreditCardRequest: CreditCardAccountData = {
             type,
@@ -337,6 +364,8 @@ describe('Create automatic credit card account use case', () => {
             synchronization: {
                 providerItemId,
                 createdAt,
+                syncStatus,
+                lastSyncAt,
             },
         }
 
@@ -373,6 +402,8 @@ describe('Create automatic credit card account use case', () => {
         const providerAccountId = 'valid-account-id'
         const providerItemId = ''
         const createdAt = new Date()
+        const syncStatus: ProviderSyncStatus = 'UPDATED'
+        const lastSyncAt = new Date()
 
         const createAutomaticCreditCardRequest: CreditCardAccountData = {
             type,
@@ -387,6 +418,8 @@ describe('Create automatic credit card account use case', () => {
             synchronization: {
                 providerItemId,
                 createdAt,
+                syncStatus,
+                lastSyncAt,
             },
         }
 
@@ -423,6 +456,8 @@ describe('Create automatic credit card account use case', () => {
         const providerAccountId = 'valid-account-id'
         const providerItemId = 'valid-item-id'
         const createdAt: Date = null
+        const syncStatus: ProviderSyncStatus = 'UPDATED'
+        const lastSyncAt = new Date()
 
         const createAutomaticCreditCardRequest: CreditCardAccountData = {
             type,
@@ -437,6 +472,8 @@ describe('Create automatic credit card account use case', () => {
             synchronization: {
                 providerItemId,
                 createdAt,
+                syncStatus,
+                lastSyncAt,
             },
         }
 
@@ -473,6 +510,8 @@ describe('Create automatic credit card account use case', () => {
         const providerAccountId = 'valid-account-id'
         const providerItemId = 'valid-item-id'
         const createdAt = new Date()
+        const syncStatus: ProviderSyncStatus = 'UPDATED'
+        const lastSyncAt = new Date()
 
         const createAutomaticCreditCardRequest: CreditCardAccountData = {
             type,
@@ -487,6 +526,8 @@ describe('Create automatic credit card account use case', () => {
             synchronization: {
                 providerItemId,
                 createdAt,
+                syncStatus,
+                lastSyncAt,
             },
         }
 

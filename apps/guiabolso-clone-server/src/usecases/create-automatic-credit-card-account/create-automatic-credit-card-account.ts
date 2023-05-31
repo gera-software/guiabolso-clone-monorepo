@@ -54,6 +54,8 @@ export class CreateAutomaticCreditCardAccount implements UseCase {
                 providerAccountId: accountData.providerAccountId,
                 providerItemId: accountData.synchronization.providerItemId,
                 createdAt: accountData.synchronization.createdAt,
+                syncStatus: accountData.synchronization.syncStatus,
+                lastSyncAt: accountData.synchronization.lastSyncAt,
             },
             new NubankCreditCardInvoiceStrategy()
         ) 
