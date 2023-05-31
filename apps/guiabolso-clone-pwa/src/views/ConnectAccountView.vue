@@ -107,20 +107,19 @@ async function getConnectToken(itemId?: string | undefined) {
     })
 }
 
-
-// async function connectAutomaticAccounts(itemId: string, userId: string) {
-//     return api.guiabolsoServer({
-//         method: 'post',
-//         url: 'connect-accounts',
-//         data: {
-//             itemId,
-//             userId,
-//         }
-//     }).then((response) => {
-//         console.log(response)
-//         return response.data
-//     })
-// }
+async function connectAutomaticAccounts(itemId: string, userId: string) {
+    return api.guiabolsoServer({
+        method: 'post',
+        url: 'connect-accounts',
+        data: {
+            itemId,
+            userId,
+        }
+    }).then((response) => {
+        console.log(response)
+        return response.data
+    })
+}
 
 async function syncAutomaticAccount(accountId: string) {
     return api.guiabolsoServer({
@@ -153,7 +152,7 @@ async function openPluggyConnectWidget(providerConnectorId: number) {
         onSuccess: async ({ item }: {item: Item}) => {
             currentStep.value = 'Importando suas contas'
 
-            const accounts = await createAutomaticAccounts(item,  userStore.user.data.id)
+            const accounts = await connectAutomaticAccounts(item.id,  userStore.user.data.id)
 
             for(const [i, account] of accounts.entries()) {
                 currentStep.value = `Importando seu histórico de transações (${i+1}/${accounts.length})`

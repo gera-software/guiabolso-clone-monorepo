@@ -12,6 +12,13 @@ export type ProviderItemStatus = {
     creditCardAccounts: ProviderAccountSyncDetails,
 }
 
+/**
+ * @deprecated
+ * @param itemId 
+ * @param userId 
+ * @param syncStatus 
+ * @returns 
+ */
 async function connectAutomaticAccounts(itemId: string, userId: string, syncStatus?: ProviderItemStatus) {
     return api.guiabolsoServer({
         method: 'post',
