@@ -1,4 +1,4 @@
-import { AutomaticBankAccount, Institution, User } from "@/entities"
+import { AutomaticBankAccount, Institution, ProviderSyncStatus, User } from "@/entities"
 import { InvalidAccountError, InvalidBalanceError, InvalidInstitutionError, InvalidNameError } from "@/entities/errors"
 
 describe("Automatic Bank Account entity", () => {
@@ -23,8 +23,9 @@ describe("Automatic Bank Account entity", () => {
             const providerAccountId = 'valid-account-id'
             const providerItemId = 'valid-item-id'
             const createdAt = new Date()
+            const syncStatus: ProviderSyncStatus = 'UPDATED'
     
-            const error = AutomaticBankAccount.create({ name, balance, imageUrl, user, institution, providerAccountId, providerItemId, createdAt }).value as Error
+            const error = AutomaticBankAccount.create({ name, balance, imageUrl, user, institution, providerAccountId, providerItemId, createdAt, syncStatus }).value as Error
             expect(error).toBeInstanceOf(InvalidNameError)
 
         })
@@ -49,8 +50,9 @@ describe("Automatic Bank Account entity", () => {
             const providerAccountId = 'valid-account-id'
             const providerItemId = 'valid-item-id'
             const createdAt = new Date()
+            const syncStatus: ProviderSyncStatus = 'UPDATED'
     
-            const error = AutomaticBankAccount.create({ name, balance, imageUrl, user, institution, providerAccountId, providerItemId, createdAt }).value as Error
+            const error = AutomaticBankAccount.create({ name, balance, imageUrl, user, institution, providerAccountId, providerItemId, createdAt, syncStatus }).value as Error
             expect(error).toBeInstanceOf(InvalidBalanceError)
         })
 
@@ -67,8 +69,9 @@ describe("Automatic Bank Account entity", () => {
             const providerAccountId = 'valid-account-id'
             const providerItemId = 'valid-item-id'
             const createdAt = new Date()
+            const syncStatus: ProviderSyncStatus = 'UPDATED'
     
-            const error = AutomaticBankAccount.create({ name, balance, imageUrl, user, institution, providerAccountId, providerItemId, createdAt }).value as Error
+            const error = AutomaticBankAccount.create({ name, balance, imageUrl, user, institution, providerAccountId, providerItemId, createdAt, syncStatus }).value as Error
             expect(error).toBeInstanceOf(InvalidInstitutionError)
         })
 
@@ -92,8 +95,9 @@ describe("Automatic Bank Account entity", () => {
             const providerAccountId = ''
             const providerItemId = 'valid-item-id'
             const createdAt = new Date()
+            const syncStatus: ProviderSyncStatus = 'UPDATED'
     
-            const error = AutomaticBankAccount.create({ name, balance, imageUrl, user, institution, providerAccountId, providerItemId, createdAt }).value as Error
+            const error = AutomaticBankAccount.create({ name, balance, imageUrl, user, institution, providerAccountId, providerItemId, createdAt, syncStatus }).value as Error
             expect(error).toBeInstanceOf(InvalidAccountError)
             expect(error.message).toBe('providerAccountId is required')
         })
@@ -118,8 +122,9 @@ describe("Automatic Bank Account entity", () => {
             const providerAccountId = 'valid-account-id'
             const providerItemId = ''
             const createdAt = new Date()
+            const syncStatus: ProviderSyncStatus = 'UPDATED'
     
-            const error = AutomaticBankAccount.create({ name, balance, imageUrl, user, institution, providerAccountId, providerItemId, createdAt }).value as Error
+            const error = AutomaticBankAccount.create({ name, balance, imageUrl, user, institution, providerAccountId, providerItemId, createdAt, syncStatus }).value as Error
             expect(error).toBeInstanceOf(InvalidAccountError)
             expect(error.message).toBe('providerItemId is required')
         })
@@ -144,10 +149,38 @@ describe("Automatic Bank Account entity", () => {
             const providerAccountId = 'valid-account-id'
             const providerItemId = 'valid-item-id'
             const createdAt: Date = null
+            const syncStatus: ProviderSyncStatus = 'UPDATED'
     
-            const error = AutomaticBankAccount.create({ name, balance, imageUrl, user, institution, providerAccountId, providerItemId, createdAt }).value as Error
+            const error = AutomaticBankAccount.create({ name, balance, imageUrl, user, institution, providerAccountId, providerItemId, createdAt, syncStatus }).value as Error
             expect(error).toBeInstanceOf(InvalidAccountError)
             expect(error.message).toBe('createdAt is required')
+        })
+
+        test("should not create an account without syncStatus", () => {
+            const name = 'valid name'
+            const balance = 5678
+            const imageUrl = 'valid image url'
+            const user = User.create({
+                name: 'user name',
+                email: 'user@email.com',
+                password: 'user password',
+            }).value as User
+            const institution = Institution.create({
+                id: 'valid id', 
+                name: 'valid name', 
+                type: "PERSONAL_BANK", 
+                imageUrl: 'valid url', 
+                primaryColor: 'valid color', 
+                providerConnectorId: 'valid id'
+            }).value as Institution
+            const providerAccountId = 'valid-account-id'
+            const providerItemId = 'valid-item-id'
+            const createdAt: Date = new Date()
+            const syncStatus: ProviderSyncStatus = null
+    
+            const error = AutomaticBankAccount.create({ name, balance, imageUrl, user, institution, providerAccountId, providerItemId, createdAt, syncStatus }).value as Error
+            expect(error).toBeInstanceOf(InvalidAccountError)
+            expect(error.message).toBe('syncStatus is required')
         })
 
         test("should create an account with valid params", () => {
@@ -170,8 +203,9 @@ describe("Automatic Bank Account entity", () => {
             const providerAccountId = 'valid-account-id'
             const providerItemId = 'valid-item-id'
             const createdAt = new Date()
-    
-            const account = AutomaticBankAccount.create({ name, balance, imageUrl, user, institution, providerAccountId, providerItemId, createdAt }).value as AutomaticBankAccount
+            const syncStatus: ProviderSyncStatus = 'UPDATED'
+        
+            const account = AutomaticBankAccount.create({ name, balance, imageUrl, user, institution, providerAccountId, providerItemId, createdAt, syncStatus }).value as AutomaticBankAccount
             expect(account.type).toBe('BANK')
             expect(account.name).toBe(name)
             expect(account.balance.value).toBe(balance)
@@ -183,6 +217,7 @@ describe("Automatic Bank Account entity", () => {
             expect(account.providerAccountId).toEqual(providerAccountId)
             expect(account.synchronization.providerItemId).toEqual(providerItemId)
             expect(account.synchronization.createdAt).toEqual(createdAt)
+            expect(account.synchronization.syncStatus).toEqual(syncStatus)
         })
     })
 })

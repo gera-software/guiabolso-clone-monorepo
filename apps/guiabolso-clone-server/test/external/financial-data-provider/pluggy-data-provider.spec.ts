@@ -362,6 +362,8 @@ describe('Pluggy Data Provider', () => {
                 "userId": null,
             })
         })
+
+        test.todo('synchronization status updated and outdated')
     })
 
     describe('getTransactionsByProviderAccountId', () => {

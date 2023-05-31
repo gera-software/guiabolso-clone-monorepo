@@ -1,6 +1,12 @@
 import { Item } from "pluggy-sdk"
 import serverApiWrapper, { ProviderItemStatus } from "./serverApiWrapper"
 
+/**
+ * @deprecated
+ * @param item 
+ * @param userId 
+ * @returns 
+ */
 export async function createAutomaticAccounts(item: Item, userId: string) {
     console.log('createAutomaticAccounts')
     const syncStatus: ProviderItemStatus = {
