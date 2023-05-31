@@ -115,6 +115,8 @@ describe('Connect automatic accounts web controller', () => {
         const providerCreditCardAccountId = 'valid-credit-card-account-id'
         const providerItemId = 'valid-item-id'
         const createdAt = new Date()
+        const syncStatus = 'UPDATED'
+        const lastSyncAt = new Date()
 
         const creditCardInfo: CreditCardInfoData = {
             brand: "master card",
@@ -137,6 +139,8 @@ describe('Connect automatic accounts web controller', () => {
             synchronization: {
                 providerItemId,
                 createdAt,
+                syncStatus,
+                lastSyncAt,
             },
         }
 
@@ -154,6 +158,8 @@ describe('Connect automatic accounts web controller', () => {
             synchronization: {
                 providerItemId,
                 createdAt,
+                syncStatus,
+                lastSyncAt,
             },
         }
 
