@@ -19,6 +19,7 @@ async function connectAutomaticAccounts(itemId: string, userId: string, syncStat
         data: {
             itemId,
             userId,
+            syncStatus,
         }
     }).then((response) => {
         console.log(response)
