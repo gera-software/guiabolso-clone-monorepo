@@ -67,7 +67,6 @@ export class PluggyDataProvider implements FinancialDataProvider {
             const results = accountsArray.results.map(account => {
                 const signal = account.type == 'CREDIT' ? -1 : 1
                 const synchronizationStatus = {
-                    // TODO deveria ter as opções OUTDATED | UPDATING | UPDATED | LOGIN_ERROR | WAITING_USER_INPUT dependendo do status do ITEM
                     syncStatus: "OUTDATED", 
                     lastSyncAt: null as Date,
                 }
@@ -78,6 +77,8 @@ export class PluggyDataProvider implements FinancialDataProvider {
                     synchronizationStatus.syncStatus = 'OUTDATED'
                 } else if(item.status == 'WAITING_USER_INPUT') {
                     synchronizationStatus.syncStatus = 'WAITING_USER_INPUT'
+                } else if(item.status == 'UPDATING') {
+                    synchronizationStatus.syncStatus = 'UPDATING'
                 } else if(item.status == 'UPDATED') {
                     if(item.executionStatus == 'SUCCESS') {
                         synchronizationStatus.syncStatus = 'UPDATED'
