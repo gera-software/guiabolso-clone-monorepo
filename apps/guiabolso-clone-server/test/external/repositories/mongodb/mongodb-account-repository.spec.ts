@@ -369,29 +369,61 @@ describe('Mongodb Account repository', () => {
         expect((await sut.findById(addedAccount.id)).creditCardInfo).toEqual(newCreditCardInfo)
     })
 
-    test('should update synchronization status', async () => {
-        const sut = new MongodbAccountRepository()
-        const account: BankAccountData = {
-            type: 'BANK',
-            syncType: 'AUTOMATIC',
-            name: 'any name',
-            balance: 789,
-            userId: validUserId.toString(),
-            institution: validInstitution,
-            providerAccountId: 'valid-provider-account-id',
-            synchronization: {
-                providerItemId: 'valid-provider-item-id',
-                createdAt: new Date('2023-03-05'),
-                syncStatus: 'UPDATED',
-                lastSyncAt: new Date('2023-03-05'),
+    describe('update synchronization status', () => {
+        // TODO testar as combinações de update  do status e datas?
+        test('should update synchronization status', async () => {
+            const sut = new MongodbAccountRepository()
+            const account: BankAccountData = {
+                type: 'BANK',
+                syncType: 'AUTOMATIC',
+                name: 'any name',
+                balance: 789,
+                userId: validUserId.toString(),
+                institution: validInstitution,
+                providerAccountId: 'valid-provider-account-id',
+                synchronization: {
+                    providerItemId: 'valid-provider-item-id',
+                    createdAt: new Date('2023-03-05'),
+                    syncStatus: 'OUTDATED',
+                    lastSyncAt: null,
+                }
             }
-        }
-        const addedAccount = await sut.add(account)
-        
-        const lastSyncAt = new Date('2023-03-07')
-        await sut.updateSynchronizationStatus(addedAccount.id, { lastSyncAt })
+            const addedAccount = await sut.add(account)
+            
+            const syncStatus = 'UPDATED'
+            const lastSyncAt = new Date('2023-03-07')
+            await sut.updateSynchronizationStatus(addedAccount.id, { syncStatus, lastSyncAt })
+    
+            const result = await sut.findById(addedAccount.id)
+            expect(result.synchronization.syncStatus).toEqual(syncStatus)
+            expect(result.synchronization.lastSyncAt).toEqual(lastSyncAt)
+        })
 
-        
-        expect((await sut.findById(addedAccount.id)).synchronization.lastSyncAt).toEqual(lastSyncAt)
+        test('should not update lastSyncAt if it\'s undefined or null', async () => {
+            const sut = new MongodbAccountRepository()
+            const account: BankAccountData = {
+                type: 'BANK',
+                syncType: 'AUTOMATIC',
+                name: 'any name',
+                balance: 789,
+                userId: validUserId.toString(),
+                institution: validInstitution,
+                providerAccountId: 'valid-provider-account-id',
+                synchronization: {
+                    providerItemId: 'valid-provider-item-id',
+                    createdAt: new Date('2023-03-05'),
+                    syncStatus: 'UPDATED',
+                    lastSyncAt: new Date('2023-03-05'),
+                }
+            }
+            const addedAccount = await sut.add(account)
+            
+            const syncStatus = 'OUTDATED'
+            await sut.updateSynchronizationStatus(addedAccount.id, { syncStatus })
+    
+            const result = await sut.findById(addedAccount.id)
+            expect(result.synchronization.syncStatus).toEqual(syncStatus)
+            expect(result.synchronization.lastSyncAt).toEqual(account.synchronization.lastSyncAt)
+        })
     })
 })

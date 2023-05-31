@@ -131,14 +131,24 @@ export class MongodbAccountRepository implements AccountRepository, UpdateAccoun
         await accountCollection.updateOne({ _id: new ObjectId(accountId) }, updateDoc)
     }
 
-    async updateSynchronizationStatus(accountId: string, syncronization: { lastSyncAt: Date }): Promise<void> {
+    async updateSynchronizationStatus(accountId: string, synchronization: { syncStatus: string, lastSyncAt?: Date }): Promise<void> {
         const accountCollection = MongoHelper.getCollection('accounts')
 
         const updateDoc = {
-            $set: {
-                'synchronization.lastSyncAt': syncronization.lastSyncAt,
-            },
-        };
+            $set: {}
+        }
+
+        if(synchronization.lastSyncAt) {
+            updateDoc.$set = {
+                'synchronization.syncStatus': synchronization.syncStatus,
+                'synchronization.lastSyncAt': synchronization.lastSyncAt,
+            }
+          
+        } else {
+            updateDoc.$set = {
+                'synchronization.syncStatus': synchronization.syncStatus,
+            }
+        }
 
         await accountCollection.updateOne({ _id: new ObjectId(accountId) }, updateDoc)
     }

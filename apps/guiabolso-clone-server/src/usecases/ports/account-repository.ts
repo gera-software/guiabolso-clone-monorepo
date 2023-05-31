@@ -8,7 +8,7 @@ export interface AccountRepository {
 
 export interface UpdateAccountRepository extends AccountRepository {
     updateBalance(accountId: string, balance: number): Promise<void>
-    updateSynchronizationStatus(accountId: string, syncronization: { lastSyncAt: Date }): Promise<void>
+    updateSynchronizationStatus(accountId: string, syncronization: { syncStatus: string, lastSyncAt?: Date }): Promise<void>
     updateAvaliableCreditCardLimit(accountId: string, limit: number): Promise<void>
     updateCreditCardInfo(accountId: string, creditCardInfoData: CreditCardInfoData): Promise<void>
 }
