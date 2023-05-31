@@ -60,12 +60,34 @@ export class PluggyDataProvider implements FinancialDataProvider {
             // console.log('institutionData', institutionData)
 
             const accountsArray = await this.client.fetchAccounts(itemId)
-            for(const account of accountsArray.results) {
+            // for(const account of accountsArray.results) {
                 // console.log('accountsArray', account)
-            }
+            // }
 
             const results = accountsArray.results.map(account => {
                 const signal = account.type == 'CREDIT' ? -1 : 1
+                const synchronizationStatus = {
+                    // TODO deveria ter as opções OUTDATED | UPDATING | UPDATED | LOGIN_ERROR | WAITING_USER_INPUT dependendo do status do ITEM
+                    syncStatus: "OUTDATED", 
+                    lastSyncAt: item.lastUpdatedAt,
+                }
+            
+                if(item.status == 'UPDATED') {
+                    if(item.executionStatus == 'SUCCESS') {
+                        synchronizationStatus.syncStatus = 'UPDATED'
+                        synchronizationStatus.lastSyncAt = item.lastUpdatedAt
+            
+                    } else if(item.executionStatus == 'PARTIAL_SUCCESS') {
+                        if(account.type == 'BANK') {
+                            synchronizationStatus.syncStatus = item.statusDetail?.accounts?.isUpdated ? 'UPDATED' : 'OUTDATED'
+                            synchronizationStatus.lastSyncAt = item.statusDetail?.accounts?.lastUpdatedAt
+                        } else {
+                            synchronizationStatus.syncStatus = item.statusDetail?.creditCards?.isUpdated ? 'UPDATED' : 'OUTDATED'
+                            synchronizationStatus.lastSyncAt = item.statusDetail?.creditCards?.lastUpdatedAt
+                        }
+                    }
+                }
+
                 return {
                     id: null,
                     type: account.type == 'BANK' ? 'BANK' : 'CREDIT_CARD',
@@ -86,8 +108,8 @@ export class PluggyDataProvider implements FinancialDataProvider {
                     synchronization: {
                         providerItemId: item.id,
                         createdAt: item.createdAt,
-                        syncStatus: 'UPDATED',
-                        lastSyncAt: item.lastUpdatedAt,
+                        syncStatus: synchronizationStatus.syncStatus,
+                        lastSyncAt: synchronizationStatus.lastSyncAt,
                     }
                 }
             })
