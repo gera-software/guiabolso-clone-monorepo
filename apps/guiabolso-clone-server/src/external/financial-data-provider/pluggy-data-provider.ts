@@ -2,7 +2,7 @@ import { ConnectTokenOptions, PluggyClient, Transaction as PluggyTransaction, Tr
 import { AccountData, FinancialDataProvider, InstitutionData, TransactionFilter, TransactionRequest } from "@/usecases/ports"
 import { Either, left, right } from '@/shared'
 import { DataProviderError } from '@/usecases/errors'
-import { AccountType } from '@/entities'
+import { AccountType, ProviderSyncStatus } from '@/entities'
 
 export class PluggyDataProvider implements FinancialDataProvider {
     private client: PluggyClient
@@ -69,7 +69,7 @@ export class PluggyDataProvider implements FinancialDataProvider {
                 const synchronizationStatus = {
                     // TODO deveria ter as opções OUTDATED | UPDATING | UPDATED | LOGIN_ERROR | WAITING_USER_INPUT dependendo do status do ITEM
                     syncStatus: "OUTDATED", 
-                    lastSyncAt: item.lastUpdatedAt,
+                    lastSyncAt: null as Date,
                 }
             
                 if(item.status == 'UPDATED') {

@@ -346,801 +346,996 @@ describe('Pluggy Data Provider', () => {
         })
 
         describe('syncronization status', () => {
-            test('data provider updated all accounts', async () => {
-                const validItemId = "a5d1ca6c-24c0-41c7-8b44-9272cc868663"
 
-                const item: Item = {
-                    "id": validItemId,
-                    "createdAt": new Date("2021-12-28T21:48:02.863Z"),
-                    "updatedAt": new Date("2021-12-28T21:48:02.952Z"),
-                    "connector": {
-                        "id": 201,
-                        "name": "Itaú",
-                        "primaryColor": "EC7000",
-                        "institutionUrl": "https://www.itau.com.br",
-                        "country": "BR",
-                        "type": "PERSONAL_BANK",
-                        "credentials": [
-                        {
-                            "label": "Agência",
-                            "name": "agency",
-                            "type": "number",
-                            "placeholder": "Agência",
-                            "validation": "^\\d{4}$",
-                            "validationMessage": "O agencia deve ter 4 dígito"
-                        },
-                        {
-                            "label": "Conta",
-                            "name": "account",
-                            "type": "number",
-                            "placeholder": "Conta",
-                            "validation": "^\\d{4,6}$",
-                            "validationMessage": "O conta deve ter 6 dígito"
-                        },
-                        {
-                            "label": "Senha",
-                            "name": "password",
-                            "type": "number",
-                            "placeholder": "Senha",
-                            "validation": "^\\d{6}$",
-                            "validationMessage": "O senha deve ter 6 dígito"
-                        }
-                        ],
-                        "imageUrl": "https://res.cloudinary.com/dkr0vihmp/image/upload/v1588853552/connectors-logos/itau_ntodvn.png",
-                        "hasMFA": false,
-                        "products": [],
-                        "createdAt": new Date(),
+            describe('item status: UPDATED (The sync process finished successfully)', () => {
+                test('data provider updated all accounts', async () => {
+                    const validItemId = "a5d1ca6c-24c0-41c7-8b44-9272cc868663"
     
-                    },
-                    "status": "UPDATED",
-                    "executionStatus": "SUCCESS",
-                    "lastUpdatedAt": new Date("2021-12-28T21:48:02.952Z"),
-                    "webhookUrl": null,
-                    "error": null,
-                    "clientUserId": "My User App Id",
-                    "parameter": null,
-                    "userAction": null,
-                    "statusDetail": {
-                      "accounts": {
-                        "isUpdated": true,
-                        "lastUpdatedAt": new Date("2022-03-08T22:43:04.796Z"),       
-                      },
-                      "identity": {
-                        "isUpdated": false,
+                    const item: Item = {
+                        "id": validItemId,
+                        "createdAt": new Date("2021-12-28T21:48:02.863Z"),
+                        "updatedAt": new Date("2021-12-28T21:48:02.952Z"),
+                        "connector": {
+                            "id": 201,
+                            "name": "Itaú",
+                            "primaryColor": "EC7000",
+                            "institutionUrl": "https://www.itau.com.br",
+                            "country": "BR",
+                            "type": "PERSONAL_BANK",
+                            "credentials": [
+                            {
+                                "label": "Agência",
+                                "name": "agency",
+                                "type": "number",
+                                "placeholder": "Agência",
+                                "validation": "^\\d{4}$",
+                                "validationMessage": "O agencia deve ter 4 dígito"
+                            },
+                            {
+                                "label": "Conta",
+                                "name": "account",
+                                "type": "number",
+                                "placeholder": "Conta",
+                                "validation": "^\\d{4,6}$",
+                                "validationMessage": "O conta deve ter 6 dígito"
+                            },
+                            {
+                                "label": "Senha",
+                                "name": "password",
+                                "type": "number",
+                                "placeholder": "Senha",
+                                "validation": "^\\d{6}$",
+                                "validationMessage": "O senha deve ter 6 dígito"
+                            }
+                            ],
+                            "imageUrl": "https://res.cloudinary.com/dkr0vihmp/image/upload/v1588853552/connectors-logos/itau_ntodvn.png",
+                            "hasMFA": false,
+                            "products": [],
+                            "createdAt": new Date(),
+        
+                        },
+                        "status": "UPDATED",
+                        "executionStatus": "SUCCESS",
+                        "lastUpdatedAt": new Date("2021-12-28T21:48:02.952Z"),
+                        "webhookUrl": null,
+                        "error": null,
+                        "clientUserId": "My User App Id",
+                        "parameter": null,
+                        "userAction": null,
+                        "statusDetail": {
+                          "accounts": {
+                            "isUpdated": true,
+                            "lastUpdatedAt": new Date("2022-03-08T22:43:04.796Z"),       
+                          },
+                          "identity": {
+                            "isUpdated": false,
+                            "lastUpdatedAt": null,
+                          },
+                          "creditCards": {
+                            "isUpdated": true,
+                            "lastUpdatedAt": new Date("2022-03-08T22:43:04.796Z"),
+                          },
+                          "investments": {
+                            "isUpdated": true,
+                            "lastUpdatedAt": new Date("2022-03-08T22:43:04.796Z"),
+                          },
+                          "transactions": {
+                            "isUpdated": true,
+                            "lastUpdatedAt": new Date("2022-03-08T22:43:04.796Z"),
+                          },
+                          "paymentData": null
+                        },
+                        "consecutiveFailedLoginAttempts": 0,
+                        // "nextAutoSyncAt": null
+                    }
+        
+                    const bankAccount: PluggyAccount = {
+                        "id": "a658c848-e475-457b-8565-d1fffba127c4",
+                        "type": "BANK",
+                        "subtype": "CHECKING_ACCOUNT",
+                        "number": "0001/12345-0",
+                        "name": "Conta Corrente",
+                        "marketingName": "GOLD Conta Corrente",
+                        "balance": 1209.50,
+                        "itemId": validItemId,
+                        "taxNumber": "416.799.495-00",
+                        "owner": "John Doe",
+                        "currencyCode": "BRL",
+                        "bankData": {
+                          "transferNumber": "0001/12345-0",
+                          "closingBalance": 1209.50
+                        },
+                        "creditData": null,
+                    }
+        
+                    const creditAccount: PluggyAccount = {
+                        "id": "a658c848-e475-457b-8565-d1fffba127c5",
+                        "type": "CREDIT",
+                        "subtype": "CREDIT_CARD",
+                        "number": "xxxx8670",
+                        "name": "Mastercard Black",
+                        "marketingName": "PLUGGY UNICLASS MASTERCARD BLACK",
+                        "balance": 1209.50,
+                        "itemId": validItemId,
+                        "taxNumber": "416.799.495-00",
+                        "owner": "John Doe",
+                        "currencyCode": "BRL",
+                        "creditData": {
+                          "level": "BLACK",
+                          "brand": "MASTERCARD",
+                          "balanceCloseDate": new Date("2022-01-03"),
+                          "balanceDueDate": new Date("2022-01-10"),
+                          "availableCreditLimit": 2000.00,
+                          "balanceForeignCurrency": 0,
+                          "minimumPayment": 161.90,
+                          "creditLimit": 3000.00
+                        },
+                        "bankData": null,
+                    }
+                    
+                    mockedPluggyClient.prototype.fetchItem.mockResolvedValueOnce(item)
+        
+                    mockedPluggyClient.prototype.fetchAccounts.mockResolvedValueOnce({
+                        "total": 2,
+                        "totalPages": 1,
+                        "page": 1,
+                        "results": [ bankAccount, creditAccount ]
+                    })
+        
+                    const validClientId = 'valid-client-id'
+                    const validClientSecret = 'valid-client-secret'
+                    const sut = new PluggyDataProvider(validClientId, validClientSecret)
+        
+                    const results = (await sut.getAccountsByItemId(validItemId)).value as AccountData[]
+                    expect(results.length).toBe(2)
+                    expect(results[0]).toEqual({
+                        "balance": 120950, 
+                        "creditCardInfo": null, 
+                        "id": null, 
+                        "imageUrl": item.connector.imageUrl, 
+                        "institution": {
+                            "id": null, 
+                            "imageUrl": item.connector.imageUrl, 
+                            "name": item.connector.name, 
+                            "primaryColor": item.connector.primaryColor, 
+                            "providerConnectorId": ''+item.connector.id, 
+                            "type": item.connector.type
+                        }, 
+                        "name": bankAccount.name, 
+                        "providerAccountId": bankAccount.id, 
+                        "syncType": "AUTOMATIC", 
+                        "synchronization": {
+                            "createdAt": item.createdAt, 
+                            "providerItemId": item.id,
+                            "syncStatus": "UPDATED",
+                            "lastSyncAt": item.lastUpdatedAt,
+                        }, 
+                        "type": "BANK", 
+                        "userId": null,
+                    })
+        
+                    expect(results[1]).toEqual({
+                        "balance": -120950, 
+                        "creditCardInfo": {
+                            "availableCreditLimit": 200000, 
+                            "creditLimit": 300000, 
+                            "brand": creditAccount.creditData.brand, 
+                            "closeDay": creditAccount.creditData.balanceCloseDate.getUTCDate(), 
+                            "dueDay": creditAccount.creditData.balanceDueDate.getUTCDate()
+                        }, 
+                        "id": null, 
+                        "imageUrl": item.connector.imageUrl, 
+                        "institution": {
+                            "id": null, 
+                            "imageUrl": item.connector.imageUrl, 
+                            "name": item.connector.name, 
+                            "primaryColor": item.connector.primaryColor, 
+                            "providerConnectorId": ''+item.connector.id, 
+                            "type": item.connector.type
+                        },
+                        "name": creditAccount.name, 
+                        "providerAccountId": creditAccount.id, 
+                        "syncType": "AUTOMATIC", 
+                        "synchronization": {
+                            "createdAt": item.createdAt, 
+                            "providerItemId": item.id,
+                            "syncStatus": "UPDATED",
+                            "lastSyncAt": item.lastUpdatedAt,
+                        }, 
+                        "type": "CREDIT_CARD", 
+                        "userId": null,
+                    })
+                })
+    
+                test('data provider did not update bank accounts', async () => {
+                    const validItemId = "a5d1ca6c-24c0-41c7-8b44-9272cc868663"
+    
+                    const item: Item = {
+                        "id": validItemId,
+                        "createdAt": new Date("2021-12-28T21:48:02.863Z"),
+                        "updatedAt": new Date("2021-12-28T21:48:02.952Z"),
+                        "connector": {
+                            "id": 201,
+                            "name": "Itaú",
+                            "primaryColor": "EC7000",
+                            "institutionUrl": "https://www.itau.com.br",
+                            "country": "BR",
+                            "type": "PERSONAL_BANK",
+                            "credentials": [
+                            {
+                                "label": "Agência",
+                                "name": "agency",
+                                "type": "number",
+                                "placeholder": "Agência",
+                                "validation": "^\\d{4}$",
+                                "validationMessage": "O agencia deve ter 4 dígito"
+                            },
+                            {
+                                "label": "Conta",
+                                "name": "account",
+                                "type": "number",
+                                "placeholder": "Conta",
+                                "validation": "^\\d{4,6}$",
+                                "validationMessage": "O conta deve ter 6 dígito"
+                            },
+                            {
+                                "label": "Senha",
+                                "name": "password",
+                                "type": "number",
+                                "placeholder": "Senha",
+                                "validation": "^\\d{6}$",
+                                "validationMessage": "O senha deve ter 6 dígito"
+                            }
+                            ],
+                            "imageUrl": "https://res.cloudinary.com/dkr0vihmp/image/upload/v1588853552/connectors-logos/itau_ntodvn.png",
+                            "hasMFA": false,
+                            "products": [],
+                            "createdAt": new Date(),
+        
+                        },
+                        "status": "UPDATED",
+                        "executionStatus": "PARTIAL_SUCCESS",
                         "lastUpdatedAt": null,
-                      },
-                      "creditCards": {
-                        "isUpdated": true,
-                        "lastUpdatedAt": new Date("2022-03-08T22:43:04.796Z"),
-                      },
-                      "investments": {
-                        "isUpdated": true,
-                        "lastUpdatedAt": new Date("2022-03-08T22:43:04.796Z"),
-                      },
-                      "transactions": {
-                        "isUpdated": true,
-                        "lastUpdatedAt": new Date("2022-03-08T22:43:04.796Z"),
-                      },
-                      "paymentData": null
-                    },
-                    "consecutiveFailedLoginAttempts": 0,
-                    // "nextAutoSyncAt": null
-                }
-    
-                const bankAccount: PluggyAccount = {
-                    "id": "a658c848-e475-457b-8565-d1fffba127c4",
-                    "type": "BANK",
-                    "subtype": "CHECKING_ACCOUNT",
-                    "number": "0001/12345-0",
-                    "name": "Conta Corrente",
-                    "marketingName": "GOLD Conta Corrente",
-                    "balance": 1209.50,
-                    "itemId": validItemId,
-                    "taxNumber": "416.799.495-00",
-                    "owner": "John Doe",
-                    "currencyCode": "BRL",
-                    "bankData": {
-                      "transferNumber": "0001/12345-0",
-                      "closingBalance": 1209.50
-                    },
-                    "creditData": null,
-                }
-    
-                const creditAccount: PluggyAccount = {
-                    "id": "a658c848-e475-457b-8565-d1fffba127c5",
-                    "type": "CREDIT",
-                    "subtype": "CREDIT_CARD",
-                    "number": "xxxx8670",
-                    "name": "Mastercard Black",
-                    "marketingName": "PLUGGY UNICLASS MASTERCARD BLACK",
-                    "balance": 1209.50,
-                    "itemId": validItemId,
-                    "taxNumber": "416.799.495-00",
-                    "owner": "John Doe",
-                    "currencyCode": "BRL",
-                    "creditData": {
-                      "level": "BLACK",
-                      "brand": "MASTERCARD",
-                      "balanceCloseDate": new Date("2022-01-03"),
-                      "balanceDueDate": new Date("2022-01-10"),
-                      "availableCreditLimit": 2000.00,
-                      "balanceForeignCurrency": 0,
-                      "minimumPayment": 161.90,
-                      "creditLimit": 3000.00
-                    },
-                    "bankData": null,
-                }
-                
-                mockedPluggyClient.prototype.fetchItem.mockResolvedValueOnce(item)
-    
-                mockedPluggyClient.prototype.fetchAccounts.mockResolvedValueOnce({
-                    "total": 2,
-                    "totalPages": 1,
-                    "page": 1,
-                    "results": [ bankAccount, creditAccount ]
-                })
-    
-                const validClientId = 'valid-client-id'
-                const validClientSecret = 'valid-client-secret'
-                const sut = new PluggyDataProvider(validClientId, validClientSecret)
-    
-                const results = (await sut.getAccountsByItemId(validItemId)).value as AccountData[]
-                expect(results.length).toBe(2)
-                expect(results[0]).toEqual({
-                    "balance": 120950, 
-                    "creditCardInfo": null, 
-                    "id": null, 
-                    "imageUrl": item.connector.imageUrl, 
-                    "institution": {
+                        "webhookUrl": null,
+                        "error": null,
+                        "clientUserId": "My User App Id",
+                        "parameter": null,
+                        "userAction": null,
+                        "statusDetail": {
+                          "accounts": {
+                            "isUpdated": false,
+                            "lastUpdatedAt": null,       
+                          },
+                          "identity": {
+                            "isUpdated": false,
+                            "lastUpdatedAt": null,
+                          },
+                          "creditCards": {
+                            "isUpdated": true,
+                            "lastUpdatedAt": new Date("2022-03-08T22:43:04.796Z"),
+                          },
+                          "investments": {
+                            "isUpdated": true,
+                            "lastUpdatedAt": new Date("2022-03-08T22:43:04.796Z"),
+                          },
+                          "transactions": {
+                            "isUpdated": true,
+                            "lastUpdatedAt": new Date("2022-03-08T22:43:04.796Z"),
+                          },
+                          "paymentData": null
+                        },
+                        "consecutiveFailedLoginAttempts": 0,
+                        // "nextAutoSyncAt": null
+                    }
+        
+                    const bankAccount: PluggyAccount = {
+                        "id": "a658c848-e475-457b-8565-d1fffba127c4",
+                        "type": "BANK",
+                        "subtype": "CHECKING_ACCOUNT",
+                        "number": "0001/12345-0",
+                        "name": "Conta Corrente",
+                        "marketingName": "GOLD Conta Corrente",
+                        "balance": 1209.50,
+                        "itemId": validItemId,
+                        "taxNumber": "416.799.495-00",
+                        "owner": "John Doe",
+                        "currencyCode": "BRL",
+                        "bankData": {
+                          "transferNumber": "0001/12345-0",
+                          "closingBalance": 1209.50
+                        },
+                        "creditData": null,
+                    }
+        
+                    const creditAccount: PluggyAccount = {
+                        "id": "a658c848-e475-457b-8565-d1fffba127c5",
+                        "type": "CREDIT",
+                        "subtype": "CREDIT_CARD",
+                        "number": "xxxx8670",
+                        "name": "Mastercard Black",
+                        "marketingName": "PLUGGY UNICLASS MASTERCARD BLACK",
+                        "balance": 1209.50,
+                        "itemId": validItemId,
+                        "taxNumber": "416.799.495-00",
+                        "owner": "John Doe",
+                        "currencyCode": "BRL",
+                        "creditData": {
+                          "level": "BLACK",
+                          "brand": "MASTERCARD",
+                          "balanceCloseDate": new Date("2022-01-03"),
+                          "balanceDueDate": new Date("2022-01-10"),
+                          "availableCreditLimit": 2000.00,
+                          "balanceForeignCurrency": 0,
+                          "minimumPayment": 161.90,
+                          "creditLimit": 3000.00
+                        },
+                        "bankData": null,
+                    }
+                    
+                    mockedPluggyClient.prototype.fetchItem.mockResolvedValueOnce(item)
+        
+                    mockedPluggyClient.prototype.fetchAccounts.mockResolvedValueOnce({
+                        "total": 2,
+                        "totalPages": 1,
+                        "page": 1,
+                        "results": [ bankAccount, creditAccount ]
+                    })
+        
+                    const validClientId = 'valid-client-id'
+                    const validClientSecret = 'valid-client-secret'
+                    const sut = new PluggyDataProvider(validClientId, validClientSecret)
+        
+                    const results = (await sut.getAccountsByItemId(validItemId)).value as AccountData[]
+                    expect(results.length).toBe(2)
+                    expect(results[0]).toEqual({
+                        "balance": 120950, 
+                        "creditCardInfo": null, 
                         "id": null, 
                         "imageUrl": item.connector.imageUrl, 
-                        "name": item.connector.name, 
-                        "primaryColor": item.connector.primaryColor, 
-                        "providerConnectorId": ''+item.connector.id, 
-                        "type": item.connector.type
-                    }, 
-                    "name": bankAccount.name, 
-                    "providerAccountId": bankAccount.id, 
-                    "syncType": "AUTOMATIC", 
-                    "synchronization": {
-                        "createdAt": item.createdAt, 
-                        "providerItemId": item.id,
-                        "syncStatus": "UPDATED",
-                        "lastSyncAt": item.lastUpdatedAt,
-                    }, 
-                    "type": "BANK", 
-                    "userId": null,
-                })
-    
-                expect(results[1]).toEqual({
-                    "balance": -120950, 
-                    "creditCardInfo": {
-                        "availableCreditLimit": 200000, 
-                        "creditLimit": 300000, 
-                        "brand": creditAccount.creditData.brand, 
-                        "closeDay": creditAccount.creditData.balanceCloseDate.getUTCDate(), 
-                        "dueDay": creditAccount.creditData.balanceDueDate.getUTCDate()
-                    }, 
-                    "id": null, 
-                    "imageUrl": item.connector.imageUrl, 
-                    "institution": {
+                        "institution": {
+                            "id": null, 
+                            "imageUrl": item.connector.imageUrl, 
+                            "name": item.connector.name, 
+                            "primaryColor": item.connector.primaryColor, 
+                            "providerConnectorId": ''+item.connector.id, 
+                            "type": item.connector.type
+                        }, 
+                        "name": bankAccount.name, 
+                        "providerAccountId": bankAccount.id, 
+                        "syncType": "AUTOMATIC", 
+                        "synchronization": {
+                            "createdAt": item.createdAt, 
+                            "providerItemId": item.id,
+                            "syncStatus": "OUTDATED",
+                            "lastSyncAt": item.statusDetail.accounts.lastUpdatedAt,
+                        }, 
+                        "type": "BANK", 
+                        "userId": null,
+                    })
+        
+                    expect(results[1]).toEqual({
+                        "balance": -120950, 
+                        "creditCardInfo": {
+                            "availableCreditLimit": 200000, 
+                            "creditLimit": 300000, 
+                            "brand": creditAccount.creditData.brand, 
+                            "closeDay": creditAccount.creditData.balanceCloseDate.getUTCDate(), 
+                            "dueDay": creditAccount.creditData.balanceDueDate.getUTCDate()
+                        }, 
                         "id": null, 
                         "imageUrl": item.connector.imageUrl, 
-                        "name": item.connector.name, 
-                        "primaryColor": item.connector.primaryColor, 
-                        "providerConnectorId": ''+item.connector.id, 
-                        "type": item.connector.type
-                    },
-                    "name": creditAccount.name, 
-                    "providerAccountId": creditAccount.id, 
-                    "syncType": "AUTOMATIC", 
-                    "synchronization": {
-                        "createdAt": item.createdAt, 
-                        "providerItemId": item.id,
-                        "syncStatus": "UPDATED",
-                        "lastSyncAt": item.lastUpdatedAt,
-                    }, 
-                    "type": "CREDIT_CARD", 
-                    "userId": null,
+                        "institution": {
+                            "id": null, 
+                            "imageUrl": item.connector.imageUrl, 
+                            "name": item.connector.name, 
+                            "primaryColor": item.connector.primaryColor, 
+                            "providerConnectorId": ''+item.connector.id, 
+                            "type": item.connector.type
+                        },
+                        "name": creditAccount.name, 
+                        "providerAccountId": creditAccount.id, 
+                        "syncType": "AUTOMATIC", 
+                        "synchronization": {
+                            "createdAt": item.createdAt, 
+                            "providerItemId": item.id,
+                            "syncStatus": "UPDATED",
+                            "lastSyncAt": item.statusDetail.creditCards.lastUpdatedAt,
+                        }, 
+                        "type": "CREDIT_CARD", 
+                        "userId": null,
+                    })
+                })
+    
+                test('data provider did not update credit card accounts', async () => {
+                    const validItemId = "a5d1ca6c-24c0-41c7-8b44-9272cc868663"
+    
+                    const item: Item = {
+                        "id": validItemId,
+                        "createdAt": new Date("2021-12-28T21:48:02.863Z"),
+                        "updatedAt": new Date("2021-12-28T21:48:02.952Z"),
+                        "connector": {
+                            "id": 201,
+                            "name": "Itaú",
+                            "primaryColor": "EC7000",
+                            "institutionUrl": "https://www.itau.com.br",
+                            "country": "BR",
+                            "type": "PERSONAL_BANK",
+                            "credentials": [
+                            {
+                                "label": "Agência",
+                                "name": "agency",
+                                "type": "number",
+                                "placeholder": "Agência",
+                                "validation": "^\\d{4}$",
+                                "validationMessage": "O agencia deve ter 4 dígito"
+                            },
+                            {
+                                "label": "Conta",
+                                "name": "account",
+                                "type": "number",
+                                "placeholder": "Conta",
+                                "validation": "^\\d{4,6}$",
+                                "validationMessage": "O conta deve ter 6 dígito"
+                            },
+                            {
+                                "label": "Senha",
+                                "name": "password",
+                                "type": "number",
+                                "placeholder": "Senha",
+                                "validation": "^\\d{6}$",
+                                "validationMessage": "O senha deve ter 6 dígito"
+                            }
+                            ],
+                            "imageUrl": "https://res.cloudinary.com/dkr0vihmp/image/upload/v1588853552/connectors-logos/itau_ntodvn.png",
+                            "hasMFA": false,
+                            "products": [],
+                            "createdAt": new Date(),
+        
+                        },
+                        "status": "UPDATED",
+                        "executionStatus": "PARTIAL_SUCCESS",
+                        "lastUpdatedAt": new Date("2021-12-28T21:48:02.863Z"),
+                        "webhookUrl": null,
+                        "error": null,
+                        "clientUserId": "My User App Id",
+                        "parameter": null,
+                        "userAction": null,
+                        "statusDetail": {
+                          "accounts": {
+                            "isUpdated": true,
+                            "lastUpdatedAt": new Date("2022-03-08T22:43:04.796Z"),       
+                          },
+                          "identity": {
+                            "isUpdated": false,
+                            "lastUpdatedAt": null,
+                          },
+                          "creditCards": {
+                            "isUpdated": false,
+                            "lastUpdatedAt": null,
+                          },
+                          "investments": {
+                            "isUpdated": true,
+                            "lastUpdatedAt": new Date("2022-03-08T22:43:04.796Z"),
+                          },
+                          "transactions": {
+                            "isUpdated": true,
+                            "lastUpdatedAt": new Date("2022-03-08T22:43:04.796Z"),
+                          },
+                          "paymentData": null
+                        },
+                        "consecutiveFailedLoginAttempts": 0,
+                        // "nextAutoSyncAt": null
+                    }
+        
+                    const bankAccount: PluggyAccount = {
+                        "id": "a658c848-e475-457b-8565-d1fffba127c4",
+                        "type": "BANK",
+                        "subtype": "CHECKING_ACCOUNT",
+                        "number": "0001/12345-0",
+                        "name": "Conta Corrente",
+                        "marketingName": "GOLD Conta Corrente",
+                        "balance": 1209.50,
+                        "itemId": validItemId,
+                        "taxNumber": "416.799.495-00",
+                        "owner": "John Doe",
+                        "currencyCode": "BRL",
+                        "bankData": {
+                          "transferNumber": "0001/12345-0",
+                          "closingBalance": 1209.50
+                        },
+                        "creditData": null,
+                    }
+        
+                    const creditAccount: PluggyAccount = {
+                        "id": "a658c848-e475-457b-8565-d1fffba127c5",
+                        "type": "CREDIT",
+                        "subtype": "CREDIT_CARD",
+                        "number": "xxxx8670",
+                        "name": "Mastercard Black",
+                        "marketingName": "PLUGGY UNICLASS MASTERCARD BLACK",
+                        "balance": 1209.50,
+                        "itemId": validItemId,
+                        "taxNumber": "416.799.495-00",
+                        "owner": "John Doe",
+                        "currencyCode": "BRL",
+                        "creditData": {
+                          "level": "BLACK",
+                          "brand": "MASTERCARD",
+                          "balanceCloseDate": new Date("2022-01-03"),
+                          "balanceDueDate": new Date("2022-01-10"),
+                          "availableCreditLimit": 2000.00,
+                          "balanceForeignCurrency": 0,
+                          "minimumPayment": 161.90,
+                          "creditLimit": 3000.00
+                        },
+                        "bankData": null,
+                    }
+                    
+                    mockedPluggyClient.prototype.fetchItem.mockResolvedValueOnce(item)
+        
+                    mockedPluggyClient.prototype.fetchAccounts.mockResolvedValueOnce({
+                        "total": 2,
+                        "totalPages": 1,
+                        "page": 1,
+                        "results": [ bankAccount, creditAccount ]
+                    })
+        
+                    const validClientId = 'valid-client-id'
+                    const validClientSecret = 'valid-client-secret'
+                    const sut = new PluggyDataProvider(validClientId, validClientSecret)
+        
+                    const results = (await sut.getAccountsByItemId(validItemId)).value as AccountData[]
+                    expect(results.length).toBe(2)
+                    expect(results[0]).toEqual({
+                        "balance": 120950, 
+                        "creditCardInfo": null, 
+                        "id": null, 
+                        "imageUrl": item.connector.imageUrl, 
+                        "institution": {
+                            "id": null, 
+                            "imageUrl": item.connector.imageUrl, 
+                            "name": item.connector.name, 
+                            "primaryColor": item.connector.primaryColor, 
+                            "providerConnectorId": ''+item.connector.id, 
+                            "type": item.connector.type
+                        }, 
+                        "name": bankAccount.name, 
+                        "providerAccountId": bankAccount.id, 
+                        "syncType": "AUTOMATIC", 
+                        "synchronization": {
+                            "createdAt": item.createdAt, 
+                            "providerItemId": item.id,
+                            "syncStatus": "UPDATED",
+                            "lastSyncAt": item.statusDetail.accounts.lastUpdatedAt,
+                        }, 
+                        "type": "BANK", 
+                        "userId": null,
+                    })
+        
+                    expect(results[1]).toEqual({
+                        "balance": -120950, 
+                        "creditCardInfo": {
+                            "availableCreditLimit": 200000, 
+                            "creditLimit": 300000, 
+                            "brand": creditAccount.creditData.brand, 
+                            "closeDay": creditAccount.creditData.balanceCloseDate.getUTCDate(), 
+                            "dueDay": creditAccount.creditData.balanceDueDate.getUTCDate()
+                        }, 
+                        "id": null, 
+                        "imageUrl": item.connector.imageUrl, 
+                        "institution": {
+                            "id": null, 
+                            "imageUrl": item.connector.imageUrl, 
+                            "name": item.connector.name, 
+                            "primaryColor": item.connector.primaryColor, 
+                            "providerConnectorId": ''+item.connector.id, 
+                            "type": item.connector.type
+                        },
+                        "name": creditAccount.name, 
+                        "providerAccountId": creditAccount.id, 
+                        "syncType": "AUTOMATIC", 
+                        "synchronization": {
+                            "createdAt": item.createdAt, 
+                            "providerItemId": item.id,
+                            "syncStatus": "OUTDATED",
+                            "lastSyncAt": item.statusDetail.creditCards.lastUpdatedAt,
+                        }, 
+                        "type": "CREDIT_CARD", 
+                        "userId": null,
+                    })
+                })
+    
+                test('data provider did not update any accounts', async () => {
+                    const validItemId = "a5d1ca6c-24c0-41c7-8b44-9272cc868663"
+    
+                    const item: Item = {
+                        "id": validItemId,
+                        "createdAt": new Date("2021-12-28T21:48:02.863Z"),
+                        "updatedAt": new Date("2021-12-28T21:48:02.952Z"),
+                        "connector": {
+                            "id": 201,
+                            "name": "Itaú",
+                            "primaryColor": "EC7000",
+                            "institutionUrl": "https://www.itau.com.br",
+                            "country": "BR",
+                            "type": "PERSONAL_BANK",
+                            "credentials": [
+                            {
+                                "label": "Agência",
+                                "name": "agency",
+                                "type": "number",
+                                "placeholder": "Agência",
+                                "validation": "^\\d{4}$",
+                                "validationMessage": "O agencia deve ter 4 dígito"
+                            },
+                            {
+                                "label": "Conta",
+                                "name": "account",
+                                "type": "number",
+                                "placeholder": "Conta",
+                                "validation": "^\\d{4,6}$",
+                                "validationMessage": "O conta deve ter 6 dígito"
+                            },
+                            {
+                                "label": "Senha",
+                                "name": "password",
+                                "type": "number",
+                                "placeholder": "Senha",
+                                "validation": "^\\d{6}$",
+                                "validationMessage": "O senha deve ter 6 dígito"
+                            }
+                            ],
+                            "imageUrl": "https://res.cloudinary.com/dkr0vihmp/image/upload/v1588853552/connectors-logos/itau_ntodvn.png",
+                            "hasMFA": false,
+                            "products": [],
+                            "createdAt": new Date(),
+        
+                        },
+                        "status": "UPDATED",
+                        "executionStatus": "PARTIAL_SUCCESS",
+                        "lastUpdatedAt": null,
+                        "webhookUrl": null,
+                        "error": null,
+                        "clientUserId": "My User App Id",
+                        "parameter": null,
+                        "userAction": null,
+                        "statusDetail": {
+                          "accounts": {
+                            "isUpdated": false,
+                            "lastUpdatedAt": null,       
+                          },
+                          "identity": {
+                            "isUpdated": false,
+                            "lastUpdatedAt": null,
+                          },
+                          "creditCards": {
+                            "isUpdated": false,
+                            "lastUpdatedAt": null,
+                          },
+                          "investments": {
+                            "isUpdated": true,
+                            "lastUpdatedAt": new Date("2022-03-08T22:43:04.796Z"),
+                          },
+                          "transactions": {
+                            "isUpdated": true,
+                            "lastUpdatedAt": new Date("2022-03-08T22:43:04.796Z"),
+                          },
+                          "paymentData": null
+                        },
+                        "consecutiveFailedLoginAttempts": 0,
+                        // "nextAutoSyncAt": null
+                    }
+        
+                    const bankAccount: PluggyAccount = {
+                        "id": "a658c848-e475-457b-8565-d1fffba127c4",
+                        "type": "BANK",
+                        "subtype": "CHECKING_ACCOUNT",
+                        "number": "0001/12345-0",
+                        "name": "Conta Corrente",
+                        "marketingName": "GOLD Conta Corrente",
+                        "balance": 1209.50,
+                        "itemId": validItemId,
+                        "taxNumber": "416.799.495-00",
+                        "owner": "John Doe",
+                        "currencyCode": "BRL",
+                        "bankData": {
+                          "transferNumber": "0001/12345-0",
+                          "closingBalance": 1209.50
+                        },
+                        "creditData": null,
+                    }
+        
+                    const creditAccount: PluggyAccount = {
+                        "id": "a658c848-e475-457b-8565-d1fffba127c5",
+                        "type": "CREDIT",
+                        "subtype": "CREDIT_CARD",
+                        "number": "xxxx8670",
+                        "name": "Mastercard Black",
+                        "marketingName": "PLUGGY UNICLASS MASTERCARD BLACK",
+                        "balance": 1209.50,
+                        "itemId": validItemId,
+                        "taxNumber": "416.799.495-00",
+                        "owner": "John Doe",
+                        "currencyCode": "BRL",
+                        "creditData": {
+                          "level": "BLACK",
+                          "brand": "MASTERCARD",
+                          "balanceCloseDate": new Date("2022-01-03"),
+                          "balanceDueDate": new Date("2022-01-10"),
+                          "availableCreditLimit": 2000.00,
+                          "balanceForeignCurrency": 0,
+                          "minimumPayment": 161.90,
+                          "creditLimit": 3000.00
+                        },
+                        "bankData": null,
+                    }
+                    
+                    mockedPluggyClient.prototype.fetchItem.mockResolvedValueOnce(item)
+        
+                    mockedPluggyClient.prototype.fetchAccounts.mockResolvedValueOnce({
+                        "total": 2,
+                        "totalPages": 1,
+                        "page": 1,
+                        "results": [ bankAccount, creditAccount ]
+                    })
+        
+                    const validClientId = 'valid-client-id'
+                    const validClientSecret = 'valid-client-secret'
+                    const sut = new PluggyDataProvider(validClientId, validClientSecret)
+        
+                    const results = (await sut.getAccountsByItemId(validItemId)).value as AccountData[]
+                    expect(results.length).toBe(2)
+                    expect(results[0]).toEqual({
+                        "balance": 120950, 
+                        "creditCardInfo": null, 
+                        "id": null, 
+                        "imageUrl": item.connector.imageUrl, 
+                        "institution": {
+                            "id": null, 
+                            "imageUrl": item.connector.imageUrl, 
+                            "name": item.connector.name, 
+                            "primaryColor": item.connector.primaryColor, 
+                            "providerConnectorId": ''+item.connector.id, 
+                            "type": item.connector.type
+                        }, 
+                        "name": bankAccount.name, 
+                        "providerAccountId": bankAccount.id, 
+                        "syncType": "AUTOMATIC", 
+                        "synchronization": {
+                            "createdAt": item.createdAt, 
+                            "providerItemId": item.id,
+                            "syncStatus": "OUTDATED",
+                            "lastSyncAt": item.statusDetail.accounts.lastUpdatedAt,
+                        }, 
+                        "type": "BANK", 
+                        "userId": null,
+                    })
+        
+                    expect(results[1]).toEqual({
+                        "balance": -120950, 
+                        "creditCardInfo": {
+                            "availableCreditLimit": 200000, 
+                            "creditLimit": 300000, 
+                            "brand": creditAccount.creditData.brand, 
+                            "closeDay": creditAccount.creditData.balanceCloseDate.getUTCDate(), 
+                            "dueDay": creditAccount.creditData.balanceDueDate.getUTCDate()
+                        }, 
+                        "id": null, 
+                        "imageUrl": item.connector.imageUrl, 
+                        "institution": {
+                            "id": null, 
+                            "imageUrl": item.connector.imageUrl, 
+                            "name": item.connector.name, 
+                            "primaryColor": item.connector.primaryColor, 
+                            "providerConnectorId": ''+item.connector.id, 
+                            "type": item.connector.type
+                        },
+                        "name": creditAccount.name, 
+                        "providerAccountId": creditAccount.id, 
+                        "syncType": "AUTOMATIC", 
+                        "synchronization": {
+                            "createdAt": item.createdAt, 
+                            "providerItemId": item.id,
+                            "syncStatus": "OUTDATED",
+                            "lastSyncAt": item.statusDetail.creditCards.lastUpdatedAt,
+                        }, 
+                        "type": "CREDIT_CARD", 
+                        "userId": null,
+                    })
                 })
             })
 
-            test('data provider did not update bank accounts', async () => {
-                const validItemId = "a5d1ca6c-24c0-41c7-8b44-9272cc868663"
-
-                const item: Item = {
-                    "id": validItemId,
-                    "createdAt": new Date("2021-12-28T21:48:02.863Z"),
-                    "updatedAt": new Date("2021-12-28T21:48:02.952Z"),
-                    "connector": {
-                        "id": 201,
-                        "name": "Itaú",
-                        "primaryColor": "EC7000",
-                        "institutionUrl": "https://www.itau.com.br",
-                        "country": "BR",
-                        "type": "PERSONAL_BANK",
-                        "credentials": [
-                        {
-                            "label": "Agência",
-                            "name": "agency",
-                            "type": "number",
-                            "placeholder": "Agência",
-                            "validation": "^\\d{4}$",
-                            "validationMessage": "O agencia deve ter 4 dígito"
+            describe('item status: OUTDATED (The sync process finished with errors)', () => {
+                test('data provider had an unexpected error', async () => {
+                    const validItemId = "a5d1ca6c-24c0-41c7-8b44-9272cc868663"
+    
+                    const item: Item = {
+                        "id": validItemId,
+                        "connector": {
+                            "id": 2,
+                            "name": "Pluggy Bank",
+                            "primaryColor": "ef294b",
+                            "institutionUrl": "https://pluggy.ai",
+                            "country": "BR",
+                            "type": "PERSONAL_BANK",
+                            "credentials": [
+                                {
+                                    "label": "User",
+                                    "name": "user",
+                                    "type": "text",
+                                    "placeholder": "",
+                                    "validation": "^user-.{2,50}$",
+                                    "validationMessage": "O user deve começar com \"user-\"",
+                                    "optional": false
+                                },
+                                {
+                                    "label": "Password",
+                                    "name": "password",
+                                    "type": "password",
+                                    "placeholder": "",
+                                    "validation": "^.{6,20}$",
+                                    "validationMessage": "A senha deve ter entre 6 e 20 caracteres",
+                                    "optional": false
+                                }
+                            ],
+                            "imageUrl": "https://cdn.pluggy.ai/assets/connector-icons/sandbox.svg",
+                            "hasMFA": false,
+                            "health": {
+                                "status": "ONLINE",
+                                "stage": null
+                            },
+                            "products": [
+                                "ACCOUNTS",
+                                "CREDIT_CARDS",
+                                "TRANSACTIONS",
+                                "PAYMENT_DATA",
+                                "INVESTMENTS",
+                                "INVESTMENTS_TRANSACTIONS",
+                                "OPPORTUNITIES",
+                                "IDENTITY",
+                                // "PORTFOLIO",
+                                // "INCOME_REPORTS"
+                            ],
+                            "createdAt": new Date("2020-09-07T00:08:06.588Z")
                         },
-                        {
-                            "label": "Conta",
-                            "name": "account",
-                            "type": "number",
-                            "placeholder": "Conta",
-                            "validation": "^\\d{4,6}$",
-                            "validationMessage": "O conta deve ter 6 dígito"
+                        "createdAt": new Date("2023-05-31T14:31:02.310Z"),
+                        "updatedAt": new Date("2023-05-31T14:31:03.413Z"),
+                        "status": "OUTDATED",
+                        "executionStatus": "ERROR",
+                        "lastUpdatedAt": new Date("2023-05-31T14:31:03.413Z"),
+                        "webhookUrl": null,
+                        "error": {
+                            "code": "UNEXPECTED_ERROR",
+                            "message": "Unexpected error."
                         },
-                        {
-                            "label": "Senha",
-                            "name": "password",
-                            "type": "number",
-                            "placeholder": "Senha",
-                            "validation": "^\\d{6}$",
-                            "validationMessage": "O senha deve ter 6 dígito"
-                        }
-                        ],
-                        "imageUrl": "https://res.cloudinary.com/dkr0vihmp/image/upload/v1588853552/connectors-logos/itau_ntodvn.png",
-                        "hasMFA": false,
-                        "products": [],
-                        "createdAt": new Date(),
-    
-                    },
-                    "status": "UPDATED",
-                    "executionStatus": "PARTIAL_SUCCESS",
-                    "lastUpdatedAt": null,
-                    "webhookUrl": null,
-                    "error": null,
-                    "clientUserId": "My User App Id",
-                    "parameter": null,
-                    "userAction": null,
-                    "statusDetail": {
-                      "accounts": {
-                        "isUpdated": false,
-                        "lastUpdatedAt": null,       
-                      },
-                      "identity": {
-                        "isUpdated": false,
-                        "lastUpdatedAt": null,
-                      },
-                      "creditCards": {
-                        "isUpdated": true,
-                        "lastUpdatedAt": new Date("2022-03-08T22:43:04.796Z"),
-                      },
-                      "investments": {
-                        "isUpdated": true,
-                        "lastUpdatedAt": new Date("2022-03-08T22:43:04.796Z"),
-                      },
-                      "transactions": {
-                        "isUpdated": true,
-                        "lastUpdatedAt": new Date("2022-03-08T22:43:04.796Z"),
-                      },
-                      "paymentData": null
-                    },
-                    "consecutiveFailedLoginAttempts": 0,
-                    // "nextAutoSyncAt": null
-                }
-    
-                const bankAccount: PluggyAccount = {
-                    "id": "a658c848-e475-457b-8565-d1fffba127c4",
-                    "type": "BANK",
-                    "subtype": "CHECKING_ACCOUNT",
-                    "number": "0001/12345-0",
-                    "name": "Conta Corrente",
-                    "marketingName": "GOLD Conta Corrente",
-                    "balance": 1209.50,
-                    "itemId": validItemId,
-                    "taxNumber": "416.799.495-00",
-                    "owner": "John Doe",
-                    "currencyCode": "BRL",
-                    "bankData": {
-                      "transferNumber": "0001/12345-0",
-                      "closingBalance": 1209.50
-                    },
-                    "creditData": null,
-                }
-    
-                const creditAccount: PluggyAccount = {
-                    "id": "a658c848-e475-457b-8565-d1fffba127c5",
-                    "type": "CREDIT",
-                    "subtype": "CREDIT_CARD",
-                    "number": "xxxx8670",
-                    "name": "Mastercard Black",
-                    "marketingName": "PLUGGY UNICLASS MASTERCARD BLACK",
-                    "balance": 1209.50,
-                    "itemId": validItemId,
-                    "taxNumber": "416.799.495-00",
-                    "owner": "John Doe",
-                    "currencyCode": "BRL",
-                    "creditData": {
-                      "level": "BLACK",
-                      "brand": "MASTERCARD",
-                      "balanceCloseDate": new Date("2022-01-03"),
-                      "balanceDueDate": new Date("2022-01-10"),
-                      "availableCreditLimit": 2000.00,
-                      "balanceForeignCurrency": 0,
-                      "minimumPayment": 161.90,
-                      "creditLimit": 3000.00
-                    },
-                    "bankData": null,
-                }
-                
-                mockedPluggyClient.prototype.fetchItem.mockResolvedValueOnce(item)
-    
-                mockedPluggyClient.prototype.fetchAccounts.mockResolvedValueOnce({
-                    "total": 2,
-                    "totalPages": 1,
-                    "page": 1,
-                    "results": [ bankAccount, creditAccount ]
-                })
-    
-                const validClientId = 'valid-client-id'
-                const validClientSecret = 'valid-client-secret'
-                const sut = new PluggyDataProvider(validClientId, validClientSecret)
-    
-                const results = (await sut.getAccountsByItemId(validItemId)).value as AccountData[]
-                expect(results.length).toBe(2)
-                expect(results[0]).toEqual({
-                    "balance": 120950, 
-                    "creditCardInfo": null, 
-                    "id": null, 
-                    "imageUrl": item.connector.imageUrl, 
-                    "institution": {
+                        "clientUserId": null,
+                        "consecutiveFailedLoginAttempts": 0,
+                        "statusDetail": null,
+                        "parameter": null,
+                        "userAction": null,
+                        // "nextAutoSyncAt": null
+                    }
+        
+                    const bankAccount: PluggyAccount = {
+                        "id": "a658c848-e475-457b-8565-d1fffba127c4",
+                        "type": "BANK",
+                        "subtype": "CHECKING_ACCOUNT",
+                        "number": "0001/12345-0",
+                        "name": "Conta Corrente",
+                        "marketingName": "GOLD Conta Corrente",
+                        "balance": 1209.50,
+                        "itemId": validItemId,
+                        "taxNumber": "416.799.495-00",
+                        "owner": "John Doe",
+                        "currencyCode": "BRL",
+                        "bankData": {
+                          "transferNumber": "0001/12345-0",
+                          "closingBalance": 1209.50
+                        },
+                        "creditData": null,
+                    }
+        
+                    const creditAccount: PluggyAccount = {
+                        "id": "a658c848-e475-457b-8565-d1fffba127c5",
+                        "type": "CREDIT",
+                        "subtype": "CREDIT_CARD",
+                        "number": "xxxx8670",
+                        "name": "Mastercard Black",
+                        "marketingName": "PLUGGY UNICLASS MASTERCARD BLACK",
+                        "balance": 1209.50,
+                        "itemId": validItemId,
+                        "taxNumber": "416.799.495-00",
+                        "owner": "John Doe",
+                        "currencyCode": "BRL",
+                        "creditData": {
+                          "level": "BLACK",
+                          "brand": "MASTERCARD",
+                          "balanceCloseDate": new Date("2022-01-03"),
+                          "balanceDueDate": new Date("2022-01-10"),
+                          "availableCreditLimit": 2000.00,
+                          "balanceForeignCurrency": 0,
+                          "minimumPayment": 161.90,
+                          "creditLimit": 3000.00
+                        },
+                        "bankData": null,
+                    }
+                    
+                    mockedPluggyClient.prototype.fetchItem.mockResolvedValueOnce(item)
+        
+                    mockedPluggyClient.prototype.fetchAccounts.mockResolvedValueOnce({
+                        "total": 2,
+                        "totalPages": 1,
+                        "page": 1,
+                        "results": [ bankAccount, creditAccount ]
+                    })
+        
+                    const validClientId = 'valid-client-id'
+                    const validClientSecret = 'valid-client-secret'
+                    const sut = new PluggyDataProvider(validClientId, validClientSecret)
+        
+                    const results = (await sut.getAccountsByItemId(validItemId)).value as AccountData[]
+                    expect(results.length).toBe(2)
+                    expect(results[0]).toEqual({
+                        "balance": 120950, 
+                        "creditCardInfo": null, 
                         "id": null, 
                         "imageUrl": item.connector.imageUrl, 
-                        "name": item.connector.name, 
-                        "primaryColor": item.connector.primaryColor, 
-                        "providerConnectorId": ''+item.connector.id, 
-                        "type": item.connector.type
-                    }, 
-                    "name": bankAccount.name, 
-                    "providerAccountId": bankAccount.id, 
-                    "syncType": "AUTOMATIC", 
-                    "synchronization": {
-                        "createdAt": item.createdAt, 
-                        "providerItemId": item.id,
-                        "syncStatus": "OUTDATED",
-                        "lastSyncAt": item.statusDetail.accounts.lastUpdatedAt,
-                    }, 
-                    "type": "BANK", 
-                    "userId": null,
-                })
-    
-                expect(results[1]).toEqual({
-                    "balance": -120950, 
-                    "creditCardInfo": {
-                        "availableCreditLimit": 200000, 
-                        "creditLimit": 300000, 
-                        "brand": creditAccount.creditData.brand, 
-                        "closeDay": creditAccount.creditData.balanceCloseDate.getUTCDate(), 
-                        "dueDay": creditAccount.creditData.balanceDueDate.getUTCDate()
-                    }, 
-                    "id": null, 
-                    "imageUrl": item.connector.imageUrl, 
-                    "institution": {
+                        "institution": {
+                            "id": null, 
+                            "imageUrl": item.connector.imageUrl, 
+                            "name": item.connector.name, 
+                            "primaryColor": item.connector.primaryColor, 
+                            "providerConnectorId": ''+item.connector.id, 
+                            "type": item.connector.type
+                        }, 
+                        "name": bankAccount.name, 
+                        "providerAccountId": bankAccount.id, 
+                        "syncType": "AUTOMATIC", 
+                        "synchronization": {
+                            "createdAt": item.createdAt, 
+                            "providerItemId": item.id,
+                            "syncStatus": "OUTDATED",
+                            "lastSyncAt": null,
+                        }, 
+                        "type": "BANK", 
+                        "userId": null,
+                    })
+        
+                    expect(results[1]).toEqual({
+                        "balance": -120950, 
+                        "creditCardInfo": {
+                            "availableCreditLimit": 200000, 
+                            "creditLimit": 300000, 
+                            "brand": creditAccount.creditData.brand, 
+                            "closeDay": creditAccount.creditData.balanceCloseDate.getUTCDate(), 
+                            "dueDay": creditAccount.creditData.balanceDueDate.getUTCDate()
+                        }, 
                         "id": null, 
                         "imageUrl": item.connector.imageUrl, 
-                        "name": item.connector.name, 
-                        "primaryColor": item.connector.primaryColor, 
-                        "providerConnectorId": ''+item.connector.id, 
-                        "type": item.connector.type
-                    },
-                    "name": creditAccount.name, 
-                    "providerAccountId": creditAccount.id, 
-                    "syncType": "AUTOMATIC", 
-                    "synchronization": {
-                        "createdAt": item.createdAt, 
-                        "providerItemId": item.id,
-                        "syncStatus": "UPDATED",
-                        "lastSyncAt": item.statusDetail.creditCards.lastUpdatedAt,
-                    }, 
-                    "type": "CREDIT_CARD", 
-                    "userId": null,
+                        "institution": {
+                            "id": null, 
+                            "imageUrl": item.connector.imageUrl, 
+                            "name": item.connector.name, 
+                            "primaryColor": item.connector.primaryColor, 
+                            "providerConnectorId": ''+item.connector.id, 
+                            "type": item.connector.type
+                        },
+                        "name": creditAccount.name, 
+                        "providerAccountId": creditAccount.id, 
+                        "syncType": "AUTOMATIC", 
+                        "synchronization": {
+                            "createdAt": item.createdAt, 
+                            "providerItemId": item.id,
+                            "syncStatus": "OUTDATED",
+                            "lastSyncAt": null,
+                        }, 
+                        "type": "CREDIT_CARD", 
+                        "userId": null,
+                    })
                 })
             })
 
-            test('data provider did not update credit card accounts', async () => {
-                const validItemId = "a5d1ca6c-24c0-41c7-8b44-9272cc868663"
 
-                const item: Item = {
-                    "id": validItemId,
-                    "createdAt": new Date("2021-12-28T21:48:02.863Z"),
-                    "updatedAt": new Date("2021-12-28T21:48:02.952Z"),
-                    "connector": {
-                        "id": 201,
-                        "name": "Itaú",
-                        "primaryColor": "EC7000",
-                        "institutionUrl": "https://www.itau.com.br",
-                        "country": "BR",
-                        "type": "PERSONAL_BANK",
-                        "credentials": [
-                        {
-                            "label": "Agência",
-                            "name": "agency",
-                            "type": "number",
-                            "placeholder": "Agência",
-                            "validation": "^\\d{4}$",
-                            "validationMessage": "O agencia deve ter 4 dígito"
-                        },
-                        {
-                            "label": "Conta",
-                            "name": "account",
-                            "type": "number",
-                            "placeholder": "Conta",
-                            "validation": "^\\d{4,6}$",
-                            "validationMessage": "O conta deve ter 6 dígito"
-                        },
-                        {
-                            "label": "Senha",
-                            "name": "password",
-                            "type": "number",
-                            "placeholder": "Senha",
-                            "validation": "^\\d{6}$",
-                            "validationMessage": "O senha deve ter 6 dígito"
-                        }
-                        ],
-                        "imageUrl": "https://res.cloudinary.com/dkr0vihmp/image/upload/v1588853552/connectors-logos/itau_ntodvn.png",
-                        "hasMFA": false,
-                        "products": [],
-                        "createdAt": new Date(),
-    
-                    },
-                    "status": "UPDATED",
-                    "executionStatus": "PARTIAL_SUCCESS",
-                    "lastUpdatedAt": new Date("2021-12-28T21:48:02.863Z"),
-                    "webhookUrl": null,
-                    "error": null,
-                    "clientUserId": "My User App Id",
-                    "parameter": null,
-                    "userAction": null,
-                    "statusDetail": {
-                      "accounts": {
-                        "isUpdated": true,
-                        "lastUpdatedAt": new Date("2022-03-08T22:43:04.796Z"),       
-                      },
-                      "identity": {
-                        "isUpdated": false,
-                        "lastUpdatedAt": null,
-                      },
-                      "creditCards": {
-                        "isUpdated": false,
-                        "lastUpdatedAt": null,
-                      },
-                      "investments": {
-                        "isUpdated": true,
-                        "lastUpdatedAt": new Date("2022-03-08T22:43:04.796Z"),
-                      },
-                      "transactions": {
-                        "isUpdated": true,
-                        "lastUpdatedAt": new Date("2022-03-08T22:43:04.796Z"),
-                      },
-                      "paymentData": null
-                    },
-                    "consecutiveFailedLoginAttempts": 0,
-                    // "nextAutoSyncAt": null
-                }
-    
-                const bankAccount: PluggyAccount = {
-                    "id": "a658c848-e475-457b-8565-d1fffba127c4",
-                    "type": "BANK",
-                    "subtype": "CHECKING_ACCOUNT",
-                    "number": "0001/12345-0",
-                    "name": "Conta Corrente",
-                    "marketingName": "GOLD Conta Corrente",
-                    "balance": 1209.50,
-                    "itemId": validItemId,
-                    "taxNumber": "416.799.495-00",
-                    "owner": "John Doe",
-                    "currencyCode": "BRL",
-                    "bankData": {
-                      "transferNumber": "0001/12345-0",
-                      "closingBalance": 1209.50
-                    },
-                    "creditData": null,
-                }
-    
-                const creditAccount: PluggyAccount = {
-                    "id": "a658c848-e475-457b-8565-d1fffba127c5",
-                    "type": "CREDIT",
-                    "subtype": "CREDIT_CARD",
-                    "number": "xxxx8670",
-                    "name": "Mastercard Black",
-                    "marketingName": "PLUGGY UNICLASS MASTERCARD BLACK",
-                    "balance": 1209.50,
-                    "itemId": validItemId,
-                    "taxNumber": "416.799.495-00",
-                    "owner": "John Doe",
-                    "currencyCode": "BRL",
-                    "creditData": {
-                      "level": "BLACK",
-                      "brand": "MASTERCARD",
-                      "balanceCloseDate": new Date("2022-01-03"),
-                      "balanceDueDate": new Date("2022-01-10"),
-                      "availableCreditLimit": 2000.00,
-                      "balanceForeignCurrency": 0,
-                      "minimumPayment": 161.90,
-                      "creditLimit": 3000.00
-                    },
-                    "bankData": null,
-                }
-                
-                mockedPluggyClient.prototype.fetchItem.mockResolvedValueOnce(item)
-    
-                mockedPluggyClient.prototype.fetchAccounts.mockResolvedValueOnce({
-                    "total": 2,
-                    "totalPages": 1,
-                    "page": 1,
-                    "results": [ bankAccount, creditAccount ]
-                })
-    
-                const validClientId = 'valid-client-id'
-                const validClientSecret = 'valid-client-secret'
-                const sut = new PluggyDataProvider(validClientId, validClientSecret)
-    
-                const results = (await sut.getAccountsByItemId(validItemId)).value as AccountData[]
-                expect(results.length).toBe(2)
-                expect(results[0]).toEqual({
-                    "balance": 120950, 
-                    "creditCardInfo": null, 
-                    "id": null, 
-                    "imageUrl": item.connector.imageUrl, 
-                    "institution": {
-                        "id": null, 
-                        "imageUrl": item.connector.imageUrl, 
-                        "name": item.connector.name, 
-                        "primaryColor": item.connector.primaryColor, 
-                        "providerConnectorId": ''+item.connector.id, 
-                        "type": item.connector.type
-                    }, 
-                    "name": bankAccount.name, 
-                    "providerAccountId": bankAccount.id, 
-                    "syncType": "AUTOMATIC", 
-                    "synchronization": {
-                        "createdAt": item.createdAt, 
-                        "providerItemId": item.id,
-                        "syncStatus": "UPDATED",
-                        "lastSyncAt": item.statusDetail.accounts.lastUpdatedAt,
-                    }, 
-                    "type": "BANK", 
-                    "userId": null,
-                })
-    
-                expect(results[1]).toEqual({
-                    "balance": -120950, 
-                    "creditCardInfo": {
-                        "availableCreditLimit": 200000, 
-                        "creditLimit": 300000, 
-                        "brand": creditAccount.creditData.brand, 
-                        "closeDay": creditAccount.creditData.balanceCloseDate.getUTCDate(), 
-                        "dueDay": creditAccount.creditData.balanceDueDate.getUTCDate()
-                    }, 
-                    "id": null, 
-                    "imageUrl": item.connector.imageUrl, 
-                    "institution": {
-                        "id": null, 
-                        "imageUrl": item.connector.imageUrl, 
-                        "name": item.connector.name, 
-                        "primaryColor": item.connector.primaryColor, 
-                        "providerConnectorId": ''+item.connector.id, 
-                        "type": item.connector.type
-                    },
-                    "name": creditAccount.name, 
-                    "providerAccountId": creditAccount.id, 
-                    "syncType": "AUTOMATIC", 
-                    "synchronization": {
-                        "createdAt": item.createdAt, 
-                        "providerItemId": item.id,
-                        "syncStatus": "OUTDATED",
-                        "lastSyncAt": item.statusDetail.creditCards.lastUpdatedAt,
-                    }, 
-                    "type": "CREDIT_CARD", 
-                    "userId": null,
-                })
-            })
-
-            test('data provider did not update any accounts', async () => {
-                const validItemId = "a5d1ca6c-24c0-41c7-8b44-9272cc868663"
-
-                const item: Item = {
-                    "id": validItemId,
-                    "createdAt": new Date("2021-12-28T21:48:02.863Z"),
-                    "updatedAt": new Date("2021-12-28T21:48:02.952Z"),
-                    "connector": {
-                        "id": 201,
-                        "name": "Itaú",
-                        "primaryColor": "EC7000",
-                        "institutionUrl": "https://www.itau.com.br",
-                        "country": "BR",
-                        "type": "PERSONAL_BANK",
-                        "credentials": [
-                        {
-                            "label": "Agência",
-                            "name": "agency",
-                            "type": "number",
-                            "placeholder": "Agência",
-                            "validation": "^\\d{4}$",
-                            "validationMessage": "O agencia deve ter 4 dígito"
-                        },
-                        {
-                            "label": "Conta",
-                            "name": "account",
-                            "type": "number",
-                            "placeholder": "Conta",
-                            "validation": "^\\d{4,6}$",
-                            "validationMessage": "O conta deve ter 6 dígito"
-                        },
-                        {
-                            "label": "Senha",
-                            "name": "password",
-                            "type": "number",
-                            "placeholder": "Senha",
-                            "validation": "^\\d{6}$",
-                            "validationMessage": "O senha deve ter 6 dígito"
-                        }
-                        ],
-                        "imageUrl": "https://res.cloudinary.com/dkr0vihmp/image/upload/v1588853552/connectors-logos/itau_ntodvn.png",
-                        "hasMFA": false,
-                        "products": [],
-                        "createdAt": new Date(),
-    
-                    },
-                    "status": "UPDATED",
-                    "executionStatus": "PARTIAL_SUCCESS",
-                    "lastUpdatedAt": null,
-                    "webhookUrl": null,
-                    "error": null,
-                    "clientUserId": "My User App Id",
-                    "parameter": null,
-                    "userAction": null,
-                    "statusDetail": {
-                      "accounts": {
-                        "isUpdated": false,
-                        "lastUpdatedAt": null,       
-                      },
-                      "identity": {
-                        "isUpdated": false,
-                        "lastUpdatedAt": null,
-                      },
-                      "creditCards": {
-                        "isUpdated": false,
-                        "lastUpdatedAt": null,
-                      },
-                      "investments": {
-                        "isUpdated": true,
-                        "lastUpdatedAt": new Date("2022-03-08T22:43:04.796Z"),
-                      },
-                      "transactions": {
-                        "isUpdated": true,
-                        "lastUpdatedAt": new Date("2022-03-08T22:43:04.796Z"),
-                      },
-                      "paymentData": null
-                    },
-                    "consecutiveFailedLoginAttempts": 0,
-                    // "nextAutoSyncAt": null
-                }
-    
-                const bankAccount: PluggyAccount = {
-                    "id": "a658c848-e475-457b-8565-d1fffba127c4",
-                    "type": "BANK",
-                    "subtype": "CHECKING_ACCOUNT",
-                    "number": "0001/12345-0",
-                    "name": "Conta Corrente",
-                    "marketingName": "GOLD Conta Corrente",
-                    "balance": 1209.50,
-                    "itemId": validItemId,
-                    "taxNumber": "416.799.495-00",
-                    "owner": "John Doe",
-                    "currencyCode": "BRL",
-                    "bankData": {
-                      "transferNumber": "0001/12345-0",
-                      "closingBalance": 1209.50
-                    },
-                    "creditData": null,
-                }
-    
-                const creditAccount: PluggyAccount = {
-                    "id": "a658c848-e475-457b-8565-d1fffba127c5",
-                    "type": "CREDIT",
-                    "subtype": "CREDIT_CARD",
-                    "number": "xxxx8670",
-                    "name": "Mastercard Black",
-                    "marketingName": "PLUGGY UNICLASS MASTERCARD BLACK",
-                    "balance": 1209.50,
-                    "itemId": validItemId,
-                    "taxNumber": "416.799.495-00",
-                    "owner": "John Doe",
-                    "currencyCode": "BRL",
-                    "creditData": {
-                      "level": "BLACK",
-                      "brand": "MASTERCARD",
-                      "balanceCloseDate": new Date("2022-01-03"),
-                      "balanceDueDate": new Date("2022-01-10"),
-                      "availableCreditLimit": 2000.00,
-                      "balanceForeignCurrency": 0,
-                      "minimumPayment": 161.90,
-                      "creditLimit": 3000.00
-                    },
-                    "bankData": null,
-                }
-                
-                mockedPluggyClient.prototype.fetchItem.mockResolvedValueOnce(item)
-    
-                mockedPluggyClient.prototype.fetchAccounts.mockResolvedValueOnce({
-                    "total": 2,
-                    "totalPages": 1,
-                    "page": 1,
-                    "results": [ bankAccount, creditAccount ]
-                })
-    
-                const validClientId = 'valid-client-id'
-                const validClientSecret = 'valid-client-secret'
-                const sut = new PluggyDataProvider(validClientId, validClientSecret)
-    
-                const results = (await sut.getAccountsByItemId(validItemId)).value as AccountData[]
-                expect(results.length).toBe(2)
-                expect(results[0]).toEqual({
-                    "balance": 120950, 
-                    "creditCardInfo": null, 
-                    "id": null, 
-                    "imageUrl": item.connector.imageUrl, 
-                    "institution": {
-                        "id": null, 
-                        "imageUrl": item.connector.imageUrl, 
-                        "name": item.connector.name, 
-                        "primaryColor": item.connector.primaryColor, 
-                        "providerConnectorId": ''+item.connector.id, 
-                        "type": item.connector.type
-                    }, 
-                    "name": bankAccount.name, 
-                    "providerAccountId": bankAccount.id, 
-                    "syncType": "AUTOMATIC", 
-                    "synchronization": {
-                        "createdAt": item.createdAt, 
-                        "providerItemId": item.id,
-                        "syncStatus": "OUTDATED",
-                        "lastSyncAt": item.statusDetail.accounts.lastUpdatedAt,
-                    }, 
-                    "type": "BANK", 
-                    "userId": null,
-                })
-    
-                expect(results[1]).toEqual({
-                    "balance": -120950, 
-                    "creditCardInfo": {
-                        "availableCreditLimit": 200000, 
-                        "creditLimit": 300000, 
-                        "brand": creditAccount.creditData.brand, 
-                        "closeDay": creditAccount.creditData.balanceCloseDate.getUTCDate(), 
-                        "dueDay": creditAccount.creditData.balanceDueDate.getUTCDate()
-                    }, 
-                    "id": null, 
-                    "imageUrl": item.connector.imageUrl, 
-                    "institution": {
-                        "id": null, 
-                        "imageUrl": item.connector.imageUrl, 
-                        "name": item.connector.name, 
-                        "primaryColor": item.connector.primaryColor, 
-                        "providerConnectorId": ''+item.connector.id, 
-                        "type": item.connector.type
-                    },
-                    "name": creditAccount.name, 
-                    "providerAccountId": creditAccount.id, 
-                    "syncType": "AUTOMATIC", 
-                    "synchronization": {
-                        "createdAt": item.createdAt, 
-                        "providerItemId": item.id,
-                        "syncStatus": "OUTDATED",
-                        "lastSyncAt": item.statusDetail.creditCards.lastUpdatedAt,
-                    }, 
-                    "type": "CREDIT_CARD", 
-                    "userId": null,
-                })
-            })
         })
     })
 
