@@ -53,10 +53,14 @@ import api from '../config/axios.js'
 import BottomSheet from '@/components/BottomSheet.vue'
 import { ref } from 'vue';
 import { dateToUTCString } from '../config/dateHelper';
+import { Item } from 'pluggy-sdk';
+import { useUserStore } from '../stores/userStore';
 
 const props = defineProps<{
     account: AccountSummaryDTO
 }>()
+
+const userStore = useUserStore()
 
 const showSyncingModal = ref(false)
 const currentStep = ref('Conectando com a instituição financeira')
@@ -105,6 +109,19 @@ async function getConnectToken(clientUserId: string, itemId?: string) {
   })
 }
 
+async function syncAutomaticAccount(accountId: string | undefined) {
+    return api.guiabolsoServer({
+        method: 'post',
+        url: 'sync-accounts',
+        data: {
+          accountId
+        }
+    }).then((response) => {
+        console.log(response)
+        return response.data
+    })
+}
+
 async function openPluggyUpdateWidget(account: AccountSummaryDTO) {
     currentStep.value = 'Conectando com a instituição financeira'
 
@@ -122,7 +139,11 @@ async function openPluggyUpdateWidget(account: AccountSummaryDTO) {
       connectorTypes: ['PERSONAL_BANK'],
       updateItem: existingItemIdToUpdate, // by specifying the Item id to update here, Pluggy Connect will attempt to trigger an update on it, and/or prompt credentials request if needed.
       includeSandbox: true, // note: not needed in production
-      onSuccess: async (itemData: Object) => {
+      onSuccess: async ({ item }: {item: Item}) => {
+        currentStep.value = 'Importando suas transações recentes'
+
+        const result = await syncAutomaticAccount(account?._id?.toString())
+        console.log(result)
           // if(account.synchronization) {
           //   // @ts-ignore
           //   // account.synchronization.itemStatus = itemData.item.status
@@ -172,45 +193,6 @@ async function openPluggyUpdateWidget(account: AccountSummaryDTO) {
 async function requestUpdate(account: AccountSummaryDTO, event: Event) {
   event.stopImmediatePropagation()
   await openPluggyUpdateWidget(account)
-}
-
-/**
- * O provedor de dados já concluiu a preparação e atualização dos dados com a instituição bancária
- * @param sync 
- */
-async function synchronizationReady(sync: Synchronization) {
-  return api.guiabolsoApi({
-        method: 'post',
-        url: '/synchronization-ready',
-        data: sync
-    }).then((response) => {
-        return response.data
-    })
-}
-
-/**
- * Inicia a importação das transações de uma conta
- * @param 
- */
-async function startSynchronization(account: AccountSummaryDTO) {
-  console.time('synchronization')
-  // start syncronization from 7 days before the last sync date, for guarantee 
-  // const fromDate = new Date(account.synchronization?.lastSyncAt ?? '')
-  const fromDate = new Date(account.synchronization?.createdAt ?? '')
-  fromDate.setDate(fromDate.getDate() - 7)
-
-  return api.guiabolsoServer({
-        method: 'post',
-        url: '/sync',
-        params: {
-          accountId: account._id?.toString() ?? '',
-          from: dateToUTCString(fromDate),
-        }
-    }).then((response) => {
-        // console.log('SYNCRONIZATION ENDED', response.data)
-        console.timeEnd('synchronization')
-        return response.data
-    })
 }
 
 const isBottomSheetOpen = ref(false)
