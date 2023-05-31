@@ -54,7 +54,9 @@ describe('connect automatic accounts route', () => {
             "syncType": "AUTOMATIC", 
             "synchronization": {
                 "createdAt": new Date("2021-12-28T21:48:02.863Z"), 
-                "providerItemId": validItemId
+                "providerItemId": validItemId,
+                "syncStatus": 'UPDATED',
+                "lastSyncAt": new Date("2021-12-28T21:48:02.863Z")
             }, 
             "type": "BANK", 
             "userId": null,
@@ -84,7 +86,9 @@ describe('connect automatic accounts route', () => {
             "syncType": "AUTOMATIC", 
             "synchronization": {
                 "createdAt": new Date("2021-12-28T21:48:02.863Z"), 
-                "providerItemId": validItemId
+                "providerItemId": validItemId,
+                "syncStatus": 'UPDATED',
+                "lastSyncAt": new Date("2021-12-28T21:48:02.863Z")
             }, 
             "type": "CREDIT_CARD", 
             "userId": null,
