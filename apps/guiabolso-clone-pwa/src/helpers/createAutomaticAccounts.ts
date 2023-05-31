@@ -31,7 +31,8 @@ export async function createAutomaticAccounts(item: Item, userId: string) {
             syncStatus.creditCardAccounts.executionStatus = item.statusDetail?.creditCards?.isUpdated ? 'SUCCESS' : 'PENDENTE'
             syncStatus.creditCardAccounts.lastUpdatedAt = item.statusDetail?.creditCards?.lastUpdatedAt
         }
+        
+        return serverApiWrapper.connectAutomaticAccounts(item.id,  userId, syncStatus)
     }
 
-    return serverApiWrapper.connectAutomaticAccounts(item.id,  userId, syncStatus)
 }
