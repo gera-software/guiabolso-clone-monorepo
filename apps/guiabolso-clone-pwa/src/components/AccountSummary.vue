@@ -8,7 +8,7 @@
               <div class="balance">R$ {{ (+account.balance / 100).toFixed(2) }}</div>
               <div class="date" v-if="account.syncType === 'AUTOMATIC'">
                 <font-awesome-icon icon="fa-solid fa-arrows-rotate" /> Atualizado em {{ (new Date(""+account.synchronization?.lastSyncAt)).toLocaleString() }} 
-                <!-- <span class="badge" v-if="account.synchronization">{{account.synchronization.syncStatus}}</span>  -->
+                <span class="badge" v-if="account.synchronization">{{account.synchronization.syncStatus}}</span> 
               </div>
               <div class="date" v-else><font-awesome-icon icon="fa-solid fa-user" /> Conta manual</div>
             </div>
@@ -44,7 +44,7 @@
 
 </template>
 <script setup lang="ts">
-import { AccountSummaryDTO, AccountType, Synchronization, SyncStatus } from '../config/types';
+import { AccountSummaryDTO, AccountType, Synchronization, ProviderSyncStatus } from '../config/types';
 import { useRouter } from 'vue-router';
 import api from '../config/axios.js'
 import BottomSheet from '@/components/BottomSheet.vue'

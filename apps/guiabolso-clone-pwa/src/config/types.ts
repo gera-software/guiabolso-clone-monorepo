@@ -155,19 +155,21 @@ export interface TransactionSummaryDTO {
     account: AccountData
 }
 
-export enum SyncStatus {
-    PREPARING = 'PREPARING',
-    READY = 'READY',
-    IN_PROGRESS = 'IN_PROGRESS',
-    SYNCED = 'SYNCED',
-}
+// export enum SyncStatus {
+//     PREPARING = 'PREPARING',
+//     READY = 'READY',
+//     IN_PROGRESS = 'IN_PROGRESS',
+//     SYNCED = 'SYNCED',
+// }
+
+export type ProviderSyncStatus = 'OUTDATED' | 'UPDATING' | 'UPDATED' | 'LOGIN_ERROR' | 'WAITING_USER_INPUT'
 
 export interface Synchronization {
     // _id?: string,
     providerItemId: string,
     createdAt: Date,
     // itemStatus: string,
-    // syncStatus: SyncStatus,
+    syncStatus: ProviderSyncStatus,
     lastSyncAt: Date,
     // userId: string,
 }
