@@ -6,6 +6,7 @@ export interface Accountsynchronization {
     providerItemId: string,
     createdAt: Date,
     syncStatus: ProviderSyncStatus,
+    lastSyncAt: Date | null | undefined,
 }
 
 export interface AutomaticAccount extends Account {

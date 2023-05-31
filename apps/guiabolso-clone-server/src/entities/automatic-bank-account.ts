@@ -14,7 +14,7 @@ export class AutomaticBankAccount implements AutomaticAccount {
     public readonly providerAccountId: string;
     public readonly synchronization: Accountsynchronization;
 
-    private constructor(account: {name: string, balance: Amount, imageUrl?: string, user: User, institution?: Institution, providerAccountId: string, providerItemId: string, createdAt: Date, syncStatus: ProviderSyncStatus}) {
+    private constructor(account: {name: string, balance: Amount, imageUrl?: string, user: User, institution?: Institution, providerAccountId: string, providerItemId: string, createdAt: Date, syncStatus: ProviderSyncStatus, lastSyncAt?: Date}) {
         this.name = account.name
         this.balance = account.balance
         this.imageUrl = account.imageUrl
@@ -25,11 +25,12 @@ export class AutomaticBankAccount implements AutomaticAccount {
             providerItemId: account.providerItemId,
             createdAt: account.createdAt,
             syncStatus: account.syncStatus,
+            lastSyncAt: account.lastSyncAt,
         }
     }
 
-    public static create(account: { name: string, balance: number, imageUrl?: string, user: User, institution: Institution, providerAccountId: string, providerItemId: string, createdAt: Date, syncStatus: ProviderSyncStatus }): Either<InvalidNameError | InvalidBalanceError | InvalidInstitutionError | InvalidAccountError, AutomaticBankAccount>  {
-        const { name, balance, imageUrl, user, institution, providerAccountId, providerItemId, createdAt, syncStatus } = account
+    public static create(account: { name: string, balance: number, imageUrl?: string, user: User, institution: Institution, providerAccountId: string, providerItemId: string, createdAt: Date, syncStatus: ProviderSyncStatus, lastSyncAt?: Date }): Either<InvalidNameError | InvalidBalanceError | InvalidInstitutionError | InvalidAccountError, AutomaticBankAccount>  {
+        const { name, balance, imageUrl, user, institution, providerAccountId, providerItemId, createdAt, syncStatus, lastSyncAt } = account
         
         if(!name) {
             return left(new InvalidNameError())
@@ -62,7 +63,7 @@ export class AutomaticBankAccount implements AutomaticAccount {
             return left(new InvalidAccountError("syncStatus is required"))
         }
 
-        return right(new AutomaticBankAccount({name, balance: amount, imageUrl, user, institution, providerAccountId, providerItemId, createdAt, syncStatus}))
+        return right(new AutomaticBankAccount({name, balance: amount, imageUrl, user, institution, providerAccountId, providerItemId, createdAt, syncStatus, lastSyncAt}))
 
     }
 

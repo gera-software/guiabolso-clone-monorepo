@@ -24,8 +24,9 @@ describe("Automatic Bank Account entity", () => {
             const providerItemId = 'valid-item-id'
             const createdAt = new Date()
             const syncStatus: ProviderSyncStatus = 'UPDATED'
+            const lastSyncAt = new Date()
     
-            const error = AutomaticBankAccount.create({ name, balance, imageUrl, user, institution, providerAccountId, providerItemId, createdAt, syncStatus }).value as Error
+            const error = AutomaticBankAccount.create({ name, balance, imageUrl, user, institution, providerAccountId, providerItemId, createdAt, syncStatus, lastSyncAt }).value as Error
             expect(error).toBeInstanceOf(InvalidNameError)
 
         })
@@ -51,8 +52,9 @@ describe("Automatic Bank Account entity", () => {
             const providerItemId = 'valid-item-id'
             const createdAt = new Date()
             const syncStatus: ProviderSyncStatus = 'UPDATED'
+            const lastSyncAt = new Date()
     
-            const error = AutomaticBankAccount.create({ name, balance, imageUrl, user, institution, providerAccountId, providerItemId, createdAt, syncStatus }).value as Error
+            const error = AutomaticBankAccount.create({ name, balance, imageUrl, user, institution, providerAccountId, providerItemId, createdAt, syncStatus, lastSyncAt }).value as Error
             expect(error).toBeInstanceOf(InvalidBalanceError)
         })
 
@@ -70,8 +72,9 @@ describe("Automatic Bank Account entity", () => {
             const providerItemId = 'valid-item-id'
             const createdAt = new Date()
             const syncStatus: ProviderSyncStatus = 'UPDATED'
+            const lastSyncAt = new Date()
     
-            const error = AutomaticBankAccount.create({ name, balance, imageUrl, user, institution, providerAccountId, providerItemId, createdAt, syncStatus }).value as Error
+            const error = AutomaticBankAccount.create({ name, balance, imageUrl, user, institution, providerAccountId, providerItemId, createdAt, syncStatus, lastSyncAt }).value as Error
             expect(error).toBeInstanceOf(InvalidInstitutionError)
         })
 
@@ -96,8 +99,9 @@ describe("Automatic Bank Account entity", () => {
             const providerItemId = 'valid-item-id'
             const createdAt = new Date()
             const syncStatus: ProviderSyncStatus = 'UPDATED'
+            const lastSyncAt = new Date()
     
-            const error = AutomaticBankAccount.create({ name, balance, imageUrl, user, institution, providerAccountId, providerItemId, createdAt, syncStatus }).value as Error
+            const error = AutomaticBankAccount.create({ name, balance, imageUrl, user, institution, providerAccountId, providerItemId, createdAt, syncStatus, lastSyncAt }).value as Error
             expect(error).toBeInstanceOf(InvalidAccountError)
             expect(error.message).toBe('providerAccountId is required')
         })
@@ -123,8 +127,9 @@ describe("Automatic Bank Account entity", () => {
             const providerItemId = ''
             const createdAt = new Date()
             const syncStatus: ProviderSyncStatus = 'UPDATED'
+            const lastSyncAt = new Date()
     
-            const error = AutomaticBankAccount.create({ name, balance, imageUrl, user, institution, providerAccountId, providerItemId, createdAt, syncStatus }).value as Error
+            const error = AutomaticBankAccount.create({ name, balance, imageUrl, user, institution, providerAccountId, providerItemId, createdAt, syncStatus, lastSyncAt }).value as Error
             expect(error).toBeInstanceOf(InvalidAccountError)
             expect(error.message).toBe('providerItemId is required')
         })
@@ -150,8 +155,9 @@ describe("Automatic Bank Account entity", () => {
             const providerItemId = 'valid-item-id'
             const createdAt: Date = null
             const syncStatus: ProviderSyncStatus = 'UPDATED'
+            const lastSyncAt = new Date()
     
-            const error = AutomaticBankAccount.create({ name, balance, imageUrl, user, institution, providerAccountId, providerItemId, createdAt, syncStatus }).value as Error
+            const error = AutomaticBankAccount.create({ name, balance, imageUrl, user, institution, providerAccountId, providerItemId, createdAt, syncStatus, lastSyncAt }).value as Error
             expect(error).toBeInstanceOf(InvalidAccountError)
             expect(error.message).toBe('createdAt is required')
         })
@@ -177,8 +183,9 @@ describe("Automatic Bank Account entity", () => {
             const providerItemId = 'valid-item-id'
             const createdAt: Date = new Date()
             const syncStatus: ProviderSyncStatus = null
+            const lastSyncAt = new Date()
     
-            const error = AutomaticBankAccount.create({ name, balance, imageUrl, user, institution, providerAccountId, providerItemId, createdAt, syncStatus }).value as Error
+            const error = AutomaticBankAccount.create({ name, balance, imageUrl, user, institution, providerAccountId, providerItemId, createdAt, syncStatus, lastSyncAt }).value as Error
             expect(error).toBeInstanceOf(InvalidAccountError)
             expect(error.message).toBe('syncStatus is required')
         })
@@ -204,8 +211,9 @@ describe("Automatic Bank Account entity", () => {
             const providerItemId = 'valid-item-id'
             const createdAt = new Date()
             const syncStatus: ProviderSyncStatus = 'UPDATED'
+            const lastSyncAt = new Date()
         
-            const account = AutomaticBankAccount.create({ name, balance, imageUrl, user, institution, providerAccountId, providerItemId, createdAt, syncStatus }).value as AutomaticBankAccount
+            const account = AutomaticBankAccount.create({ name, balance, imageUrl, user, institution, providerAccountId, providerItemId, createdAt, syncStatus, lastSyncAt }).value as AutomaticBankAccount
             expect(account.type).toBe('BANK')
             expect(account.name).toBe(name)
             expect(account.balance.value).toBe(balance)
@@ -218,6 +226,7 @@ describe("Automatic Bank Account entity", () => {
             expect(account.synchronization.providerItemId).toEqual(providerItemId)
             expect(account.synchronization.createdAt).toEqual(createdAt)
             expect(account.synchronization.syncStatus).toEqual(syncStatus)
+            expect(account.synchronization.lastSyncAt).toEqual(lastSyncAt)
         })
     })
 })
