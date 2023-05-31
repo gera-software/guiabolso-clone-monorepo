@@ -51,7 +51,6 @@ import { ref, onMounted, computed } from 'vue';
 import { useUserStore } from '../stores/userStore';
 import { Item } from 'pluggy-sdk';
 import { useRouter } from 'vue-router';
-import { createAutomaticAccounts } from '../helpers/createAutomaticAccounts'
 
 // @ts-ignore
 import Toastify from 'toastify-js'
@@ -95,16 +94,22 @@ onMounted(async () => {
 
 const userStore = useUserStore()
 
+async function getConnectToken(clientUserId: string, itemId?: string) {
+  let params = new URLSearchParams();
+  if(clientUserId) {
+    params.set('clientUserId', clientUserId)
+  }
+  if(itemId) {
+    params.set('itemId', itemId)
+  }
 
-
-async function getConnectToken(itemId?: string | undefined) {
-    return api.guiabolsoServer({
+  return api.guiabolsoServer({
         method: 'get',
-        url: `/pluggy/create-token${itemId ? '?itemId=' + itemId : ''}`,
-    }).then((response) => {
-        // console.log(response)
-        return response.data.accessToken
-    })
+        url: `/pluggy/create-token?${params.toString()}`,
+  }).then((response) => {
+      // console.log(response)
+      return response.data.accessToken
+  })
 }
 
 async function connectAutomaticAccounts(itemId: string, userId: string) {
@@ -139,7 +144,7 @@ const currentStep = ref('Conectando com a instituição financeira')
 
 async function openPluggyConnectWidget(providerConnectorId: number) {
     currentStep.value = 'Conectando com a instituição financeira'
-    const accessToken: string = await getConnectToken()
+    const accessToken: string = await getConnectToken(userStore.user.data.id)
 
     // configure the Pluggy Connect widget instance
     // @ts-ignore
@@ -284,6 +289,9 @@ function handleConnect(providerConnectorId: string, e: Event) {
     animation: pulse-bg 1s infinite;
 }
 
+/**
+Syncing modal
+ */
 .syncingModal {
     background-color: #3f1b68e3;
     position: fixed;
