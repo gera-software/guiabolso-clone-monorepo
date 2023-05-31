@@ -102,6 +102,8 @@ describe('Mongodb Account repository', () => {
                 synchronization: {
                     providerItemId: 'valid-provider-item-id',
                     createdAt: new Date(),
+                    syncStatus: 'UPDATED',
+                    lastSyncAt: new Date(),
                 }
             }
             const addedAccount = await sut.add(account)
@@ -129,6 +131,8 @@ describe('Mongodb Account repository', () => {
                 synchronization: {
                     providerItemId: 'valid-provider-item-id',
                     createdAt: new Date(),
+                    syncStatus: 'UPDATED',
+                    lastSyncAt: new Date(),
                 }
             }
             const addedAccount = await sut.add(account)
@@ -176,7 +180,7 @@ describe('Mongodb Account repository', () => {
     
         })
     
-        test('when a bank account is find by id, should return the account', async () => {
+        test('when a manual bank account is find by id, should return the account', async () => {
             const sut = new MongodbAccountRepository()
             const account: BankAccountData = {
                 type: 'BANK',
@@ -199,7 +203,7 @@ describe('Mongodb Account repository', () => {
             expect(result.institution).toEqual(validInstitution)
         })
     
-        test('when a credit card account is find by id, should return the account', async () => {
+        test('when a manual credit card account is find by id, should return the account', async () => {
             const sut = new MongodbAccountRepository()
             const account: CreditCardAccountData = {
                 type: 'CREDIT_CARD',
@@ -222,6 +226,72 @@ describe('Mongodb Account repository', () => {
             expect(result.userId).toBe(account.userId)
             expect(result.institution).toEqual(validInstitution)
             expect(result.creditCardInfo).toEqual(validCreditCardInfoData)
+        })
+
+        test('when a automatic bank account is find by id, should return the account', async () => {
+            const sut = new MongodbAccountRepository()
+            const account: BankAccountData = {
+                type: 'BANK',
+                syncType: 'AUTOMATIC',
+                name: 'any name',
+                balance: 789,
+                userId: validUserId.toString(),
+                institution: validInstitution,
+                providerAccountId: 'valid-provider-account-id',
+                synchronization: {
+                    providerItemId: 'valid-provider-item-id',
+                    createdAt: new Date(),
+                    syncStatus: 'UPDATED',
+                    lastSyncAt: new Date(),
+                }
+            }
+            const addedAccount = await sut.add(account)
+
+            const result: AccountData = await sut.findById(addedAccount.id) as AccountData
+            expect(result).not.toBeNull()
+            expect(result.id).toBe(addedAccount.id)
+            expect(result.type).toBe(account.type)
+            expect(result.syncType).toBe(account.syncType)
+            expect(result.name).toBe(account.name)
+            expect(result.balance).toBe(account.balance)
+            expect(result.userId).toBe(account.userId)
+            expect(result.institution).toEqual(validInstitution)
+            expect(result.providerAccountId).toEqual(account.providerAccountId)
+            expect(result.synchronization).toEqual(account.synchronization)
+        })
+
+        test('when a automatic credit card account is find by id, should return the account', async () => {
+            const sut = new MongodbAccountRepository()
+            const account: CreditCardAccountData = {
+                type: 'CREDIT_CARD',
+                syncType: 'AUTOMATIC',
+                name: 'any name',
+                balance: 789,
+                userId: validUserId.toString(),
+                institution: validInstitution,
+                creditCardInfo: validCreditCardInfoData,
+                providerAccountId: 'valid-provider-account-id',
+                synchronization: {
+                    providerItemId: 'valid-provider-item-id',
+                    createdAt: new Date(),
+                    syncStatus: 'UPDATED',
+                    lastSyncAt: new Date(),
+                }
+            }
+            const addedAccount = await sut.add(account)
+    
+            const result: AccountData = await sut.findById(addedAccount.id) as AccountData
+            expect(result).not.toBeNull()
+            expect(result.id).toBe(addedAccount.id)
+            expect(result.type).toBe(account.type)
+            expect(result.syncType).toBe(account.syncType)
+            expect(result.name).toBe(account.name)
+            expect(result.balance).toBe(account.balance)
+            expect(result.userId).toBe(account.userId)
+            expect(result.institution).toEqual(validInstitution)
+            expect(result.creditCardInfo).toEqual(validCreditCardInfoData)
+            expect(result.providerAccountId).toEqual(account.providerAccountId)
+            expect(result.synchronization).toEqual(account.synchronization)
         })
     })
 
@@ -312,6 +382,8 @@ describe('Mongodb Account repository', () => {
             synchronization: {
                 providerItemId: 'valid-provider-item-id',
                 createdAt: new Date('2023-03-05'),
+                syncStatus: 'UPDATED',
+                lastSyncAt: new Date('2023-03-05'),
             }
         }
         const addedAccount = await sut.add(account)

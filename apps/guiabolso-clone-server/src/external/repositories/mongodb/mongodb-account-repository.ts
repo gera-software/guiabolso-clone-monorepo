@@ -2,6 +2,7 @@ import { AccountData, AccountRepository, CreditCardInfoData, InstitutionData, Up
 import { ObjectId } from "mongodb"
 import { MongoHelper } from "@/external/repositories/mongodb/helper"
 import { MongodbInstitution } from "@/external/repositories/mongodb"
+import { ProviderSyncStatus } from "@/entities"
 
 export type MongodbCreditCardInfo = {
     brand: string,
@@ -14,6 +15,7 @@ export type MongodbCreditCardInfo = {
 export type MongodbAccountSynchronization = {
     providerItemId: string,
     createdAt: Date,
+    syncStatus: string,
     lastSyncAt?: Date,
 }
 
@@ -164,7 +166,13 @@ export class MongodbAccountRepository implements AccountRepository, UpdateAccoun
 
         let synchronization: AccountData['synchronization'] = null
         if(dbAccount.synchronization) {
-            synchronization = dbAccount.synchronization
+            synchronization = {
+                providerItemId: dbAccount.synchronization.providerItemId,
+                createdAt: dbAccount.synchronization.createdAt,
+                syncStatus: dbAccount.synchronization.syncStatus as ProviderSyncStatus,
+                lastSyncAt: dbAccount.synchronization.lastSyncAt,
+            }
+            dbAccount.synchronization
         }
 
         return {
