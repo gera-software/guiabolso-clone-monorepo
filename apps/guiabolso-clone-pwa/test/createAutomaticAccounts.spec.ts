@@ -86,8 +86,8 @@ describe("create automatic accounts unit test", () => {
                 item.id, 
                 userId, 
                 { 
-                    bankAccounts: { executionStatus: "SUCCESS", lastUpdatedAt },
-                    creditCardAccounts: { executionStatus: "SUCCESS", lastUpdatedAt }
+                    bankAccounts: { syncStatus: "UPDATED", lastSyncAt: lastUpdatedAt },
+                    creditCardAccounts: { syncStatus: "UPDATED", lastSyncAt: lastUpdatedAt }
                 })
         })
     
@@ -199,8 +199,8 @@ describe("create automatic accounts unit test", () => {
                 item.id, 
                 userId, 
                 { 
-                    bankAccounts: { executionStatus: 'PENDENTE', lastUpdatedAt: bankLastUpdatedAt },
-                    creditCardAccounts: { executionStatus: 'SUCCESS', lastUpdatedAt: creditCardLastUpdatedAt }
+                    bankAccounts: { syncStatus: 'OUTDATED', lastSyncAt: bankLastUpdatedAt },
+                    creditCardAccounts: { syncStatus: 'UPDATED', lastSyncAt: creditCardLastUpdatedAt }
                 })
         })
     
@@ -310,8 +310,8 @@ describe("create automatic accounts unit test", () => {
                 item.id, 
                 userId, 
                 { 
-                    bankAccounts: { executionStatus: 'SUCCESS', lastUpdatedAt: bankLastUpdatedAt },
-                    creditCardAccounts: { executionStatus: 'PENDENTE', lastUpdatedAt: creditCardLastUpdatedAt }
+                    bankAccounts: { syncStatus: 'UPDATED', lastSyncAt: bankLastUpdatedAt },
+                    creditCardAccounts: { syncStatus: 'OUTDATED', lastSyncAt: creditCardLastUpdatedAt }
                 })
         })
     
@@ -421,8 +421,8 @@ describe("create automatic accounts unit test", () => {
                 item.id, 
                 userId, 
                 { 
-                    bankAccounts: { executionStatus: 'PENDENTE', lastUpdatedAt: bankLastUpdatedAt },
-                    creditCardAccounts: { executionStatus: 'PENDENTE', lastUpdatedAt: creditCardLastUpdatedAt }
+                    bankAccounts: { syncStatus: 'OUTDATED', lastSyncAt: bankLastUpdatedAt },
+                    creditCardAccounts: { syncStatus: 'OUTDATED', lastSyncAt: creditCardLastUpdatedAt }
                 })
         })
     })

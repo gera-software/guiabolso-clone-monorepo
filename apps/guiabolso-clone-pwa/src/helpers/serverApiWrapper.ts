@@ -1,15 +1,15 @@
 import api from '../config/axios.js'
 
-type ProviderExecutionStatus = 'SUCCESS' | 'PENDENTE'
+type ProviderSyncStatus = 'UPDATED' | 'OUTDATED'
 
-type ProviderAccountStatus = {
-    executionStatus: ProviderExecutionStatus,
-    lastUpdatedAt: Date | null | undefined,
+type ProviderAccountSyncDetails = {
+    syncStatus: ProviderSyncStatus,
+    lastSyncAt: Date | null | undefined,
 }
 
 export type ProviderItemStatus = {
-    bankAccounts: ProviderAccountStatus,
-    creditCardAccounts: ProviderAccountStatus,
+    bankAccounts: ProviderAccountSyncDetails,
+    creditCardAccounts: ProviderAccountSyncDetails,
 }
 
 async function connectAutomaticAccounts(itemId: string, userId: string, syncStatus?: ProviderItemStatus) {
