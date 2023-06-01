@@ -236,32 +236,36 @@ async function handleSubmit() {
         date: (transaction.value?.accountType == 'CREDIT_CARD') ? stringToUTCDate(form.value.invoiceDate) : stringToUTCDate(form.value.date),
         comment: form.value.comment,
         ignored: form.value.ignored,
-        // currencyCode: CurrencyCodes.BRL,
-        // invoiceDate: null as Date,
-        // TODO refactor, not necessary fetch all categories, use getCategoryById()...
-        // type: form.value.amount >= 0 ? TransactionType.INCOME : TransactionType.EXPENSE,
-        // status: TransactionStatus.POSTED,
-        // accountType: accounts.value.find(account => account._id == form.value.accountId)?.type,
-        // userId: store.user._id,
-        // _isDeleted: false,
     }
 
-    // if(payload.accountType == AccountType.CREDIT_CARD) {
-    //   // @ts-ignore
-    //   payload.invoiceDate = stringToUTCDate(form.value.invoiceDate)
-    // }
-
     console.log(payload)
-    await updateTransaction(payload)
+    if(transaction.value?.syncType == 'AUTOMATIC') {
+      await updateAutomaticTransaction(payload)
+    } else {
+      await updateManualTransaction(payload)
+    }
     loading.value = false
     router.back()
 
 }
 
-async function updateTransaction(payload: Object): Promise<Transaction> {
+async function updateManualTransaction(payload: Object): Promise<Transaction> {
   return api.guiabolsoServer({
     method: 'put',
     url: `/manual-transaction`,
+    data: payload,
+  }).then(function (response) {
+    console.log(response.data)
+    return response.data
+  }).catch(function (error) {
+    console.log(error.response?.data);
+  })
+}
+
+async function updateAutomaticTransaction(payload: Object): Promise<Transaction> {
+  return api.guiabolsoServer({
+    method: 'put',
+    url: `/automatic-transaction`,
     data: payload,
   }).then(function (response) {
     console.log(response.data)
