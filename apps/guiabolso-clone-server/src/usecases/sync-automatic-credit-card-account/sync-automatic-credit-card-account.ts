@@ -122,6 +122,7 @@ export class SyncAutomaticCreditCardAccount implements UseCase {
             syncStatus: accountDataToSync.synchronization.syncStatus,
             lastSyncAt: accountDataToSync.synchronization.lastSyncAt,
             lastMergeAt: null as Date,
+            mergeStatus: null as string,
         }
         if(accountDataToSync.synchronization.syncStatus == 'UPDATED') {
             await this.accountRepo.updateBalance(accountId, accountDataToSync.balance)
@@ -181,6 +182,7 @@ export class SyncAutomaticCreditCardAccount implements UseCase {
             await this.invoiceRepo.batchUpdateAmount(invoicesAmount)
 
             synchronization.lastMergeAt = new Date()
+            synchronization.mergeStatus = 'MERGED'
         }
 
         await this.accountRepo.updateSynchronizationStatus(accountId, synchronization)

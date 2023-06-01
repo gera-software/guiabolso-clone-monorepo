@@ -9,7 +9,7 @@ export interface Accountsynchronization {
     createdAt: Date,
     syncStatus: ProviderSyncStatus,
     lastSyncAt: Date | null | undefined,
-    mergeStatus: MergeStatus,
+    mergeStatus?: MergeStatus,
     lastMergeAt?: Date
 }
 

@@ -35,12 +35,14 @@ describe('Sync automatic bank account use case', () => {
     const syncStatus = 'UPDATED'
     const lastSyncAt = new Date()
     const lastMergeAt = new Date()
+    const mergeStatus = 'MERGED'
     const synchronization = {
         providerItemId: 'valid-provider-item-id',
         createdAt: new Date(),
         syncStatus,
         lastSyncAt,
         lastMergeAt,
+        mergeStatus,
     }
     
     let bankAccountData: BankAccountData
@@ -135,6 +137,7 @@ describe('Sync automatic bank account use case', () => {
             bankAccountData.synchronization.syncStatus = 'OUTDATED'
             bankAccountData.synchronization.lastSyncAt = null
             bankAccountData.synchronization.lastMergeAt = null
+            bankAccountData.synchronization.mergeStatus = null
     
             const dataProvider = new InMemoryPluggyDataProvider({accounts: [ providerAccountData1 ]})
             const accountRepository = new InMemoryAccountRepository([bankAccountData])
@@ -149,6 +152,7 @@ describe('Sync automatic bank account use case', () => {
             expect(updatedAccount.balance).toBe(providerAccountData1.balance)
             expect(updatedAccount.synchronization.syncStatus).toBe(providerAccountData1.synchronization.syncStatus)
             expect(updatedAccount.synchronization.lastSyncAt).toBe(providerAccountData1.synchronization.lastSyncAt)
+            expect(updatedAccount.synchronization.mergeStatus).toBe('MERGED')
             expect(updatedAccount.synchronization.lastMergeAt).toBeInstanceOf(Date)
         })
 
@@ -181,7 +185,7 @@ describe('Sync automatic bank account use case', () => {
             bankAccountData.synchronization.syncStatus = 'UPDATED'
             bankAccountData.synchronization.lastSyncAt = null
             bankAccountData.synchronization.lastMergeAt = new Date()
-
+            bankAccountData.synchronization.mergeStatus = 'MERGED'
     
             const dataProvider = new InMemoryPluggyDataProvider({accounts: [ providerAccountData1 ]})
             const accountRepository = new InMemoryAccountRepository([bankAccountData])
@@ -194,6 +198,7 @@ describe('Sync automatic bank account use case', () => {
             expect(updatedAccount.balance).toBe(balance)
             expect(updatedAccount.synchronization.syncStatus).toBe(providerAccountData1.synchronization.syncStatus)
             expect(updatedAccount.synchronization.lastSyncAt).toBe(bankAccountData.synchronization.lastSyncAt)
+            expect(updatedAccount.synchronization.mergeStatus).toBe(null)
             expect(updatedAccount.synchronization.lastMergeAt).toBe(bankAccountData.synchronization.lastMergeAt)
         })
 
@@ -226,6 +231,7 @@ describe('Sync automatic bank account use case', () => {
             bankAccountData.synchronization.syncStatus = 'UPDATED'
             bankAccountData.synchronization.lastSyncAt = null
             bankAccountData.synchronization.lastMergeAt = new Date()
+            bankAccountData.synchronization.mergeStatus = 'MERGED'
     
             const dataProvider = new InMemoryPluggyDataProvider({accounts: [ providerAccountData1 ]})
             const accountRepository = new InMemoryAccountRepository([bankAccountData])
@@ -238,6 +244,7 @@ describe('Sync automatic bank account use case', () => {
             expect(updatedAccount.balance).toBe(balance)
             expect(updatedAccount.synchronization.syncStatus).toBe(providerAccountData1.synchronization.syncStatus)
             expect(updatedAccount.synchronization.lastSyncAt).toBe(bankAccountData.synchronization.lastSyncAt)
+            expect(updatedAccount.synchronization.mergeStatus).toBe(null)
             expect(updatedAccount.synchronization.lastMergeAt).toBe(bankAccountData.synchronization.lastMergeAt)
         })
 
@@ -270,6 +277,7 @@ describe('Sync automatic bank account use case', () => {
             bankAccountData.synchronization.syncStatus = 'UPDATED'
             bankAccountData.synchronization.lastSyncAt = null
             bankAccountData.synchronization.lastMergeAt = new Date()
+            bankAccountData.synchronization.mergeStatus = 'MERGED'
     
             const dataProvider = new InMemoryPluggyDataProvider({accounts: [ providerAccountData1 ]})
             const accountRepository = new InMemoryAccountRepository([bankAccountData])
@@ -281,6 +289,8 @@ describe('Sync automatic bank account use case', () => {
             const updatedAccount = await accountRepository.findById(accountId)
             expect(updatedAccount.balance).toBe(balance)
             expect(updatedAccount.synchronization.syncStatus).toBe(providerAccountData1.synchronization.syncStatus)
+            expect(updatedAccount.synchronization.lastSyncAt).toBe(bankAccountData.synchronization.lastSyncAt)
+            expect(updatedAccount.synchronization.mergeStatus).toBe(null)
             expect(updatedAccount.synchronization.lastMergeAt).toBe(bankAccountData.synchronization.lastMergeAt)
         })
 
@@ -313,8 +323,8 @@ describe('Sync automatic bank account use case', () => {
             bankAccountData.synchronization.syncStatus = 'UPDATED'
             bankAccountData.synchronization.lastSyncAt = null
             bankAccountData.synchronization.lastMergeAt = new Date()
+            bankAccountData.synchronization.mergeStatus = 'MERGED'
 
-    
             const dataProvider = new InMemoryPluggyDataProvider({accounts: [ providerAccountData1 ]})
             const accountRepository = new InMemoryAccountRepository([bankAccountData])
             const transactionRepository = new InMemoryTransactionRepository([])
@@ -326,6 +336,7 @@ describe('Sync automatic bank account use case', () => {
             expect(updatedAccount.balance).toBe(balance)
             expect(updatedAccount.synchronization.syncStatus).toBe(providerAccountData1.synchronization.syncStatus)
             expect(updatedAccount.synchronization.lastSyncAt).toBe(bankAccountData.synchronization.lastSyncAt)
+            expect(updatedAccount.synchronization.mergeStatus).toBe(null)
             expect(updatedAccount.synchronization.lastMergeAt).toBe(bankAccountData.synchronization.lastMergeAt)
         })
     })

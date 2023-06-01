@@ -40,6 +40,7 @@ describe('Sync automatic credit card account use case', () => {
         syncStatus: 'UPDATED',
         lastSyncAt,
         lastMergeAt,
+        mergeStatus: 'MERGED',
     }
 
     let creditCardAccountData: CreditCardAccountData
@@ -164,6 +165,7 @@ describe('Sync automatic credit card account use case', () => {
             creditCardAccountData.synchronization.syncStatus = 'OUTDATED'
             creditCardAccountData.synchronization.lastSyncAt = null
             creditCardAccountData.synchronization.lastMergeAt = null
+            creditCardAccountData.synchronization.mergeStatus = null
     
             const dataProvider = new InMemoryPluggyDataProvider({accounts: [ providerAccountData1 ]})
             const accountRepository = new InMemoryAccountRepository([creditCardAccountData])
@@ -182,6 +184,7 @@ describe('Sync automatic credit card account use case', () => {
             expect(updatedAccount.creditCardInfo).toEqual(providerAccountData1.creditCardInfo)
             expect(updatedAccount.synchronization.syncStatus).toBe(providerAccountData1.synchronization.syncStatus)
             expect(updatedAccount.synchronization.lastSyncAt).toBe(providerAccountData1.synchronization.lastSyncAt)
+            expect(updatedAccount.synchronization.mergeStatus).toBe('MERGED')
             expect(updatedAccount.synchronization.lastMergeAt).toBeInstanceOf(Date)
         })
 
@@ -221,7 +224,7 @@ describe('Sync automatic credit card account use case', () => {
             creditCardAccountData.synchronization.syncStatus = 'UPDATED'
             creditCardAccountData.synchronization.lastSyncAt = null
             creditCardAccountData.synchronization.lastMergeAt = new Date()
-
+            creditCardAccountData.synchronization.mergeStatus = 'MERGED'
     
             const dataProvider = new InMemoryPluggyDataProvider({accounts: [ providerAccountData1 ]})
             const accountRepository = new InMemoryAccountRepository([creditCardAccountData])
@@ -238,6 +241,7 @@ describe('Sync automatic credit card account use case', () => {
             expect(updatedAccount.creditCardInfo).toEqual(creditCardAccountData.creditCardInfo)
             expect(updatedAccount.synchronization.syncStatus).toBe(providerAccountData1.synchronization.syncStatus)
             expect(updatedAccount.synchronization.lastSyncAt).toBe(creditCardAccountData.synchronization.lastSyncAt)
+            expect(updatedAccount.synchronization.mergeStatus).toBe(null)
             expect(updatedAccount.synchronization.lastMergeAt).toBe(creditCardAccountData.synchronization.lastMergeAt)
         })
 
@@ -277,6 +281,7 @@ describe('Sync automatic credit card account use case', () => {
             creditCardAccountData.synchronization.syncStatus = 'UPDATED'
             creditCardAccountData.synchronization.lastSyncAt = null
             creditCardAccountData.synchronization.lastMergeAt = new Date()
+            creditCardAccountData.synchronization.mergeStatus = 'MERGED'
     
             const dataProvider = new InMemoryPluggyDataProvider({accounts: [ providerAccountData1 ]})
             const accountRepository = new InMemoryAccountRepository([creditCardAccountData])
@@ -293,6 +298,7 @@ describe('Sync automatic credit card account use case', () => {
             expect(updatedAccount.creditCardInfo).toEqual(creditCardAccountData.creditCardInfo)
             expect(updatedAccount.synchronization.syncStatus).toBe(providerAccountData1.synchronization.syncStatus)
             expect(updatedAccount.synchronization.lastSyncAt).toBe(creditCardAccountData.synchronization.lastSyncAt)
+            expect(updatedAccount.synchronization.mergeStatus).toBe(null)
             expect(updatedAccount.synchronization.lastMergeAt).toBe(creditCardAccountData.synchronization.lastMergeAt)
         })
 
@@ -332,6 +338,7 @@ describe('Sync automatic credit card account use case', () => {
             creditCardAccountData.synchronization.syncStatus = 'UPDATED'
             creditCardAccountData.synchronization.lastSyncAt = null
             creditCardAccountData.synchronization.lastMergeAt = new Date()
+            creditCardAccountData.synchronization.mergeStatus = 'MERGED'
     
             const dataProvider = new InMemoryPluggyDataProvider({accounts: [ providerAccountData1 ]})
             const accountRepository = new InMemoryAccountRepository([creditCardAccountData])
@@ -348,6 +355,7 @@ describe('Sync automatic credit card account use case', () => {
             expect(updatedAccount.creditCardInfo).toEqual(creditCardAccountData.creditCardInfo)
             expect(updatedAccount.synchronization.syncStatus).toBe(providerAccountData1.synchronization.syncStatus)
             expect(updatedAccount.synchronization.lastSyncAt).toBe(creditCardAccountData.synchronization.lastSyncAt)
+            expect(updatedAccount.synchronization.mergeStatus).toBe(null)
             expect(updatedAccount.synchronization.lastMergeAt).toBe(creditCardAccountData.synchronization.lastMergeAt)
         })
 
@@ -387,6 +395,7 @@ describe('Sync automatic credit card account use case', () => {
             creditCardAccountData.synchronization.syncStatus = 'UPDATED'
             creditCardAccountData.synchronization.lastSyncAt = null
             creditCardAccountData.synchronization.lastMergeAt = new Date()
+            creditCardAccountData.synchronization.mergeStatus = 'MERGED'
     
             const dataProvider = new InMemoryPluggyDataProvider({accounts: [ providerAccountData1 ]})
             const accountRepository = new InMemoryAccountRepository([creditCardAccountData])
@@ -402,6 +411,8 @@ describe('Sync automatic credit card account use case', () => {
             expect(updatedAccount.balance).toBe(balance)
             expect(updatedAccount.creditCardInfo).toEqual(creditCardAccountData.creditCardInfo)
             expect(updatedAccount.synchronization.syncStatus).toBe(providerAccountData1.synchronization.syncStatus)
+            expect(updatedAccount.synchronization.lastSyncAt).toBe(creditCardAccountData.synchronization.lastSyncAt)
+            expect(updatedAccount.synchronization.mergeStatus).toBe(null)
             expect(updatedAccount.synchronization.lastMergeAt).toBe(creditCardAccountData.synchronization.lastMergeAt)
         })
     })

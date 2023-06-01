@@ -17,5 +17,6 @@ export interface CreditCardAccountData {
         syncStatus: string,
         lastSyncAt?: Date,
         lastMergeAt?: Date,
+        mergeStatus?: string,
     },
 }

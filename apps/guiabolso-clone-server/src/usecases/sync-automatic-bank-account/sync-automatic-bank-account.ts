@@ -2,7 +2,7 @@ import { Either, left, right } from "@/shared";
 import { AccountData, FinancialDataProvider, TransactionRepository, UpdateAccountRepository, UseCase } from "@/usecases/ports";
 import { DataProviderError, UnexpectedError, UnregisteredAccountError } from "@/usecases/errors";
 import { InvalidAccountError } from "@/entities/errors";
-import { AccountType } from "@/entities";
+import { AccountType, MergeStatus } from "@/entities";
 
 export class SyncAutomaticBankAccount implements UseCase {
     private readonly financialDataProvider: FinancialDataProvider
@@ -45,6 +45,7 @@ export class SyncAutomaticBankAccount implements UseCase {
             syncStatus: accountDataToSync.synchronization.syncStatus,
             lastSyncAt: accountDataToSync.synchronization.lastSyncAt,
             lastMergeAt: null as Date,
+            mergeStatus: null as string,
         }
 
         if(accountDataToSync.synchronization.syncStatus == 'UPDATED') {
@@ -85,6 +86,7 @@ export class SyncAutomaticBankAccount implements UseCase {
 
 
             synchronization.lastMergeAt = new Date()
+            synchronization.mergeStatus = 'MERGED'
         }
 
         await this.accountRepo.updateSynchronizationStatus(accountId, synchronization)

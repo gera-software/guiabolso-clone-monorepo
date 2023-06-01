@@ -17,5 +17,6 @@ export interface AccountData {
         syncStatus: string, 
         lastSyncAt?: Date,
         lastMergeAt?: Date,
+        mergeStatus?: string,
     }
 }

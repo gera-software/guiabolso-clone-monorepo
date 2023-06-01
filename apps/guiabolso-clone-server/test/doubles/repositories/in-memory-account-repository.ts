@@ -49,7 +49,7 @@ export class InMemoryAccountRepository implements AccountRepository, UpdateAccou
         }
     }
 
-    async updateSynchronizationStatus(accountId: string, synchronization: { syncStatus: string, lastSyncAt?: Date, lastMergeAt?: Date }): Promise<void> {
+    async updateSynchronizationStatus(accountId: string, synchronization: { syncStatus: string, lastSyncAt?: Date, lastMergeAt?: Date, mergeStatus?: string }): Promise<void> {
         const account = await this.findById(accountId)
         if(account) {
             account.synchronization.syncStatus = synchronization.syncStatus
@@ -59,6 +59,9 @@ export class InMemoryAccountRepository implements AccountRepository, UpdateAccou
             if(synchronization.lastMergeAt) {
                 account.synchronization.lastMergeAt = synchronization.lastMergeAt
             }
+
+            account.synchronization.mergeStatus = synchronization.mergeStatus
+
         }
     }
 

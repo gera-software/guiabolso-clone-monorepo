@@ -104,6 +104,7 @@ describe('Mongodb Account repository', () => {
                     createdAt: new Date(),
                     syncStatus: 'UPDATED',
                     lastSyncAt: new Date(),
+                    mergeStatus: 'MERGED',
                     lastMergeAt: new Date(),
                 }
             }
@@ -134,6 +135,7 @@ describe('Mongodb Account repository', () => {
                     createdAt: new Date(),
                     syncStatus: 'UPDATED',
                     lastSyncAt: new Date(),
+                    mergeStatus: 'MERGED',
                     lastMergeAt: new Date(),
                 }
             }
@@ -245,6 +247,7 @@ describe('Mongodb Account repository', () => {
                     createdAt: new Date(),
                     syncStatus: 'UPDATED',
                     lastSyncAt: new Date(),
+                    mergeStatus: 'MERGED',
                     lastMergeAt: new Date(),
                 }
             }
@@ -279,6 +282,7 @@ describe('Mongodb Account repository', () => {
                     createdAt: new Date(),
                     syncStatus: 'UPDATED',
                     lastSyncAt: new Date(),
+                    mergeStatus: 'MERGED',
                     lastMergeAt: new Date(),
                 }
             }
@@ -389,6 +393,7 @@ describe('Mongodb Account repository', () => {
                     createdAt: new Date('2023-03-05'),
                     syncStatus: 'OUTDATED',
                     lastSyncAt: null,
+                    mergeStatus: 'MERGE_ERROR',
                     lastMergeAt: null
                 }
             }
@@ -396,8 +401,9 @@ describe('Mongodb Account repository', () => {
             
             const syncStatus = 'UPDATED'
             const lastSyncAt = new Date('2023-03-07')
+            const mergeStatus = 'MERGED'
             const lastMergeAt = new Date('2023-03-07')
-            await sut.updateSynchronizationStatus(addedAccount.id, { syncStatus, lastSyncAt, lastMergeAt })
+            await sut.updateSynchronizationStatus(addedAccount.id, { syncStatus, lastSyncAt, lastMergeAt, mergeStatus })
     
             const result = await sut.findById(addedAccount.id)
             expect(result.synchronization.syncStatus).toEqual(syncStatus)
@@ -420,6 +426,7 @@ describe('Mongodb Account repository', () => {
                     createdAt: new Date('2023-03-05'),
                     syncStatus: 'UPDATED',
                     lastSyncAt: new Date('2023-03-05'),
+                    mergeStatus: 'MERGE_ERROR',
                     lastMergeAt: new Date('2023-03-05'),
                 }
             }

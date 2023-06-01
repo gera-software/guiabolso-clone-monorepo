@@ -1,4 +1,4 @@
-import { ProviderSyncStatus } from "@/entities"
+import { MergeStatus, ProviderSyncStatus } from "@/entities"
 import { InvalidAccountError, InvalidBalanceError, InvalidInstitutionError, InvalidNameError } from "@/entities/errors"
 import { CreateAutomaticBankAccount } from "@/usecases/create-automatic-bank-account"
 import { UnregisteredInstitutionError, UnregisteredUserError } from "@/usecases/errors"
@@ -27,6 +27,7 @@ describe('Create automatic bank account use case', () => {
         const syncStatus: ProviderSyncStatus = 'UPDATED'
         const lastSyncAt = new Date()
         const lastMergeAt = new Date()
+        const mergeStatus: MergeStatus = 'MERGED'
 
         const createAutomaticBankRequest: BankAccountData = {
             type,
@@ -43,6 +44,7 @@ describe('Create automatic bank account use case', () => {
                 syncStatus,
                 lastSyncAt,
                 lastMergeAt,
+                mergeStatus,
             },
         }
 
@@ -75,6 +77,7 @@ describe('Create automatic bank account use case', () => {
         const syncStatus: ProviderSyncStatus = 'UPDATED'
         const lastSyncAt = new Date()
         const lastMergeAt = new Date()
+        const mergeStatus: MergeStatus = 'MERGED'
 
         const createAutomaticBankRequest: BankAccountData = {
             type,
@@ -91,6 +94,7 @@ describe('Create automatic bank account use case', () => {
                 syncStatus,
                 lastSyncAt,
                 lastMergeAt,
+                mergeStatus,
             },
         }
 
@@ -123,6 +127,7 @@ describe('Create automatic bank account use case', () => {
         const syncStatus: ProviderSyncStatus = 'UPDATED'
         const lastSyncAt = new Date()
         const lastMergeAt = new Date()
+        const mergeStatus: MergeStatus = 'MERGED'
 
         const createAutomaticBankRequest: BankAccountData = {
             type,
@@ -139,6 +144,7 @@ describe('Create automatic bank account use case', () => {
                 syncStatus,
                 lastSyncAt,
                 lastMergeAt,
+                mergeStatus,
             },
         }
 
@@ -171,6 +177,7 @@ describe('Create automatic bank account use case', () => {
         const syncStatus: ProviderSyncStatus = 'UPDATED'
         const lastSyncAt = new Date()
         const lastMergeAt = new Date()
+        const mergeStatus: MergeStatus = 'MERGED'
 
         const createAutomaticBankRequest: BankAccountData = {
             type,
@@ -187,6 +194,7 @@ describe('Create automatic bank account use case', () => {
                 syncStatus,
                 lastSyncAt,
                 lastMergeAt,
+                mergeStatus,
             },
         }
 
@@ -212,6 +220,7 @@ describe('Create automatic bank account use case', () => {
         const syncStatus: ProviderSyncStatus = 'UPDATED'
         const lastSyncAt = new Date()
         const lastMergeAt = new Date()
+        const mergeStatus: MergeStatus = 'MERGED'
 
         const createAutomaticBankRequest: BankAccountData = {
             type,
@@ -228,6 +237,7 @@ describe('Create automatic bank account use case', () => {
                 syncStatus,
                 lastSyncAt,
                 lastMergeAt,
+                mergeStatus,
             },
         }
 
@@ -260,6 +270,7 @@ describe('Create automatic bank account use case', () => {
         const syncStatus: ProviderSyncStatus = 'UPDATED'
         const lastSyncAt = new Date()
         const lastMergeAt = new Date()
+        const mergeStatus: MergeStatus = 'MERGED'
 
         const createAutomaticBankRequest: BankAccountData = {
             type,
@@ -276,6 +287,7 @@ describe('Create automatic bank account use case', () => {
                 syncStatus,
                 lastSyncAt,
                 lastMergeAt,
+                mergeStatus,
             },
         }
 
@@ -308,6 +320,7 @@ describe('Create automatic bank account use case', () => {
         const syncStatus: ProviderSyncStatus = 'UPDATED'
         const lastSyncAt = new Date()
         const lastMergeAt = new Date()
+        const mergeStatus: MergeStatus = 'MERGED'
 
         const createAutomaticBankRequest: BankAccountData = {
             type,
@@ -324,6 +337,7 @@ describe('Create automatic bank account use case', () => {
                 syncStatus,
                 lastSyncAt,
                 lastMergeAt,
+                mergeStatus,
             },
         }
 
@@ -356,6 +370,7 @@ describe('Create automatic bank account use case', () => {
         const syncStatus: ProviderSyncStatus = 'UPDATED'
         const lastSyncAt = new Date()
         const lastMergeAt = new Date()
+        const mergeStatus: MergeStatus = 'MERGED'
 
         const createAutomaticBankRequest: BankAccountData = {
             type,
@@ -372,6 +387,7 @@ describe('Create automatic bank account use case', () => {
                 syncStatus,
                 lastSyncAt,
                 lastMergeAt,
+                mergeStatus,
             },
         }
 
@@ -404,6 +420,7 @@ describe('Create automatic bank account use case', () => {
         const syncStatus: ProviderSyncStatus = 'UPDATED'
         const lastSyncAt = new Date()
         const lastMergeAt = new Date()
+        const mergeStatus: MergeStatus = 'MERGED'
 
         const createAutomaticBankRequest: BankAccountData = {
             type,
@@ -420,6 +437,7 @@ describe('Create automatic bank account use case', () => {
                 syncStatus,
                 lastSyncAt,
                 lastMergeAt,
+                mergeStatus,
             },
         }
 

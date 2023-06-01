@@ -2,7 +2,7 @@ import { AccountData, AccountRepository, CreditCardInfoData, InstitutionData, Up
 import { ObjectId } from "mongodb"
 import { MongoHelper } from "@/external/repositories/mongodb/helper"
 import { MongodbInstitution } from "@/external/repositories/mongodb"
-import { ProviderSyncStatus } from "@/entities"
+import { MergeStatus, ProviderSyncStatus } from "@/entities"
 
 export type MongodbCreditCardInfo = {
     brand: string,
@@ -17,6 +17,7 @@ export type MongodbAccountSynchronization = {
     createdAt: Date,
     syncStatus: string,
     lastSyncAt?: Date,
+    mergeStatus?: string,
     lastMergeAt?: Date,
 }
 
@@ -133,7 +134,7 @@ export class MongodbAccountRepository implements AccountRepository, UpdateAccoun
     }
 
     // TODO refactor, maybe use bulk?
-    async updateSynchronizationStatus(accountId: string, synchronization: { syncStatus: string, lastSyncAt?: Date, lastMergeAt?: Date }): Promise<void> {
+    async updateSynchronizationStatus(accountId: string, synchronization: { syncStatus: string, lastSyncAt?: Date, lastMergeAt?: Date, mergeStatus?: string }): Promise<void> {
         const accountCollection = MongoHelper.getCollection('accounts')
     
         if(synchronization.syncStatus) {
@@ -163,6 +164,13 @@ export class MongodbAccountRepository implements AccountRepository, UpdateAccoun
             }
             await accountCollection.updateOne({ _id: new ObjectId(accountId) }, updateDoc)
         }
+
+        const updateDoc = {
+            $set: {
+                'synchronization.mergeStatus': synchronization.mergeStatus,
+            }
+        }
+        await accountCollection.updateOne({ _id: new ObjectId(accountId) }, updateDoc)
 
     }
 
@@ -194,6 +202,7 @@ export class MongodbAccountRepository implements AccountRepository, UpdateAccoun
                 createdAt: dbAccount.synchronization.createdAt,
                 syncStatus: dbAccount.synchronization.syncStatus as ProviderSyncStatus,
                 lastSyncAt: dbAccount.synchronization.lastSyncAt,
+                mergeStatus: dbAccount.synchronization.mergeStatus as MergeStatus,
                 lastMergeAt: dbAccount.synchronization.lastMergeAt,
             }
             dbAccount.synchronization

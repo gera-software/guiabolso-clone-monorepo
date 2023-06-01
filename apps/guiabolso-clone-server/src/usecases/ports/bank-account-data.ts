@@ -16,5 +16,6 @@ export interface BankAccountData {
         syncStatus: string,
         lastSyncAt?: Date,
         lastMergeAt?: Date,
+        mergeStatus?: string,
     },
 }
