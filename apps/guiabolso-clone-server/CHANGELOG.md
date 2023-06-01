@@ -1,5 +1,11 @@
 # @gera-software/guiabolso-clone-server
 
+## 1.15.0
+
+### Minor Changes
+
+- Manual update of automatic transaction metadata
+
 ## 1.14.0
 
 ### Minor Changes
