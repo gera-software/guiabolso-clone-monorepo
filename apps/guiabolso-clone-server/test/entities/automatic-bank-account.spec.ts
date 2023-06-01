@@ -1,4 +1,4 @@
-import { AutomaticBankAccount, Institution, ProviderSyncStatus, User } from "@/entities"
+import { AutomaticBankAccount, Institution, MergeStatus, ProviderSyncStatus, User } from "@/entities"
 import { InvalidAccountError, InvalidBalanceError, InvalidInstitutionError, InvalidNameError } from "@/entities/errors"
 
 describe("Automatic Bank Account entity", () => {
@@ -26,8 +26,9 @@ describe("Automatic Bank Account entity", () => {
             const syncStatus: ProviderSyncStatus = 'UPDATED'
             const lastSyncAt = new Date()
             const lastMergeAt = new Date()
+            const mergeStatus: MergeStatus = 'MERGED'
     
-            const error = AutomaticBankAccount.create({ name, balance, imageUrl, user, institution, providerAccountId, providerItemId, createdAt, syncStatus, lastSyncAt, lastMergeAt }).value as Error
+            const error = AutomaticBankAccount.create({ name, balance, imageUrl, user, institution, providerAccountId, providerItemId, createdAt, syncStatus, lastSyncAt, lastMergeAt, mergeStatus }).value as Error
             expect(error).toBeInstanceOf(InvalidNameError)
 
         })
@@ -55,8 +56,9 @@ describe("Automatic Bank Account entity", () => {
             const syncStatus: ProviderSyncStatus = 'UPDATED'
             const lastSyncAt = new Date()
             const lastMergeAt = new Date()
+            const mergeStatus: MergeStatus = 'MERGED'
     
-            const error = AutomaticBankAccount.create({ name, balance, imageUrl, user, institution, providerAccountId, providerItemId, createdAt, syncStatus, lastSyncAt, lastMergeAt }).value as Error
+            const error = AutomaticBankAccount.create({ name, balance, imageUrl, user, institution, providerAccountId, providerItemId, createdAt, syncStatus, lastSyncAt, lastMergeAt, mergeStatus }).value as Error
             expect(error).toBeInstanceOf(InvalidBalanceError)
         })
 
@@ -76,8 +78,9 @@ describe("Automatic Bank Account entity", () => {
             const syncStatus: ProviderSyncStatus = 'UPDATED'
             const lastSyncAt = new Date()
             const lastMergeAt = new Date()
+            const mergeStatus: MergeStatus = 'MERGED'
     
-            const error = AutomaticBankAccount.create({ name, balance, imageUrl, user, institution, providerAccountId, providerItemId, createdAt, syncStatus, lastSyncAt, lastMergeAt }).value as Error
+            const error = AutomaticBankAccount.create({ name, balance, imageUrl, user, institution, providerAccountId, providerItemId, createdAt, syncStatus, lastSyncAt, lastMergeAt, mergeStatus }).value as Error
             expect(error).toBeInstanceOf(InvalidInstitutionError)
         })
 
@@ -104,8 +107,9 @@ describe("Automatic Bank Account entity", () => {
             const syncStatus: ProviderSyncStatus = 'UPDATED'
             const lastSyncAt = new Date()
             const lastMergeAt = new Date()
+            const mergeStatus: MergeStatus = 'MERGED'
     
-            const error = AutomaticBankAccount.create({ name, balance, imageUrl, user, institution, providerAccountId, providerItemId, createdAt, syncStatus, lastSyncAt, lastMergeAt }).value as Error
+            const error = AutomaticBankAccount.create({ name, balance, imageUrl, user, institution, providerAccountId, providerItemId, createdAt, syncStatus, lastSyncAt, lastMergeAt, mergeStatus }).value as Error
             expect(error).toBeInstanceOf(InvalidAccountError)
             expect(error.message).toBe('providerAccountId is required')
         })
@@ -133,8 +137,9 @@ describe("Automatic Bank Account entity", () => {
             const syncStatus: ProviderSyncStatus = 'UPDATED'
             const lastSyncAt = new Date()
             const lastMergeAt = new Date()
+            const mergeStatus: MergeStatus = 'MERGED'
     
-            const error = AutomaticBankAccount.create({ name, balance, imageUrl, user, institution, providerAccountId, providerItemId, createdAt, syncStatus, lastSyncAt, lastMergeAt }).value as Error
+            const error = AutomaticBankAccount.create({ name, balance, imageUrl, user, institution, providerAccountId, providerItemId, createdAt, syncStatus, lastSyncAt, lastMergeAt, mergeStatus }).value as Error
             expect(error).toBeInstanceOf(InvalidAccountError)
             expect(error.message).toBe('providerItemId is required')
         })
@@ -162,8 +167,9 @@ describe("Automatic Bank Account entity", () => {
             const syncStatus: ProviderSyncStatus = 'UPDATED'
             const lastSyncAt = new Date()
             const lastMergeAt = new Date()
+            const mergeStatus: MergeStatus = 'MERGED'
     
-            const error = AutomaticBankAccount.create({ name, balance, imageUrl, user, institution, providerAccountId, providerItemId, createdAt, syncStatus, lastSyncAt, lastMergeAt }).value as Error
+            const error = AutomaticBankAccount.create({ name, balance, imageUrl, user, institution, providerAccountId, providerItemId, createdAt, syncStatus, lastSyncAt, lastMergeAt, mergeStatus }).value as Error
             expect(error).toBeInstanceOf(InvalidAccountError)
             expect(error.message).toBe('createdAt is required')
         })
@@ -191,8 +197,9 @@ describe("Automatic Bank Account entity", () => {
             const syncStatus: ProviderSyncStatus = null
             const lastSyncAt = new Date()
             const lastMergeAt = new Date()
+            const mergeStatus: MergeStatus = 'MERGED'
     
-            const error = AutomaticBankAccount.create({ name, balance, imageUrl, user, institution, providerAccountId, providerItemId, createdAt, syncStatus, lastSyncAt, lastMergeAt }).value as Error
+            const error = AutomaticBankAccount.create({ name, balance, imageUrl, user, institution, providerAccountId, providerItemId, createdAt, syncStatus, lastSyncAt, lastMergeAt, mergeStatus }).value as Error
             expect(error).toBeInstanceOf(InvalidAccountError)
             expect(error.message).toBe('syncStatus is required')
         })
@@ -220,9 +227,10 @@ describe("Automatic Bank Account entity", () => {
             const syncStatus: ProviderSyncStatus = 'UPDATED'
             const lastSyncAt = new Date()
             const lastMergeAt = new Date()
+            const mergeStatus: MergeStatus = 'MERGED'
 
         
-            const account = AutomaticBankAccount.create({ name, balance, imageUrl, user, institution, providerAccountId, providerItemId, createdAt, syncStatus, lastSyncAt, lastMergeAt }).value as AutomaticBankAccount
+            const account = AutomaticBankAccount.create({ name, balance, imageUrl, user, institution, providerAccountId, providerItemId, createdAt, syncStatus, lastSyncAt, lastMergeAt, mergeStatus }).value as AutomaticBankAccount
             expect(account.type).toBe('BANK')
             expect(account.name).toBe(name)
             expect(account.balance.value).toBe(balance)
@@ -237,6 +245,7 @@ describe("Automatic Bank Account entity", () => {
             expect(account.synchronization.syncStatus).toEqual(syncStatus)
             expect(account.synchronization.lastSyncAt).toEqual(lastSyncAt)
             expect(account.synchronization.lastMergeAt).toEqual(lastMergeAt)
+            expect(account.synchronization.mergeStatus).toEqual(mergeStatus)
         })
     })
 })
