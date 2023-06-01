@@ -13,6 +13,7 @@ import {
     makeSignUpController,
     makeUpdateManualTransactionController,
     makeSyncAutomaticAccountController,
+    makeUpdateAutomaticTransactionController,
  } from '@/main/factories'
 
 export default (app: Express): void => {
@@ -34,7 +35,7 @@ export default (app: Express): void => {
     router.get('/pluggy/create-token', adaptRoute(makePluggyConnectWidgetCreateTokenController()))
     router.post('/connect-accounts', adaptRoute(makeConnectAutomaticAccountsController()))
     router.post('/sync-accounts', adaptRoute(makeSyncAutomaticAccountController()))
-
+    router.put('/automatic-transaction', adaptRoute(makeUpdateAutomaticTransactionController()))
 
     router.post('/manual-transaction', adaptRoute(makeAddManualTransactionController()))
     router.delete('/manual-transaction', adaptRoute(makeRemoveManualTransactionController()))
