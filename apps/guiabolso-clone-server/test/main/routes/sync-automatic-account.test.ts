@@ -123,7 +123,8 @@ describe('Sync automatic account route', () => {
                 providerItemId: 'valid-provider-item-id',
                 createdAt: new Date(),
                 syncStatus: 'UPDATED',
-                lastSyncAt: new Date("2021-12-28T21:48:02.863Z")
+                lastSyncAt: new Date("2021-12-28T21:48:02.863Z"),
+                lastMergeAt: new Date("2021-12-28T21:48:02.863Z"),
             }
         })
 
@@ -146,7 +147,8 @@ describe('Sync automatic account route', () => {
                 providerItemId: 'valid-provider-item-id',
                 createdAt: new Date(),
                 syncStatus: 'UPDATED',
-                lastSyncAt: new Date("2021-12-28T21:48:02.863Z")
+                lastSyncAt: new Date("2021-12-28T21:48:02.863Z"),
+                lastMergeAt: new Date("2021-12-28T21:48:02.863Z")
             }
         })
 
@@ -195,7 +197,8 @@ describe('Sync automatic account route', () => {
                 .expect(200)
                 .then(async (res) => {
                     expect(res.body.balance).toBe(pluggyBankAccount.balance)
-                    expect(res.body.synchronization.lastSyncAt).toBeDefined()
+                    expect(res.body.synchronization.lastSyncAt).not.toBeNull()
+                    expect(res.body.synchronization.lastMergeAt).not.toBeNull()
                     
                     const insertedTransactions = await transactionCollection.find({}).toArray()
                     expect(insertedTransactions).toHaveLength(2)
@@ -237,7 +240,8 @@ describe('Sync automatic account route', () => {
                     expect(res.body.balance).toBe(pluggyCreditAccount.balance)
                     expect(res.body.creditCardInfo.availableCreditLimit).toBe(pluggyCreditAccount.creditCardInfo.availableCreditLimit)
                     expect(res.body.creditCardInfo.creditLimit).toBe(pluggyCreditAccount.creditCardInfo.creditLimit)
-                    expect(res.body.synchronization.lastSyncAt).toBeDefined()
+                    expect(res.body.synchronization.lastSyncAt).not.toBeNull()
+                    expect(res.body.synchronization.lastMergeAt).not.toBeNull()
                     
                     const insertedTransactions = await transactionCollection.find({}).toArray()
                     expect(insertedTransactions).toHaveLength(2)
