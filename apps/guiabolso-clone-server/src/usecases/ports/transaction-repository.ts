@@ -5,7 +5,8 @@ export interface TransactionRepository {
     findById(id: string): Promise<TransactionData>
     exists(id: string): Promise<boolean>
     remove(id: string): Promise<TransactionData>
-    update(transaction: TransactionData): Promise<TransactionData>
+    updateManual(transaction: TransactionData): Promise<TransactionData>
+    updateAutomatic(transaction: TransactionData): Promise<TransactionData>
     mergeTransactions(transactions: TransactionData[]): Promise<{ upsertedIds: string[], modifiedCount: number }>
     recalculateInvoicesAmount(invoicesIds: string[]): Promise<{ invoiceId: string, amount: number }[]>
 }

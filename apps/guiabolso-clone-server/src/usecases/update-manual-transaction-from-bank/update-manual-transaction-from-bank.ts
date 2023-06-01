@@ -100,7 +100,7 @@ export class UpdateManualTransactionFromBank implements UseCase {
             category: request.newTransaction.category ?? null,
         }
 
-        const result = await this.transactionRepo.update(transactionData)
+        const result = await this.transactionRepo.updateManual(transactionData)
 
         await this.accountRepo.updateBalance(request.oldTransactionData.accountId, bankAccount.balance.value)
 

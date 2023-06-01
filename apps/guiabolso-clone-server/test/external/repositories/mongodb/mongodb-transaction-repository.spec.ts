@@ -322,7 +322,7 @@ describe('Mongodb Transaction repository', () => {
         })
     })
 
-    describe('update', () => {
+    describe('update transaction type MANUAL', () => {
         test('should return null if a transaction to update is not found', async () => {
             const sut = new MongodbTransactionRepository()
     
@@ -350,7 +350,7 @@ describe('Mongodb Transaction repository', () => {
                 },
                 _isDeleted: false,
             }
-            const updatedTransaction = await sut.update(transactionData)
+            const updatedTransaction = await sut.updateManual(transactionData)
             expect(updatedTransaction).toBeNull()
     
         })
@@ -393,7 +393,7 @@ describe('Mongodb Transaction repository', () => {
                 _isDeleted: false,
             }
     
-            const updatedTransaction = await sut.update(updateTransactionData)
+            const updatedTransaction = await sut.updateManual(updateTransactionData)
     
             const transaction = await sut.findById(updatedTransaction.id)
             expect(transaction.amount).toBe(updateTransactionData.amount)
@@ -444,7 +444,7 @@ describe('Mongodb Transaction repository', () => {
                 _isDeleted: false,
             }
     
-            const updatedTransaction = await sut.update(updateTransactionData)
+            const updatedTransaction = await sut.updateManual(updateTransactionData)
     
             const transaction = await sut.findById(updatedTransaction.id)
             expect(transaction.amount).toBe(updateTransactionData.amount)
@@ -499,7 +499,7 @@ describe('Mongodb Transaction repository', () => {
                 _isDeleted: false,
             }
     
-            const updatedTransaction = await sut.update(updateTransactionData)
+            const updatedTransaction = await sut.updateManual(updateTransactionData)
     
             const transaction = await sut.findById(updatedTransaction.id)
             expect(transaction.amount).toBe(updateTransactionData.amount)
@@ -509,6 +509,150 @@ describe('Mongodb Transaction repository', () => {
             expect(transaction.date).toEqual(updateTransactionData.date)
             expect(transaction.invoiceDate).toEqual(updateTransactionData.invoiceDate)
             expect(transaction.invoiceId).toEqual(updateTransactionData.invoiceId)
+            expect(transaction.comment).toBe(updateTransactionData.comment)
+            expect(transaction.ignored).toBe(updateTransactionData.ignored)
+            expect(transaction.category).toEqual(updateTransactionData.category)
+        })
+    })
+
+    describe('update transaction type AUTOMATIC', () => {
+        test('should return null if a transaction to update is not found', async () => {
+            const sut = new MongodbTransactionRepository()
+    
+            const notFoundId = '62f95f4a93d61d8fff971668'
+            const transactionData: TransactionData = {
+                id: notFoundId,
+                accountId: validBankAccountId.toString(),
+                accountType: 'BANK',
+                syncType: 'AUTOMATIC',
+                userId: validUserId.toString(),
+                amount: 2345,
+                description: 'valid description',
+                descriptionOriginal: '',
+                date: new Date('2023-05-18'),
+                type: 'INCOME',
+                comment: 'valid comment',
+                ignored: false,
+                category: {
+                    id: validCategory0.id,
+                    name: "category 0",
+                    group: "group 0",
+                    iconName: "icon 0",
+                    primaryColor: "color 0",
+                    ignored: true,
+                },
+                _isDeleted: false,
+            }
+            const updatedTransaction = await sut.updateAutomatic(transactionData)
+            expect(updatedTransaction).toBeNull()
+    
+        })
+
+        test('should update a valid bank transaction', async () => {
+            const sut = new MongodbTransactionRepository()
+    
+            const oldTransactionData: TransactionData = {
+                accountId: validBankAccountId.toString(),
+                accountType: 'BANK',
+                syncType: 'AUTOMATIC',
+                userId: validUserId.toString(),
+                amount: 2345,
+                description: 'valid description',
+                descriptionOriginal: '',
+                date: new Date('2023-05-18'),
+                type: 'INCOME',
+                comment: 'valid comment',
+                ignored: false,
+                category: validCategory0,
+                _isDeleted: false,
+            }
+    
+            const insertedTransaction = await sut.add(oldTransactionData)
+    
+            const updateTransactionData: TransactionData = {
+                id: insertedTransaction.id,
+                accountId: validBankAccountId.toString(),
+                accountType: 'BANK',
+                syncType: 'AUTOMATIC',
+                userId: validUserId.toString(),
+                amount: -5000,
+                description: 'updated description',
+                descriptionOriginal: 'updated original',
+                date: new Date('2023-01-15'),
+                type: 'EXPENSE',
+                comment: 'updated comment',
+                ignored: true,
+                category: validCategory1,
+                _isDeleted: false,
+            }
+    
+            const updatedTransaction = await sut.updateAutomatic(updateTransactionData)
+    
+            const transaction = await sut.findById(updatedTransaction.id)
+            expect(transaction.amount).toBe(oldTransactionData.amount)
+            expect(transaction.type).toBe(oldTransactionData.type)
+            expect(transaction.descriptionOriginal).toBe(oldTransactionData.descriptionOriginal)
+            expect(transaction.date).toEqual(oldTransactionData.date)
+
+            expect(transaction.description).toBe(updateTransactionData.description)
+            expect(transaction.comment).toBe(updateTransactionData.comment)
+            expect(transaction.ignored).toBe(updateTransactionData.ignored)
+            expect(transaction.category).toEqual(updateTransactionData.category)
+        })
+
+        test('should update a valid credit card transaction', async () => {
+            const sut = new MongodbTransactionRepository()
+    
+            const oldTransactionData: TransactionData = {
+                accountId: validCreditCardAccountId.toString(),
+                accountType: 'CREDIT_CARD',
+                syncType: 'AUTOMATIC',
+                userId: validUserId.toString(),
+                amount: 2345,
+                description: 'valid description',
+                descriptionOriginal: '',
+                date: new Date('2023-06-10'),
+                invoiceDate: new Date('2023-05-18'),
+                invoiceId: new ObjectId().toString(),
+                type: 'INCOME',
+                comment: 'valid comment',
+                ignored: false,
+                category: validCategory0,
+                _isDeleted: false,
+            }
+    
+            const insertedTransaction = await sut.add(oldTransactionData)
+    
+            const updateTransactionData: TransactionData = {
+                id: insertedTransaction.id,
+                accountId: validCreditCardAccountId.toString(),
+                accountType: 'CREDIT_CARD',
+                syncType: 'MANUAL',
+                userId: validUserId.toString(),
+                amount: -5000,
+                description: 'updated description',
+                descriptionOriginal: 'updated original',
+                date: new Date('2023-05-10'),
+                invoiceDate: new Date('2023-05-01'),
+                invoiceId: new ObjectId().toString(),
+                type: 'EXPENSE',
+                comment: 'updated comment',
+                ignored: true,
+                category: validCategory1,
+                _isDeleted: false,
+            }
+    
+            const updatedTransaction = await sut.updateAutomatic(updateTransactionData)
+    
+            const transaction = await sut.findById(updatedTransaction.id)
+            expect(transaction.amount).toBe(oldTransactionData.amount)
+            expect(transaction.type).toBe(oldTransactionData.type)
+            expect(transaction.descriptionOriginal).toBe(oldTransactionData.descriptionOriginal)
+            expect(transaction.date).toEqual(oldTransactionData.date)
+            expect(transaction.invoiceDate).toEqual(oldTransactionData.invoiceDate)
+            expect(transaction.invoiceId).toEqual(oldTransactionData.invoiceId)
+
+            expect(transaction.description).toBe(updateTransactionData.description)
             expect(transaction.comment).toBe(updateTransactionData.comment)
             expect(transaction.ignored).toBe(updateTransactionData.ignored)
             expect(transaction.category).toEqual(updateTransactionData.category)

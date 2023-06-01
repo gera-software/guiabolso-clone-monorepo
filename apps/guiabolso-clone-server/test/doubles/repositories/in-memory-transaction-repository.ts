@@ -45,7 +45,7 @@ export class InMemoryTransactionRepository implements TransactionRepository {
         return transaction
     }
     
-    async update(transaction: TransactionData): Promise<TransactionData> {
+    async updateManual(transaction: TransactionData): Promise<TransactionData> {
         const transactionToUpdate = await this.findById(transaction.id)
 
         transactionToUpdate.amount = transaction.amount
@@ -61,6 +61,10 @@ export class InMemoryTransactionRepository implements TransactionRepository {
 
 
         return transactionToUpdate
+    }
+
+    async updateAutomatic(transaction: TransactionData): Promise<TransactionData> {
+        throw new Error("Method updateAutomatic not implemented.");
     }
 
     async mergeTransactions(transactions: TransactionData[]): Promise<{ upsertedIds: string[], modifiedCount: number }> {

@@ -96,7 +96,7 @@ export class MongodbTransactionRepository implements TransactionRepository {
         return null
     }
 
-    async update(transaction: TransactionData): Promise<TransactionData> {
+    async updateManual(transaction: TransactionData): Promise<TransactionData> {
         const transactionCollection = MongoHelper.getCollection('transactions')
 
         let updateCategoryDoc = null
@@ -121,6 +121,44 @@ export class MongodbTransactionRepository implements TransactionRepository {
               date: transaction.date,
               invoiceDate: transaction.invoiceDate ?? null,
               invoiceId: transaction.invoiceId ? new ObjectId(transaction.invoiceId) : null,
+              category: updateCategoryDoc,
+              comment: transaction.comment,
+              ignored: transaction.ignored,
+            },
+        };
+
+        const result = await transactionCollection.findOneAndUpdate({ _id: new ObjectId(transaction.id) }, updateDoc, { returnDocument: 'after' });
+        if(result.value) {
+            return this.withApplicationId(result.value as MongodbTransaction)
+        }
+        return null
+    }
+
+    async updateAutomatic(transaction: TransactionData): Promise<TransactionData> {
+        const transactionCollection = MongoHelper.getCollection('transactions')
+
+        let updateCategoryDoc = null
+
+        if(transaction.category) {
+            updateCategoryDoc = {
+                _id: new ObjectId(transaction.category.id),
+                name: transaction.category.name,
+                group: transaction.category.group,
+                iconName: transaction.category.iconName,
+                primaryColor: transaction.category.primaryColor,
+                ignored: !!transaction.category.ignored,
+            }
+        }
+
+        const updateDoc = {
+            $set: {
+            //   amount: transaction.amount,
+            //   type: transaction.type,
+              description: transaction.description,
+            //   descriptionOriginal: transaction.descriptionOriginal,
+            //   date: transaction.date,
+            //   invoiceDate: transaction.invoiceDate ?? null,
+            //   invoiceId: transaction.invoiceId ? new ObjectId(transaction.invoiceId) : null,
               category: updateCategoryDoc,
               comment: transaction.comment,
               ignored: transaction.ignored,

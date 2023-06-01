@@ -211,7 +211,7 @@ export class UpdateManualTransactionFromCreditCard implements UseCase {
         const lastClosedBalance = lastClosedInvoice?.amount ?? 0
         await this.accountRepo.updateBalance(request.newTransaction.account.id, lastClosedBalance)
 
-        const result = await this.transactionRepo.update(transactionData)
+        const result = await this.transactionRepo.updateManual(transactionData)
         return(right(result))
     }
 
