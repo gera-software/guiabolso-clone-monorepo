@@ -1,5 +1,11 @@
 # guiabolso-clone-pwa
 
+## 1.3.0
+
+### Minor Changes
+
+- Manual update of automatic transaction metadata
+
 ## 1.2.1
 
 ### Patch Changes
