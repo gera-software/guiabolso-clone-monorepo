@@ -1,5 +1,11 @@
 # guiabolso-clone-pwa
 
+## 1.2.1
+
+### Patch Changes
+
+- Fix tsconfig
+
 ## 1.2.0
 
 ### Minor Changes
