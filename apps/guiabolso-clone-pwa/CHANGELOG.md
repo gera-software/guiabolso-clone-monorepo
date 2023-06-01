@@ -1,5 +1,11 @@
 # guiabolso-clone-pwa
 
+## 1.2.0
+
+### Minor Changes
+
+- Primeira sincronização completa de account
+
 ## 1.1.0
 
 ### Minor Changes
