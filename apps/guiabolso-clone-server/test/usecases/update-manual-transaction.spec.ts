@@ -1,3 +1,4 @@
+import { InvalidAccountError } from "@/entities/errors"
 import { UnregisteredAccountError, UnregisteredCategoryError, UnregisteredTransactionError, UnregisteredUserError } from "@/usecases/errors"
 import { BankAccountData, CategoryData, CreditCardAccountData, CreditCardInvoiceData, TransactionData, TransactionRequest, UserData, WalletAccountData } from "@/usecases/ports"
 import { UpdateManualTransaction } from "@/usecases/update-manual-transaction"
@@ -198,6 +199,56 @@ describe('Update manual transaction from account use case', () => {
         const sut = new UpdateManualTransaction(userRepository, accountRepository, transactionRepository, categoryRepository, updateManualTransactionFromWallet, updateManualTransactionFromBank, updateManualTransactionFromCreditCard)   
         const response = (await sut.perform(transactionRequest)).value as Error
         expect(response).toBeInstanceOf(UnregisteredAccountError)
+    })
+
+    test('should not update if account is not of sync type AUTOMATIC', async () => {
+        bankAccountData = {
+            id: bankAccountId,
+            type: bankAccountType,
+            syncType: 'AUTOMATIC',
+            name: 'valid bank account',
+            balance,
+            imageUrl,
+            userId,
+        }
+
+        const transactionData: TransactionData = {
+            id: transactionId,
+            accountId: bankAccountId,
+            accountType: bankAccountType,
+            syncType: 'AUTOMATIC',
+            userId,
+            description,
+            amount,
+            date,
+            type: 'INCOME',
+            category: categoryData1,
+        }
+
+        const transactionRequest: TransactionRequest = {
+            id: transactionId,
+            accountId: bankAccountId,
+            categoryId,
+            amount,
+            description,
+            date,
+            comment,
+            ignored,
+        }
+
+        const userRepository = new InMemoryUserRepository([userData])
+        const accountRepository = new InMemoryAccountRepository([walletAccountData, bankAccountData, creditCardAccountData])
+        const transactionRepository = new InMemoryTransactionRepository([transactionData])
+        const invoiceRepository = new InMemoryCreditCardInvoiceRepository([])
+        const categoryRepository = new InMemoryCategoryRepository([categoryData, categoryData1])
+        const updateManualTransactionFromWallet = new UpdateManualTransactionFromWallet(transactionRepository, accountRepository)
+        const updateManualTransactionFromBank = new UpdateManualTransactionFromBank(transactionRepository, accountRepository)
+        const updateManualTransactionFromCreditCard = new UpdateManualTransactionFromCreditCard(transactionRepository, accountRepository, invoiceRepository)
+
+        const sut = new UpdateManualTransaction(userRepository, accountRepository, transactionRepository, categoryRepository, updateManualTransactionFromWallet, updateManualTransactionFromBank, updateManualTransactionFromCreditCard)   
+        const response = (await sut.perform(transactionRequest)).value as Error
+        expect(response).toBeInstanceOf(InvalidAccountError)
+        expect(response.message).toEqual('Operação não permitida')
     })
 
     test('should not update if new category is not found', async () => {

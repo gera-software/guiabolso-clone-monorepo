@@ -1,7 +1,7 @@
 import { Either, left } from "@/shared";
 import { CategoryData, CategoryRepository, TransactionData, TransactionRepository, TransactionRequest, UpdateAccountRepository, UseCase, UserRepository } from "@/usecases/ports";
 import { UnregisteredAccountError, UnregisteredCategoryError, UnregisteredTransactionError, UnregisteredUserError } from "@/usecases/errors";
-import { InvalidTransactionError, InvalidAmountError, InvalidNameError, InvalidEmailError, InvalidPasswordError, InvalidBalanceError, InvalidCreditCardError, InvalidCreditCardInvoiceError } from "@/entities/errors";
+import { InvalidTransactionError, InvalidAmountError, InvalidNameError, InvalidEmailError, InvalidPasswordError, InvalidBalanceError, InvalidCreditCardError, InvalidCreditCardInvoiceError, InvalidAccountError } from "@/entities/errors";
 import { TransactionToUpdateData } from "@/usecases/update-manual-transaction/ports";
 import { UpdateManualTransactionFromWallet } from "@/usecases/update-manual-transaction-from-wallet";
 import { UpdateManualTransactionFromBank } from "@/usecases/update-manual-transaction-from-bank";
@@ -26,7 +26,7 @@ export class UpdateManualTransaction implements UseCase {
         this.updateManualTransactionFromCreditCard = updateManualTransactionFromCreditCard
     }
 
-    async perform(request: TransactionRequest): Promise<Either<UnregisteredCategoryError | InvalidTransactionError | InvalidAmountError | UnregisteredTransactionError | UnregisteredAccountError | UnregisteredUserError | InvalidNameError | InvalidEmailError | InvalidPasswordError | InvalidBalanceError | InvalidCreditCardError | InvalidCreditCardInvoiceError, TransactionData>> {
+    async perform(request: TransactionRequest): Promise<Either<InvalidAccountError | UnregisteredCategoryError | InvalidTransactionError | InvalidAmountError | UnregisteredTransactionError | UnregisteredAccountError | UnregisteredUserError | InvalidNameError | InvalidEmailError | InvalidPasswordError | InvalidBalanceError | InvalidCreditCardError | InvalidCreditCardInvoiceError, TransactionData>> {
         const oldTransactionData = await this.transactionRepo.findById(request.id)
 
         if(!oldTransactionData) {
@@ -36,6 +36,9 @@ export class UpdateManualTransaction implements UseCase {
         const foundAccountData = await this.accountRepo.findById(oldTransactionData.accountId)
         if(!foundAccountData) {
             return left(new UnregisteredAccountError())
+        }
+        if(foundAccountData.syncType != 'MANUAL') {
+            return left(new InvalidAccountError('Operação não permitida'))
         }
 
         const foundUserData = await this.userRepo.findUserById(foundAccountData.userId)
