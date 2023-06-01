@@ -104,6 +104,7 @@ describe('Mongodb Account repository', () => {
                     createdAt: new Date(),
                     syncStatus: 'UPDATED',
                     lastSyncAt: new Date(),
+                    lastMergeAt: new Date(),
                 }
             }
             const addedAccount = await sut.add(account)
@@ -133,6 +134,7 @@ describe('Mongodb Account repository', () => {
                     createdAt: new Date(),
                     syncStatus: 'UPDATED',
                     lastSyncAt: new Date(),
+                    lastMergeAt: new Date(),
                 }
             }
             const addedAccount = await sut.add(account)
@@ -243,6 +245,7 @@ describe('Mongodb Account repository', () => {
                     createdAt: new Date(),
                     syncStatus: 'UPDATED',
                     lastSyncAt: new Date(),
+                    lastMergeAt: new Date(),
                 }
             }
             const addedAccount = await sut.add(account)
@@ -276,6 +279,7 @@ describe('Mongodb Account repository', () => {
                     createdAt: new Date(),
                     syncStatus: 'UPDATED',
                     lastSyncAt: new Date(),
+                    lastMergeAt: new Date(),
                 }
             }
             const addedAccount = await sut.add(account)
@@ -370,7 +374,6 @@ describe('Mongodb Account repository', () => {
     })
 
     describe('update synchronization status', () => {
-        // TODO testar as combinações de update  do status e datas?
         test('should update synchronization status', async () => {
             const sut = new MongodbAccountRepository()
             const account: BankAccountData = {
@@ -386,20 +389,23 @@ describe('Mongodb Account repository', () => {
                     createdAt: new Date('2023-03-05'),
                     syncStatus: 'OUTDATED',
                     lastSyncAt: null,
+                    lastMergeAt: null
                 }
             }
             const addedAccount = await sut.add(account)
             
             const syncStatus = 'UPDATED'
             const lastSyncAt = new Date('2023-03-07')
-            await sut.updateSynchronizationStatus(addedAccount.id, { syncStatus, lastSyncAt })
+            const lastMergeAt = new Date('2023-03-07')
+            await sut.updateSynchronizationStatus(addedAccount.id, { syncStatus, lastSyncAt, lastMergeAt })
     
             const result = await sut.findById(addedAccount.id)
             expect(result.synchronization.syncStatus).toEqual(syncStatus)
             expect(result.synchronization.lastSyncAt).toEqual(lastSyncAt)
+            expect(result.synchronization.lastMergeAt).toEqual(lastMergeAt)
         })
 
-        test('should not update lastSyncAt if it\'s undefined or null', async () => {
+        test('should not update lastSyncAt/lastMergeAt if it\'s undefined or null', async () => {
             const sut = new MongodbAccountRepository()
             const account: BankAccountData = {
                 type: 'BANK',
@@ -414,6 +420,7 @@ describe('Mongodb Account repository', () => {
                     createdAt: new Date('2023-03-05'),
                     syncStatus: 'UPDATED',
                     lastSyncAt: new Date('2023-03-05'),
+                    lastMergeAt: new Date('2023-03-05'),
                 }
             }
             const addedAccount = await sut.add(account)
@@ -424,6 +431,7 @@ describe('Mongodb Account repository', () => {
             const result = await sut.findById(addedAccount.id)
             expect(result.synchronization.syncStatus).toEqual(syncStatus)
             expect(result.synchronization.lastSyncAt).toEqual(account.synchronization.lastSyncAt)
+            expect(result.synchronization.lastMergeAt).toEqual(account.synchronization.lastMergeAt)
         })
     })
 })

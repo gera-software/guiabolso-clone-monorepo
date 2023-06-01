@@ -17,6 +17,7 @@ export type MongodbAccountSynchronization = {
     createdAt: Date,
     syncStatus: string,
     lastSyncAt?: Date,
+    lastMergeAt?: Date,
 }
 
 export type MongodbAccount = {
@@ -131,26 +132,38 @@ export class MongodbAccountRepository implements AccountRepository, UpdateAccoun
         await accountCollection.updateOne({ _id: new ObjectId(accountId) }, updateDoc)
     }
 
-    async updateSynchronizationStatus(accountId: string, synchronization: { syncStatus: string, lastSyncAt?: Date }): Promise<void> {
+    // TODO refactor, maybe use bulk?
+    async updateSynchronizationStatus(accountId: string, synchronization: { syncStatus: string, lastSyncAt?: Date, lastMergeAt?: Date }): Promise<void> {
         const accountCollection = MongoHelper.getCollection('accounts')
-
-        const updateDoc = {
-            $set: {}
+    
+        if(synchronization.syncStatus) {
+            const updateDoc = {
+                $set: {
+                    'synchronization.syncStatus': synchronization.syncStatus,
+                }
+            }
+            await accountCollection.updateOne({ _id: new ObjectId(accountId) }, updateDoc)
         }
 
         if(synchronization.lastSyncAt) {
-            updateDoc.$set = {
-                'synchronization.syncStatus': synchronization.syncStatus,
-                'synchronization.lastSyncAt': synchronization.lastSyncAt,
+            const updateDoc = {
+                $set: {
+                    'synchronization.lastSyncAt': synchronization.lastSyncAt,
+                }
             }
+            await accountCollection.updateOne({ _id: new ObjectId(accountId) }, updateDoc)
           
-        } else {
-            updateDoc.$set = {
-                'synchronization.syncStatus': synchronization.syncStatus,
+        } 
+        
+        if(synchronization.lastMergeAt){
+            const updateDoc = {
+                $set: {
+                    'synchronization.lastMergeAt': synchronization.lastMergeAt,
+                }
             }
+            await accountCollection.updateOne({ _id: new ObjectId(accountId) }, updateDoc)
         }
 
-        await accountCollection.updateOne({ _id: new ObjectId(accountId) }, updateDoc)
     }
 
 
@@ -181,6 +194,7 @@ export class MongodbAccountRepository implements AccountRepository, UpdateAccoun
                 createdAt: dbAccount.synchronization.createdAt,
                 syncStatus: dbAccount.synchronization.syncStatus as ProviderSyncStatus,
                 lastSyncAt: dbAccount.synchronization.lastSyncAt,
+                lastMergeAt: dbAccount.synchronization.lastMergeAt,
             }
             dbAccount.synchronization
         }
