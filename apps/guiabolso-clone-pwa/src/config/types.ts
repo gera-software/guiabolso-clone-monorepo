@@ -163,6 +163,7 @@ export interface TransactionSummaryDTO {
 // }
 
 export type ProviderSyncStatus = 'OUTDATED' | 'UPDATING' | 'UPDATED' | 'LOGIN_ERROR' | 'WAITING_USER_INPUT'
+export type MergeStatus = null | 'MERGED'
 
 export interface Synchronization {
     // _id?: string,
@@ -172,6 +173,7 @@ export interface Synchronization {
     syncStatus: ProviderSyncStatus,
     lastSyncAt: Date,
     lastMergeAt: Date,
+    mergeStatus?: MergeStatus,
     // userId: string,
 }
 

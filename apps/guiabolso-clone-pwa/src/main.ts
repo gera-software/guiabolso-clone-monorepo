@@ -53,7 +53,7 @@ import { library } from '@fortawesome/fontawesome-svg-core'
 /* import font awesome icon component */
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 /* import specific icons */
-import { faArrowLeftLong, faArrowRightLong, faWallet, faArrowsRotate, faBan, faUser, faPlus, faEllipsisVertical, faXmark } from '@fortawesome/free-solid-svg-icons'
+import { faArrowLeftLong, faArrowRightLong, faWallet, faArrowsRotate, faBan, faUser, faPlus, faEllipsisVertical, faXmark, faTriangleExclamation } from '@fortawesome/free-solid-svg-icons'
 /* add icons to the library */
 
 library.add(faArrowLeftLong)
@@ -65,6 +65,7 @@ library.add(faUser)
 library.add(faPlus)
 library.add(faEllipsisVertical)
 library.add(faXmark)
+library.add(faTriangleExclamation)
 
 const pinia = createPinia()
 pinia.use(({ store }) => {

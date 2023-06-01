@@ -6,9 +6,12 @@
             <div>
               <div class="name">{{account.name}}</div>
               <div class="balance">R$ {{ (+account.balance / 100).toFixed(2) }}</div>
-              <div class="date" v-if="account.syncType === 'AUTOMATIC'">
-                <font-awesome-icon icon="fa-solid fa-arrows-rotate" /> Atualizado em {{ (new Date(""+account.synchronization?.lastMergeAt)).toLocaleString() }} 
-                <span class="badge" v-if="account.synchronization">{{account.synchronization.syncStatus}}</span> 
+              <div class="date" v-if="account.syncType === 'AUTOMATIC'" :class="{ 'error': account.synchronization && account.synchronization.mergeStatus !== 'MERGED' }">
+                <font-awesome-icon icon="fa-solid fa-triangle-exclamation" v-if="account.synchronization && account.synchronization.mergeStatus !== 'MERGED'"/>
+                <font-awesome-icon icon="fa-solid fa-arrows-rotate" v-else /> 
+                Atualizado em {{ (new Date(""+account.synchronization?.lastMergeAt)).toLocaleString() }} 
+                <span class="badge" v-if="account.synchronization && account.synchronization.syncStatus !== 'UPDATED'">{{account.synchronization.syncStatus}}</span> 
+                <!-- <span class="badge" v-if="account.synchronization && account.synchronization.mergeStatus !== 'MERGED'">{{account.synchronization.mergeStatus}}</span>  -->
               </div>
               <div class="date" v-else><font-awesome-icon icon="fa-solid fa-user" /> Conta manual</div>
             </div>
@@ -278,6 +281,10 @@ async function deleteAccount(id: string) {
   font-size: 12px;
   font-weight: 400;
   color: #404040;
+}
+
+.account .date.error {
+  color: #ff0000;
 }
 
 .account .balance {
