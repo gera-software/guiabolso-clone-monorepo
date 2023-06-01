@@ -64,7 +64,21 @@ export class InMemoryTransactionRepository implements TransactionRepository {
     }
 
     async updateAutomatic(transaction: TransactionData): Promise<TransactionData> {
-        throw new Error("Method updateAutomatic not implemented.");
+        const transactionToUpdate = await this.findById(transaction.id)
+
+        // transactionToUpdate.amount = transaction.amount
+        transactionToUpdate.description = transaction.description
+        // transactionToUpdate.descriptionOriginal = transaction.descriptionOriginal
+        // transactionToUpdate.date = transaction.date
+        // transactionToUpdate.invoiceDate = transaction.invoiceDate
+        // transactionToUpdate.invoiceId = transaction.invoiceId,
+        // transactionToUpdate.type = transaction.type
+        transactionToUpdate.comment = transaction.comment
+        transactionToUpdate.ignored = transaction.ignored
+        transactionToUpdate.category = transaction.category
+
+
+        return transactionToUpdate
     }
 
     async mergeTransactions(transactions: TransactionData[]): Promise<{ upsertedIds: string[], modifiedCount: number }> {

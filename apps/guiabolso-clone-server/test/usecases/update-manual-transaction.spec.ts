@@ -123,6 +123,45 @@ describe('Update manual transaction from account use case', () => {
         expect(response).toBeInstanceOf(UnregisteredTransactionError)
     })
 
+    test('should not update if account is not found', async () => {
+        const transactionData: TransactionData = {
+            id: transactionId,
+            accountId: walletAccountId,
+            accountType: walletAccountType,
+            syncType,
+            userId,
+            description,
+            amount,
+            date,
+            type: 'INCOME',
+            category: categoryData1,
+        }
+
+        const transactionRequest: TransactionRequest = {
+            id: transactionId,
+            accountId: walletAccountId,
+            categoryId,
+            amount,
+            description,
+            date,
+            comment,
+            ignored,
+        }
+
+        const userRepository = new InMemoryUserRepository([userData])
+        const accountRepository = new InMemoryAccountRepository([])
+        const transactionRepository = new InMemoryTransactionRepository([transactionData])
+        const invoiceRepository = new InMemoryCreditCardInvoiceRepository([])
+        const categoryRepository = new InMemoryCategoryRepository([categoryData, categoryData1])
+        const updateManualTransactionFromWallet = new UpdateManualTransactionFromWallet(transactionRepository, accountRepository)
+        const updateManualTransactionFromBank = new UpdateManualTransactionFromBank(transactionRepository, accountRepository)
+        const updateManualTransactionFromCreditCard = new UpdateManualTransactionFromCreditCard(transactionRepository, accountRepository, invoiceRepository)
+
+        const sut = new UpdateManualTransaction(userRepository, accountRepository, transactionRepository, categoryRepository, updateManualTransactionFromWallet, updateManualTransactionFromBank, updateManualTransactionFromCreditCard)   
+        const response = (await sut.perform(transactionRequest)).value as Error
+        expect(response).toBeInstanceOf(UnregisteredAccountError)
+    })
+
     test('should not update if user is not found', async () => {
         const transactionData: TransactionData = {
             id: transactionId,
@@ -162,44 +201,7 @@ describe('Update manual transaction from account use case', () => {
         expect(response).toBeInstanceOf(UnregisteredUserError)
     })
 
-    test('should not update if account is not found', async () => {
-        const transactionData: TransactionData = {
-            id: transactionId,
-            accountId: walletAccountId,
-            accountType: walletAccountType,
-            syncType,
-            userId,
-            description,
-            amount,
-            date,
-            type: 'INCOME',
-            category: categoryData1,
-        }
 
-        const transactionRequest: TransactionRequest = {
-            id: transactionId,
-            accountId: walletAccountId,
-            categoryId,
-            amount,
-            description,
-            date,
-            comment,
-            ignored,
-        }
-
-        const userRepository = new InMemoryUserRepository([userData])
-        const accountRepository = new InMemoryAccountRepository([])
-        const transactionRepository = new InMemoryTransactionRepository([transactionData])
-        const invoiceRepository = new InMemoryCreditCardInvoiceRepository([])
-        const categoryRepository = new InMemoryCategoryRepository([categoryData, categoryData1])
-        const updateManualTransactionFromWallet = new UpdateManualTransactionFromWallet(transactionRepository, accountRepository)
-        const updateManualTransactionFromBank = new UpdateManualTransactionFromBank(transactionRepository, accountRepository)
-        const updateManualTransactionFromCreditCard = new UpdateManualTransactionFromCreditCard(transactionRepository, accountRepository, invoiceRepository)
-
-        const sut = new UpdateManualTransaction(userRepository, accountRepository, transactionRepository, categoryRepository, updateManualTransactionFromWallet, updateManualTransactionFromBank, updateManualTransactionFromCreditCard)   
-        const response = (await sut.perform(transactionRequest)).value as Error
-        expect(response).toBeInstanceOf(UnregisteredAccountError)
-    })
 
     test('should not update if account is not of sync type MANUAL', async () => {
         bankAccountData = {
