@@ -7,7 +7,7 @@
               <div class="name">{{account.name}}</div>
               <div class="balance">R$ {{ (+account.balance / 100).toFixed(2) }}</div>
               <div class="date" v-if="account.syncType === 'AUTOMATIC'">
-                <font-awesome-icon icon="fa-solid fa-arrows-rotate" /> Atualizado em {{ (new Date(""+account.synchronization?.lastSyncAt)).toLocaleString() }} 
+                <font-awesome-icon icon="fa-solid fa-arrows-rotate" /> Atualizado em {{ (new Date(""+account.synchronization?.lastMergeAt)).toLocaleString() }} 
                 <span class="badge" v-if="account.synchronization">{{account.synchronization.syncStatus}}</span> 
               </div>
               <div class="date" v-else><font-awesome-icon icon="fa-solid fa-user" /> Conta manual</div>

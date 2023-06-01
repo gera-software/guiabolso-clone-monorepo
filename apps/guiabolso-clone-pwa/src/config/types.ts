@@ -171,6 +171,7 @@ export interface Synchronization {
     // itemStatus: string,
     syncStatus: ProviderSyncStatus,
     lastSyncAt: Date,
+    lastMergeAt: Date,
     // userId: string,
 }
 
