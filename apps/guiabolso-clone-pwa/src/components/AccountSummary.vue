@@ -144,6 +144,8 @@ async function openPluggyUpdateWidget(account: AccountSummaryDTO) {
 
         const result = await syncAutomaticAccount(account?._id?.toString())
         console.log(result)
+        account.balance = result.balance
+        account.synchronization = result.synchronization
           // if(account.synchronization) {
           //   // @ts-ignore
           //   // account.synchronization.itemStatus = itemData.item.status
