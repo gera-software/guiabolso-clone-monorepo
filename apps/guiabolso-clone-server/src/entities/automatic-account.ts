@@ -8,6 +8,7 @@ export interface Accountsynchronization {
     createdAt: Date,
     syncStatus: ProviderSyncStatus,
     lastSyncAt: Date | null | undefined,
+    lastMergeAt?: Date
 }
 
 export interface AutomaticAccount extends Account {

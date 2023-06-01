@@ -32,8 +32,9 @@ describe("Automatic Credit Card Account entity", () => {
             const createdAt = new Date()
             const syncStatus: ProviderSyncStatus = 'UPDATED'
             const lastSyncAt = new Date()
+            const lastMergeAt = new Date()
 
-            const error = AutomaticCreditCardAccount.create({name, balance, imageUrl, user, institution, creditCardInfo, providerAccountId, providerItemId, createdAt, syncStatus, lastSyncAt}, new NubankCreditCardInvoiceStrategy() ).value as Error
+            const error = AutomaticCreditCardAccount.create({name, balance, imageUrl, user, institution, creditCardInfo, providerAccountId, providerItemId, createdAt, syncStatus, lastSyncAt, lastMergeAt}, new NubankCreditCardInvoiceStrategy() ).value as Error
             expect(error).toBeInstanceOf(InvalidNameError)
         })
 
@@ -66,8 +67,9 @@ describe("Automatic Credit Card Account entity", () => {
             const createdAt = new Date()
             const syncStatus: ProviderSyncStatus = 'UPDATED'
             const lastSyncAt = new Date()
+            const lastMergeAt = new Date()
 
-            const error = AutomaticCreditCardAccount.create({name, balance, imageUrl, user, institution, creditCardInfo, providerAccountId, providerItemId, createdAt, syncStatus, lastSyncAt}, new NubankCreditCardInvoiceStrategy() ).value as Error
+            const error = AutomaticCreditCardAccount.create({name, balance, imageUrl, user, institution, creditCardInfo, providerAccountId, providerItemId, createdAt, syncStatus, lastSyncAt, lastMergeAt}, new NubankCreditCardInvoiceStrategy() ).value as Error
             expect(error).toBeInstanceOf(InvalidBalanceError)
 
         })
@@ -101,8 +103,9 @@ describe("Automatic Credit Card Account entity", () => {
             const createdAt = new Date()
             const syncStatus: ProviderSyncStatus = 'UPDATED'
             const lastSyncAt = new Date()
+            const lastMergeAt = new Date()
 
-            const error = AutomaticCreditCardAccount.create({name, balance, imageUrl, user, institution, creditCardInfo, providerAccountId, providerItemId, createdAt, syncStatus, lastSyncAt}, new NubankCreditCardInvoiceStrategy() ).value as Error
+            const error = AutomaticCreditCardAccount.create({name, balance, imageUrl, user, institution, creditCardInfo, providerAccountId, providerItemId, createdAt, syncStatus, lastSyncAt, lastMergeAt}, new NubankCreditCardInvoiceStrategy() ).value as Error
             expect(error).toBeInstanceOf(InvalidCreditCardError)
             expect(error.message).toBe('Invalid credit card params: brand, closeDay, dueDay, creditLimit, availableCreditLimit')
 
@@ -130,8 +133,9 @@ describe("Automatic Credit Card Account entity", () => {
             const createdAt = new Date()
             const syncStatus: ProviderSyncStatus = 'UPDATED'
             const lastSyncAt = new Date()
+            const lastMergeAt = new Date()
 
-            const error = AutomaticCreditCardAccount.create({name, balance, imageUrl, user, institution, creditCardInfo, providerAccountId, providerItemId, createdAt, syncStatus, lastSyncAt}, new NubankCreditCardInvoiceStrategy() ).value as Error
+            const error = AutomaticCreditCardAccount.create({name, balance, imageUrl, user, institution, creditCardInfo, providerAccountId, providerItemId, createdAt, syncStatus, lastSyncAt, lastMergeAt}, new NubankCreditCardInvoiceStrategy() ).value as Error
             expect(error).toBeInstanceOf(InvalidInstitutionError)
 
         })
@@ -165,8 +169,9 @@ describe("Automatic Credit Card Account entity", () => {
             const createdAt = new Date()
             const syncStatus: ProviderSyncStatus = 'UPDATED'
             const lastSyncAt = new Date()
+            const lastMergeAt = new Date()
 
-            const error = AutomaticCreditCardAccount.create({name, balance, imageUrl, user, institution, creditCardInfo, providerAccountId, providerItemId, createdAt, syncStatus, lastSyncAt}, new NubankCreditCardInvoiceStrategy() ).value as Error
+            const error = AutomaticCreditCardAccount.create({name, balance, imageUrl, user, institution, creditCardInfo, providerAccountId, providerItemId, createdAt, syncStatus, lastSyncAt, lastMergeAt}, new NubankCreditCardInvoiceStrategy() ).value as Error
             expect(error).toBeInstanceOf(InvalidAccountError)
             expect(error.message).toBe('providerAccountId is required')
 
@@ -201,8 +206,9 @@ describe("Automatic Credit Card Account entity", () => {
             const createdAt = new Date()
             const syncStatus: ProviderSyncStatus = 'UPDATED'
             const lastSyncAt = new Date()
+            const lastMergeAt = new Date()
 
-            const error = AutomaticCreditCardAccount.create({name, balance, imageUrl, user, institution, creditCardInfo, providerAccountId, providerItemId, createdAt, syncStatus, lastSyncAt}, new NubankCreditCardInvoiceStrategy() ).value as Error
+            const error = AutomaticCreditCardAccount.create({name, balance, imageUrl, user, institution, creditCardInfo, providerAccountId, providerItemId, createdAt, syncStatus, lastSyncAt, lastMergeAt}, new NubankCreditCardInvoiceStrategy() ).value as Error
             expect(error).toBeInstanceOf(InvalidAccountError)
             expect(error.message).toBe('providerItemId is required')
 
@@ -237,8 +243,9 @@ describe("Automatic Credit Card Account entity", () => {
             const createdAt: Date = null
             const syncStatus: ProviderSyncStatus = 'UPDATED'
             const lastSyncAt = new Date()
+            const lastMergeAt = new Date()
 
-            const error = AutomaticCreditCardAccount.create({name, balance, imageUrl, user, institution, creditCardInfo, providerAccountId, providerItemId, createdAt, syncStatus, lastSyncAt}, new NubankCreditCardInvoiceStrategy() ).value as Error
+            const error = AutomaticCreditCardAccount.create({name, balance, imageUrl, user, institution, creditCardInfo, providerAccountId, providerItemId, createdAt, syncStatus, lastSyncAt, lastMergeAt}, new NubankCreditCardInvoiceStrategy() ).value as Error
             expect(error).toBeInstanceOf(InvalidAccountError)
             expect(error.message).toBe('createdAt is required')
 
@@ -273,8 +280,9 @@ describe("Automatic Credit Card Account entity", () => {
             const createdAt: Date = new Date()
             const syncStatus: ProviderSyncStatus = null
             const lastSyncAt = new Date()
+            const lastMergeAt = new Date()
 
-            const error = AutomaticCreditCardAccount.create({name, balance, imageUrl, user, institution, creditCardInfo, providerAccountId, providerItemId, createdAt, syncStatus, lastSyncAt}, new NubankCreditCardInvoiceStrategy() ).value as Error
+            const error = AutomaticCreditCardAccount.create({name, balance, imageUrl, user, institution, creditCardInfo, providerAccountId, providerItemId, createdAt, syncStatus, lastSyncAt, lastMergeAt}, new NubankCreditCardInvoiceStrategy() ).value as Error
             expect(error).toBeInstanceOf(InvalidAccountError)
             expect(error.message).toBe('syncStatus is required')
 
@@ -309,8 +317,9 @@ describe("Automatic Credit Card Account entity", () => {
             const createdAt = new Date()
             const syncStatus: ProviderSyncStatus = 'UPDATED'
             const lastSyncAt = new Date()
+            const lastMergeAt = new Date()
     
-            const account = AutomaticCreditCardAccount.create({name, balance, imageUrl, user, institution, creditCardInfo, providerAccountId, providerItemId, createdAt, syncStatus, lastSyncAt}, new NubankCreditCardInvoiceStrategy() ).value as AutomaticCreditCardAccount
+            const account = AutomaticCreditCardAccount.create({name, balance, imageUrl, user, institution, creditCardInfo, providerAccountId, providerItemId, createdAt, syncStatus, lastSyncAt, lastMergeAt}, new NubankCreditCardInvoiceStrategy() ).value as AutomaticCreditCardAccount
             expect(account.type).toBe('CREDIT_CARD')
             expect(account.syncType).toBe('AUTOMATIC')
             expect(account.name).toBe(name)
@@ -329,6 +338,7 @@ describe("Automatic Credit Card Account entity", () => {
             expect(account.synchronization.createdAt).toEqual(createdAt)
             expect(account.synchronization.syncStatus).toEqual(syncStatus)
             expect(account.synchronization.lastSyncAt).toEqual(lastSyncAt)
+            expect(account.synchronization.lastMergeAt).toEqual(lastMergeAt)
 
         })
     })
@@ -365,8 +375,9 @@ describe("Automatic Credit Card Account entity", () => {
         const createdAt = new Date()
         const syncStatus: ProviderSyncStatus = 'UPDATED'
         const lastSyncAt = new Date()
+        const lastMergeAt = new Date()
 
-        const account = AutomaticCreditCardAccount.create({name, balance, imageUrl, user, institution, creditCardInfo, providerAccountId, providerItemId, createdAt, syncStatus, lastSyncAt}, new NubankCreditCardInvoiceStrategy() ).value as AutomaticCreditCardAccount
+        const account = AutomaticCreditCardAccount.create({name, balance, imageUrl, user, institution, creditCardInfo, providerAccountId, providerItemId, createdAt, syncStatus, lastSyncAt, lastMergeAt}, new NubankCreditCardInvoiceStrategy() ).value as AutomaticCreditCardAccount
         const transactionDate = new Date('2023-10-24')
         const { invoiceDueDate, invoiceClosingDate } = account.calculateInvoiceDatesFromTransaction(transactionDate)
         expect(invoiceDueDate).toBeInstanceOf(Date)

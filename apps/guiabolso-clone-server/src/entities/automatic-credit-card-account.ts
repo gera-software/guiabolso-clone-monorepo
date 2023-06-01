@@ -18,7 +18,7 @@ export class AutomaticCreditCardAccount implements AutomaticAccount {
 
     private readonly creditCardInvoiceStrategy: CreditCardInvoiceStrategy
 
-    private constructor(account: {name: string, balance: Amount, imageUrl?: string, user: User, institution?: Institution, creditCardInfo: CreditCardInfo, providerAccountId: string, providerItemId: string, createdAt: Date, syncStatus: string, lastSyncAt?: Date }, creditCardInvoiceStrategy: CreditCardInvoiceStrategy) {
+    private constructor(account: {name: string, balance: Amount, imageUrl?: string, user: User, institution?: Institution, creditCardInfo: CreditCardInfo, providerAccountId: string, providerItemId: string, createdAt: Date, syncStatus: string, lastSyncAt?: Date, lastMergeAt?: Date }, creditCardInvoiceStrategy: CreditCardInvoiceStrategy) {
         this.name = account.name
         this.balance = account.balance
         this.imageUrl = account.imageUrl
@@ -31,13 +31,14 @@ export class AutomaticCreditCardAccount implements AutomaticAccount {
             createdAt: account.createdAt,
             syncStatus: account.syncStatus as ProviderSyncStatus,
             lastSyncAt: account.lastSyncAt,
+            lastMergeAt: account.lastMergeAt,
         }
 
         this.creditCardInvoiceStrategy = creditCardInvoiceStrategy
     }
 
-    public static create(account: { name: string, balance: number, imageUrl?: string, user: User, institution?: Institution, creditCardInfo: CreditCardInfoData, providerAccountId: string, providerItemId: string, createdAt: Date, syncStatus: string, lastSyncAt?: Date}, creditCardInvoiceStrategy: CreditCardInvoiceStrategy): Either<InvalidNameError | InvalidBalanceError | InvalidCreditCardError | InvalidInstitutionError | InvalidAccountError, AutomaticCreditCardAccount> {
-        const { name, balance, imageUrl, user, institution, creditCardInfo, providerAccountId, providerItemId, createdAt, syncStatus, lastSyncAt} = account
+    public static create(account: { name: string, balance: number, imageUrl?: string, user: User, institution?: Institution, creditCardInfo: CreditCardInfoData, providerAccountId: string, providerItemId: string, createdAt: Date, syncStatus: string, lastSyncAt?: Date, lastMergeAt?: Date}, creditCardInvoiceStrategy: CreditCardInvoiceStrategy): Either<InvalidNameError | InvalidBalanceError | InvalidCreditCardError | InvalidInstitutionError | InvalidAccountError, AutomaticCreditCardAccount> {
+        const { name, balance, imageUrl, user, institution, creditCardInfo, providerAccountId, providerItemId, createdAt, syncStatus, lastSyncAt, lastMergeAt} = account
         
         if(!name) {
             return left(new InvalidNameError())
@@ -77,7 +78,7 @@ export class AutomaticCreditCardAccount implements AutomaticAccount {
             return left(new InvalidAccountError("syncStatus is required"))
         }
 
-        return right(new AutomaticCreditCardAccount({name, balance: amount, imageUrl, user, institution, creditCardInfo: creditCard, providerAccountId, providerItemId, createdAt, syncStatus, lastSyncAt}, creditCardInvoiceStrategy))
+        return right(new AutomaticCreditCardAccount({name, balance: amount, imageUrl, user, institution, creditCardInfo: creditCard, providerAccountId, providerItemId, createdAt, syncStatus, lastSyncAt, lastMergeAt}, creditCardInvoiceStrategy))
 
     }
 
