@@ -1,4 +1,4 @@
-import { InvalidTransactionError } from "@/entities/errors"
+import { InvalidAccountError, InvalidTransactionError } from "@/entities/errors"
 import { AddManualTransaction } from "@/usecases/add-manual-transaction"
 import { AddManualTransactionToBank } from "@/usecases/add-manual-transaction-to-bank"
 import { AddManualTransactionToCreditCard } from "@/usecases/add-manual-transaction-to-credit-card"
@@ -139,6 +139,43 @@ describe('Add manual transaction to account use case', () => {
 
             const response = (await sut.perform(transactionRequest)).value as Error
             expect(response).toBeInstanceOf(UnregisteredUserError)
+
+        })
+
+        test('should not add transaction if account is not of sync type MANUAL', async () => {
+            bankAccountData = {
+                id: bankAccountId,
+                type: bankAccountType,
+                syncType: 'AUTOMATIC',
+                name: 'valid bank account',
+                balance,
+                imageUrl,
+                userId,
+            }
+
+            const transactionRequest: TransactionRequest = {
+                accountId: bankAccountId,
+                categoryId,
+                amount,
+                description,
+                date,
+                comment,
+                ignored,
+            }
+
+            const userRepository = new InMemoryUserRepository([])
+            const accountRepository = new InMemoryAccountRepository([walletAccountData, bankAccountData, creditCardAccountData])
+            const categoryRepository = new InMemoryCategoryRepository([categoryData])
+            const transactionRepository = new InMemoryTransactionRepository([])
+            const invoiceRepository = new InMemoryCreditCardInvoiceRepository([])
+            const addManualTransactionToWallet = new AddManualTransactionToWallet(accountRepository, transactionRepository)
+            const addManualTransactionToBank = new AddManualTransactionToBank(accountRepository, transactionRepository)
+            const addManualTransactionToCreditCard = new AddManualTransactionToCreditCard(accountRepository, transactionRepository, invoiceRepository)
+            const sut = new AddManualTransaction(userRepository, accountRepository, categoryRepository, addManualTransactionToWallet, addManualTransactionToBank, addManualTransactionToCreditCard)
+
+            const response = (await sut.perform(transactionRequest)).value as Error
+            expect(response).toBeInstanceOf(InvalidAccountError)
+            expect(response.message).toBe('Operação não permitida')
 
         })
 

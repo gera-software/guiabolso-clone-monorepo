@@ -2,6 +2,7 @@ import { CategoryData, CategoryRepository, TransactionRequest, UpdateAccountRepo
 import { left } from "@/shared";
 import { UnregisteredAccountError, UnregisteredUserError, UnregisteredCategoryError } from "@/usecases/errors"
 import { TransactionToAddData } from "@/usecases/add-manual-transaction/ports";
+import { InvalidAccountError } from "@/entities/errors";
 
 export class AddManualTransaction implements UseCase {
     private readonly accountRepo: UpdateAccountRepository
@@ -28,6 +29,9 @@ export class AddManualTransaction implements UseCase {
         const foundAccountData = await this.accountRepo.findById(request.accountId)
         if(!foundAccountData) {
             return left(new UnregisteredAccountError())
+        }
+        if(foundAccountData.syncType != 'MANUAL') {
+            return left(new InvalidAccountError('Operação não permitida'))
         }
 
         const foundUserData = await this.userRepo.findUserById(foundAccountData.userId)
