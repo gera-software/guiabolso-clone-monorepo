@@ -34,11 +34,13 @@ describe('Sync automatic bank account use case', () => {
 
     const syncStatus = 'UPDATED'
     const lastSyncAt = new Date()
+    const lastMergeAt = new Date()
     const synchronization = {
         providerItemId: 'valid-provider-item-id',
         createdAt: new Date(),
         syncStatus,
         lastSyncAt,
+        lastMergeAt,
     }
     
     let bankAccountData: BankAccountData
@@ -132,6 +134,7 @@ describe('Sync automatic bank account use case', () => {
 
             bankAccountData.synchronization.syncStatus = 'OUTDATED'
             bankAccountData.synchronization.lastSyncAt = null
+            bankAccountData.synchronization.lastMergeAt = null
     
             const dataProvider = new InMemoryPluggyDataProvider({accounts: [ providerAccountData1 ]})
             const accountRepository = new InMemoryAccountRepository([bankAccountData])
@@ -146,6 +149,7 @@ describe('Sync automatic bank account use case', () => {
             expect(updatedAccount.balance).toBe(providerAccountData1.balance)
             expect(updatedAccount.synchronization.syncStatus).toBe(providerAccountData1.synchronization.syncStatus)
             expect(updatedAccount.synchronization.lastSyncAt).toBe(providerAccountData1.synchronization.lastSyncAt)
+            expect(updatedAccount.synchronization.lastMergeAt).toBeInstanceOf(Date)
         })
 
         test('OUTDATED: should update synchronization status', async () => {
@@ -176,6 +180,8 @@ describe('Sync automatic bank account use case', () => {
 
             bankAccountData.synchronization.syncStatus = 'UPDATED'
             bankAccountData.synchronization.lastSyncAt = null
+            bankAccountData.synchronization.lastMergeAt = new Date()
+
     
             const dataProvider = new InMemoryPluggyDataProvider({accounts: [ providerAccountData1 ]})
             const accountRepository = new InMemoryAccountRepository([bankAccountData])
@@ -188,6 +194,7 @@ describe('Sync automatic bank account use case', () => {
             expect(updatedAccount.balance).toBe(balance)
             expect(updatedAccount.synchronization.syncStatus).toBe(providerAccountData1.synchronization.syncStatus)
             expect(updatedAccount.synchronization.lastSyncAt).toBe(bankAccountData.synchronization.lastSyncAt)
+            expect(updatedAccount.synchronization.lastMergeAt).toBe(bankAccountData.synchronization.lastMergeAt)
         })
 
         test('UPDATING: should update synchronization status', async () => {
@@ -218,6 +225,7 @@ describe('Sync automatic bank account use case', () => {
 
             bankAccountData.synchronization.syncStatus = 'UPDATED'
             bankAccountData.synchronization.lastSyncAt = null
+            bankAccountData.synchronization.lastMergeAt = new Date()
     
             const dataProvider = new InMemoryPluggyDataProvider({accounts: [ providerAccountData1 ]})
             const accountRepository = new InMemoryAccountRepository([bankAccountData])
@@ -230,6 +238,7 @@ describe('Sync automatic bank account use case', () => {
             expect(updatedAccount.balance).toBe(balance)
             expect(updatedAccount.synchronization.syncStatus).toBe(providerAccountData1.synchronization.syncStatus)
             expect(updatedAccount.synchronization.lastSyncAt).toBe(bankAccountData.synchronization.lastSyncAt)
+            expect(updatedAccount.synchronization.lastMergeAt).toBe(bankAccountData.synchronization.lastMergeAt)
         })
 
         test('LOGIN_ERROR: should update synchronization status', async () => {
@@ -260,6 +269,7 @@ describe('Sync automatic bank account use case', () => {
 
             bankAccountData.synchronization.syncStatus = 'UPDATED'
             bankAccountData.synchronization.lastSyncAt = null
+            bankAccountData.synchronization.lastMergeAt = new Date()
     
             const dataProvider = new InMemoryPluggyDataProvider({accounts: [ providerAccountData1 ]})
             const accountRepository = new InMemoryAccountRepository([bankAccountData])
@@ -271,7 +281,7 @@ describe('Sync automatic bank account use case', () => {
             const updatedAccount = await accountRepository.findById(accountId)
             expect(updatedAccount.balance).toBe(balance)
             expect(updatedAccount.synchronization.syncStatus).toBe(providerAccountData1.synchronization.syncStatus)
-            expect(updatedAccount.synchronization.lastSyncAt).toBe(bankAccountData.synchronization.lastSyncAt)
+            expect(updatedAccount.synchronization.lastMergeAt).toBe(bankAccountData.synchronization.lastMergeAt)
         })
 
         test('WAITING_USER_INPUT: should update synchronization status', async () => {
@@ -302,6 +312,8 @@ describe('Sync automatic bank account use case', () => {
 
             bankAccountData.synchronization.syncStatus = 'UPDATED'
             bankAccountData.synchronization.lastSyncAt = null
+            bankAccountData.synchronization.lastMergeAt = new Date()
+
     
             const dataProvider = new InMemoryPluggyDataProvider({accounts: [ providerAccountData1 ]})
             const accountRepository = new InMemoryAccountRepository([bankAccountData])
@@ -314,6 +326,7 @@ describe('Sync automatic bank account use case', () => {
             expect(updatedAccount.balance).toBe(balance)
             expect(updatedAccount.synchronization.syncStatus).toBe(providerAccountData1.synchronization.syncStatus)
             expect(updatedAccount.synchronization.lastSyncAt).toBe(bankAccountData.synchronization.lastSyncAt)
+            expect(updatedAccount.synchronization.lastMergeAt).toBe(bankAccountData.synchronization.lastMergeAt)
         })
     })
 

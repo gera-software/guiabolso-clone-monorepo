@@ -34,6 +34,7 @@ describe('Sync automatic account use case', () => {
         createdAt: new Date(),
         syncStatus: 'UPDATED',
         lastSyncAt: new Date(),
+        lastMergeAt: new Date(),
     }
     
     const creditAccountId = 'ac1'
@@ -46,6 +47,7 @@ describe('Sync automatic account use case', () => {
         createdAt: new Date(),
         syncStatus: 'UPDATED',
         lastSyncAt: new Date(),
+        lastMergeAt: new Date(),
     }
 
 
@@ -159,6 +161,7 @@ describe('Sync automatic account use case', () => {
             const response = (await sut.perform(bankAccountId)).value as BankAccountData
             expect(response.balance).toBe(providerAccountData1.balance)
             expect(response.synchronization.lastSyncAt).toBeInstanceOf(Date)
+            expect(response.synchronization.lastMergeAt).toBeInstanceOf(Date)
         })
     })
 
@@ -239,8 +242,9 @@ describe('Sync automatic account use case', () => {
     
             const updatedAccount = await accountRepository.findById(creditAccountId)
             expect(updatedAccount.balance).toBe(providerAccountData1.balance)
-            expect(updatedAccount.synchronization.lastSyncAt).toBeInstanceOf(Date)
             expect(updatedAccount.creditCardInfo).toEqual(providerAccountData1.creditCardInfo)
+            expect(updatedAccount.synchronization.lastSyncAt).toBeInstanceOf(Date)
+            expect(updatedAccount.synchronization.lastMergeAt).toBeInstanceOf(Date)
         })
     })
 

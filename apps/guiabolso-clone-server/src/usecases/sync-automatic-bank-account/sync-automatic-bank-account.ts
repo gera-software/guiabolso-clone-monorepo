@@ -44,6 +44,7 @@ export class SyncAutomaticBankAccount implements UseCase {
         const synchronization = {
             syncStatus: accountDataToSync.synchronization.syncStatus,
             lastSyncAt: accountDataToSync.synchronization.lastSyncAt,
+            lastMergeAt: null as Date,
         }
 
         if(accountDataToSync.synchronization.syncStatus == 'UPDATED') {
@@ -83,8 +84,9 @@ export class SyncAutomaticBankAccount implements UseCase {
             await this.transactionRepo.mergeTransactions(transactionsData)
 
 
-
+            synchronization.lastMergeAt = new Date()
         }
+
         await this.accountRepo.updateSynchronizationStatus(accountId, synchronization)
         
         const updatedAccount = await this.accountRepo.findById(accountId)
