@@ -1,5 +1,11 @@
 # @gera-software/guiabolso-clone-server
 
+## 1.14.0
+
+### Minor Changes
+
+- Primeira sincronização completa de account
+
 ## 1.13.0
 
 ### Minor Changes
