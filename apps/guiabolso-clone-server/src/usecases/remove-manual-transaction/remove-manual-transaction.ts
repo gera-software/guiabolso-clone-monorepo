@@ -1,6 +1,7 @@
 import { Either, left } from "@/shared";
 import { TransactionData, TransactionRepository, UseCase } from "@/usecases/ports";
 import { UnregisteredTransactionError } from "@/usecases/errors";
+import { InvalidAccountError } from "@/entities/errors";
 
 export class RemoveManualTransaction implements UseCase {
     private readonly transactionRepo: TransactionRepository
@@ -16,11 +17,15 @@ export class RemoveManualTransaction implements UseCase {
         this.removeManualTransactionFromCreditCard = removeManualTransactionFromCreditCard
     }
     
-    async perform(id: string): Promise<Either<UnregisteredTransactionError, TransactionData>> {
+    async perform(id: string): Promise<Either<InvalidAccountError | UnregisteredTransactionError, TransactionData>> {
         const transactionData = await this.transactionRepo.findById(id)
 
         if(!transactionData || transactionData._isDeleted) {
             return left(new UnregisteredTransactionError())
+        }
+
+        if(transactionData.syncType != 'MANUAL') {
+            return left(new InvalidAccountError('Operação não permitida'))
         }
 
         switch(transactionData.accountType) {

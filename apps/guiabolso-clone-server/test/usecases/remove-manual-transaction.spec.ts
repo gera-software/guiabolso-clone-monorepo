@@ -1,3 +1,4 @@
+import { InvalidAccountError } from "@/entities/errors"
 import { UnregisteredTransactionError } from "@/usecases/errors"
 import { BankAccountData, CategoryData, CreditCardAccountData, CreditCardInvoiceData, TransactionData, UserData, WalletAccountData } from "@/usecases/ports"
 import { RemoveManualTransaction } from "@/usecases/remove-manual-transaction"
@@ -62,7 +63,7 @@ describe('Remove manual transaction from account use case', () => {
             id: bankAccountId,
             type: bankAccountType,
             syncType,
-            name: 'valid wallet account',
+            name: 'valid bank account',
             balance,
             imageUrl,
             userId,
@@ -131,6 +132,47 @@ describe('Remove manual transaction from account use case', () => {
             const sut = new RemoveManualTransaction(transactionRepository, removeManualTransactionFromWallet, removeManualTransactionFromBank, removeManualTransactionFromCreditCard)
             const result = (await sut.perform(id)).value as Error
             expect(result).toBeInstanceOf(UnregisteredTransactionError)
+        })
+
+        test('should not remove if account is not of sync type MANUAL', async () => {
+            bankAccountData = {
+                id: bankAccountId,
+                type: bankAccountType,
+                syncType: 'AUTOMATIC',
+                name: 'valid bank account',
+                balance,
+                imageUrl,
+                userId,
+            }
+
+            const id = 'valid id'
+            const transactionData: TransactionData = {
+                id, 
+                accountId: bankAccountId,
+                accountType: bankAccountType,
+                syncType: 'AUTOMATIC',
+                userId,
+                amount: -5678,
+                date,
+                type: 'EXPENSE',
+                description,
+                comment,
+                ignored,
+                _isDeleted: false,
+            }
+
+            const userRepository = new InMemoryUserRepository([userData])
+            const accountRepository = new InMemoryAccountRepository([walletAccountData, bankAccountData, creditCardAccountData])
+            const transactionRepository = new InMemoryTransactionRepository([transactionData])
+            const invoiceRepository = new InMemoryCreditCardInvoiceRepository([])
+            const removeManualTransactionFromWallet = new RemoveManualTransactionFromWallet(transactionRepository, accountRepository, userRepository)
+            const removeManualTransactionFromBank = new RemoveManualTransactionFromBank(transactionRepository, accountRepository, userRepository)
+            const removeManualTransactionFromCreditCard = new RemoveManualTransactionFromCreditCard(transactionRepository, accountRepository, userRepository, invoiceRepository)
+            
+            const sut = new RemoveManualTransaction(transactionRepository, removeManualTransactionFromWallet, removeManualTransactionFromBank, removeManualTransactionFromCreditCard)
+            const result = (await sut.perform(id)).value as Error
+            expect(result).toBeInstanceOf(InvalidAccountError)
+            expect(result.message).toBe('Operação não permitida')
         })
     })
 

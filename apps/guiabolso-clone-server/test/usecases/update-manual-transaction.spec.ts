@@ -201,7 +201,7 @@ describe('Update manual transaction from account use case', () => {
         expect(response).toBeInstanceOf(UnregisteredAccountError)
     })
 
-    test('should not update if account is not of sync type AUTOMATIC', async () => {
+    test('should not update if account is not of sync type MANUAL', async () => {
         bankAccountData = {
             id: bankAccountId,
             type: bankAccountType,
