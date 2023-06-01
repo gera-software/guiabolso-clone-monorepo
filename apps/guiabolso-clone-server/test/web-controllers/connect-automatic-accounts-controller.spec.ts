@@ -117,7 +117,7 @@ describe('Connect automatic accounts web controller', () => {
         const createdAt = new Date()
         const syncStatus = 'UPDATED'
         const lastSyncAt = new Date()
-        const lastMergeAt = new Date()
+        const lastMergeAt = null as Date
 
         const creditCardInfo: CreditCardInfoData = {
             brand: "master card",

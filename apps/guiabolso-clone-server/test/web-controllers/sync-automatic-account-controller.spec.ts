@@ -36,7 +36,7 @@ describe('Sync automatic account web controller', () => {
         createdAt: new Date(),
         syncStatus: 'UPDATED',
         lastSyncAt: new Date(),
-        lastMergeAt: new Date(),
+        lastMergeAt: null as Date,
     }
     
     const creditAccountId = 'ac1'
@@ -49,7 +49,7 @@ describe('Sync automatic account web controller', () => {
         createdAt: new Date(),
         syncStatus: 'UPDATED',
         lastSyncAt: new Date(),
-        lastMergeAt: new Date(),
+        lastMergeAt: null as Date,
     }
 
 
@@ -219,6 +219,7 @@ describe('Sync automatic account web controller', () => {
             const response: HttpResponse = await sut.handle(validRequest)
             expect(response.statusCode).toEqual(200)
             expect(response.body.synchronization.lastSyncAt).toBeInstanceOf(Date)
+            expect(response.body.synchronization.mergeStatus).toBe('MERGED')
             expect(response.body.synchronization.lastMergeAt).toBeInstanceOf(Date)
             expect(response.body.balance).toBe(providerAccountData1.balance)
 
@@ -296,6 +297,7 @@ describe('Sync automatic account web controller', () => {
             const response: HttpResponse = await sut.handle(validRequest)
             expect(response.statusCode).toEqual(200)
             expect(response.body.synchronization.lastSyncAt).toBeInstanceOf(Date)
+            expect(response.body.synchronization.mergeStatus).toBe('MERGED')
             expect(response.body.synchronization.lastMergeAt).toBeInstanceOf(Date)
             expect(response.body.balance).toBe(providerAccountData1.balance)
 
