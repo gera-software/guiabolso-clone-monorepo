@@ -33,6 +33,7 @@ describe('Create automatic credit card account use case', () => {
         const createdAt = new Date()
         const syncStatus: ProviderSyncStatus = 'UPDATED'
         const lastSyncAt = new Date()
+        const lastMergeAt = new Date()
 
         const createAutomaticCreditCardRequest: CreditCardAccountData = {
             type,
@@ -49,6 +50,7 @@ describe('Create automatic credit card account use case', () => {
                 createdAt,
                 syncStatus,
                 lastSyncAt,
+                lastMergeAt,
             },
         }
 
@@ -87,6 +89,7 @@ describe('Create automatic credit card account use case', () => {
         const createdAt = new Date()
         const syncStatus: ProviderSyncStatus = 'UPDATED'
         const lastSyncAt = new Date()
+        const lastMergeAt = new Date()
 
         const createAutomaticCreditCardRequest: CreditCardAccountData = {
             type,
@@ -103,6 +106,7 @@ describe('Create automatic credit card account use case', () => {
                 createdAt,
                 syncStatus,
                 lastSyncAt,
+                lastMergeAt,
             },
         }
 
@@ -141,6 +145,7 @@ describe('Create automatic credit card account use case', () => {
         const createdAt = new Date()
         const syncStatus: ProviderSyncStatus = 'UPDATED'
         const lastSyncAt = new Date()
+        const lastMergeAt = new Date()
 
         const createAutomaticCreditCardRequest: CreditCardAccountData = {
             type,
@@ -157,6 +162,7 @@ describe('Create automatic credit card account use case', () => {
                 createdAt,
                 syncStatus,
                 lastSyncAt,
+                lastMergeAt,
             },
         }
 
@@ -195,6 +201,7 @@ describe('Create automatic credit card account use case', () => {
         const createdAt = new Date()
         const syncStatus: ProviderSyncStatus = 'UPDATED'
         const lastSyncAt = new Date()
+        const lastMergeAt = new Date()
 
         const createAutomaticCreditCardRequest: CreditCardAccountData = {
             type,
@@ -211,6 +218,7 @@ describe('Create automatic credit card account use case', () => {
                 createdAt,
                 syncStatus,
                 lastSyncAt,
+                lastMergeAt,
             },
         }
 
@@ -249,6 +257,7 @@ describe('Create automatic credit card account use case', () => {
         const createdAt = new Date()
         const syncStatus: ProviderSyncStatus = 'UPDATED'
         const lastSyncAt = new Date()
+        const lastMergeAt = new Date()
 
         const createAutomaticCreditCardRequest: CreditCardAccountData = {
             type,
@@ -265,6 +274,7 @@ describe('Create automatic credit card account use case', () => {
                 createdAt,
                 syncStatus,
                 lastSyncAt,
+                lastMergeAt,
             },
         }
 
@@ -296,6 +306,7 @@ describe('Create automatic credit card account use case', () => {
         const createdAt = new Date()
         const syncStatus: ProviderSyncStatus = 'UPDATED'
         const lastSyncAt = new Date()
+        const lastMergeAt = new Date()
 
         const createAutomaticCreditCardRequest: CreditCardAccountData = {
             type,
@@ -312,6 +323,7 @@ describe('Create automatic credit card account use case', () => {
                 createdAt,
                 syncStatus,
                 lastSyncAt,
+                lastMergeAt,
             },
         }
 
@@ -350,6 +362,7 @@ describe('Create automatic credit card account use case', () => {
         const createdAt = new Date()
         const syncStatus: ProviderSyncStatus = 'UPDATED'
         const lastSyncAt = new Date()
+        const lastMergeAt = new Date()
 
         const createAutomaticCreditCardRequest: CreditCardAccountData = {
             type,
@@ -366,6 +379,7 @@ describe('Create automatic credit card account use case', () => {
                 createdAt,
                 syncStatus,
                 lastSyncAt,
+                lastMergeAt,
             },
         }
 
@@ -404,6 +418,7 @@ describe('Create automatic credit card account use case', () => {
         const createdAt = new Date()
         const syncStatus: ProviderSyncStatus = 'UPDATED'
         const lastSyncAt = new Date()
+        const lastMergeAt = new Date()
 
         const createAutomaticCreditCardRequest: CreditCardAccountData = {
             type,
@@ -420,6 +435,7 @@ describe('Create automatic credit card account use case', () => {
                 createdAt,
                 syncStatus,
                 lastSyncAt,
+                lastMergeAt,
             },
         }
 
@@ -458,6 +474,7 @@ describe('Create automatic credit card account use case', () => {
         const createdAt: Date = null
         const syncStatus: ProviderSyncStatus = 'UPDATED'
         const lastSyncAt = new Date()
+        const lastMergeAt = new Date()
 
         const createAutomaticCreditCardRequest: CreditCardAccountData = {
             type,
@@ -474,6 +491,7 @@ describe('Create automatic credit card account use case', () => {
                 createdAt,
                 syncStatus,
                 lastSyncAt,
+                lastMergeAt,
             },
         }
 
@@ -512,6 +530,7 @@ describe('Create automatic credit card account use case', () => {
         const createdAt = new Date()
         const syncStatus: ProviderSyncStatus = 'UPDATED'
         const lastSyncAt = new Date()
+        const lastMergeAt = new Date()
 
         const createAutomaticCreditCardRequest: CreditCardAccountData = {
             type,
@@ -528,6 +547,7 @@ describe('Create automatic credit card account use case', () => {
                 createdAt,
                 syncStatus,
                 lastSyncAt,
+                lastMergeAt,
             },
         }
 
@@ -539,6 +559,7 @@ describe('Create automatic credit card account use case', () => {
         expect(response.id).toBeTruthy()
         expect(response.syncType).toBe('AUTOMATIC')
         expect(response.type).toBe('CREDIT_CARD')
+        expect(response.synchronization).toEqual(createAutomaticCreditCardRequest.synchronization)
 
 
         const addedAccount = await accountRepository.exists(response.id)

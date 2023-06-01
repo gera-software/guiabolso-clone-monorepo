@@ -89,6 +89,7 @@ describe('Connect automatic accounts use case', () => {
         const createdAt = new Date()
         const syncStatus = 'UPDATED'
         const lastSyncAt = new Date()
+        const lastMergeAt = new Date()
 
         const creditCardInfo: CreditCardInfoData = {
             brand: "master card",
@@ -120,6 +121,7 @@ describe('Connect automatic accounts use case', () => {
                 createdAt,
                 syncStatus,
                 lastSyncAt,
+                // lastMergeAt,
             },
         }
 
@@ -146,6 +148,7 @@ describe('Connect automatic accounts use case', () => {
                 createdAt,
                 syncStatus,
                 lastSyncAt,
+                // lastMergeAt,
             },
         }
 
