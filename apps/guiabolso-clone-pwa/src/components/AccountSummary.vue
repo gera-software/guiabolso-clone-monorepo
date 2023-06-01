@@ -295,8 +295,8 @@ async function deleteAccount(id: string) {
 }
 
 .badge {
-  background: gray;
-  color: black;
+  background: red;
+  color: #fff;
   padding: 0px 10px;
   border-radius: 4px;
 }
