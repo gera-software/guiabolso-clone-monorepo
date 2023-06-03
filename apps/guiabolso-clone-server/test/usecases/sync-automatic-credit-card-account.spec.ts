@@ -36,7 +36,7 @@ describe('Sync automatic credit card account use case', () => {
     const lastSyncAt = new Date()
     const synchronization = {
         providerItemId: 'valid-provider-item-id',
-        createdAt: new Date(),
+        createdAt: new Date('2023-02-17'),
         syncStatus: 'UPDATED',
         lastSyncAt,
         lastMergeAt,
@@ -419,7 +419,7 @@ describe('Sync automatic credit card account use case', () => {
 
     describe('merge transactions', () => {
         
-        test('should insert all transactions from data provider and update invoices', async () => {
+        test('should insert transactions from data provider and update invoices (until 3 months prior creation date)', async () => {
             const providerAccountData1: CreditCardAccountData = {
                 id: null,
                 type: accountType,
@@ -446,7 +446,7 @@ describe('Sync automatic credit card account use case', () => {
                 providerAccountId,
                 synchronization: {
                     providerItemId: 'valid-provider-item-id',
-                    createdAt: new Date(),
+                    createdAt: new Date('2023-02-17'),
                     syncStatus: 'UPDATED',
                     lastSyncAt: null,
                 },
@@ -485,7 +485,11 @@ describe('Sync automatic credit card account use case', () => {
             const invoiceRepository = new InMemoryCreditCardInvoiceRepository([])
             const sut = new SyncAutomaticCreditCardAccount(accountRepository, userRepository, institutionRepository, transactionRepository, invoiceRepository, dataProvider)
 
+            const spy = jest.spyOn(dataProvider, 'getTransactionsByProviderAccountId');
+
+
             const response = (await sut.perform(accountId)).value as CreditCardAccountData
+            expect(spy).toBeCalledWith(creditCardAccountData.id, creditCardAccountData.type, { from: new Date('2022-11-01'), providerAccountId: creditCardAccountData.providerAccountId })
             expect(transactionRepository.data).toHaveLength(3)
             expect(transactionRepository.data[0]).toEqual({
                 id: '0',

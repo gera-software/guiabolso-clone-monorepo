@@ -152,7 +152,7 @@ export class PluggyDataProvider implements FinancialDataProvider {
                 }
                 const { results, page, totalPages, total } = await this.client.fetchTransactions(filter.providerAccountId, options)
                 buffer.push(...results)
-                console.log(`[Pluggy] Fetching transactions. total processado: ${buffer.length}, total estimado: ${total}, currentPage: ${page}/${totalPages}`)
+                console.log(`[Pluggy] Fetching transactions from ${filter.from.toISOString()}. total processado: ${buffer.length}, total estimado: ${total}, currentPage: ${page}/${totalPages}`)
                 
                 numeroTotalPages = totalPages
             }

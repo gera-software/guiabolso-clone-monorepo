@@ -52,9 +52,12 @@ export class SyncAutomaticBankAccount implements UseCase {
             await this.accountRepo.updateBalance(accountId, accountDataToSync.balance)
 
             // merge transactions
+            const fromDate = new Date(foundAccountData.synchronization.createdAt)
+            fromDate.setMonth(foundAccountData.synchronization.createdAt.getMonth() -3)
+            fromDate.setUTCDate(1)
             const transactionRequestsOrError = await this.financialDataProvider.getTransactionsByProviderAccountId(accountId, accountDataToSync.type as AccountType, {
                 providerAccountId: accountDataToSync.providerAccountId,
-                from: undefined
+                from: fromDate
             })
             if(transactionRequestsOrError.isLeft()) {
                 return left(transactionRequestsOrError.value)

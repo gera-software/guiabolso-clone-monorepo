@@ -38,7 +38,7 @@ describe('Sync automatic bank account use case', () => {
     const mergeStatus = 'MERGED'
     const synchronization = {
         providerItemId: 'valid-provider-item-id',
-        createdAt: new Date(),
+        createdAt: new Date('2023-02-17'),
         syncStatus,
         lastSyncAt,
         lastMergeAt,
@@ -60,6 +60,11 @@ describe('Sync automatic bank account use case', () => {
             synchronization,
         }
     })
+
+    afterEach(() => {
+        // restore the spy created with spyOn
+        jest.restoreAllMocks();
+    });
 
     test('should not sync if account does not exists', async () => {
         const accountId = 'invalid-bank-account-id'
@@ -343,7 +348,7 @@ describe('Sync automatic bank account use case', () => {
 
     describe('merge transactions', () => {
 
-        test('should insert all transactions from data provider', async () => {
+        test('should insert transactions from data provider (until 3 months prior creation date)', async () => {
             const providerAccountData1: BankAccountData = {
                 id: null,
                 type: accountType,
@@ -363,7 +368,7 @@ describe('Sync automatic bank account use case', () => {
                 providerAccountId,
                 synchronization: {
                     providerItemId: 'valid-provider-item-id',
-                    createdAt: new Date(),
+                    createdAt: new Date('2023-02-17'),
                     syncStatus: 'UPDATED',
                     lastSyncAt: null,
                 },
@@ -391,8 +396,11 @@ describe('Sync automatic bank account use case', () => {
             const transactionRepository = new InMemoryTransactionRepository([])
             const sut = new SyncAutomaticBankAccount(accountRepository, transactionRepository, dataProvider)
     
+            const spy = jest.spyOn(dataProvider, 'getTransactionsByProviderAccountId');
+
             const response = (await sut.perform(accountId)).value as BankAccountData
     
+            expect(spy).toBeCalledWith(bankAccountData.id, bankAccountData.type, { from: new Date('2022-11-01'), providerAccountId: bankAccountData.providerAccountId })
             expect(transactionRepository.data).toHaveLength(2)
             expect(transactionRepository.data[0]).toEqual({
                 id: '0',
