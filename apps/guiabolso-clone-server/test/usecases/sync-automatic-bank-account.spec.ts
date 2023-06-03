@@ -431,6 +431,45 @@ describe('Sync automatic bank account use case', () => {
                 providerId: transaction1.providerId,
             })
         })
+
+        test('should insert 0 transactions from data provider', async () => {
+            const providerAccountData1: BankAccountData = {
+                id: null,
+                type: accountType,
+                syncType,
+                name,
+                balance: balance + 1000,
+                imageUrl,
+                userId: null,
+                institution: {
+                    id: null,
+                    name: institution.name,
+                    type: institution.type,
+                    imageUrl: institution.imageUrl,
+                    primaryColor: institution.primaryColor,
+                    providerConnectorId: institution.providerConnectorId,
+                },
+                providerAccountId,
+                synchronization: {
+                    providerItemId: 'valid-provider-item-id',
+                    createdAt: new Date('2023-02-17'),
+                    syncStatus: 'UPDATED',
+                    lastSyncAt: null,
+                },
+            }
+    
+            const dataProvider = new InMemoryPluggyDataProvider({accounts: [ providerAccountData1 ], transactions: [] })
+            const accountRepository = new InMemoryAccountRepository([bankAccountData])
+            const transactionRepository = new InMemoryTransactionRepository([])
+            const sut = new SyncAutomaticBankAccount(accountRepository, transactionRepository, dataProvider)
+    
+            const spy = jest.spyOn(transactionRepository, 'mergeTransactions');
+
+            const response = (await sut.perform(accountId)).value as BankAccountData
+    
+            expect(spy).toBeCalledTimes(0)
+            expect(transactionRepository.data).toHaveLength(0)
+        })
     })
 
 })

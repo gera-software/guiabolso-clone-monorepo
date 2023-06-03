@@ -85,7 +85,9 @@ export class SyncAutomaticBankAccount implements UseCase {
                 providerId: transaction.providerId,
             }))
 
-            await this.transactionRepo.mergeTransactions(transactionsData)
+            if(transactionsData.length) {
+                await this.transactionRepo.mergeTransactions(transactionsData)
+            }
 
 
             synchronization.lastMergeAt = new Date()

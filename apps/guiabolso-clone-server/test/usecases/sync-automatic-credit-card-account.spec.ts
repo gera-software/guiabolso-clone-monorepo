@@ -554,6 +554,60 @@ describe('Sync automatic credit card account use case', () => {
                 _isDeleted: false,
             })
         })
+        
+        test('should insert 0 transactions from data provider', async () => {
+            const providerAccountData1: CreditCardAccountData = {
+                id: null,
+                type: accountType,
+                syncType,
+                name,
+                balance: balance - 1000,
+                imageUrl,
+                userId: null,
+                institution: {
+                    id: null,
+                    name: institution.name,
+                    type: institution.type,
+                    imageUrl: institution.imageUrl,
+                    primaryColor: institution.primaryColor,
+                    providerConnectorId: institution.providerConnectorId,
+                },
+                creditCardInfo: {
+                    brand: 'visa',
+                    creditLimit: 500000,
+                    availableCreditLimit: 25000,
+                    closeDay: 5,
+                    dueDay: 12
+                },
+                providerAccountId,
+                synchronization: {
+                    providerItemId: 'valid-provider-item-id',
+                    createdAt: new Date('2023-02-17'),
+                    syncStatus: 'UPDATED',
+                    lastSyncAt: null,
+                },
+            }
+
+            const dataProvider = new InMemoryPluggyDataProvider({accounts: [ providerAccountData1 ], transactions: []})
+            const accountRepository = new InMemoryAccountRepository([creditCardAccountData])
+            const institutionRepository = new InMemoryInstitutionRepository([institution])
+            const userRepository = new InMemoryUserRepository([userData])
+            const transactionRepository = new InMemoryTransactionRepository([])
+            const invoiceRepository = new InMemoryCreditCardInvoiceRepository([])
+            const sut = new SyncAutomaticCreditCardAccount(accountRepository, userRepository, institutionRepository, transactionRepository, invoiceRepository, dataProvider)
+
+            const spyMergeTransactions = jest.spyOn(transactionRepository, 'mergeTransactions');
+            const spyRecalculateInvoicesAmount = jest.spyOn(transactionRepository, 'recalculateInvoicesAmount');
+            const spyBatchUpdateAmount = jest.spyOn(invoiceRepository, 'batchUpdateAmount');
+
+            const response = (await sut.perform(accountId)).value as CreditCardAccountData
+            expect(spyMergeTransactions).toBeCalledTimes(0)
+            expect(spyRecalculateInvoicesAmount).toBeCalledTimes(0)
+            expect(spyBatchUpdateAmount).toBeCalledTimes(0)
+            expect(transactionRepository.data).toHaveLength(0)
+            expect(invoiceRepository.data).toHaveLength(0)
+         
+        })
 
     })
 })

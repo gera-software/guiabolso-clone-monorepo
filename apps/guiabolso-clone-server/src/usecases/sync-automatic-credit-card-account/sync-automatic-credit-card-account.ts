@@ -178,11 +178,13 @@ export class SyncAutomaticCreditCardAccount implements UseCase {
                 })
             }
             
-            await this.transactionRepo.mergeTransactions(transactionsData)
-
-            // recalculate invoices amounts
-            const invoicesAmount = await this.transactionRepo.recalculateInvoicesAmount(Object.values(Object.fromEntries(this.invoicesIdLookupTable)))
-            await this.invoiceRepo.batchUpdateAmount(invoicesAmount)
+            if(transactionsData.length) {
+                await this.transactionRepo.mergeTransactions(transactionsData)
+    
+                // recalculate invoices amounts
+                const invoicesAmount = await this.transactionRepo.recalculateInvoicesAmount(Object.values(Object.fromEntries(this.invoicesIdLookupTable)))
+                await this.invoiceRepo.batchUpdateAmount(invoicesAmount)
+            }
 
             synchronization.lastMergeAt = new Date()
             synchronization.mergeStatus = 'MERGED'
