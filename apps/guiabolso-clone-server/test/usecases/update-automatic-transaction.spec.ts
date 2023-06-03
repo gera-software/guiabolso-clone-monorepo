@@ -1,6 +1,6 @@
 import { InvalidAccountError } from "@/entities/errors"
 import { UnregisteredAccountError, UnregisteredCategoryError, UnregisteredTransactionError, UnregisteredUserError } from "@/usecases/errors"
-import { UserData, CategoryData, BankAccountData, CreditCardAccountData, MetaTransactionRequest, TransactionData } from "@/usecases/ports"
+import { UserData, CategoryData, BankAccountData, CreditCardAccountData, MetaTransactionRequest, TransactionData, CreditCardInvoiceData } from "@/usecases/ports"
 import { UpdateAutomaticTransaction } from "@/usecases/update-automatic-transaction"
 import { InMemoryUserRepository, InMemoryAccountRepository, InMemoryTransactionRepository, InMemoryCategoryRepository, InMemoryCreditCardInvoiceRepository } from "@test/doubles/repositories"
 
@@ -380,51 +380,181 @@ describe('Update automatic transaction from account use case', () => {
             id: "pc",
         }
 
-        const transactionData: TransactionData = {
-            id: transactionId,
-            accountId: creditCardAccountId,
-            accountType: creditCardAccountType,
-            syncType,
-            userId,
-            description: 'old description',
-            descriptionOriginal: 'original',
-            amount: -400,
-            date: new Date('2023-03-10'),
-            invoiceDate: new Date('2023-02-17'),
-            invoiceId: 'invoiceId1',
-            type: 'EXPENSE',
-            category: categoryData1,
+        const invoiceData1: CreditCardInvoiceData = {
+            id: 'invoiceId1',
+            closeDate: new Date('2023-03-03'),
+            dueDate: new Date('2023-03-10'),
+            amount: -20000,
+            userId: userData.id,
+            accountId: creditCardAccountData.id,
+            _isDeleted: false
         }
-        
+
+        const transactions = [
+            {
+                id: 'transaction0',
+                accountId: creditCardAccountId,
+                accountType: creditCardAccountType,
+                syncType,
+                userId,
+                description: 'description',
+                descriptionOriginal: 'pagamento de fatura recebido',
+                amount: 40000,
+                date: new Date('2023-03-10'),
+                invoiceDate: new Date('2023-02-17'),
+                invoiceId: invoiceData1.id,
+                type: 'INCOME',
+                category: categoryData1,
+            },
+            {
+                id: 'transaction1',
+                accountId: creditCardAccountId,
+                accountType: creditCardAccountType,
+                syncType,
+                userId,
+                description: 'description',
+                descriptionOriginal: 'compra',
+                amount: -40000,
+                date: new Date('2023-03-10'),
+                invoiceDate: new Date('2023-02-17'),
+                invoiceId: invoiceData1.id,
+                type: 'EXPENSE',
+                category: categoryData1,
+            },
+            {
+                id: 'transaction2',
+                accountId: creditCardAccountId,
+                accountType: creditCardAccountType,
+                syncType,
+                userId,
+                description: 'description',
+                descriptionOriginal: 'outra compra',
+                amount: -20000,
+                date: new Date('2023-03-10'),
+                invoiceDate: new Date('2023-02-17'),
+                invoiceId: invoiceData1.id,
+                type: 'EXPENSE',
+                category: categoryData1,
+            },
+        ]
+
         const transactionRequest: MetaTransactionRequest = {
-            id: transactionId,
+            id: 'transaction0',
             categoryId: pagamentoFaturaCategory.id,
-            description: 'new description',
-            comment: 'new comment',
-            ignored: true,
+            description: 'Pagamento de fatura',
         }
 
         const userRepository = new InMemoryUserRepository([userData])
         const accountRepository = new InMemoryAccountRepository([bankAccountData, creditCardAccountData])
-        const transactionRepository = new InMemoryTransactionRepository([transactionData])
+        const transactionRepository = new InMemoryTransactionRepository(transactions)
         const categoryRepository = new InMemoryCategoryRepository([categoryData, categoryData1, pagamentoFaturaCategory])
-        const invoiceRepository = new InMemoryCreditCardInvoiceRepository([])
+        const invoiceRepository = new InMemoryCreditCardInvoiceRepository([invoiceData1])
         const sut = new UpdateAutomaticTransaction(userRepository, accountRepository, transactionRepository, categoryRepository, invoiceRepository)
         const response = (await sut.perform(transactionRequest)).value as TransactionData
 
-        const updated = await transactionRepository.findById(transactionId)
-        expect(updated.description).toBe('new description')
-        expect(updated.comment).toEqual('new comment')
-        expect(updated.ignored).toEqual(true)
-        expect(updated.category.id).toBe(pagamentoFaturaCategory.id)
+        const updated = await transactionRepository.findById('transaction0')
 
-        expect(updated.amount).toBe(-400)
-        expect(updated.type).toBe('EXPENSE')
-        expect(updated.descriptionOriginal).toBe('original')
+        expect(updated.category.id).toBe(pagamentoFaturaCategory.id)
         expect(updated.date).toEqual(new Date('2023-03-10'))
         expect(updated.invoiceDate).toEqual(new Date('2023-02-17'))
         expect(updated.invoiceId).toBe('invoiceId1')
-        
+
+        const invoice = await invoiceRepository.findById('invoiceId1')
+        expect(invoice.amount).toBe(-60000)
+       
+    })
+
+    test('should update cateogry from "Pagamento de cartão" to another category and update invoice total amount', async () => {
+        const pagamentoFaturaCategory: CategoryData = {
+            name: "Pagamento de cartão",
+            group: "Lançamentos entre contas",
+            iconName: "BankPostingsCreditCard",
+            primaryColor: "#4C4C4C",
+            ignored: true,
+            id: "pc",
+        }
+
+        const invoiceData1: CreditCardInvoiceData = {
+            id: 'invoiceId1',
+            closeDate: new Date('2023-03-03'),
+            dueDate: new Date('2023-03-10'),
+            amount: -60000,
+            userId: userData.id,
+            accountId: creditCardAccountData.id,
+            _isDeleted: false
+        }
+
+        const transactions = [
+            {
+                id: 'transaction0',
+                accountId: creditCardAccountId,
+                accountType: creditCardAccountType,
+                syncType,
+                userId,
+                description: 'description',
+                descriptionOriginal: 'pagamento de fatura recebido',
+                amount: 40000,
+                date: new Date('2023-03-10'),
+                invoiceDate: new Date('2023-02-17'),
+                invoiceId: invoiceData1.id,
+                type: 'INCOME',
+                category: pagamentoFaturaCategory,
+            },
+            {
+                id: 'transaction1',
+                accountId: creditCardAccountId,
+                accountType: creditCardAccountType,
+                syncType,
+                userId,
+                description: 'description',
+                descriptionOriginal: 'compra',
+                amount: -40000,
+                date: new Date('2023-03-10'),
+                invoiceDate: new Date('2023-02-17'),
+                invoiceId: invoiceData1.id,
+                type: 'EXPENSE',
+                category: categoryData1,
+            },
+            {
+                id: 'transaction2',
+                accountId: creditCardAccountId,
+                accountType: creditCardAccountType,
+                syncType,
+                userId,
+                description: 'description',
+                descriptionOriginal: 'outra compra',
+                amount: -20000,
+                date: new Date('2023-03-10'),
+                invoiceDate: new Date('2023-02-17'),
+                invoiceId: invoiceData1.id,
+                type: 'EXPENSE',
+                category: categoryData1,
+            },
+        ]
+
+        const transactionRequest: MetaTransactionRequest = {
+            id: 'transaction0',
+            categoryId: categoryData1.id,
+            description: 'não é Pagamento de fatura',
+        }
+
+        const userRepository = new InMemoryUserRepository([userData])
+        const accountRepository = new InMemoryAccountRepository([bankAccountData, creditCardAccountData])
+        const transactionRepository = new InMemoryTransactionRepository(transactions)
+        const categoryRepository = new InMemoryCategoryRepository([categoryData, categoryData1, pagamentoFaturaCategory])
+        const invoiceRepository = new InMemoryCreditCardInvoiceRepository([invoiceData1])
+        const sut = new UpdateAutomaticTransaction(userRepository, accountRepository, transactionRepository, categoryRepository, invoiceRepository)
+        const response = (await sut.perform(transactionRequest)).value as TransactionData
+
+        const updated = await transactionRepository.findById('transaction0')
+
+        expect(updated.category.id).toBe(categoryData1.id)
+        expect(updated.date).toEqual(new Date('2023-03-10'))
+        expect(updated.invoiceDate).toEqual(new Date('2023-02-17'))
+        expect(updated.invoiceId).toBe('invoiceId1')
+
+        const invoice = await invoiceRepository.findById('invoiceId1')
+        expect(invoice.amount).toBe(-20000)
        
     })
 })

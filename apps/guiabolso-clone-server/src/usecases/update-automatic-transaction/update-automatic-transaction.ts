@@ -20,7 +20,6 @@ export class UpdateAutomaticTransaction implements UseCase {
 
     async perform(request: MetaTransactionRequest): Promise<any> {
         const oldTransactionData = await this.transactionRepo.findById(request.id)
-
         if(!oldTransactionData) {
             return left(new UnregisteredTransactionError())
         }
@@ -62,6 +61,17 @@ export class UpdateAutomaticTransaction implements UseCase {
         }
 
         const result = await this.transactionRepo.updateAutomatic(transactionData)
+
+        
+        if(oldTransactionData.accountType == 'CREDIT_CARD') {
+            // TODO hardcoded string
+            // recalculate invoice amount to ignore a transaction of category 'Pagamento de cartão'
+            if(oldTransactionData.category?.name == 'Pagamento de cartão' || transactionData.category?.name == 'Pagamento de cartão') {
+                const invoicesAmount = await this.transactionRepo.recalculateInvoicesAmount([oldTransactionData.invoiceId])
+                await this.invoiceRepo.updateAmount(invoicesAmount[0].invoiceId, invoicesAmount[0].amount)
+            }
+        }
+
         return(right(result))
     }
 
