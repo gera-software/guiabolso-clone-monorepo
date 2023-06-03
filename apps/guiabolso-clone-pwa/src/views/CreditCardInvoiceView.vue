@@ -20,7 +20,7 @@
             <div class="invoice-info" v-if="selectedInvoice">
                 <div>
                     <h3 class="label">Total</h3>
-                    <h4 class="display"> R$ {{ (+totalAmount / 100).toFixed(2) }}</h4>
+                    <h4 class="display"> R$ {{ (+selectedInvoice.amount / 100).toFixed(2) }}</h4>
                 </div>
                 <div>
                     <h3 class="label">Fechamento</h3>
@@ -71,11 +71,11 @@ async function getAccount(accountId: String) {
   })
 }
 
-const totalAmount = computed(() => {
-  return transactions.value.reduce((accumulator: number, transaction: Transaction) => {
-    return accumulator += transaction.amount.valueOf()
-  }, 0)
-})
+// const totalAmount = computed(() => {
+//   return transactions.value.reduce((accumulator: number, transaction: Transaction) => {
+//     return accumulator += transaction.amount.valueOf()
+//   }, 0)
+// })
 
 const invoices = ref<CreditCardInvoice[]>([])
 
@@ -100,6 +100,7 @@ async function getInvoicesByAccount(accountId: String) {
 const selectedInvoiceId = ref('')
 
 const selectedInvoice = computed<CreditCardInvoice>(() => {
+  console.log('selectedInvoice', selectedInvoice?.value?.amount)
     return invoices.value.find((invoice : CreditCardInvoice) => invoice._id == selectedInvoiceId.value) as CreditCardInvoice
 })
 
