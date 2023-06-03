@@ -21,11 +21,18 @@ export class InMemoryTransactionRepository implements TransactionRepository {
 
     async findById(id: string): Promise<TransactionData> {
         const transaction = this.data.find(transaction => transaction.id == id)
-        return transaction || null
+
+        if(transaction) {
+            const categoryClone = transaction.category ? {...transaction.category} : null
+            const transactionClone = {...transaction}
+            transactionClone.category = categoryClone
+            return transactionClone
+        }
+        return null
     }
 
     async exists(id: string): Promise<boolean> {
-        const found = await this.findById(id)
+        const found = this.data.find(transaction => transaction.id == id)
         if(!found || found._isDeleted) {
             return false
         }
@@ -34,7 +41,7 @@ export class InMemoryTransactionRepository implements TransactionRepository {
     }
 
     async remove(id: string): Promise<TransactionData> {
-        const transaction = await this.findById(id)
+        const transaction = this.data.find(transaction => transaction.id == id)
 
         if(!transaction || transaction._isDeleted) {
             return null
@@ -46,7 +53,7 @@ export class InMemoryTransactionRepository implements TransactionRepository {
     }
     
     async updateManual(transaction: TransactionData): Promise<TransactionData> {
-        const transactionToUpdate = await this.findById(transaction.id)
+        const transactionToUpdate = this.data.find(t => t.id == transaction.id)
 
         transactionToUpdate.amount = transaction.amount
         transactionToUpdate.description = transaction.description
@@ -64,7 +71,7 @@ export class InMemoryTransactionRepository implements TransactionRepository {
     }
 
     async updateAutomatic(transaction: TransactionData): Promise<TransactionData> {
-        const transactionToUpdate = await this.findById(transaction.id)
+        const transactionToUpdate = this.data.find(t => t.id == transaction.id)
 
         // transactionToUpdate.amount = transaction.amount
         transactionToUpdate.description = transaction.description
