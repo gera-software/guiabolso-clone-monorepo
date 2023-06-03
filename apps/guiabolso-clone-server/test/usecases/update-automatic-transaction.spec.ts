@@ -2,7 +2,7 @@ import { InvalidAccountError } from "@/entities/errors"
 import { UnregisteredAccountError, UnregisteredCategoryError, UnregisteredTransactionError, UnregisteredUserError } from "@/usecases/errors"
 import { UserData, CategoryData, BankAccountData, CreditCardAccountData, MetaTransactionRequest, TransactionData } from "@/usecases/ports"
 import { UpdateAutomaticTransaction } from "@/usecases/update-automatic-transaction"
-import { InMemoryUserRepository, InMemoryAccountRepository, InMemoryTransactionRepository, InMemoryCategoryRepository } from "@test/doubles/repositories"
+import { InMemoryUserRepository, InMemoryAccountRepository, InMemoryTransactionRepository, InMemoryCategoryRepository, InMemoryCreditCardInvoiceRepository } from "@test/doubles/repositories"
 
 describe('Update automatic transaction from account use case', () => {
     const transactionId = 'valid id'
@@ -94,7 +94,8 @@ describe('Update automatic transaction from account use case', () => {
         const accountRepository = new InMemoryAccountRepository([bankAccountData, creditCardAccountData])
         const transactionRepository = new InMemoryTransactionRepository([])
         const categoryRepository = new InMemoryCategoryRepository([categoryData, categoryData1])
-        const sut = new UpdateAutomaticTransaction(userRepository, accountRepository, transactionRepository, categoryRepository)
+        const invoiceRepository = new InMemoryCreditCardInvoiceRepository([])
+        const sut = new UpdateAutomaticTransaction(userRepository, accountRepository, transactionRepository, categoryRepository, invoiceRepository)
         const response = (await sut.perform(transactionRequest)).value as Error
         expect(response).toBeInstanceOf(UnregisteredTransactionError)
     })
@@ -126,7 +127,8 @@ describe('Update automatic transaction from account use case', () => {
         const accountRepository = new InMemoryAccountRepository([])
         const transactionRepository = new InMemoryTransactionRepository([transactionData])
         const categoryRepository = new InMemoryCategoryRepository([categoryData, categoryData1])
-        const sut = new UpdateAutomaticTransaction(userRepository, accountRepository, transactionRepository, categoryRepository)
+        const invoiceRepository = new InMemoryCreditCardInvoiceRepository([])
+        const sut = new UpdateAutomaticTransaction(userRepository, accountRepository, transactionRepository, categoryRepository, invoiceRepository)
         const response = (await sut.perform(transactionRequest)).value as Error
         expect(response).toBeInstanceOf(UnregisteredAccountError)
     })
@@ -158,7 +160,8 @@ describe('Update automatic transaction from account use case', () => {
         const accountRepository = new InMemoryAccountRepository([bankAccountData, creditCardAccountData])
         const transactionRepository = new InMemoryTransactionRepository([transactionData])
         const categoryRepository = new InMemoryCategoryRepository([categoryData, categoryData1])
-        const sut = new UpdateAutomaticTransaction(userRepository, accountRepository, transactionRepository, categoryRepository)
+        const invoiceRepository = new InMemoryCreditCardInvoiceRepository([])
+        const sut = new UpdateAutomaticTransaction(userRepository, accountRepository, transactionRepository, categoryRepository, invoiceRepository)
         const response = (await sut.perform(transactionRequest)).value as Error
         expect(response).toBeInstanceOf(UnregisteredUserError)
     })
@@ -200,7 +203,8 @@ describe('Update automatic transaction from account use case', () => {
         const accountRepository = new InMemoryAccountRepository([bankAccountData, creditCardAccountData])
         const transactionRepository = new InMemoryTransactionRepository([transactionData])
         const categoryRepository = new InMemoryCategoryRepository([categoryData, categoryData1])
-        const sut = new UpdateAutomaticTransaction(userRepository, accountRepository, transactionRepository, categoryRepository)
+        const invoiceRepository = new InMemoryCreditCardInvoiceRepository([])
+        const sut = new UpdateAutomaticTransaction(userRepository, accountRepository, transactionRepository, categoryRepository, invoiceRepository)
         const response = (await sut.perform(transactionRequest)).value as Error
         expect(response).toBeInstanceOf(InvalidAccountError)
         expect(response.message).toBe('Operação não permitida')
@@ -233,7 +237,8 @@ describe('Update automatic transaction from account use case', () => {
         const accountRepository = new InMemoryAccountRepository([bankAccountData, creditCardAccountData])
         const transactionRepository = new InMemoryTransactionRepository([transactionData])
         const categoryRepository = new InMemoryCategoryRepository([categoryData, categoryData1])
-        const sut = new UpdateAutomaticTransaction(userRepository, accountRepository, transactionRepository, categoryRepository)
+        const invoiceRepository = new InMemoryCreditCardInvoiceRepository([])
+        const sut = new UpdateAutomaticTransaction(userRepository, accountRepository, transactionRepository, categoryRepository, invoiceRepository)
         const response = (await sut.perform(transactionRequest)).value as Error
         expect(response).toBeInstanceOf(UnregisteredCategoryError)
     })
@@ -265,7 +270,8 @@ describe('Update automatic transaction from account use case', () => {
         const accountRepository = new InMemoryAccountRepository([bankAccountData, creditCardAccountData])
         const transactionRepository = new InMemoryTransactionRepository([transactionData])
         const categoryRepository = new InMemoryCategoryRepository([categoryData, categoryData1])
-        const sut = new UpdateAutomaticTransaction(userRepository, accountRepository, transactionRepository, categoryRepository)
+        const invoiceRepository = new InMemoryCreditCardInvoiceRepository([])
+        const sut = new UpdateAutomaticTransaction(userRepository, accountRepository, transactionRepository, categoryRepository, invoiceRepository)
         const response = (await sut.perform(transactionRequest)).value
         expect(response).not.toBeInstanceOf(Error)
     })
@@ -297,7 +303,8 @@ describe('Update automatic transaction from account use case', () => {
         const accountRepository = new InMemoryAccountRepository([bankAccountData, creditCardAccountData])
         const transactionRepository = new InMemoryTransactionRepository([transactionData])
         const categoryRepository = new InMemoryCategoryRepository([categoryData, categoryData1])
-        const sut = new UpdateAutomaticTransaction(userRepository, accountRepository, transactionRepository, categoryRepository)
+        const invoiceRepository = new InMemoryCreditCardInvoiceRepository([])
+        const sut = new UpdateAutomaticTransaction(userRepository, accountRepository, transactionRepository, categoryRepository, invoiceRepository)
         const response = (await sut.perform(transactionRequest)).value as TransactionData
 
         const updated = await transactionRepository.findById(transactionId)
@@ -343,7 +350,8 @@ describe('Update automatic transaction from account use case', () => {
         const accountRepository = new InMemoryAccountRepository([bankAccountData, creditCardAccountData])
         const transactionRepository = new InMemoryTransactionRepository([transactionData])
         const categoryRepository = new InMemoryCategoryRepository([categoryData, categoryData1])
-        const sut = new UpdateAutomaticTransaction(userRepository, accountRepository, transactionRepository, categoryRepository)
+        const invoiceRepository = new InMemoryCreditCardInvoiceRepository([])
+        const sut = new UpdateAutomaticTransaction(userRepository, accountRepository, transactionRepository, categoryRepository, invoiceRepository)
         const response = (await sut.perform(transactionRequest)).value as TransactionData
 
         const updated = await transactionRepository.findById(transactionId)
@@ -351,6 +359,64 @@ describe('Update automatic transaction from account use case', () => {
         expect(updated.comment).toEqual('new comment')
         expect(updated.ignored).toEqual(true)
         expect(updated.category.id).toBe(categoryId)
+
+        expect(updated.amount).toBe(-400)
+        expect(updated.type).toBe('EXPENSE')
+        expect(updated.descriptionOriginal).toBe('original')
+        expect(updated.date).toEqual(new Date('2023-03-10'))
+        expect(updated.invoiceDate).toEqual(new Date('2023-02-17'))
+        expect(updated.invoiceId).toBe('invoiceId1')
+        
+       
+    })
+
+    test('should update category of credit card transaction to "Pagamento de cartão" and update invoice total amount', async () => {
+        const pagamentoFaturaCategory: CategoryData = {
+            name: "Pagamento de cartão",
+            group: "Lançamentos entre contas",
+            iconName: "BankPostingsCreditCard",
+            primaryColor: "#4C4C4C",
+            ignored: true,
+            id: "pc",
+        }
+
+        const transactionData: TransactionData = {
+            id: transactionId,
+            accountId: creditCardAccountId,
+            accountType: creditCardAccountType,
+            syncType,
+            userId,
+            description: 'old description',
+            descriptionOriginal: 'original',
+            amount: -400,
+            date: new Date('2023-03-10'),
+            invoiceDate: new Date('2023-02-17'),
+            invoiceId: 'invoiceId1',
+            type: 'EXPENSE',
+            category: categoryData1,
+        }
+        
+        const transactionRequest: MetaTransactionRequest = {
+            id: transactionId,
+            categoryId: pagamentoFaturaCategory.id,
+            description: 'new description',
+            comment: 'new comment',
+            ignored: true,
+        }
+
+        const userRepository = new InMemoryUserRepository([userData])
+        const accountRepository = new InMemoryAccountRepository([bankAccountData, creditCardAccountData])
+        const transactionRepository = new InMemoryTransactionRepository([transactionData])
+        const categoryRepository = new InMemoryCategoryRepository([categoryData, categoryData1, pagamentoFaturaCategory])
+        const invoiceRepository = new InMemoryCreditCardInvoiceRepository([])
+        const sut = new UpdateAutomaticTransaction(userRepository, accountRepository, transactionRepository, categoryRepository, invoiceRepository)
+        const response = (await sut.perform(transactionRequest)).value as TransactionData
+
+        const updated = await transactionRepository.findById(transactionId)
+        expect(updated.description).toBe('new description')
+        expect(updated.comment).toEqual('new comment')
+        expect(updated.ignored).toEqual(true)
+        expect(updated.category.id).toBe(pagamentoFaturaCategory.id)
 
         expect(updated.amount).toBe(-400)
         expect(updated.type).toBe('EXPENSE')

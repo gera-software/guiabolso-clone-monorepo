@@ -1,4 +1,4 @@
-import { CategoryData, CategoryRepository, MetaTransactionRequest, TransactionData, TransactionRepository, UpdateAccountRepository, UseCase, UserRepository } from "@/usecases/ports";
+import { CategoryData, CategoryRepository, CreditCardInvoiceRepository, MetaTransactionRequest, TransactionData, TransactionRepository, UpdateAccountRepository, UseCase, UserRepository } from "@/usecases/ports";
 import { UnregisteredAccountError, UnregisteredCategoryError, UnregisteredTransactionError, UnregisteredUserError } from "@/usecases/errors";
 import { left, right } from "@/shared";
 import { InvalidAccountError } from "@/entities/errors";
@@ -8,12 +8,14 @@ export class UpdateAutomaticTransaction implements UseCase {
     private readonly accountRepo: UpdateAccountRepository
     private readonly transactionRepo: TransactionRepository
     private readonly categoryRepo: CategoryRepository
+    private readonly invoiceRepo: CreditCardInvoiceRepository
 
-    constructor(userRepository: UserRepository, accountRepository: UpdateAccountRepository, transactionRepository: TransactionRepository, categoryRepository: CategoryRepository) {
+    constructor(userRepository: UserRepository, accountRepository: UpdateAccountRepository, transactionRepository: TransactionRepository, categoryRepository: CategoryRepository, creditCardInvoiceRepository: CreditCardInvoiceRepository) {
         this.userRepo = userRepository
         this.accountRepo = accountRepository
         this.transactionRepo = transactionRepository
         this.categoryRepo = categoryRepository
+        this.invoiceRepo = creditCardInvoiceRepository
     }
 
     async perform(request: MetaTransactionRequest): Promise<any> {

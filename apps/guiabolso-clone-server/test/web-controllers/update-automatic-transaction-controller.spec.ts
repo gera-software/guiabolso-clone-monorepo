@@ -2,7 +2,7 @@ import { UserData, CategoryData, BankAccountData, CreditCardAccountData, UseCase
 import { UpdateAutomaticTransaction } from "@/usecases/update-automatic-transaction"
 import { UpdateAutomaticTransactionController } from "@/web-controllers"
 import { HttpRequest, HttpResponse } from "@/web-controllers/ports"
-import { InMemoryUserRepository, InMemoryAccountRepository, InMemoryTransactionRepository, InMemoryCategoryRepository } from "@test/doubles/repositories"
+import { InMemoryUserRepository, InMemoryAccountRepository, InMemoryTransactionRepository, InMemoryCategoryRepository, InMemoryCreditCardInvoiceRepository } from "@test/doubles/repositories"
 import { ErrorThrowingUseCaseStub } from "@test/doubles/usecases"
 
 describe('Update automatic transaction web controller', () => {
@@ -92,7 +92,8 @@ describe('Update automatic transaction web controller', () => {
         const accountRepository = new InMemoryAccountRepository([bankAccountData, creditCardAccountData])
         const transactionRepository = new InMemoryTransactionRepository([])
         const categoryRepository = new InMemoryCategoryRepository([categoryData, categoryData1])
-        const usecase = new UpdateAutomaticTransaction(userRepository, accountRepository, transactionRepository, categoryRepository)
+        const invoiceRepository = new InMemoryCreditCardInvoiceRepository([])
+        const usecase = new UpdateAutomaticTransaction(userRepository, accountRepository, transactionRepository, categoryRepository, invoiceRepository)
         const sut = new UpdateAutomaticTransactionController(usecase)
         const response: HttpResponse = await sut.handle(invalidRequest)
         expect(response.statusCode).toEqual(400)
@@ -147,7 +148,8 @@ describe('Update automatic transaction web controller', () => {
             const accountRepository = new InMemoryAccountRepository([bankAccountData, creditCardAccountData])
             const transactionRepository = new InMemoryTransactionRepository([transactionData])
             const categoryRepository = new InMemoryCategoryRepository([categoryData, categoryData1])
-            const usecase = new UpdateAutomaticTransaction(userRepository, accountRepository, transactionRepository, categoryRepository)
+            const invoiceRepository = new InMemoryCreditCardInvoiceRepository([])
+            const usecase = new UpdateAutomaticTransaction(userRepository, accountRepository, transactionRepository, categoryRepository, invoiceRepository)
             const sut = new UpdateAutomaticTransactionController(usecase)
             const response: HttpResponse = await sut.handle(validRequest)
             expect(response.statusCode).toEqual(200)
@@ -185,7 +187,8 @@ describe('Update automatic transaction web controller', () => {
             const accountRepository = new InMemoryAccountRepository([bankAccountData, creditCardAccountData])
             const transactionRepository = new InMemoryTransactionRepository([transactionData])
             const categoryRepository = new InMemoryCategoryRepository([categoryData, categoryData1])
-            const usecase = new UpdateAutomaticTransaction(userRepository, accountRepository, transactionRepository, categoryRepository)
+            const invoiceRepository = new InMemoryCreditCardInvoiceRepository([])
+            const usecase = new UpdateAutomaticTransaction(userRepository, accountRepository, transactionRepository, categoryRepository, invoiceRepository)
             const sut = new UpdateAutomaticTransactionController(usecase)
             const response: HttpResponse = await sut.handle(validRequest)
             expect(response.statusCode).toEqual(200)
