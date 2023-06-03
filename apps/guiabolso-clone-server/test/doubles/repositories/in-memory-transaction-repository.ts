@@ -111,7 +111,8 @@ export class InMemoryTransactionRepository implements TransactionRepository {
     }
 
     async recalculateInvoicesAmount(invoicesIds: string[]): Promise<{ invoiceId: string; amount: number; }[]> {
-        const filterByInvoiceId = (invoiceId: string) => this.data.filter(transaction => transaction.invoiceId == invoiceId)
+        // TODO hardcoded string, use environment variable with category id
+        const filterByInvoiceId = (invoiceId: string) => this.data.filter(transaction => transaction.invoiceId == invoiceId && transaction.category?.name !== 'Pagamento de cartão')
         const sumAmount = (sum: number, t: TransactionData) => sum += t.amount
        
         return invoicesIds.map( invoiceId => ({
