@@ -1,5 +1,5 @@
 import { CustomAuthentication } from "@/usecases/authentication"
-import { UserNotFoundError, WrongPasswordError } from "@/usecases/authentication/errors"
+import { UserNotFoundError, UserNotVerifiedError, WrongPasswordError } from "@/usecases/authentication/errors"
 import { AuthenticationResult } from "@/usecases/authentication/ports"
 import { SignIn } from "@/usecases/sign-in"
 import { FakeTokenManager } from "@test/doubles/authentication"
@@ -18,6 +18,7 @@ describe('Sign in use case', () => {
             name: 'valid name',
             email: 'valid@email.com',
             password: 'validENCRYPTED',
+            isVerified: true,
             id: '6057e9885c94f99b6dc1410a',
         }
         const userRepository = new InMemoryUserRepository([validUser])
@@ -42,6 +43,28 @@ describe('Sign in use case', () => {
 
     })
 
+    test('should not sign in if password is correct but user is not verified', async () => {
+        const singInRequest = {
+            email: 'valid@email.com',
+            password: 'valid',
+        }
+
+        const user = {
+            name: 'valid name',
+            email: 'valid@email.com',
+            password: 'validENCRYPTED',
+            isVerified: false,
+            id: '6057e9885c94f99b6dc1410a',
+        }
+        const userRepository = new InMemoryUserRepository([user])
+        const encoder = new FakeEncoder()
+        const tokenManager = new FakeTokenManager()
+        const autenticationService = new CustomAuthentication(userRepository, encoder, tokenManager)
+        const sut = new SignIn(autenticationService)
+        const response = (await sut.perform(singInRequest)).value as Error
+        expect(response).toBeInstanceOf(UserNotVerifiedError)
+    })
+
     test('should not sign in if password is incorrect', async () => {
         const singInRequest = {
             email: 'valid@email.com',
@@ -52,6 +75,7 @@ describe('Sign in use case', () => {
             name: 'valid name',
             email: 'valid@email.com',
             password: 'validENCRYPTED',
+            isVerified: true,
             id: '6057e9885c94f99b6dc1410a',
         }
         const userRepository = new InMemoryUserRepository([user])
@@ -69,13 +93,14 @@ describe('Sign in use case', () => {
             password: 'valid',
         }
 
-        const user = {
-            name: 'valid name',
-            email: 'valid@email.com',
-            password: 'validENCRYPTED',
-            id: '6057e9885c94f99b6dc1410a',
-        }
-        const userRepository = new InMemoryUserRepository([user])
+        // const user = {
+        //     name: 'valid name',
+        //     email: 'valid@email.com',
+        //     password: 'validENCRYPTED',
+        //     isVerified: true,
+        //     id: '6057e9885c94f99b6dc1410a',
+        // }
+        const userRepository = new InMemoryUserRepository([])
         const encoder = new FakeEncoder()
         const tokenManager = new FakeTokenManager()
         const autenticationService = new CustomAuthentication(userRepository, encoder, tokenManager)
