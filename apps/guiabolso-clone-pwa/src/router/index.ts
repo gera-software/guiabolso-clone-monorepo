@@ -17,6 +17,7 @@ import IndexView from '@/views/IndexView.vue'
 import CreditCardInvoiceView from '@/views/CreditCardInvoiceView.vue'
 import LoginView from '@/views/LoginView.vue'
 import { useUserStore } from '../stores/userStore'
+import SignupViewVue from '@/views/SignupView.vue'
 
 
 
@@ -42,6 +43,11 @@ const router = createRouter({
       path: '/login',
       name: 'login',
       component: LoginView,
+    },
+    {
+      path: '/signup',
+      name: 'signup',
+      component: SignupViewVue,
     },
     {
       path: '/dashboard',
@@ -121,19 +127,25 @@ const router = createRouter({
   ]
 })
 
-//TODO  checar se o usuario está atutenticado e o token é ainda é válido
+//TODO  checar se o usuario está autenticado e se o token ainda é válido
 function isAuthenticated() {
   const userStore = useUserStore()
   return userStore.tokenIsValid()
 }
 
 router.beforeEach((to, from) => {
-  // ...
   // explicitly return false to cancel the navigation
-
   // return false
-    console.log(to.name, isAuthenticated())
-  if(!isAuthenticated() && to.name !== 'index' && to.name !== 'login') {
+
+  console.log(to.name, isAuthenticated())
+  const publicRoutes = [
+    'index',
+    'login',
+    'signup'
+  ]
+
+  // para acessar rotas privadas, deve estar autenticado, ou será redirecionado para o index
+  if(!isAuthenticated() && publicRoutes.every((routeName) => routeName !== to.name )) {
     return { name: 'index' }
   }
 })

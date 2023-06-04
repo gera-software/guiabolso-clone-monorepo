@@ -4,7 +4,7 @@
   
     </div>
     <div class="container">
-      <button class="button">Começar</button>
+      <router-link class="button" :to="{ name: 'signup'}">Começar</router-link>
       <router-link class="link" :to="{ name: 'login'}">Já sou cadastrado</router-link>
       <span class="version">v{{ version }} - {{ node_env }}</span>
     </div>
@@ -71,6 +71,7 @@ onMounted(async () => {
     text-align: center;
     padding: 12px 16px;
     cursor: pointer;
+    text-decoration: none;
 }
 
 .button.button-outline {
