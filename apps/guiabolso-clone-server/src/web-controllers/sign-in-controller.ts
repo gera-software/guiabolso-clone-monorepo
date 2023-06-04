@@ -2,7 +2,7 @@ import { UseCase, UserData } from "@/usecases/ports";
 import { Controller, HttpRequest, HttpResponse } from "@/web-controllers/ports";
 import { badRequest, forbidden, ok, serverError } from "@/web-controllers/util";
 import { MissingParamError } from "@/web-controllers/errors";
-import { WrongPasswordError } from "@/usecases/authentication/errors";
+import { UserNotVerifiedError, WrongPasswordError } from "@/usecases/authentication/errors";
 
 /**
  * Autenticação de usuário
@@ -33,7 +33,7 @@ export class SignInController implements Controller {
                 return ok(response.value)
             }
             
-            if(response.value instanceof WrongPasswordError) {
+            if(response.value instanceof WrongPasswordError || response.value instanceof UserNotVerifiedError) {
                 return forbidden(response.value)
             }
     

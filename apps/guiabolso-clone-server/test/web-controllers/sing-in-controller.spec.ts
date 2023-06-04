@@ -15,6 +15,7 @@ describe('Sign In web controller', () => {
             id: 'valid_id',
             name: 'Any name',
             email: 'any@email.com',
+            isVerified: true,
             password: 'validENCRYPTED'
         }
         const userRepository = new InMemoryUserRepository([validUser])
@@ -61,6 +62,7 @@ describe('Sign In web controller', () => {
             id: 'valid_id',
             name: 'Any name',
             email: 'any@email.com',
+            isVerified: true,
             password: 'validENCRYPTED'
         }
         const userRepository = new InMemoryUserRepository([validUser])
@@ -78,6 +80,31 @@ describe('Sign In web controller', () => {
         expect(response.statusCode).toEqual(403)
         expect(response.body.name).toBe('WrongPasswordError')
         expect(response.body.message).toBe('E-mail ou senha incorretos')
+    })
+
+    test('should return 403 if password is correct but user is not verified', async () => {
+        const validUser: UserData = {
+            id: 'valid_id',
+            name: 'Any name',
+            email: 'any@email.com',
+            isVerified: false,
+            password: 'validENCRYPTED'
+        }
+        const userRepository = new InMemoryUserRepository([validUser])
+        const usecase = new SignIn(new CustomAuthentication(userRepository, new FakeEncoder(), new FakeTokenManager()))
+        const sut: SignInController = new SignInController(usecase) 
+
+        const invalidRequest: HttpRequest = {
+            body: {
+                email: 'any@email.com',
+                password: 'valid'
+              }
+        }
+
+        const response: HttpResponse = await sut.handle(invalidRequest)
+        expect(response.statusCode).toEqual(403)
+        expect(response.body.name).toBe('UserNotVerifiedError')
+        expect(response.body.message).toBe('Usuário não verificado')
     })
 
     test('should return 400 if user is not found', async () => {
