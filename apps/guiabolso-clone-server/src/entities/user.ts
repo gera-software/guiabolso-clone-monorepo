@@ -7,11 +7,13 @@ export class User {
     public readonly name: string
     public readonly email: Email
     public readonly password: Password
+    public readonly isVerified: boolean
 
-    private constructor(name: string, email: Email, password: Password) {
+    private constructor(name: string, email: Email, password: Password, isVerified?: boolean) {
         this.name = name
         this.email = email
         this.password = password
+        this.isVerified = isVerified
     }
 
     public static create(userData: UserData): Either<InvalidNameError | InvalidEmailError | InvalidPasswordError, User> {
@@ -32,7 +34,7 @@ export class User {
         const emailObject: Email = emailOrError.value as Email
         const passwordObject: Password = passwordOrError.value
 
-        return right(new User(userData.name, emailObject, passwordObject))
+        return right(new User(userData.name, emailObject, passwordObject, userData.isVerified))
     }
 
 
