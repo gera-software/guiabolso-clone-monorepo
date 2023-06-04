@@ -9,6 +9,7 @@ describe('Signin route', () => {
     const validUser: UserData = {
         name: "valid name",
         email: "valid@email.com",
+        isVerified: true,
         password: "valid"
     }
 
@@ -21,7 +22,8 @@ describe('Signin route', () => {
         await userRepo.add({
             name: validUser.name,
             email: validUser.email,
-            password: await encoder.encode(validUser.password)
+            password: await encoder.encode(validUser.password),
+            isVerified: true,
         })
     })
 
