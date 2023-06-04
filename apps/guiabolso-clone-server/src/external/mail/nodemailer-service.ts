@@ -16,11 +16,12 @@ export class NodemailerService implements MailService{
   
     public send(message: string, subject: string, to: string): Promise<void> {
       const mailOptions: nodemailer.SendMailOptions = {
-        from: 'seu-email@gmail.com',
+        from: 'guiabolsoclone@gmail.com',
         to,
         subject,
         text: message,
       };
+      console.log('[Nodemailer] send', mailOptions)
 
       return this.transporter.sendMail(mailOptions)
   

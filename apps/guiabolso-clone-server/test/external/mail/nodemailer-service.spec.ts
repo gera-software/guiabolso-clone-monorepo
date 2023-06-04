@@ -25,19 +25,19 @@ describe('Nodemailer Service', () => {
         await emailService.send('message', 'teste', 'gilmar-andrade@outlook.com')
 
         expect(sendMailMock).toBeCalledWith({
-            "from": "seu-email@gmail.com", "subject": "teste", "text": "message", "to": "gilmar-andrade@outlook.com"
+            "from": "guiabolsoclone@gmail.com", "subject": "teste", "text": "message", "to": "gilmar-andrade@outlook.com"
         })
     })
 
     it('should handle email sending error', async () => {
-        sendMailMock.mockRejectedValue('message')
+        sendMailMock.mockRejectedValue('error message')
 
         emailService = new NodemailerService()
 
         try {
             await emailService.send('message', 'teste', 'gilmar-andrade@outlook.com')
           } catch (err) {
-            expect(err).toEqual('message');
+            expect(err).toEqual('error message');
         }
 
     })
