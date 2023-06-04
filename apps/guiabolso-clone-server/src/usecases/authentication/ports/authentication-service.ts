@@ -1,5 +1,5 @@
 import { Either } from "@/shared"
-import { UserNotFoundError, WrongPasswordError } from "@/usecases/authentication/errors"
+import { UserNotFoundError, UserNotVerifiedError, WrongPasswordError } from "@/usecases/authentication/errors"
 
 export type AuthenticationParams = {
     email: string
@@ -20,5 +20,5 @@ export type AuthenticationResult = {
 
 export interface AuthenticationService {
     auth: (authenticationParams: AuthenticationParams) =>
-      Promise<Either<UserNotFoundError | WrongPasswordError, AuthenticationResult>>
+      Promise<Either<UserNotVerifiedError | UserNotFoundError | WrongPasswordError, AuthenticationResult>>
 }

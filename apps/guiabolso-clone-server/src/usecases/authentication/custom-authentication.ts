@@ -1,5 +1,5 @@
 import { Either, left, right } from "@/shared";
-import { UserNotFoundError, WrongPasswordError } from "@/usecases/authentication/errors";
+import { UserNotFoundError, UserNotVerifiedError, WrongPasswordError } from "@/usecases/authentication/errors";
 import { AuthenticationParams, AuthenticationResult, PayloadData, Payload, TokenManager } from "@/usecases/authentication/ports";
 import { Encoder, UserRepository } from "@/usecases/ports";
 import { AuthenticationService } from "@/usecases/authentication/ports";
@@ -15,7 +15,7 @@ export class CustomAuthentication implements AuthenticationService {
         this.tokenManager = tokenManager
     }
 
-    public async auth(request: AuthenticationParams): Promise<Either<UserNotFoundError | WrongPasswordError, AuthenticationResult>>{
+    public async auth(request: AuthenticationParams): Promise<Either<UserNotVerifiedError | UserNotFoundError | WrongPasswordError, AuthenticationResult>>{
 
         const userFound = await this.userRepository.findUserByEmail(request.email)
 
@@ -25,6 +25,12 @@ export class CustomAuthentication implements AuthenticationService {
 
         const matches = await this.encoder.compare(request.password, userFound.password)
         if(matches) {
+
+            if(!userFound.isVerified) {
+                // TODO enviar email de verificação
+                return left(new UserNotVerifiedError('Usuário não verificado'))
+            }
+
             const payload: PayloadData = {
                 id: userFound.id,
                 name: userFound.name,
