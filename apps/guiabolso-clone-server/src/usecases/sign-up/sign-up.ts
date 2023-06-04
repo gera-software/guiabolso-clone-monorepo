@@ -38,6 +38,7 @@ export class SignUp implements UseCase {
             name: newUser.name,
             email: newUser.email.value,
             password: encodedPassword,
+            isVerified: true, // TODO user should verify email
         })
 
         const response = (await this.authenticationService.auth(request as AuthenticationParams)).value as AuthenticationResult
