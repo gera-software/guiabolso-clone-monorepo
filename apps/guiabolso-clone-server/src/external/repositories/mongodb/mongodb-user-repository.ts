@@ -7,6 +7,7 @@ export type MongodbUser = {
     name: string,
     email: string,
     password: string,
+    isVerified: boolean,
     _id?: ObjectId
 }
 
@@ -18,7 +19,8 @@ export class MongodbUserRepository implements UserRepository {
     const userClone: MongodbUser = {
         name: user.name,
         email: user.email,
-        password: user.password
+        password: user.password,
+        isVerified: user.isVerified,
     }
 
     const { insertedId } = await userCollection.insertOne(userClone)
@@ -60,6 +62,7 @@ export class MongodbUserRepository implements UserRepository {
         name: dbUser.name,
         email: dbUser.email,
         password: dbUser.password,
+        isVerified: dbUser.isVerified,
         id: dbUser._id.toString(),
     }
   }

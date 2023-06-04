@@ -22,6 +22,7 @@ describe('Mongodb User repository', () => {
           name: 'any_name',
           email: 'any@mail.com',
           password: '123',
+          isVerified: false,
         }
         await sut.add(user)
         expect(await sut.exists(user)).toBeTruthy()
@@ -39,6 +40,7 @@ describe('Mongodb User repository', () => {
           name: 'any_name',
           email: 'any@mail.com',
           password: '123',
+          isVerified: true,
         }
         await sut.add(user)
 
@@ -47,6 +49,7 @@ describe('Mongodb User repository', () => {
         expect(result.name).toBe(user.name)
         expect(result.email).toBe('any@mail.com')
         expect(result.password).toBe('123')
+        expect(result.isVerified).toBe(true)
         expect(result.id).toBeTruthy()
     })
 
@@ -62,6 +65,7 @@ describe('Mongodb User repository', () => {
         name: 'any_name',
         email: 'any@mail.com',
         password: '123',
+        isVerified: false,
       }
       const addedUser = await sut.add(user)
 
@@ -70,6 +74,7 @@ describe('Mongodb User repository', () => {
       expect(result.name).toBe(user.name)
       expect(result.email).toBe('any@mail.com')
       expect(result.password).toBe('123')
+      expect(result.isVerified).toBe(false)
       expect(result.id).toBe(addedUser.id)
   })
 
