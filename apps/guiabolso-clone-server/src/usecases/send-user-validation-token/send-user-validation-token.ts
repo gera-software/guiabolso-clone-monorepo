@@ -26,8 +26,8 @@ export class SendUserValidationToken implements UseCase {
         }
 
         const payload: EmailValidationPayloadData = {
-            id: 'id',
-            email: 'email',
+            id: userData.id,
+            email: userData.email,
         }
         const accessToken = await this.tokenManager.sign(payload)
         
