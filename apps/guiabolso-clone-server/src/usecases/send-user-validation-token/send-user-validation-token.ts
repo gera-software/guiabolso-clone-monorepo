@@ -1,9 +1,7 @@
 import { left, right } from "@/shared";
 import { Payload, TokenManager, UseCase, UserRepository } from "@/usecases/ports";
 import { InvalidUserError, UnregisteredUserError } from "@/usecases/errors";
-
-import { UserPayloadData } from "@/usecases/authentication/ports";
-import { EmailValidationPayloadData } from "./ports";
+import { EmailValidationPayloadData } from "@/usecases/send-user-validation-token/ports"
 
 export class SendUserValidationToken implements UseCase {
     private readonly userRepo: UserRepository
@@ -29,12 +27,12 @@ export class SendUserValidationToken implements UseCase {
             id: userData.id,
             email: userData.email,
         }
-        const accessToken = await this.tokenManager.sign(payload)
+        const emailValidationToken = await this.tokenManager.sign(payload)
         
-        const payloadResponse = (await this.tokenManager.verify(accessToken)).value as Payload
+        const payloadResponse = (await this.tokenManager.verify(emailValidationToken)).value as Payload
         return right({
             ...payloadResponse,
-            accessToken,
+            emailValidationToken,
         })
 
         // const randomString = crypto.createHash('sha256').digest('hex')

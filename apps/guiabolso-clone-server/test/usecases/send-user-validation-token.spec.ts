@@ -1,7 +1,7 @@
-import { AuthenticationResult } from "@/usecases/authentication/ports";
 import { InvalidUserError, UnregisteredUserError } from "@/usecases/errors"
 import { Payload } from "@/usecases/ports";
 import { SendUserValidationToken } from "@/usecases/send-user-validation-token"
+import { EmailValidationResult } from "@/usecases/send-user-validation-token/ports";
 import { FakeTokenManager } from "@test/doubles/authentication";
 import { InMemoryUserRepository } from "@test/doubles/repositories"
 
@@ -57,8 +57,8 @@ describe('Send user validation token use case', () => {
         const fakeTokenManager = new FakeTokenManager()
         const sut = new SendUserValidationToken(userRepository, fakeTokenManager)
 
-        const response = (await sut.perform(userId)).value as AuthenticationResult
-        const verification = (await fakeTokenManager.verify(response.accessToken)).value as Payload
+        const response = (await sut.perform(userId)).value as EmailValidationResult
+        const verification = (await fakeTokenManager.verify(response.emailValidationToken)).value as Payload
         // expect(response).toEqual(3)
         expect(response.data).toEqual(verification.data)
         expect(response.exp).toEqual(verification.exp)
