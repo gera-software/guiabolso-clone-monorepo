@@ -1,4 +1,4 @@
-import { Payload, TokenManager } from "@/usecases/authentication/ports";
+import { TokenManager, Payload } from "@/usecases/ports";
 import { Middleware } from "@/web-controllers/middlewares/ports";
 import { HttpResponse } from "@/web-controllers/ports";
 import { forbidden, ok, serverError } from "@/web-controllers/util";

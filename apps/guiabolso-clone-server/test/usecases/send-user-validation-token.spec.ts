@@ -1,5 +1,6 @@
-import { AuthenticationResult, Payload } from "@/usecases/authentication/ports";
+import { AuthenticationResult } from "@/usecases/authentication/ports";
 import { InvalidUserError, UnregisteredUserError } from "@/usecases/errors"
+import { Payload } from "@/usecases/ports";
 import { SendUserValidationToken } from "@/usecases/send-user-validation-token"
 import { FakeTokenManager } from "@test/doubles/authentication";
 import { InMemoryUserRepository } from "@test/doubles/repositories"

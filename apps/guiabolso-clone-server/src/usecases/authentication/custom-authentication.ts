@@ -1,7 +1,7 @@
 import { Either, left, right } from "@/shared";
 import { UserNotFoundError, UserNotVerifiedError, WrongPasswordError } from "@/usecases/authentication/errors";
-import { AuthenticationParams, AuthenticationResult, PayloadData, Payload, TokenManager } from "@/usecases/authentication/ports";
-import { Encoder, UserRepository } from "@/usecases/ports";
+import { AuthenticationParams, AuthenticationResult, UserPayloadData } from "@/usecases/authentication/ports";
+import { Encoder, Payload, TokenManager, UserRepository } from "@/usecases/ports";
 import { AuthenticationService } from "@/usecases/authentication/ports";
 
 export class CustomAuthentication implements AuthenticationService {
@@ -31,7 +31,7 @@ export class CustomAuthentication implements AuthenticationService {
                 return left(new UserNotVerifiedError('Usuário não verificado'))
             }
 
-            const payload: PayloadData = {
+            const payload: UserPayloadData = {
                 id: userFound.id,
                 name: userFound.name,
                 email: userFound.email,

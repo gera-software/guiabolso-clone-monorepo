@@ -1,9 +1,9 @@
 import { Either, left, right } from "@/shared";
-import { PayloadData, Payload, TokenManager, TimeInSeconds, JsonWebToken } from "@/usecases/authentication/ports";
+import { JsonWebToken, Payload, TimeInSeconds, TokenManager } from "@/usecases/ports";
 
 export class FakeTokenManager implements TokenManager {
 
-    async sign(info: PayloadData, expiresIn?: TimeInSeconds): Promise<JsonWebToken> {
+    async sign(info: any, expiresIn?: TimeInSeconds): Promise<JsonWebToken> {
         return info.id + 'TOKEN'
     }
 

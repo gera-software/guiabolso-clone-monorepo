@@ -1,8 +1,9 @@
 import { Either } from "@/shared"
-import { PayloadData, Payload, TokenManager, TimeInSeconds, JsonWebToken } from "@/usecases/authentication/ports"
+import { UserPayloadData } from "@/usecases/authentication/ports"
+import { JsonWebToken, Payload, TimeInSeconds, TokenManager } from "@/usecases/ports/token-manager"
 
 export class ThrowingFakeTokenManager implements TokenManager {
-    async sign (info: PayloadData, expiresIn?: TimeInSeconds): Promise<JsonWebToken> {
+    async sign (info: UserPayloadData, expiresIn?: TimeInSeconds): Promise<JsonWebToken> {
       return 'a token'
     }
 

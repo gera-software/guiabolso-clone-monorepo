@@ -1,22 +1,16 @@
 import { Either } from "@/shared"
 
-export type PayloadData = {
-    id: string,
-    name: string,
-    email: string,
-}
-
 export type TimeInSeconds = number
 export type JsonWebToken = string
 
 export type Payload = {
-    data: PayloadData,
+    data: any,
     exp: TimeInSeconds,
     iat: TimeInSeconds,
 }
 
 
 export interface TokenManager {
-    sign(info: PayloadData, expiresIn?: TimeInSeconds): Promise<JsonWebToken>
+    sign(info: any, expiresIn?: TimeInSeconds): Promise<JsonWebToken>
     verify(token: JsonWebToken): Promise<Either<Error, Payload>>
 }

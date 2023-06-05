@@ -1,5 +1,6 @@
 import { JwtTokenManager } from "@/external/token-manager"
-import { PayloadData, Payload } from "@/usecases/authentication/ports"
+import { UserPayloadData } from "@/usecases/authentication/ports"
+import { Payload } from "@/usecases/ports"
 import { TokenExpiredError } from "jsonwebtoken"
 import * as sinon from 'sinon'
 
@@ -8,7 +9,7 @@ describe('JWT token manager', () => {
         const secret = 'my secret'
         const tokenManager = new JwtTokenManager(secret)
 
-        const info: PayloadData = {
+        const info: UserPayloadData = {
             id: 'my id',
             name: 'user name',
             email: 'email@email.com',
@@ -27,7 +28,7 @@ describe('JWT token manager', () => {
     test('should correctly verify invalid json web token', async () => {
       const secret = 'my secret'
       const tokenManager = new JwtTokenManager(secret)
-      const info: PayloadData = {
+      const info: UserPayloadData = {
         id: 'my id',
         name: 'user name',
         email: 'email@email.com',
@@ -41,7 +42,7 @@ describe('JWT token manager', () => {
       const clock = sinon.useFakeTimers()
       const secret = 'my secret'
       const tokenManager = new JwtTokenManager(secret)
-      const info: PayloadData = {
+      const info: UserPayloadData = {
         id: 'my id',
         name: 'user name',
         email: 'email@email.com',
@@ -62,7 +63,7 @@ describe('JWT token manager', () => {
       const clock = sinon.useFakeTimers()
       const secret = 'my secret'
       const tokenManager = new JwtTokenManager(secret)
-      const info: PayloadData = {
+      const info: UserPayloadData = {
         id: 'my id',
         name: 'user name',
         email: 'email@email.com',
@@ -82,7 +83,7 @@ describe('JWT token manager', () => {
       const clock = sinon.useFakeTimers()
       const secret = 'my secret'
       const tokenManager = new JwtTokenManager(secret)
-      const info: PayloadData = {
+      const info: UserPayloadData = {
         id: 'my id',
         name: 'user name',
         email: 'email@email.com',
