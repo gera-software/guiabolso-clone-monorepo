@@ -3,6 +3,7 @@ import { Payload, TokenManager, UseCase, UserRepository } from "@/usecases/ports
 import { InvalidUserError, UnregisteredUserError } from "@/usecases/errors";
 
 import { UserPayloadData } from "@/usecases/authentication/ports";
+import { EmailValidationPayloadData } from "./ports";
 
 export class SendUserValidationToken implements UseCase {
     private readonly userRepo: UserRepository
@@ -24,9 +25,8 @@ export class SendUserValidationToken implements UseCase {
             return left(new InvalidUserError('Usuário já verificado'))
         }
 
-        const payload: UserPayloadData = {
+        const payload: EmailValidationPayloadData = {
             id: 'id',
-            name: 'name',
             email: 'email',
         }
         const accessToken = await this.tokenManager.sign(payload)

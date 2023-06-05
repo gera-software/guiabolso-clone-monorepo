@@ -59,6 +59,7 @@ describe('Send user validation token use case', () => {
 
         const response = (await sut.perform(userId)).value as AuthenticationResult
         const verification = (await fakeTokenManager.verify(response.accessToken)).value as Payload
+        // expect(response).toEqual(3)
         expect(response.data).toEqual(verification.data)
         expect(response.exp).toEqual(verification.exp)
         expect(response.iat).toEqual(verification.iat)
