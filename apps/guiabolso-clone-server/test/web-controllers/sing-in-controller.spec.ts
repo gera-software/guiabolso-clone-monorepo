@@ -33,8 +33,8 @@ describe('Sign In web controller', () => {
         expect(response.statusCode).toEqual(200)
         expect(authResult.data).toEqual({
             id: "valid_id",
-            email: "fake@mail.com",
-            name: "fake name",
+            email: "any@email.com",
+            name: "Any name",
         })
         expect(authResult.accessToken).toBeTruthy()
         expect(authResult.iat).toBeDefined()

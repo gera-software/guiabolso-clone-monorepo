@@ -31,8 +31,8 @@ describe('Sign in use case', () => {
 
         expect(userResponse.data).toEqual({
             id: validUser.id,
-            email: 'fake@mail.com',
-            name: 'fake name',
+            email: 'valid@email.com',
+            name: 'valid name',
         })
         expect(userResponse.accessToken).toBeTruthy()
         expect(userResponse.iat).toBeDefined()
