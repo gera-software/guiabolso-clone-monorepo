@@ -1,9 +1,8 @@
-import { Token } from "@/entities"
+import { AuthenticationResult, Payload } from "@/usecases/authentication/ports";
 import { InvalidUserError, UnregisteredUserError } from "@/usecases/errors"
 import { SendUserValidationToken } from "@/usecases/send-user-validation-token"
-import { InMemoryTokenRepository, InMemoryUserRepository } from "@test/doubles/repositories"
-import crypto from "crypto";
-import * as sinon from 'sinon'
+import { FakeTokenManager } from "@test/doubles/authentication";
+import { InMemoryUserRepository } from "@test/doubles/repositories"
 
 describe('Send user validation token use case', () => {
 
@@ -14,9 +13,9 @@ describe('Send user validation token use case', () => {
     test('should not send a token if user does not exists', async () => {
         const userId = 'invalid-user-id'
 
-        const tokenRepository = new InMemoryTokenRepository([])
         const userRepository = new InMemoryUserRepository([])
-        const sut = new SendUserValidationToken(userRepository, tokenRepository)
+        const fakeTokenManager = new FakeTokenManager()
+        const sut = new SendUserValidationToken(userRepository, fakeTokenManager)
 
         const response = (await sut.perform(userId)).value as Error
         expect(response).toBeInstanceOf(UnregisteredUserError)
@@ -33,9 +32,9 @@ describe('Send user validation token use case', () => {
             id: userId,
         }
 
-        const tokenRepository = new InMemoryTokenRepository([])
         const userRepository = new InMemoryUserRepository([userData])
-        const sut = new SendUserValidationToken(userRepository, tokenRepository)
+        const fakeTokenManager = new FakeTokenManager()
+        const sut = new SendUserValidationToken(userRepository, fakeTokenManager)
 
         const response = (await sut.perform(userId)).value as Error
         expect(response).toBeInstanceOf(InvalidUserError)
@@ -43,8 +42,6 @@ describe('Send user validation token use case', () => {
     })
 
     test('should generate a token if user is not verified', async () => {
-        const clock = sinon.useFakeTimers()
-
         const userId = 'valid-user-id'
 
         const userData = {
@@ -55,29 +52,15 @@ describe('Send user validation token use case', () => {
             id: userId,
         }
 
-        const hashMock = {
-            // update: jest.fn().mockReturnThis(),
-            digest: jest.fn().mockReturnValueOnce('valid-hash'),
-        };
-        // @ts-ignore
-        const createHashMock = jest.spyOn(crypto, 'createHash').mockImplementationOnce(() => hashMock);
-
-        const tokenRepository = new InMemoryTokenRepository([])
         const userRepository = new InMemoryUserRepository([userData])
-        const sut = new SendUserValidationToken(userRepository, tokenRepository)
+        const fakeTokenManager = new FakeTokenManager()
+        const sut = new SendUserValidationToken(userRepository, fakeTokenManager)
 
+        const response = (await sut.perform(userId)).value as AuthenticationResult
+        const verification = (await fakeTokenManager.verify(response.accessToken)).value as Payload
+        expect(response.data).toEqual(verification.data)
+        expect(response.exp).toEqual(verification.exp)
+        expect(response.iat).toEqual(verification.iat)
 
-
-        const response = (await sut.perform(userId)).value as Token
-        expect(response.type).toBe("USER-VALIDATION-TOKEN")
-        expect(response.userId).toBe(userId)
-        expect(response.hash).toBe('valid-hash')
-        // const sixHours: number = 3600100 * 6
-        // clock.tick(sixHours)
-        // expect(response.expireAt).toEqual(new Date())
-
-        expect(createHashMock).toBeCalledWith('sha256')
-        expect(hashMock.digest).toBeCalledWith('hex')
-        clock.restore()
     })
 })

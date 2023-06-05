@@ -1,16 +1,16 @@
 import { left, right } from "@/shared";
-import { TokenRepository, UseCase, UserRepository } from "@/usecases/ports";
+import { UseCase, UserRepository } from "@/usecases/ports";
 import { InvalidUserError, UnregisteredUserError } from "@/usecases/errors";
-import { Token } from "@/entities";
-import crypto from "crypto";
+
+import { Payload, PayloadData, TokenManager } from "@/usecases/authentication/ports";
 
 export class SendUserValidationToken implements UseCase {
     private readonly userRepo: UserRepository
-    private readonly tokenRepo: TokenRepository
+    private readonly tokenManager: TokenManager
 
-    constructor(userRepository: UserRepository, tokenRepository: TokenRepository) {
+    constructor(userRepository: UserRepository, tokenManager: TokenManager) {
         this.userRepo = userRepository
-        this.tokenRepo = tokenRepository
+        this.tokenManager = tokenManager
     }
 
     async perform(userId: string): Promise<any> {
@@ -24,25 +24,38 @@ export class SendUserValidationToken implements UseCase {
             return left(new InvalidUserError('Usuário já verificado'))
         }
 
-        const randomString = crypto.createHash('sha256').digest('hex')
-        // const expireDate = new Date(new Date().setHours(new Date().getHours() + 6))
-        const expireDate = new Date()
-        const tokenOrError = Token.create('USER-VALIDATION-TOKEN', userId, randomString, expireDate)
-        // if(tokenOrError.isLeft()) {
-        //     return left(tokenOrError.value)
+        const payload: PayloadData = {
+            id: 'id',
+            name: 'name',
+            email: 'email',
+        }
+        const accessToken = await this.tokenManager.sign(payload)
+        
+        const payloadResponse = (await this.tokenManager.verify(accessToken)).value as Payload
+        return right({
+            ...payloadResponse,
+            accessToken,
+        })
+
+        // const randomString = crypto.createHash('sha256').digest('hex')
+        // // const expireDate = new Date(new Date().setHours(new Date().getHours() + 6))
+        // const expireDate = new Date()
+        // const tokenOrError = Token.create('USER-VALIDATION-TOKEN', userId, randomString, expireDate)
+        // // if(tokenOrError.isLeft()) {
+        // //     return left(tokenOrError.value)
+        // // }
+
+        // const token = tokenOrError.value as Token
+
+        // const tokenData = {
+        //     type: token.type,
+        //     userId: token.userId,
+        //     hash: token.hash,
+        //     expireAt: token.expireAt
         // }
 
-        const token = tokenOrError.value as Token
-
-        const tokenData = {
-            type: token.type,
-            userId: token.userId,
-            hash: token.hash,
-            expireAt: token.expireAt
-        }
-
-        const result = await this.tokenRepo.update(tokenData)
-        return right(result)
+        // const result = await this.tokenRepo.update(tokenData)
+        // return right(result)
 
     }
 
