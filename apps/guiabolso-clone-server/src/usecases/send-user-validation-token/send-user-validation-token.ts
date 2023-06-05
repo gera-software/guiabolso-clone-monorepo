@@ -2,6 +2,7 @@ import { left, right } from "@/shared";
 import { TokenRepository, UseCase, UserRepository } from "@/usecases/ports";
 import { InvalidUserError, UnregisteredUserError } from "@/usecases/errors";
 import { Token } from "@/entities";
+import crypto from "crypto";
 
 export class SendUserValidationToken implements UseCase {
     private readonly userRepo: UserRepository
@@ -23,7 +24,10 @@ export class SendUserValidationToken implements UseCase {
             return left(new InvalidUserError('Usuário já verificado'))
         }
 
-        const tokenOrError = Token.create('USER-VALIDATION-TOKEN', userId, 'hash-foo', new Date())
+        const randomString = crypto.createHash('sha256').digest('hex')
+        // const expireDate = new Date(new Date().setHours(new Date().getHours() + 6))
+        const expireDate = new Date()
+        const tokenOrError = Token.create('USER-VALIDATION-TOKEN', userId, randomString, expireDate)
         // if(tokenOrError.isLeft()) {
         //     return left(tokenOrError.value)
         // }
