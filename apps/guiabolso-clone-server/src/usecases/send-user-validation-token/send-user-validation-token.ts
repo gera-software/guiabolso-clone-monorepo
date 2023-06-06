@@ -1,18 +1,20 @@
-import { left, right } from "@/shared";
-import { Payload, TokenManager, UseCase, UserRepository } from "@/usecases/ports";
+import { Either, left, right } from "@/shared";
+import { MailService, Payload, TokenManager, UseCase, UserRepository } from "@/usecases/ports";
 import { InvalidUserError, UnregisteredUserError } from "@/usecases/errors";
 import { EmailValidationPayloadData } from "@/usecases/send-user-validation-token/ports"
 
 export class SendUserValidationToken implements UseCase {
     private readonly userRepo: UserRepository
     private readonly tokenManager: TokenManager
+    private readonly mailService: MailService
 
-    constructor(userRepository: UserRepository, tokenManager: TokenManager) {
+    constructor(userRepository: UserRepository, tokenManager: TokenManager, mailService: MailService) {
         this.userRepo = userRepository
         this.tokenManager = tokenManager
+        this.mailService = mailService
     }
 
-    async perform(userId: string): Promise<any> {
+    async perform(userId: string): Promise<Either<UnregisteredUserError | InvalidUserError, void>> {
         const userData = await this.userRepo.findUserById(userId)
 
         if(!userData) {
@@ -27,33 +29,13 @@ export class SendUserValidationToken implements UseCase {
             id: userData.id,
             email: userData.email,
         }
-        const emailValidationToken = await this.tokenManager.sign(payload)
+        const sixHours = 60 * 60 * 6
+        const emailValidationToken = await this.tokenManager.sign(payload, sixHours)
         
         const payloadResponse = (await this.tokenManager.verify(emailValidationToken)).value as Payload
-        return right({
-            ...payloadResponse,
-            emailValidationToken,
-        })
-
-        // const randomString = crypto.createHash('sha256').digest('hex')
-        // // const expireDate = new Date(new Date().setHours(new Date().getHours() + 6))
-        // const expireDate = new Date()
-        // const tokenOrError = Token.create('USER-VALIDATION-TOKEN', userId, randomString, expireDate)
-        // // if(tokenOrError.isLeft()) {
-        // //     return left(tokenOrError.value)
-        // // }
-
-        // const token = tokenOrError.value as Token
-
-        // const tokenData = {
-        //     type: token.type,
-        //     userId: token.userId,
-        //     hash: token.hash,
-        //     expireAt: token.expireAt
-        // }
-
-        // const result = await this.tokenRepo.update(tokenData)
-        // return right(result)
+        
+        this.mailService.send(`Olá ${userData.name},\nConfirme seu e-mail para concluir seu cadastro. Acesse o link: www.site/t=${emailValidationToken}`, "[Guiabolso Clone] Valide seu email", userData.email)
+        
 
     }
 
