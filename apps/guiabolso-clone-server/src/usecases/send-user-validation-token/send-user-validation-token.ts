@@ -1,5 +1,5 @@
 import { Either, left } from "@/shared";
-import { MailService, Payload, TokenManager, UseCase, UserRepository } from "@/usecases/ports";
+import { MailService, TokenManager, UseCase, UserRepository } from "@/usecases/ports";
 import { InvalidUserError, UnregisteredUserError } from "@/usecases/errors";
 import { EmailValidationPayloadData } from "@/usecases/send-user-validation-token/ports"
 
@@ -34,13 +34,9 @@ export class SendUserValidationToken implements UseCase {
         const sixHours = 60 * 60 * 6
         const emailValidationToken = await this.tokenManager.sign(payload, sixHours)
         
-        const payloadResponse = (await this.tokenManager.verify(emailValidationToken)).value as Payload
-        
         const url = `${this.FRONTEND_URL}/email-validation?t=${emailValidationToken}`
 
         this.mailService.send(`Olá ${userData.name},\nConfirme seu e-mail para concluir seu cadastro. Acesse o link: ${url}`, "[Guiabolso Clone] Valide seu email", userData.email)
-        
-
     }
 
 }
