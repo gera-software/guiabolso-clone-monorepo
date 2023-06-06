@@ -17,7 +17,7 @@ describe('Send user validation token use case', () => {
         const userRepository = new InMemoryUserRepository([])
         const fakeTokenManager = new FakeTokenManager()
         const fakeMailService = new FakeMailService()
-        const sut = new SendUserValidationToken(userRepository, fakeTokenManager, fakeMailService)
+        const sut = new SendUserValidationToken(userRepository, fakeTokenManager, fakeMailService, process.env.FRONTEND_URL)
 
         const response = (await sut.perform(userId)).value as Error
         expect(response).toBeInstanceOf(UnregisteredUserError)
@@ -37,7 +37,7 @@ describe('Send user validation token use case', () => {
         const userRepository = new InMemoryUserRepository([userData])
         const fakeTokenManager = new FakeTokenManager()
         const fakeMailService = new FakeMailService()
-        const sut = new SendUserValidationToken(userRepository, fakeTokenManager, fakeMailService)
+        const sut = new SendUserValidationToken(userRepository, fakeTokenManager, fakeMailService, process.env.FRONTEND_URL)
 
         const response = (await sut.perform(userId)).value as Error
         expect(response).toBeInstanceOf(InvalidUserError)
@@ -58,7 +58,7 @@ describe('Send user validation token use case', () => {
         const userRepository = new InMemoryUserRepository([userData])
         const fakeTokenManager = new FakeTokenManager()
         const fakeMailService = new FakeMailService()
-        const sut = new SendUserValidationToken(userRepository, fakeTokenManager, fakeMailService)
+        const sut = new SendUserValidationToken(userRepository, fakeTokenManager, fakeMailService, process.env.FRONTEND_URL)
 
         await sut.perform(userId)
 
@@ -69,7 +69,7 @@ describe('Send user validation token use case', () => {
         const sixHours = 60 * 60 * 6
         const emailValidationToken = await fakeTokenManager.sign(payload, sixHours)
         expect(fakeMailService._sended[0]).toEqual({
-            message: `Olá ${userData.name},\nConfirme seu e-mail para concluir seu cadastro. Acesse o link: www.site/t=${emailValidationToken}`, 
+            message: `Olá ${userData.name},\nConfirme seu e-mail para concluir seu cadastro. Acesse o link: ${process.env.FRONTEND_URL}/email-validation?t=${emailValidationToken}`, 
             subject: "[Guiabolso Clone] Valide seu email", 
             to: userData.email
         })
@@ -89,7 +89,7 @@ describe('Send user validation token use case', () => {
         const userRepository = new InMemoryUserRepository([userData])
         const fakeTokenManager = new FakeTokenManager()
         const fakeMailService = new FakeMailService()
-        const sut = new SendUserValidationToken(userRepository, fakeTokenManager, fakeMailService)
+        const sut = new SendUserValidationToken(userRepository, fakeTokenManager, fakeMailService, process.env.FRONTEND_URL)
 
         const mockTokenManager = jest.spyOn(fakeTokenManager, 'sign')
         await sut.perform(userId)

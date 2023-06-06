@@ -1,4 +1,4 @@
-import { Either, left, right } from "@/shared";
+import { Either, left } from "@/shared";
 import { MailService, Payload, TokenManager, UseCase, UserRepository } from "@/usecases/ports";
 import { InvalidUserError, UnregisteredUserError } from "@/usecases/errors";
 import { EmailValidationPayloadData } from "@/usecases/send-user-validation-token/ports"
@@ -7,11 +7,13 @@ export class SendUserValidationToken implements UseCase {
     private readonly userRepo: UserRepository
     private readonly tokenManager: TokenManager
     private readonly mailService: MailService
+    private readonly FRONTEND_URL: string
 
-    constructor(userRepository: UserRepository, tokenManager: TokenManager, mailService: MailService) {
+    constructor(userRepository: UserRepository, tokenManager: TokenManager, mailService: MailService, frontendUrl: string) {
         this.userRepo = userRepository
         this.tokenManager = tokenManager
         this.mailService = mailService
+        this.FRONTEND_URL = frontendUrl
     }
 
     async perform(userId: string): Promise<Either<UnregisteredUserError | InvalidUserError, void>> {
@@ -34,7 +36,9 @@ export class SendUserValidationToken implements UseCase {
         
         const payloadResponse = (await this.tokenManager.verify(emailValidationToken)).value as Payload
         
-        this.mailService.send(`Olá ${userData.name},\nConfirme seu e-mail para concluir seu cadastro. Acesse o link: www.site/t=${emailValidationToken}`, "[Guiabolso Clone] Valide seu email", userData.email)
+        const url = `${this.FRONTEND_URL}/email-validation?t=${emailValidationToken}`
+
+        this.mailService.send(`Olá ${userData.name},\nConfirme seu e-mail para concluir seu cadastro. Acesse o link: ${url}`, "[Guiabolso Clone] Valide seu email", userData.email)
         
 
     }
