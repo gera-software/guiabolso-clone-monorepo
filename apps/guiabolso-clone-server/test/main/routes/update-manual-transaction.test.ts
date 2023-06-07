@@ -54,7 +54,8 @@ describe('update manual transaction route', () => {
         validUser = await userRepo.add({
             name: "valid name",
             email: "valid@email.com",
-            password: "valid"
+            password: "valid",
+            isVerified: true,
         })
 
         validWalletAccount = await accountRepo.add({

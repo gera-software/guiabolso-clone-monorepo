@@ -17,6 +17,7 @@ export class NodemailerService implements MailService {
           user: smtpOptions.user,
           pass: smtpOptions.password,
         },
+        tls: {rejectUnauthorized: false},
       });
     }
   
