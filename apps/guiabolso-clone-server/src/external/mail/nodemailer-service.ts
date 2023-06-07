@@ -1,16 +1,21 @@
 import { MailService } from "@/usecases/ports";
 import nodemailer from 'nodemailer'
 
+type SmtpOptions = {
+  service: string,
+  user: string,
+  password: string,
+}
+
 export class NodemailerService implements MailService {
     public transporter: nodemailer.Transporter;
 
-    // TODO constructor should receive env params 
-    constructor() {
+    constructor(smtpOptions: SmtpOptions) {
       this.transporter = nodemailer.createTransport({
-        service: process.env.SMTP_SERVICE,
+        service: smtpOptions.service,
         auth: {
-          user: process.env.SMTP_USER,
-          pass: process.env.SMTP_PASSWORD,
+          user: smtpOptions.user,
+          pass: smtpOptions.password,
         },
       });
     }

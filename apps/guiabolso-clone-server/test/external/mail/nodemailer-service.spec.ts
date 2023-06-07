@@ -20,7 +20,12 @@ describe('Nodemailer Service', () => {
     it('should send an email successfully', async () => {
         sendMailMock.mockReturnValue(undefined)
 
-        emailService = new NodemailerService()
+        const smtpOptions = {
+            service: process.env.SMTP_SERVICE,
+            user: process.env.SMTP_USER,
+            password: process.env.SMTP_PASSWORD,
+        }
+        emailService = new NodemailerService(smtpOptions)
 
         await emailService.send('message', 'teste', 'gilmar-andrade@outlook.com')
 
@@ -32,7 +37,12 @@ describe('Nodemailer Service', () => {
     it('should handle email sending error', async () => {
         sendMailMock.mockRejectedValue('error message')
 
-        emailService = new NodemailerService()
+        const smtpOptions = {
+            service: process.env.SMTP_SERVICE,
+            user: process.env.SMTP_USER,
+            password: process.env.SMTP_PASSWORD,
+        }
+        emailService = new NodemailerService(smtpOptions)
 
         try {
             await emailService.send('message', 'teste', 'gilmar-andrade@outlook.com')
