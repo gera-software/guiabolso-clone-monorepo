@@ -29,8 +29,8 @@ export class CustomAuthentication implements AuthenticationService {
         if(matches) {
 
             if(!userFound.isVerified) {
-                // TODO enviar email de verificação
-                return left(new UserNotVerifiedError('Usuário não verificado'))
+                await this.sendUserValidationToken.perform(userFound.id)
+                return left(new UserNotVerifiedError('Por favor, verifique seu e-mail. Nós enviamos um link para ativação da sua conta.'))
             }
 
             const payload: UserPayloadData = {

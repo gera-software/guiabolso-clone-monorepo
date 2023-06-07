@@ -16,6 +16,7 @@ export class SendUserValidationToken implements UseCase {
         this.FRONTEND_URL = frontendUrl
     }
 
+    // TODO should receive an UserData, no need to search on userRepo
     async perform(userId: string): Promise<Either<UnregisteredUserError | InvalidUserError, void>> {
         const userData = await this.userRepo.findUserById(userId)
 

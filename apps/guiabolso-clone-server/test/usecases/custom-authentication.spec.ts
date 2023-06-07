@@ -41,7 +41,7 @@ describe('Custom authentication', () => {
 
     })
 
-    test('should not authenticate if password is correct but user is not verified', async () => {
+    test('should not authenticate if password is correct but user is not verified, and should resend a email verification token', async () => {
         const userRepository = new InMemoryUserRepository([
             {
                 name: 'valid name',
@@ -63,6 +63,11 @@ describe('Custom authentication', () => {
         const authentication = new CustomAuthentication(userRepository, encoder, fakeTokenManager, sendUserValidationTokenUsecase)
         const response = (await (authentication.auth(validSignInRequest))).value as Error
         expect(response).toBeInstanceOf(UserNotVerifiedError)
+        expect(response.message).toBe('Por favor, verifique seu e-mail. Nós enviamos um link para ativação da sua conta.')
+
+        const sendedEmail = fakeMailService._sended[0]
+        expect(sendedEmail.subject).toBe('[Guiabolso Clone] Valide seu email')
+        expect(sendedEmail.to).toBe(validSignInRequest.email)
     })
 
     test('should not authenticate if password is incorrect', async () => {
