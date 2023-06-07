@@ -1,9 +1,11 @@
 import { CustomAuthentication } from "@/usecases/authentication"
 import { UserNotFoundError, UserNotVerifiedError, WrongPasswordError } from "@/usecases/authentication/errors"
 import { AuthenticationResult } from "@/usecases/authentication/ports"
+import { SendUserValidationToken } from "@/usecases/send-user-validation-token"
 import { SignIn } from "@/usecases/sign-in"
 import { FakeTokenManager } from "@test/doubles/authentication"
 import { FakeEncoder } from "@test/doubles/encoder"
+import { FakeMailService } from "@test/doubles/mail"
 import { InMemoryUserRepository } from "@test/doubles/repositories"
 
 describe('Sign in use case', () => {
@@ -24,7 +26,9 @@ describe('Sign in use case', () => {
         const userRepository = new InMemoryUserRepository([validUser])
         const encoder = new FakeEncoder()
         const tokenManager = new FakeTokenManager()
-        const autenticationService = new CustomAuthentication(userRepository, encoder, tokenManager)
+        const fakeMailService = new FakeMailService()
+        const sendUserValidationTokenUsecase = new SendUserValidationToken(userRepository, tokenManager, fakeMailService, process.env.FRONTEND_URL)
+        const autenticationService = new CustomAuthentication(userRepository, encoder, tokenManager, sendUserValidationTokenUsecase)
         const sut = new SignIn(autenticationService)
         const userResponse = (await sut.perform(singInRequest)).value as AuthenticationResult
 
@@ -59,7 +63,9 @@ describe('Sign in use case', () => {
         const userRepository = new InMemoryUserRepository([user])
         const encoder = new FakeEncoder()
         const tokenManager = new FakeTokenManager()
-        const autenticationService = new CustomAuthentication(userRepository, encoder, tokenManager)
+        const fakeMailService = new FakeMailService()
+        const sendUserValidationTokenUsecase = new SendUserValidationToken(userRepository, tokenManager, fakeMailService, process.env.FRONTEND_URL)
+        const autenticationService = new CustomAuthentication(userRepository, encoder, tokenManager, sendUserValidationTokenUsecase)
         const sut = new SignIn(autenticationService)
         const response = (await sut.perform(singInRequest)).value as Error
         expect(response).toBeInstanceOf(UserNotVerifiedError)
@@ -81,7 +87,9 @@ describe('Sign in use case', () => {
         const userRepository = new InMemoryUserRepository([user])
         const encoder = new FakeEncoder()
         const tokenManager = new FakeTokenManager()
-        const autenticationService = new CustomAuthentication(userRepository, encoder, tokenManager)
+        const fakeMailService = new FakeMailService()
+        const sendUserValidationTokenUsecase = new SendUserValidationToken(userRepository, tokenManager, fakeMailService, process.env.FRONTEND_URL)
+        const autenticationService = new CustomAuthentication(userRepository, encoder, tokenManager, sendUserValidationTokenUsecase)
         const sut = new SignIn(autenticationService)
         const response = (await sut.perform(singInRequest)).value as Error
         expect(response).toBeInstanceOf(WrongPasswordError)
@@ -103,7 +111,9 @@ describe('Sign in use case', () => {
         const userRepository = new InMemoryUserRepository([])
         const encoder = new FakeEncoder()
         const tokenManager = new FakeTokenManager()
-        const autenticationService = new CustomAuthentication(userRepository, encoder, tokenManager)
+        const fakeMailService = new FakeMailService()
+        const sendUserValidationTokenUsecase = new SendUserValidationToken(userRepository, tokenManager, fakeMailService, process.env.FRONTEND_URL)
+        const autenticationService = new CustomAuthentication(userRepository, encoder, tokenManager, sendUserValidationTokenUsecase)
         const sut = new SignIn(autenticationService)
         const response = (await sut.perform(singInRequest)).value as Error
         expect(response).toBeInstanceOf(UserNotFoundError)

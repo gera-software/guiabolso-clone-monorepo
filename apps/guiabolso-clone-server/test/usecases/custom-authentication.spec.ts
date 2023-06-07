@@ -2,14 +2,16 @@ import { CustomAuthentication } from "@/usecases/authentication"
 import { UserNotFoundError, UserNotVerifiedError, WrongPasswordError } from "@/usecases/authentication/errors"
 import { AuthenticationResult, AuthenticationParams } from "@/usecases/authentication/ports"
 import { Encoder, Payload } from "@/usecases/ports"
+import { SendUserValidationToken } from "@/usecases/send-user-validation-token"
 import { FakeTokenManager } from "@test/doubles/authentication"
 import { FakeEncoder } from "@test/doubles/encoder"
+import { FakeMailService } from "@test/doubles/mail"
 import { InMemoryUserRepository } from "@test/doubles/repositories"
 
 describe('Custom authentication', () => {
 
     test('should correctly authenticate if user email and password is correct', async () => {
-        const userUserRepository = new InMemoryUserRepository([
+        const userRepository = new InMemoryUserRepository([
             {
                 name: 'valid name',
                 email: 'valid@email.com',
@@ -26,7 +28,9 @@ describe('Custom authentication', () => {
 
         const encoder: Encoder = new FakeEncoder()
         const fakeTokenManager = new FakeTokenManager()
-        const authentication = new CustomAuthentication(userUserRepository, encoder, fakeTokenManager)
+        const fakeMailService = new FakeMailService()
+        const sendUserValidationTokenUsecase = new SendUserValidationToken(userRepository, fakeTokenManager, fakeMailService, process.env.FRONTEND_URL)
+        const authentication = new CustomAuthentication(userRepository, encoder, fakeTokenManager, sendUserValidationTokenUsecase)
         const result = (await authentication.auth(validSignInRequest)).value as AuthenticationResult
 
         expect(result.accessToken).toBeDefined()
@@ -38,7 +42,7 @@ describe('Custom authentication', () => {
     })
 
     test('should not authenticate if password is correct but user is not verified', async () => {
-        const userUserRepository = new InMemoryUserRepository([
+        const userRepository = new InMemoryUserRepository([
             {
                 name: 'valid name',
                 email: 'valid@email.com',
@@ -54,13 +58,15 @@ describe('Custom authentication', () => {
         }
         const encoder: Encoder = new FakeEncoder()
         const fakeTokenManager = new FakeTokenManager()
-        const authentication = new CustomAuthentication(userUserRepository, encoder, fakeTokenManager)
+        const fakeMailService = new FakeMailService()
+        const sendUserValidationTokenUsecase = new SendUserValidationToken(userRepository, fakeTokenManager, fakeMailService, process.env.FRONTEND_URL)
+        const authentication = new CustomAuthentication(userRepository, encoder, fakeTokenManager, sendUserValidationTokenUsecase)
         const response = (await (authentication.auth(validSignInRequest))).value as Error
         expect(response).toBeInstanceOf(UserNotVerifiedError)
     })
 
     test('should not authenticate if password is incorrect', async () => {
-        const userUserRepository = new InMemoryUserRepository([
+        const userRepository = new InMemoryUserRepository([
             {
                 name: 'valid name',
                 email: 'valid@email.com',
@@ -76,13 +82,15 @@ describe('Custom authentication', () => {
         }
         const encoder: Encoder = new FakeEncoder()
         const fakeTokenManager = new FakeTokenManager()
-        const authentication = new CustomAuthentication(userUserRepository, encoder, fakeTokenManager)
+        const fakeMailService = new FakeMailService()
+        const sendUserValidationTokenUsecase = new SendUserValidationToken(userRepository, fakeTokenManager, fakeMailService, process.env.FRONTEND_URL)
+        const authentication = new CustomAuthentication(userRepository, encoder, fakeTokenManager, sendUserValidationTokenUsecase)
         const response = (await (authentication.auth(invalidSignInRequest))).value as Error
         expect(response).toBeInstanceOf(WrongPasswordError)
     })
 
     test('should not authenticate if user is not found (email is incorrect)', async () => {
-        const userUserRepository = new InMemoryUserRepository([])
+        const userRepository = new InMemoryUserRepository([])
 
         const invalidSignInRequest: AuthenticationParams = {
             email: 'invalid@email.com',
@@ -90,7 +98,9 @@ describe('Custom authentication', () => {
         }
         const encoder: Encoder = new FakeEncoder()
         const fakeTokenManager = new FakeTokenManager()
-        const authentication = new CustomAuthentication(userUserRepository, encoder, fakeTokenManager)
+        const fakeMailService = new FakeMailService()
+        const sendUserValidationTokenUsecase = new SendUserValidationToken(userRepository, fakeTokenManager, fakeMailService, process.env.FRONTEND_URL)
+        const authentication = new CustomAuthentication(userRepository, encoder, fakeTokenManager, sendUserValidationTokenUsecase)
         const response = (await (authentication.auth(invalidSignInRequest))).value as Error
         expect(response).toBeInstanceOf(UserNotFoundError)
     })

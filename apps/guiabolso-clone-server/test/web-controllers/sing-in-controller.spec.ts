@@ -1,11 +1,13 @@
 import { CustomAuthentication } from "@/usecases/authentication"
 import { AuthenticationResult } from "@/usecases/authentication/ports"
 import { UseCase, UserData } from "@/usecases/ports"
+import { SendUserValidationToken } from "@/usecases/send-user-validation-token"
 import { SignIn } from "@/usecases/sign-in"
 import { HttpRequest, HttpResponse } from "@/web-controllers/ports"
 import { SignInController } from "@/web-controllers/sign-in-controller"
 import { FakeTokenManager } from "@test/doubles/authentication"
 import { FakeEncoder } from "@test/doubles/encoder"
+import { FakeMailService } from "@test/doubles/mail"
 import { InMemoryUserRepository } from "@test/doubles/repositories"
 import { ErrorThrowingUseCaseStub } from "@test/doubles/usecases"
 
@@ -19,7 +21,11 @@ describe('Sign In web controller', () => {
             password: 'validENCRYPTED'
         }
         const userRepository = new InMemoryUserRepository([validUser])
-        const usecase = new SignIn(new CustomAuthentication(userRepository, new FakeEncoder(), new FakeTokenManager()))
+        const fakeTokenManager = new FakeTokenManager()
+        const fakeMailService = new FakeMailService()
+        const sendUserValidationTokenUsecase = new SendUserValidationToken(userRepository, fakeTokenManager, fakeMailService, process.env.FRONTEND_URL)
+        const customAuthenticationService = new CustomAuthentication(userRepository, new FakeEncoder(), new FakeTokenManager(), sendUserValidationTokenUsecase)
+        const usecase = new SignIn(customAuthenticationService)
         const sut: SignInController = new SignInController(usecase) 
 
         const validRequest: HttpRequest = {
@@ -43,7 +49,11 @@ describe('Sign In web controller', () => {
 
     test('should return 400 if password and email are missing in the request', async () => {
         const userRepository = new InMemoryUserRepository([])
-        const usecase = new SignIn(new CustomAuthentication(userRepository, new FakeEncoder(), new FakeTokenManager()))
+        const fakeTokenManager = new FakeTokenManager()
+        const fakeMailService = new FakeMailService()
+        const sendUserValidationTokenUsecase = new SendUserValidationToken(userRepository, fakeTokenManager, fakeMailService, process.env.FRONTEND_URL)
+        const customAuthenticationService = new CustomAuthentication(userRepository, new FakeEncoder(), new FakeTokenManager(), sendUserValidationTokenUsecase)
+        const usecase = new SignIn(customAuthenticationService)
         const sut: SignInController = new SignInController(usecase) 
 
         const invalidRequest: HttpRequest = {
@@ -66,7 +76,11 @@ describe('Sign In web controller', () => {
             password: 'validENCRYPTED'
         }
         const userRepository = new InMemoryUserRepository([validUser])
-        const usecase = new SignIn(new CustomAuthentication(userRepository, new FakeEncoder(), new FakeTokenManager()))
+        const fakeTokenManager = new FakeTokenManager()
+        const fakeMailService = new FakeMailService()
+        const sendUserValidationTokenUsecase = new SendUserValidationToken(userRepository, fakeTokenManager, fakeMailService, process.env.FRONTEND_URL)
+        const customAuthenticationService = new CustomAuthentication(userRepository, new FakeEncoder(), new FakeTokenManager(), sendUserValidationTokenUsecase)
+        const usecase = new SignIn(customAuthenticationService)
         const sut: SignInController = new SignInController(usecase) 
 
         const invalidRequest: HttpRequest = {
@@ -91,7 +105,11 @@ describe('Sign In web controller', () => {
             password: 'validENCRYPTED'
         }
         const userRepository = new InMemoryUserRepository([validUser])
-        const usecase = new SignIn(new CustomAuthentication(userRepository, new FakeEncoder(), new FakeTokenManager()))
+        const fakeTokenManager = new FakeTokenManager()
+        const fakeMailService = new FakeMailService()
+        const sendUserValidationTokenUsecase = new SendUserValidationToken(userRepository, fakeTokenManager, fakeMailService, process.env.FRONTEND_URL)
+        const customAuthenticationService = new CustomAuthentication(userRepository, new FakeEncoder(), new FakeTokenManager(), sendUserValidationTokenUsecase)
+        const usecase = new SignIn(customAuthenticationService)
         const sut: SignInController = new SignInController(usecase) 
 
         const invalidRequest: HttpRequest = {
@@ -109,7 +127,11 @@ describe('Sign In web controller', () => {
 
     test('should return 400 if user is not found', async () => {
         const userRepository = new InMemoryUserRepository([])
-        const usecase = new SignIn(new CustomAuthentication(userRepository, new FakeEncoder(), new FakeTokenManager()))
+        const fakeTokenManager = new FakeTokenManager()
+        const fakeMailService = new FakeMailService()
+        const sendUserValidationTokenUsecase = new SendUserValidationToken(userRepository, fakeTokenManager, fakeMailService, process.env.FRONTEND_URL)
+        const customAuthenticationService = new CustomAuthentication(userRepository, new FakeEncoder(), new FakeTokenManager(), sendUserValidationTokenUsecase)
+        const usecase = new SignIn(customAuthenticationService)
         const sut: SignInController = new SignInController(usecase) 
 
         const validRequest: HttpRequest = {

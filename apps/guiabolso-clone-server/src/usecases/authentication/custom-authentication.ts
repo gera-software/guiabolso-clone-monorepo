@@ -1,18 +1,20 @@
 import { Either, left, right } from "@/shared";
 import { UserNotFoundError, UserNotVerifiedError, WrongPasswordError } from "@/usecases/authentication/errors";
 import { AuthenticationParams, AuthenticationResult, UserPayloadData } from "@/usecases/authentication/ports";
-import { Encoder, Payload, TokenManager, UserRepository } from "@/usecases/ports";
+import { Encoder, Payload, TokenManager, UseCase, UserRepository } from "@/usecases/ports";
 import { AuthenticationService } from "@/usecases/authentication/ports";
 
 export class CustomAuthentication implements AuthenticationService {
     private readonly userRepository: UserRepository
     private readonly encoder: Encoder
     private readonly tokenManager: TokenManager
+    private readonly sendUserValidationToken: UseCase
 
-    constructor(userRepository: UserRepository, encoder: Encoder, tokenManager: TokenManager) {
+    constructor(userRepository: UserRepository, encoder: Encoder, tokenManager: TokenManager, sendUserValidationToken: UseCase) {
         this.userRepository = userRepository
         this.encoder = encoder
         this.tokenManager = tokenManager
+        this.sendUserValidationToken = sendUserValidationToken
     }
 
     public async auth(request: AuthenticationParams): Promise<Either<UserNotVerifiedError | UserNotFoundError | WrongPasswordError, AuthenticationResult>>{
