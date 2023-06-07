@@ -1,40 +1,46 @@
 import { InvalidEmailError, InvalidNameError, InvalidPasswordError } from "@/entities/errors"
-import { AuthenticationResult } from "@/usecases/authentication/ports"
 import { Encoder, UserData } from "@/usecases/ports"
+import { SendUserValidationToken } from "@/usecases/send-user-validation-token"
 import { SignUp } from "@/usecases/sign-up"
 import { ExistingUserError } from "@/usecases/sign-up/errors"
-import { AuthenticationServiceStub } from "@test/doubles/authentication"
+import { FakeTokenManager } from "@test/doubles/authentication"
 import { FakeEncoder } from "@test/doubles/encoder"
+import { FakeMailService } from "@test/doubles/mail"
 import { InMemoryUserRepository } from "@test/doubles/repositories"
 
 describe("Sing up use case", () => {
     test("should sign up user with valid data", async () => {
-        const emptyUserRepository = new InMemoryUserRepository([])
+        const userRepository = new InMemoryUserRepository([])
         const encoder: Encoder = new FakeEncoder()
-        const authenticationStub = new AuthenticationServiceStub()
-        const sut: SignUp = new SignUp(emptyUserRepository, encoder, authenticationStub)
+        const fakeTokenManager = new FakeTokenManager()
+        const fakeMailService = new FakeMailService()
+        const sendUserValidationTokenUsecase = new SendUserValidationToken(userRepository, fakeTokenManager, fakeMailService, process.env.FRONTEND_URL)
+        const sut: SignUp = new SignUp(userRepository, encoder, sendUserValidationTokenUsecase)
 
         const validUserSignUpRequest: UserData = {
             name: 'any name',
             email: 'any@mail.com',
             password: 'validpassword',
         }
-        const userSignUpResponse = await sut.perform(validUserSignUpRequest)
-        const authenticationResponse = userSignUpResponse.value as AuthenticationResult
+        const result = (await sut.perform(validUserSignUpRequest)).value as UserData
 
-        expect(authenticationResponse.data).toEqual({
-            id: "valid_id",
-            email: 'valid@email.com',
-            name: 'valid name',
+        expect(result).toEqual({
+            id: "0",
+            email: 'any@mail.com',
+            name: 'any name',
+            isVerified: false
         })
-        expect(authenticationResponse.accessToken).toBeTruthy()
-        expect(authenticationResponse.iat).toBeDefined()
-        expect(authenticationResponse.exp).toBeDefined()
 
-        expect((await emptyUserRepository.findUserByEmail(validUserSignUpRequest.email))?.password).toEqual(validUserSignUpRequest.password + 'ENCRYPTED')
+        const foundUser = await userRepository.findUserByEmail(validUserSignUpRequest.email)
+        expect(foundUser?.password).toEqual(validUserSignUpRequest.password + 'ENCRYPTED')
+        expect(foundUser?.isVerified).toEqual(false)
+
+        const sendedEmail = fakeMailService._sended[0]
+        expect(sendedEmail.subject).toBe('[Guiabolso Clone] Valide seu email')
+        expect(sendedEmail.to).toBe(validUserSignUpRequest.email)
     })
 
-    test("should not sign up existing user", async () => {
+    test("should not sign up existing user (same email)", async () => {
         const validUser: UserData = {
             name: 'any name',
             email: 'any@mail.com',
@@ -43,8 +49,10 @@ describe("Sing up use case", () => {
         const userDataArray: UserData[] = [ validUser ]
         const userRepository = new InMemoryUserRepository(userDataArray)
         const encoder: Encoder = new FakeEncoder()
-        const authenticationStub = new AuthenticationServiceStub()
-        const sut: SignUp = new SignUp(userRepository, encoder, authenticationStub)
+        const fakeTokenManager = new FakeTokenManager()
+        const fakeMailService = new FakeMailService()
+        const sendUserValidationTokenUsecase = new SendUserValidationToken(userRepository, fakeTokenManager, fakeMailService, process.env.FRONTEND_URL)
+        const sut: SignUp = new SignUp(userRepository, encoder, sendUserValidationTokenUsecase)
 
         const validUserSignUpRequest: UserData = {
             name: 'any name',
@@ -65,10 +73,12 @@ describe("Sing up use case", () => {
                 password: 'validpassword',
             }
     
-            const emptyUserRepository = new InMemoryUserRepository([])
+            const userRepository = new InMemoryUserRepository([])
             const encoder: Encoder = new FakeEncoder()
-            const authenticationStub = new AuthenticationServiceStub()
-            const sut: SignUp = new SignUp(emptyUserRepository, encoder, authenticationStub)
+            const fakeTokenManager = new FakeTokenManager()
+            const fakeMailService = new FakeMailService()
+            const sendUserValidationTokenUsecase = new SendUserValidationToken(userRepository, fakeTokenManager, fakeMailService, process.env.FRONTEND_URL)
+            const sut: SignUp = new SignUp(userRepository, encoder, sendUserValidationTokenUsecase)
             const error = await sut.perform(invalidUserSignUpRequest)
             expect(error.value).toBeInstanceOf(InvalidEmailError)
         })
@@ -80,10 +90,12 @@ describe("Sing up use case", () => {
                 password: '',
             }
     
-            const emptyUserRepository = new InMemoryUserRepository([])
+            const userRepository = new InMemoryUserRepository([])
             const encoder: Encoder = new FakeEncoder()
-            const authenticationStub = new AuthenticationServiceStub()
-            const sut: SignUp = new SignUp(emptyUserRepository, encoder, authenticationStub)
+            const fakeTokenManager = new FakeTokenManager()
+            const fakeMailService = new FakeMailService()
+            const sendUserValidationTokenUsecase = new SendUserValidationToken(userRepository, fakeTokenManager, fakeMailService, process.env.FRONTEND_URL)
+            const sut: SignUp = new SignUp(userRepository, encoder, sendUserValidationTokenUsecase)
             const error = await sut.perform(invalidUserSignUpRequest)
             expect(error.value).toBeInstanceOf(InvalidPasswordError)
         })
@@ -95,10 +107,12 @@ describe("Sing up use case", () => {
                 password: 'validpassword',
             }
     
-            const emptyUserRepository = new InMemoryUserRepository([])
+            const userRepository = new InMemoryUserRepository([])
             const encoder: Encoder = new FakeEncoder()
-            const authenticationStub = new AuthenticationServiceStub()
-            const sut: SignUp = new SignUp(emptyUserRepository, encoder, authenticationStub)
+            const fakeTokenManager = new FakeTokenManager()
+            const fakeMailService = new FakeMailService()
+            const sendUserValidationTokenUsecase = new SendUserValidationToken(userRepository, fakeTokenManager, fakeMailService, process.env.FRONTEND_URL)
+            const sut: SignUp = new SignUp(userRepository, encoder, sendUserValidationTokenUsecase)
             const error = await sut.perform(invalidUserSignUpRequest)
             expect(error.value).toBeInstanceOf(InvalidNameError)
         })

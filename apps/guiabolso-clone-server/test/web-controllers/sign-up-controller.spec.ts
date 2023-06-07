@@ -1,18 +1,22 @@
 import { Encoder, UseCase } from "@/usecases/ports"
+import { SendUserValidationToken } from "@/usecases/send-user-validation-token"
 import { SignUp } from "@/usecases/sign-up"
 import { HttpRequest, HttpResponse } from "@/web-controllers/ports"
 import { SignUpController } from '@/web-controllers/sign-up-controller'
-import { AuthenticationServiceStub } from "@test/doubles/authentication"
+import { FakeTokenManager } from "@test/doubles/authentication"
 import { FakeEncoder } from "@test/doubles/encoder"
+import { FakeMailService } from "@test/doubles/mail"
 import { InMemoryUserRepository } from "@test/doubles/repositories"
 import { ErrorThrowingUseCaseStub } from "@test/doubles/usecases"
 
 describe('Sign Up web controller', () => {
     test('should return status code 201 created when request contains valid user data', async () => {
-        const emptyUserRepository = new InMemoryUserRepository([])
+        const userRepository = new InMemoryUserRepository([])
         const encoder: Encoder = new FakeEncoder()
-        const authenticationStub = new AuthenticationServiceStub()
-        const usecase: SignUp = new SignUp(emptyUserRepository, encoder, authenticationStub)
+        const fakeTokenManager = new FakeTokenManager()
+        const fakeMailService = new FakeMailService()
+        const sendUserValidationTokenUsecase = new SendUserValidationToken(userRepository, fakeTokenManager, fakeMailService, process.env.FRONTEND_URL)
+        const usecase: SignUp = new SignUp(userRepository, encoder, sendUserValidationTokenUsecase)
         const sut: SignUpController = new SignUpController(usecase) 
 
         const request: HttpRequest = {
@@ -26,21 +30,21 @@ describe('Sign Up web controller', () => {
         const response: HttpResponse = await sut.handle(request)
         expect(response.statusCode).toEqual(201)
 
-        expect(response.body.data).toEqual({
-            id: "valid_id",
-            email: "valid@email.com",
-            name: "valid name",
+        expect(response.body).toEqual({
+            id: "0",
+            email: "any@email.com",
+            name: "Any name",
+            isVerified: false,
         })
-        expect(response.body.accessToken).toBeTruthy()
-        expect(response.body.iat).toBeDefined()
-        expect(response.body.exp).toBeDefined()
     })
 
     test('should return status code 400 when request contains invalid name', async () => {
-        const emptyUserRepository = new InMemoryUserRepository([])
+        const userRepository = new InMemoryUserRepository([])
         const encoder: Encoder = new FakeEncoder()
-        const authenticationStub = new AuthenticationServiceStub()
-        const usecase: SignUp = new SignUp(emptyUserRepository, encoder, authenticationStub)
+        const fakeTokenManager = new FakeTokenManager()
+        const fakeMailService = new FakeMailService()
+        const sendUserValidationTokenUsecase = new SendUserValidationToken(userRepository, fakeTokenManager, fakeMailService, process.env.FRONTEND_URL)
+        const usecase: SignUp = new SignUp(userRepository, encoder, sendUserValidationTokenUsecase)
         const sut: SignUpController = new SignUpController(usecase) 
 
         const invalidRequest: HttpRequest = {
@@ -60,10 +64,12 @@ describe('Sign Up web controller', () => {
 
 
     test('should return status code 400 when request contains invalid email', async () => {
-        const emptyUserRepository = new InMemoryUserRepository([])
+        const userRepository = new InMemoryUserRepository([])
         const encoder: Encoder = new FakeEncoder()
-        const authenticationStub = new AuthenticationServiceStub()
-        const usecase: SignUp = new SignUp(emptyUserRepository, encoder, authenticationStub)
+        const fakeTokenManager = new FakeTokenManager()
+        const fakeMailService = new FakeMailService()
+        const sendUserValidationTokenUsecase = new SendUserValidationToken(userRepository, fakeTokenManager, fakeMailService, process.env.FRONTEND_URL)
+        const usecase: SignUp = new SignUp(userRepository, encoder, sendUserValidationTokenUsecase)
         const sut: SignUpController = new SignUpController(usecase) 
 
         const invalidRequest: HttpRequest = {
@@ -80,10 +86,12 @@ describe('Sign Up web controller', () => {
     })
 
     test('should return status code 400 when request contains invalid password', async () => {
-        const emptyUserRepository = new InMemoryUserRepository([])
+        const userRepository = new InMemoryUserRepository([])
         const encoder: Encoder = new FakeEncoder()
-        const authenticationStub = new AuthenticationServiceStub()
-        const usecase: SignUp = new SignUp(emptyUserRepository, encoder, authenticationStub)
+        const fakeTokenManager = new FakeTokenManager()
+        const fakeMailService = new FakeMailService()
+        const sendUserValidationTokenUsecase = new SendUserValidationToken(userRepository, fakeTokenManager, fakeMailService, process.env.FRONTEND_URL)
+        const usecase: SignUp = new SignUp(userRepository, encoder, sendUserValidationTokenUsecase)
         const sut: SignUpController = new SignUpController(usecase) 
 
         const invalidRequest: HttpRequest = {
@@ -102,10 +110,12 @@ describe('Sign Up web controller', () => {
 
 
     test('should return status code 400 when request is missing name', async () => {
-        const emptyUserRepository = new InMemoryUserRepository([])
+        const userRepository = new InMemoryUserRepository([])
         const encoder: Encoder = new FakeEncoder()
-        const authenticationStub = new AuthenticationServiceStub()
-        const usecase: SignUp = new SignUp(emptyUserRepository, encoder, authenticationStub)
+        const fakeTokenManager = new FakeTokenManager()
+        const fakeMailService = new FakeMailService()
+        const sendUserValidationTokenUsecase = new SendUserValidationToken(userRepository, fakeTokenManager, fakeMailService, process.env.FRONTEND_URL)
+        const usecase: SignUp = new SignUp(userRepository, encoder, sendUserValidationTokenUsecase)
         const sut: SignUpController = new SignUpController(usecase) 
 
         const invalidRequest: HttpRequest = {
@@ -122,10 +132,12 @@ describe('Sign Up web controller', () => {
     })
 
     test('should return status code 400 when request is missing email or password', async () => {
-        const emptyUserRepository = new InMemoryUserRepository([])
+        const userRepository = new InMemoryUserRepository([])
         const encoder: Encoder = new FakeEncoder()
-        const authenticationStub = new AuthenticationServiceStub()
-        const usecase: SignUp = new SignUp(emptyUserRepository, encoder, authenticationStub)
+        const fakeTokenManager = new FakeTokenManager()
+        const fakeMailService = new FakeMailService()
+        const sendUserValidationTokenUsecase = new SendUserValidationToken(userRepository, fakeTokenManager, fakeMailService, process.env.FRONTEND_URL)
+        const usecase: SignUp = new SignUp(userRepository, encoder, sendUserValidationTokenUsecase)
         const sut: SignUpController = new SignUpController(usecase) 
 
         const invalidRequest: HttpRequest = {

@@ -3,7 +3,6 @@ import { InvalidEmailError, InvalidNameError, InvalidPasswordError } from "@/ent
 import { Either, left, right } from "@/shared"
 import { User } from "@/entities"
 import { ExistingUserError } from "./errors"
-import { AuthenticationParams, AuthenticationResult, AuthenticationService } from "@/usecases/authentication/ports"
 
 /**
  * Cadastro de novo usuário
@@ -11,15 +10,15 @@ import { AuthenticationParams, AuthenticationResult, AuthenticationService } fro
 export class SignUp implements UseCase {
     private readonly userRepository: UserRepository
     private readonly encoder: Encoder
-    private readonly authenticationService: AuthenticationService
+    private readonly sendUserValidationToken: UseCase
 
-    constructor(userRepository: UserRepository, encoder: Encoder, authenticationService: AuthenticationService) {
+    constructor(userRepository: UserRepository, encoder: Encoder, sendUserValidationToken: UseCase) {
         this.userRepository = userRepository
         this.encoder = encoder
-        this.authenticationService = authenticationService
+        this.sendUserValidationToken = sendUserValidationToken
     }
 
-    public async perform(request: UserData): Promise<Either<InvalidNameError | InvalidEmailError | InvalidPasswordError | ExistingUserError, AuthenticationResult>> {
+    public async perform(request: UserData): Promise<Either<InvalidNameError | InvalidEmailError | InvalidPasswordError | ExistingUserError, UserData>> {
         const userOrError = User.create(request)
 
         if(userOrError.isLeft()) {
@@ -34,15 +33,17 @@ export class SignUp implements UseCase {
         const newUser: User = userOrError.value as User
 
         const encodedPassword = await this.encoder.encode(newUser.password.value)
-        await this.userRepository.add({
+        const createdUser = await this.userRepository.add({
             name: newUser.name,
             email: newUser.email.value,
             password: encodedPassword,
-            isVerified: true, // TODO user should verify email
+            isVerified: false,
         })
 
-        const response = (await this.authenticationService.auth(request as AuthenticationParams)).value as AuthenticationResult
-        return right(response)
+        delete createdUser.password
 
+        await this.sendUserValidationToken.perform(createdUser.id)
+
+        return right(createdUser)
     }
 }

@@ -34,7 +34,7 @@ export class InMemoryUserRepository implements UserRepository {
     public async add(userData: UserData): Promise<UserData> {
         userData.id = this.idCounter.toString()
         this.idCounter++
-        this.data.push(userData)
+        this.data.push({...userData})
         return userData
     }
 
