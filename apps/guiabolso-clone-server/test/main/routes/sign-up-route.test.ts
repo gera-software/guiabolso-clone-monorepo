@@ -13,7 +13,7 @@ describe('Signup route', () => {
       await MongoHelper.disconnect()
     })
 
-    test('should return access token info and user data on success', async () => {
+    test('should return user data on success', async () => {
         await request(app)
           .post('/api/signup')
           .send({
@@ -23,12 +23,10 @@ describe('Signup route', () => {
           })
           .expect(201)
           .then((res) => {
-            expect(res.body.accessToken).toBeDefined()
-            expect(res.body.iat).toBeDefined()
-            expect(res.body.exp).toBeDefined()
-            expect(res.body.data.id).toBeDefined()
-            expect(res.body.data.email).toBeDefined()
-            expect(res.body.data.name).toBeDefined()
+            expect(res.body.id).toBeDefined()
+            expect(res.body.email).toBe('any@mail.com')
+            expect(res.body.name).toBe('any name')
+            expect(res.body.isVerified).toBe(false)
           })
       })
 })
