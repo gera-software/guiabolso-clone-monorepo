@@ -89,7 +89,7 @@ async function createUser(payload: any): Promise<any> {
         data: payload,
     }).then(response => {
         console.log(response)
-        successMessage.value = 'Usuário criado com sucesso! Acesse seu e-mail para confirmar cadastro'
+        successMessage.value = 'Usuário criado com sucesso! Por favor, verifique seu e-mail. Nós enviamos um link para ativação da sua conta.'
         form.value = {
             name: '',
             email: '',
