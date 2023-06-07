@@ -21,12 +21,13 @@ export class NodemailerService implements MailService {
       });
     }
   
-    public send(message: string, subject: string, to: string): Promise<void> {
+    public send(textMessage: string, htmlMessage: string, subject: string, to: string): Promise<void> {
       const mailOptions: nodemailer.SendMailOptions = {
         from: 'guiabolsoclone@gmail.com', // TODO hardcoded string
         to,
         subject,
-        text: message,
+        text: textMessage,
+        html: htmlMessage,
       };
       console.log('[Nodemailer] send', mailOptions)
 

@@ -37,7 +37,12 @@ export class SendUserValidationToken implements UseCase {
         
         const url = `${this.FRONTEND_URL}/email-validation?t=${emailValidationToken}`
 
-        this.mailService.send(`Olá ${userData.name},\nConfirme seu e-mail para concluir seu cadastro. Acesse o link: ${url}`, "[Guiabolso Clone] Valide seu email", userData.email)
+        const textMessage = `Olá ${userData.name},\nConfirme seu e-mail para concluir seu cadastro. Acesse o link: ${url}`
+        const htmlMessage = `
+            <p>Olá ${userData.name},</p>
+            <p>Confirme seu e-mail para concluir seu cadastro.</p> 
+            <p>Acesse o link: <a href="${url}">Confirmar e-mail</a></p>`
+        this.mailService.send(textMessage, htmlMessage, "[Guiabolso Clone] Valide seu email", userData.email)
     }
 
 }

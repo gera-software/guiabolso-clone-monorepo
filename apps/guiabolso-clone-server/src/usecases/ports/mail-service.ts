@@ -1,3 +1,3 @@
 export interface MailService {
-    send(message: string, subject: string, to: string): Promise<void>
+    send(textMessage: string, htmlMessage: string, subject: string, to: string): Promise<void>
 }

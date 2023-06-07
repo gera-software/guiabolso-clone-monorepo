@@ -122,7 +122,7 @@ describe('Sign In web controller', () => {
         const response: HttpResponse = await sut.handle(invalidRequest)
         expect(response.statusCode).toEqual(403)
         expect(response.body.name).toBe('UserNotVerifiedError')
-        expect(response.body.message).toBe('Usuário não verificado')
+        expect(response.body.message).toBe("Por favor, verifique seu e-mail. Nós enviamos um link para ativação da sua conta.")
     })
 
     test('should return 400 if user is not found', async () => {

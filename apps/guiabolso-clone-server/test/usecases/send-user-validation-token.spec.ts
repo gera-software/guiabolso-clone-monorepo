@@ -68,8 +68,13 @@ describe('Send user validation token use case', () => {
         }
         const sixHours = 60 * 60 * 6
         const emailValidationToken = await fakeTokenManager.sign(payload, sixHours)
+        const url = `${process.env.FRONTEND_URL}/email-validation?t=${emailValidationToken}`
         expect(fakeMailService._sended[0]).toEqual({
-            message: `Olá ${userData.name},\nConfirme seu e-mail para concluir seu cadastro. Acesse o link: ${process.env.FRONTEND_URL}/email-validation?t=${emailValidationToken}`, 
+            textMessage: `Olá ${userData.name},\nConfirme seu e-mail para concluir seu cadastro. Acesse o link: ${url}`, 
+            htmlMessage: `
+            <p>Olá ${userData.name},</p>
+            <p>Confirme seu e-mail para concluir seu cadastro.</p> 
+            <p>Acesse o link: <a href="${url}">Confirmar e-mail</a></p>`,
             subject: "[Guiabolso Clone] Valide seu email", 
             to: userData.email
         })

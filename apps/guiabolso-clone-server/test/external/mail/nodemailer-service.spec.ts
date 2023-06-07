@@ -27,10 +27,14 @@ describe('Nodemailer Service', () => {
         }
         emailService = new NodemailerService(smtpOptions)
 
-        await emailService.send('message', 'teste', 'gilmar-andrade@outlook.com')
+        await emailService.send('message', '<p>message</p>', 'teste', 'gilmar-andrade@outlook.com')
 
         expect(sendMailMock).toBeCalledWith({
-            "from": "guiabolsoclone@gmail.com", "subject": "teste", "text": "message", "to": "gilmar-andrade@outlook.com"
+            from: "guiabolsoclone@gmail.com", 
+            subject: "teste", 
+            to: "gilmar-andrade@outlook.com",
+            text: "message", 
+            html: '<p>message</p>'
         })
     })
 
@@ -45,7 +49,7 @@ describe('Nodemailer Service', () => {
         emailService = new NodemailerService(smtpOptions)
 
         try {
-            await emailService.send('message', 'teste', 'gilmar-andrade@outlook.com')
+            await emailService.send('message', '<p>message</p>', 'teste', 'gilmar-andrade@outlook.com')
           } catch (err) {
             expect(err).toEqual('error message');
         }
