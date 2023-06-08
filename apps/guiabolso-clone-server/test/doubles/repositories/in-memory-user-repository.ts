@@ -38,4 +38,11 @@ export class InMemoryUserRepository implements UserRepository {
         return userData
     }
 
+    public async verifyEmail(id: string): Promise<void> {
+        const user = this.data.find(user => user.id == id)
+        if(user) {
+            user.isVerified = true
+        }
+    }
+
 }

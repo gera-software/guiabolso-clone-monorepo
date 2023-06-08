@@ -6,4 +6,6 @@ export interface UserRepository {
     findUserById(id: string): Promise<UserData | null>
     // findAllUsers(): Promise<UserData[]>
     exists(user: UserData): Promise<boolean>
+
+    verifyEmail(id: string): Promise<void>
 }

@@ -57,6 +57,18 @@ export class MongodbUserRepository implements UserRepository {
     return false
   }
 
+  async verifyEmail (id: string): Promise<void> {
+    const userCollection = MongoHelper.getCollection('users')
+    await userCollection.updateOne(
+      { _id: new ObjectId(id) },
+      {
+        $set: {
+          isVerified: true
+        }
+      })
+
+  }
+
   private withApplicationId (dbUser: MongodbUser): UserData {
     return {
         name: dbUser.name,

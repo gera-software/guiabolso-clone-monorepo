@@ -78,4 +78,22 @@ describe('Mongodb User repository', () => {
       expect(result.id).toBe(addedUser.id)
   })
 
+  test('should set user as verified', async () => {
+    const sut = new MongodbUserRepository()
+    const user = {
+      name: 'any_name',
+      email: 'any@mail.com',
+      password: '123',
+      isVerified: false,
+    }
+    const addedUser = await sut.add(user)
+    expect(addedUser.isVerified).toBe(false)
+
+    await sut.verifyEmail(addedUser.id)
+    
+    const verifiedUser = await sut.findUserById(addedUser.id)
+    expect(verifiedUser.isVerified).toBe(true)
+
+  })
+
 })
