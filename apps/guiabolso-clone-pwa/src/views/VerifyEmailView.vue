@@ -18,7 +18,6 @@
 
 </template>
 <script setup lang="ts">
-import { appendFile } from 'fs';
 import { onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import api from '../config/axios.js'
