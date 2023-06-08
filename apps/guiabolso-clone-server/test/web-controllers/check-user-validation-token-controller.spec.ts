@@ -8,7 +8,7 @@ import { InMemoryUserRepository } from "@test/doubles/repositories"
 import { ErrorThrowingUseCaseStub } from "@test/doubles/usecases"
 
 describe('Check user validatin token web controller', () => {
-    test('should return status code 200 ok when token is valided', async () => {
+    test('should return status code 200 ok when token is validated', async () => {
         const userId = 'valid-user-id'
 
         const userData = {
