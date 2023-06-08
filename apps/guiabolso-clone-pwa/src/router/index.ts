@@ -1,5 +1,4 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '@/views/HomeView.vue'
 import AccountsView from '@/views/AccountsView.vue'
 import ExtractView from '@/views/ExtractView.vue'
 import ExtractByAccountView from '@/views/ExtractByAccountView.vue'
@@ -17,7 +16,8 @@ import IndexView from '@/views/IndexView.vue'
 import CreditCardInvoiceView from '@/views/CreditCardInvoiceView.vue'
 import LoginView from '@/views/LoginView.vue'
 import { useUserStore } from '../stores/userStore'
-import SignupViewVue from '@/views/SignupView.vue'
+import SignupView from '@/views/SignupView.vue'
+import VerifyEmailView from '@/views/VerifyEmailView.vue'
 
 
 
@@ -47,7 +47,12 @@ const router = createRouter({
     {
       path: '/signup',
       name: 'signup',
-      component: SignupViewVue,
+      component: SignupView,
+    },
+    {
+      path: '/email-validation',
+      name: 'email-validation',
+      component: VerifyEmailView,
     },
     {
       path: '/dashboard',
@@ -141,7 +146,8 @@ router.beforeEach((to, from) => {
   const publicRoutes = [
     'index',
     'login',
-    'signup'
+    'signup',
+    'email-validation',
   ]
 
   // para acessar rotas privadas, deve estar autenticado, ou será redirecionado para o index
