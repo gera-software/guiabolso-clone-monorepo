@@ -2,7 +2,6 @@ import { CheckUserValidationToken } from "@/usecases/check-user-validation-token
 import { InvalidTokenError } from "@/usecases/errors"
 import { EmailValidationPayloadData } from "@/usecases/send-user-validation-token/ports"
 import { FakeTokenManager } from "@test/doubles/authentication"
-import { FakeMailService } from "@test/doubles/mail"
 import { InMemoryUserRepository } from "@test/doubles/repositories"
 
 describe('Check user validation token use case', () => {
@@ -15,8 +14,7 @@ describe('Check user validation token use case', () => {
 
         const userRepository = new InMemoryUserRepository([])
         const fakeTokenManager = new FakeTokenManager()
-        const fakeMailService = new FakeMailService()
-        const sut = new CheckUserValidationToken(userRepository, fakeTokenManager, fakeMailService)
+        const sut = new CheckUserValidationToken(userRepository, fakeTokenManager)
 
         const response = (await sut.perform(token)).value as Error
         expect(response).toBeInstanceOf(InvalidTokenError)
@@ -26,8 +24,7 @@ describe('Check user validation token use case', () => {
     test('should not validate user if user does not exists', async () => {
         const userRepository = new InMemoryUserRepository([])
         const fakeTokenManager = new FakeTokenManager()
-        const fakeMailService = new FakeMailService()
-        const sut = new CheckUserValidationToken(userRepository, fakeTokenManager, fakeMailService)
+        const sut = new CheckUserValidationToken(userRepository, fakeTokenManager)
 
         const payload: EmailValidationPayloadData = {
             id: 'invalid-user-id',
@@ -55,8 +52,7 @@ describe('Check user validation token use case', () => {
 
         const userRepository = new InMemoryUserRepository([userData])
         const fakeTokenManager = new FakeTokenManager()
-        const fakeMailService = new FakeMailService()
-        const sut = new CheckUserValidationToken(userRepository, fakeTokenManager, fakeMailService)
+        const sut = new CheckUserValidationToken(userRepository, fakeTokenManager)
 
         const payload: EmailValidationPayloadData = {
             id: userId,
@@ -83,8 +79,7 @@ describe('Check user validation token use case', () => {
 
         const userRepository = new InMemoryUserRepository([userData])
         const fakeTokenManager = new FakeTokenManager()
-        const fakeMailService = new FakeMailService()
-        const sut = new CheckUserValidationToken(userRepository, fakeTokenManager, fakeMailService)
+        const sut = new CheckUserValidationToken(userRepository, fakeTokenManager)
 
         const payload: EmailValidationPayloadData = {
             id: userId,
@@ -111,8 +106,7 @@ describe('Check user validation token use case', () => {
 
         const userRepository = new InMemoryUserRepository([userData])
         const fakeTokenManager = new FakeTokenManager()
-        const fakeMailService = new FakeMailService()
-        const sut = new CheckUserValidationToken(userRepository, fakeTokenManager, fakeMailService)
+        const sut = new CheckUserValidationToken(userRepository, fakeTokenManager)
 
         const payload: EmailValidationPayloadData = {
             id: userId,
@@ -125,7 +119,6 @@ describe('Check user validation token use case', () => {
 
         const validatedUser = await userRepository.findUserById(userId)
         expect(validatedUser.isVerified).toBe(true)
- 
     })
     
 })

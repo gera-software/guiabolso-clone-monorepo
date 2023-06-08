@@ -1,17 +1,15 @@
 import { left, right } from "@/shared";
-import { MailService, TokenManager, UseCase, UserRepository } from "@/usecases/ports";
+import { TokenManager, UseCase, UserRepository } from "@/usecases/ports";
 import { InvalidTokenError } from "@/usecases/errors";
 import { EmailValidationPayloadData } from "@/usecases/send-user-validation-token/ports";
 
 export class CheckUserValidationToken implements UseCase {
     private readonly userRepo: UserRepository
     private readonly tokenManager: TokenManager
-    private readonly mailService: MailService
 
-    constructor(userRepository: UserRepository, tokenManager: TokenManager, mailService: MailService) {
+    constructor(userRepository: UserRepository, tokenManager: TokenManager) {
         this.userRepo = userRepository
         this.tokenManager = tokenManager
-        this.mailService = mailService
     }
 
 
@@ -39,10 +37,7 @@ export class CheckUserValidationToken implements UseCase {
             return left(new InvalidTokenError('email inválido'))
         }
 
-
         await this.userRepo.verifyEmail(userData.id)
-
-        // TODO send mail
 
         return right(null)
     }
