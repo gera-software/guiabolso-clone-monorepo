@@ -18,19 +18,35 @@
 
 </template>
 <script setup lang="ts">
+import { appendFile } from 'fs';
 import { onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
+import api from '../config/axios.js'
 
 const route = useRoute()
 
-const isLoading = ref(false)
+const isLoading = ref(true)
 
 const success = ref(false)
 
-onMounted(() => {
-    const emailValidationToken = route.query?.t
-    console.log(emailValidationToken)
+onMounted(async () => {
+    const emailValidationToken = route.query?.t?.toString()
+    await verifyEmailToken(emailValidationToken)
+    isLoading.value = false
 })
+
+async function verifyEmailToken(token: string | undefined): Promise<any> {
+  return api.guiabolsoServer({
+    method: 'post',
+    url: `/validate-email?t=${token}`
+  }).then(response => {
+    success.value = true
+    return
+  }).catch(error => {
+    console.error(error.response)
+    success.value = false
+  })
+}
 </script>
 <style scoped>
 
