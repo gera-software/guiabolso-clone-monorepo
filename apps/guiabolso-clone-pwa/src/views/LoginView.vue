@@ -22,7 +22,7 @@
           </div>
           <div class="form-group">
             <span>
-              Primeira vez aqui? <a href="#" class="link">Cadastre-se</a>
+              Primeira vez aqui? <router-link class="link" :to="{ name: 'signup'}">Cadastre-se</router-link>
             </span>
           </div>
         </div>
