@@ -1,6 +1,6 @@
 import { UseCase, UserData } from "@/usecases/ports"
-import { SendResetPasswordToken } from "@/usecases/send-reset-password-token"
-import { SendResetPasswordTokenController } from "@/web-controllers"
+import { SendPasswordResetToken } from "@/usecases/send-password-reset-token"
+import { SendPasswordResetTokenController } from "@/web-controllers"
 import { HttpRequest, HttpResponse } from "@/web-controllers/ports"
 import { FakeTokenManager } from "@test/doubles/authentication"
 import { FakeMailService } from "@test/doubles/mail"
@@ -12,8 +12,8 @@ describe('Send reset password token web controller', () => {
         const userRepository = new InMemoryUserRepository([])
         const fakeTokenManager = new FakeTokenManager()
         const fakeMailService = new FakeMailService()
-        const usecase = new SendResetPasswordToken(userRepository, fakeTokenManager, fakeMailService, process.env.FRONTEND_URL)
-        const sut = new SendResetPasswordTokenController(usecase) 
+        const usecase = new SendPasswordResetToken(userRepository, fakeTokenManager, fakeMailService, process.env.FRONTEND_URL)
+        const sut = new SendPasswordResetTokenController(usecase) 
 
         const request: HttpRequest = {
             body: {
@@ -38,8 +38,8 @@ describe('Send reset password token web controller', () => {
         const userRepository = new InMemoryUserRepository([validUser])
         const fakeTokenManager = new FakeTokenManager()
         const fakeMailService = new FakeMailService()
-        const usecase = new SendResetPasswordToken(userRepository, fakeTokenManager, fakeMailService, process.env.FRONTEND_URL)
-        const sut = new SendResetPasswordTokenController(usecase) 
+        const usecase = new SendPasswordResetToken(userRepository, fakeTokenManager, fakeMailService, process.env.FRONTEND_URL)
+        const sut = new SendPasswordResetTokenController(usecase) 
 
         const request: HttpRequest = {
             body: {
@@ -55,8 +55,8 @@ describe('Send reset password token web controller', () => {
         const userRepository = new InMemoryUserRepository([])
         const fakeTokenManager = new FakeTokenManager()
         const fakeMailService = new FakeMailService()
-        const usecase = new SendResetPasswordToken(userRepository, fakeTokenManager, fakeMailService, process.env.FRONTEND_URL)
-        const sut = new SendResetPasswordTokenController(usecase) 
+        const usecase = new SendPasswordResetToken(userRepository, fakeTokenManager, fakeMailService, process.env.FRONTEND_URL)
+        const sut = new SendPasswordResetTokenController(usecase) 
 
         const request: HttpRequest = {
             body: {
@@ -72,7 +72,7 @@ describe('Send reset password token web controller', () => {
     test('should return 500 if an error is raised internally', async () => {
         const errorThrowingUseCaseStub: UseCase = new ErrorThrowingUseCaseStub()
 
-        const sut = new SendResetPasswordTokenController(errorThrowingUseCaseStub) 
+        const sut = new SendPasswordResetTokenController(errorThrowingUseCaseStub) 
 
         const validRequest: HttpRequest = {
             body: {

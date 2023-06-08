@@ -3,7 +3,7 @@ import { Controller, HttpRequest, HttpResponse } from "@/web-controllers/ports";
 import { badRequest, noContent, serverError } from "@/web-controllers/util";
 import { MissingParamError } from "@/web-controllers/errors";
 
-export class SendResetPasswordTokenController implements Controller {
+export class SendPasswordResetTokenController implements Controller {
     private readonly usecase: UseCase
 
     constructor(usecase: UseCase) {

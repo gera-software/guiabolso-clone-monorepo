@@ -15,6 +15,7 @@ import {
     makeSyncAutomaticAccountController,
     makeUpdateAutomaticTransactionController,
     makeCheckUserValidationTokenController,
+    makeSendPasswordResetTokenController,
  } from '@/main/factories'
 
 export default (app: Express): void => {
@@ -27,6 +28,8 @@ export default (app: Express): void => {
     router.post('/signin', adaptRoute(makeSignInController()))
     /** Validação email */
     router.post('/validate-email', adaptRoute(makeCheckUserValidationTokenController()))
+    /** Request password reset token */
+    router.post('/password-reset-token', adaptRoute(makeSendPasswordResetTokenController()))
 
     // TODO faltam as verificações de segurança se o usuario não estiver autenticado!
     router.post('/manual-account', adaptRoute(makeCreateManualAccountController()))

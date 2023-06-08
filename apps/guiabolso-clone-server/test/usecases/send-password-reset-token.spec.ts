@@ -1,5 +1,5 @@
-import { SendResetPasswordToken } from "@/usecases/send-reset-password-token"
-import { ResetPasswordPayloadData } from "@/usecases/send-reset-password-token/ports"
+import { SendPasswordResetToken } from "@/usecases/send-password-reset-token"
+import { ResetPasswordPayloadData } from "@/usecases/send-password-reset-token/ports"
 import { FakeTokenManager } from "@test/doubles/authentication"
 import { FakeMailService } from "@test/doubles/mail"
 import { InMemoryUserRepository } from "@test/doubles/repositories"
@@ -15,7 +15,7 @@ describe('Send reset password token use case', () => {
         const userRepository = new InMemoryUserRepository([])
         const fakeTokenManager = new FakeTokenManager()
         const fakeMailService = new FakeMailService()
-        const sut = new SendResetPasswordToken(userRepository, fakeTokenManager, fakeMailService, process.env.FRONTEND_URL)
+        const sut = new SendPasswordResetToken(userRepository, fakeTokenManager, fakeMailService, process.env.FRONTEND_URL)
 
         await sut.perform(email)
         expect(fakeMailService._sended.length).toEqual(0)
@@ -36,7 +36,7 @@ describe('Send reset password token use case', () => {
         const userRepository = new InMemoryUserRepository([userData])
         const fakeTokenManager = new FakeTokenManager()
         const fakeMailService = new FakeMailService()
-        const sut = new SendResetPasswordToken(userRepository, fakeTokenManager, fakeMailService, process.env.FRONTEND_URL)
+        const sut = new SendPasswordResetToken(userRepository, fakeTokenManager, fakeMailService, process.env.FRONTEND_URL)
 
         await sut.perform(email)
 
@@ -72,7 +72,7 @@ describe('Send reset password token use case', () => {
         const userRepository = new InMemoryUserRepository([userData])
         const fakeTokenManager = new FakeTokenManager()
         const fakeMailService = new FakeMailService()
-        const sut = new SendResetPasswordToken(userRepository, fakeTokenManager, fakeMailService, process.env.FRONTEND_URL)
+        const sut = new SendPasswordResetToken(userRepository, fakeTokenManager, fakeMailService, process.env.FRONTEND_URL)
 
         const mockTokenManager = jest.spyOn(fakeTokenManager, 'sign')
         await sut.perform(email)

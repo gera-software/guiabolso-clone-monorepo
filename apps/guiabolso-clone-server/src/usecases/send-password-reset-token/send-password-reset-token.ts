@@ -1,8 +1,8 @@
 import { MailService, TokenManager, UseCase, UserRepository } from "@/usecases/ports";
 import { right } from "@/shared";
-import { ResetPasswordPayloadData } from "@/usecases/send-reset-password-token/ports";
+import { ResetPasswordPayloadData } from "@/usecases/send-password-reset-token/ports";
 
-export class SendResetPasswordToken implements UseCase {
+export class SendPasswordResetToken implements UseCase {
     private readonly userRepo: UserRepository
     private readonly tokenManager: TokenManager
     private readonly mailService: MailService
