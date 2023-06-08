@@ -1,5 +1,11 @@
 # @gera-software/guiabolso-clone-server
 
+## 1.16.0
+
+### Minor Changes
+
+- User creation and validation
+
 ## 1.15.0
 
 ### Minor Changes
