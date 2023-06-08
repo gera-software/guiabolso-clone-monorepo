@@ -39,11 +39,11 @@ export class CheckUserValidationToken implements UseCase {
             return left(new InvalidTokenError('email inválido'))
         }
 
-        // TODO save
-        // this.userRepo.
+
+        await this.userRepo.verifyEmail(userData.id)
 
         // TODO send mail
-        
+
         return right(null)
     }
 

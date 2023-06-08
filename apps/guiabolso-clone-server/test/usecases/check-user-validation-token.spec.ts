@@ -98,7 +98,7 @@ describe('Check user validation token use case', () => {
         expect(response.message).toBe('email inválido')
     })
 
-    test.skip('should validate user', async () => {
+    test('should validate user', async () => {
         const userId = 'valid-user-id'
 
         const userData = {
@@ -121,7 +121,7 @@ describe('Check user validation token use case', () => {
         const sixHours = 60 * 60 * 6
         const emailValidationToken = await fakeTokenManager.sign(payload, sixHours)
 
-        const response = (await sut.perform(emailValidationToken)).value
+        await sut.perform(emailValidationToken)
 
         const validatedUser = await userRepository.findUserById(userId)
         expect(validatedUser.isVerified).toBe(true)
