@@ -1,97 +1,73 @@
 <template>
-  <div class="page">
-    <AppBar title="Login" />
-    <div class="container">
-      <form @submit.prevent="handleSubmit">
-        <div class="alert" v-show="errorMessage">
-          {{ errorMessage }}
+    <div class="page">
+        <AppBar title="Resetar senha" />
+        <div class="container">
+            <form @submit.prevent="handleSubmit">
+                <div class="alert alert--error" v-show="errorMessage">
+                    {{ errorMessage }}
+                </div>
+                <div class="alert alert--success" v-show="successMessage">
+                    {{ successMessage }}
+                </div>
+                <div class="form-group">
+                    <p>Enviaremos um link para resetar sua senha</p>
+                </div>
+                <div class="form-group">
+                    <input class="form-input" type="email" placeholder="E-mail" required v-model="form.email">
+                </div>
+                <div class="bottom">
+                    <div class="form-group">
+                        <button type="submit" class="button" :disabled="loading">Enviar</button>
+                    </div>
+                </div>
+            </form>
         </div>
-        <div class="form-group">
-          <input class="form-input" type="email" placeholder="E-mail" required v-model="form.email">
-        </div>
-        <div class="form-group">
-          <input class="form-input" type="password" placeholder="Senha" required v-model="form.password">
-        </div>
-        <div class="form-group">
-          <router-link class="link" :to="{ name: 'forgot-password'}">Esqueceu a sua senha?</router-link>
-        </div>
-        
-        <div class="bottom">
-          <div class="form-group">
-            <button type="submit" class="button" :disabled="loading">Entrar</button>
-          </div>
-          <div class="form-group">
-            <span>
-              Primeira vez aqui? <a href="#" class="link">Cadastre-se</a>
-            </span>
-          </div>
-        </div>
-      </form>
     </div>
-  </div>
 </template>
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
-import { useRouter } from 'vue-router';
-import { useUserStore } from '../stores/userStore';
 import AppBar from '@/components/AppBar.vue'
 import api from '../config/axios.js'
-
-
-const router = useRouter()
-
-const userStore = useUserStore()
-
-
-userStore.$subscribe((mutation, state) => {
-  console.log('MUTATED STATE', state)
-  if(state.user.accessToken) {
-    router.push({ name: 'dashboard'})
-  }
-})
+import { ref } from 'vue';
 
 const form = ref({
-    email: '',
-    password: '',
+    email: ''
 })
 
 const loading = ref(false)
-
 const errorMessage = ref('')
+const successMessage = ref('')
 
 async function handleSubmit() {
-  loading.value = true
-  const payload = {
-    email: form.value.email,
-    password: form.value.password,
-  }
-  await fazerLogin(payload)
-  loading.value = false
+    loading.value = true
+    errorMessage.value = ''
+    successMessage.value = ''
+
+    const payload = {
+        email: form.value.email,
+    }
+    await sendResetLink(payload)
+    loading.value = false
 }
 
-async function fazerLogin(payload: any) : Promise<any> {
+async function sendResetLink(payload: any): Promise<any> {
     errorMessage.value = ''
+    successMessage.value = ''
     return api.guiabolsoServer({
         method: 'post',
-        url: '/signin',
+        url: '/password-reset-token',
         data: payload,
     }).then((response) => {
         console.log(response)
-        userStore.setUser(response.data)
+        successMessage.value = 'Por favor, verifique seu e-mail. Nós enviamos um link para resetar sua senha.'
+        form.value = {
+            email: ''
+        }
         return response.data
     }).catch(function (error) {
       console.error(error.response);
-      errorMessage.value = error.response?.data.message ?? 'Ocorreu um erro inesperado'
+      errorMessage.value = (error.response?.data.message || error.response?.data.name) ?? 'Ocorreu um erro inesperado'
     })
 }
-
-onMounted(async () => {
-  if(userStore.tokenIsValid()) {
-      router.push({ name: 'dashboard' })
-  }
-})
-
-
 
 </script>
 <style scoped>
@@ -199,4 +175,11 @@ form {
   font-size: .8em;
 }
 
+.alert--error {
+  background-color: red;
+}
+
+.alert--success {
+  background-color: green;
+}
 </style>
