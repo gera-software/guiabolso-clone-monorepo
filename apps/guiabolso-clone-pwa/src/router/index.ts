@@ -19,6 +19,7 @@ import { useUserStore } from '../stores/userStore'
 import SignupView from '@/views/SignupView.vue'
 import VerifyEmailView from '@/views/VerifyEmailView.vue'
 import ForgotPasswordView from '@/views/ForgotPasswordView.vue'
+import ResetPasswordView from '@/views/ResetPasswordView.vue'
 
 
 const router = createRouter({
@@ -56,6 +57,11 @@ const router = createRouter({
       path: '/forgot-password',
       name: 'forgot-password',
       component: ForgotPasswordView,
+    },
+    {
+      path: '/reset-password',
+      name: 'reset-password',
+      component: ResetPasswordView,
     },
     {
       path: '/dashboard',
@@ -152,6 +158,7 @@ router.beforeEach((to, from) => {
     'signup',
     'email-validation',
     'forgot-password',
+    'reset-password',
   ]
 
   // para acessar rotas privadas, deve estar autenticado, ou será redirecionado para o index
