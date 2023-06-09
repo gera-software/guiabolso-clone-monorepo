@@ -96,4 +96,22 @@ describe('Mongodb User repository', () => {
 
   })
 
+  test('should update password', async () => {
+    const sut = new MongodbUserRepository()
+    const user = {
+      name: 'any_name',
+      email: 'any@mail.com',
+      password: '123',
+      isVerified: true,
+    }
+    const addedUser = await sut.add(user)
+
+    const newPassword = 'new-password'
+    await sut.updatePassword(addedUser.id, newPassword)
+    
+    const updatedUser = await sut.findUserById(addedUser.id)
+    expect(updatedUser.password).toBe(newPassword)
+
+  })
+
 })
