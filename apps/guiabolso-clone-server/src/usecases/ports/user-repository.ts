@@ -8,4 +8,5 @@ export interface UserRepository {
     exists(user: UserData): Promise<boolean>
 
     verifyEmail(id: string): Promise<void>
+    updatePassword(id: string, password: string): Promise<void>
 }

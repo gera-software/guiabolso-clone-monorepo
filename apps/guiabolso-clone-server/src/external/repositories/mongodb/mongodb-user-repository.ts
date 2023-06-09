@@ -69,6 +69,10 @@ export class MongodbUserRepository implements UserRepository {
 
   }
 
+  async updatePassword(id: string, password: string): Promise<void> {
+    throw new Error('Method updatePassword not implemented.')
+  }
+
   private withApplicationId (dbUser: MongodbUser): UserData {
     return {
         name: dbUser.name,

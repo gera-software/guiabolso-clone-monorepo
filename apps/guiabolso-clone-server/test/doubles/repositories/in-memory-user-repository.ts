@@ -45,4 +45,11 @@ export class InMemoryUserRepository implements UserRepository {
         }
     }
 
+    public async updatePassword(id: string, password: string): Promise<void> {
+        const user = this.data.find(user => user.id == id)
+        if(user) {
+            user.password = password
+        }
+    }
+
 }
