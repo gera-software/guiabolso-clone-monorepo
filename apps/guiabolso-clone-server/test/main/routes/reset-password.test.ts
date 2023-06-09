@@ -1,13 +1,13 @@
 import request from 'supertest'
-import { MongoHelper } from "@/external/repositories/mongodb/helper"
 import app from '@/main/config/app'
-import { UserData } from '@/usecases/ports'
-import { makeTokenManager, makeUserRepository } from '@/main/factories'
-import { EmailValidationPayloadData } from '@/usecases/send-user-validation-token/ports'
+import { MongoHelper } from "@/external/repositories/mongodb/helper"
+import { makeUserRepository, makeTokenManager } from "@/main/factories"
+import { UserData } from "@/usecases/ports"
+import { ResetPasswordPayloadData } from "@/usecases/send-password-reset-token/ports"
 
-describe('Check user validation token route', () => {
+describe('Reset password route', () => {
     let userData: UserData
-    let emailValidationToken: string
+    let passwordResetToken: string
 
     beforeAll(async () => {
         await MongoHelper.connect(process.env.MONGO_URL)
@@ -23,12 +23,12 @@ describe('Check user validation token route', () => {
             password: "valid"
         })
 
-        const payload: EmailValidationPayloadData = {
+        const payload: ResetPasswordPayloadData = {
             id: userData.id,
             email: userData.email,
         }
         const sixHours = 60 * 60 * 6
-        emailValidationToken = await tokenManager.sign(payload, sixHours)
+        passwordResetToken = await tokenManager.sign(payload, sixHours)
     })
 
     afterAll(async () => {
@@ -36,9 +36,13 @@ describe('Check user validation token route', () => {
         await MongoHelper.disconnect()
     })
 
-    test('should validate user email token', async () => {
+    test('should update password', async () => {
         await request(app)
-          .post(`/api/validate-email?t=${emailValidationToken}`)
-          .expect(200)
+          .post('/api/reset-password')
+          .send({
+            token: passwordResetToken,
+            password: 'new-password',
+          })
+          .expect(204)
     })
 })
