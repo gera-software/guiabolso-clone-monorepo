@@ -17,7 +17,10 @@
         </div>
         <div class="bottom">
           <div class="form-group">
-            <button type="submit" class="button" :disabled="loading">Entrar</button>
+            <button type="submit" class="button" :disabled="loading">Enviar</button>
+          </div>
+          <div class="form-group">
+            <router-link class="link" :to="{ name: 'login'}">Fazer login</router-link>
           </div>
         </div>
       </form>
@@ -178,7 +181,7 @@ form {
   font-family: 'Open Sans';
   font-size: 20px;
   font-weight: 600;
-  /* text-align: center; */
+  text-align: center;
   /* padding: 12px 16px; */
 }
 
