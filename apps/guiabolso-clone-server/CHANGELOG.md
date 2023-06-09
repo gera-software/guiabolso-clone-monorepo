@@ -1,5 +1,11 @@
 # @gera-software/guiabolso-clone-server
 
+## 1.17.0
+
+### Minor Changes
+
+- Reset password option
+
 ## 1.16.0
 
 ### Minor Changes
