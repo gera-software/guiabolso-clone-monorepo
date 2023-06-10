@@ -18,7 +18,7 @@
           </div>
           <div class="col-2">
             <button v-if="account.syncType === 'AUTOMATIC'" class="icon-button" @click="requestUpdate(account, $event)">
-              <font-awesome-icon icon="fa-solid fa-arrows-rotate" />
+              <font-awesome-icon icon="fa-solid fa-arrows-rotate" :spin="loading"/>
               <!-- <font-awesome-icon icon="fa-solid fa-arrows-rotate" :spin="account.sync?.syncStatus != SyncStatus.SYNCED"/> -->
             </button>
             <button class="icon-button" @click="openMoreDialog">
@@ -196,8 +196,10 @@ async function openPluggyUpdateWidget(account: AccountSummaryDTO) {
 }
 
 async function requestUpdate(account: AccountSummaryDTO, event: Event) {
+  loading.value = true
   event.stopImmediatePropagation()
   await openPluggyUpdateWidget(account)
+  loading.value = false
 }
 
 const isBottomSheetOpen = ref(false)
@@ -218,13 +220,13 @@ async function handleClickDeleteAccount() {
 }
 
 async function deleteAccount(id: string) {
-  loading.value = true
+  // loading.value = true
   return api.guiabolsoApi({
     method: 'get',
     url: `/account-delete?id=${id}`,
   }).then(function (response) {
     console.log(response.data)
-    loading.value = false
+    // loading.value = false
     return response.data
   }).catch(function (error) {
     console.log(error.response?.data);
