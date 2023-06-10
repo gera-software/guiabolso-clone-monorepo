@@ -2,7 +2,13 @@
     <div class="calendar-summary" @click="handleClick(bill)" :class="bill.type">
         <div class="row">
             <span class="description">{{ bill.description }}</span>
-            <span class="badge" :class="{ 'PAYABLE': bill.type === 'PAYABLE', 'RECEIVABLE': bill.type === 'RECEIVABLE', 'ATRASADO': isAtrasado(bill) }">{{ getStatus(bill) }}</span>
+            <span class="badge" :class="{
+                'PAGO': getStatus(bill) == 'pago',
+                'RECEBIDO': getStatus(bill) == 'recebido',
+                'ATRASADO': getStatus(bill) == 'atrasado',
+                'A-PAGAR': getStatus(bill) == 'a pagar',
+                'A-RECEBER': getStatus(bill) == 'a receber',
+                }">{{ getStatus(bill) }}</span>
         </div>
         <span class="amount">R$ {{ (+bill.amount / 100).toFixed(2) }}</span>
     </div>
@@ -107,14 +113,21 @@ function getStatus(bill: CalendarBill) {
     padding: 2px 15px;
     width: fit-content;
 }
-.calendar-summary .badge.PAYABLE {
+
+.calendar-summary .badge.A-PAGAR {
     background-color: #5B64DE;
 }
-.calendar-summary .badge.RECEIVABLE {
+.calendar-summary .badge.A-RECEBER {
     background-color: #00BD6E;
 }
 .calendar-summary .badge.ATRASADO {
     background-color: #ED4A4A;
 }
+
+.calendar-summary .badge.PAGO,
+.calendar-summary .badge.RECEBIDO {
+    background-color: #009ec1;
+}
+
 
 </style>
