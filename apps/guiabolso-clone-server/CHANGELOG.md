@@ -1,5 +1,11 @@
 # @gera-software/guiabolso-clone-server
 
+## 1.17.1
+
+### Patch Changes
+
+- Fix layout issues
+
 ## 1.17.0
 
 ### Minor Changes

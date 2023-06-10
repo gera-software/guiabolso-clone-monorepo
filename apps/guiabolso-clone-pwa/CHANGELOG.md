@@ -1,5 +1,11 @@
 # guiabolso-clone-pwa
 
+## 1.6.0
+
+### Minor Changes
+
+- Fix layout issues
+
 ## 1.5.0
 
 ### Minor Changes
