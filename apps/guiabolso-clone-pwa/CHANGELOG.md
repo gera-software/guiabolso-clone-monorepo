@@ -1,5 +1,11 @@
 # guiabolso-clone-pwa
 
+## 1.6.1
+
+### Patch Changes
+
+- Atualização Readme
+
 ## 1.6.0
 
 ### Minor Changes

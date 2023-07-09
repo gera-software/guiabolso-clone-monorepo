@@ -1,5 +1,11 @@
 # @gera-software/guiabolso-clone-server
 
+## 1.17.2
+
+### Patch Changes
+
+- Atualização Readme
+
 ## 1.17.1
 
 ### Patch Changes

@@ -4,16 +4,16 @@
   "publishConfig": {
     "access": "public"
   },
-  "version": "1.17.1",
+  "version": "1.17.2",
   "description": "Servidor para execução de tarefas de longa duração que não podem ser colocada em serveless functions",
   "scripts": {
-    "test": "jest --passWithNoTests --silent --noStackTrace --runInBand",
-    "test:verbose": "jest --passWithNoTests --runInBand",
+    "test": "npx jest --passWithNoTests --silent --noStackTrace --runInBand",
+    "test:verbose": "npx jest --passWithNoTests --runInBand",
     "test:unit": "npm test -- --watch -c jest-unit.config.js",
-    "test:integration": "jest --passWithNoTests --watch --runInBand -c jest-integration.config.js",
+    "test:integration": "npx jest --passWithNoTests --watch --runInBand -c jest-integration.config.js",
     "build": "npx rimraf dist && npx tsc -p tsconfig-build.json && tsc-alias",
     "start": "node ./dist/main/server.js",
-    "dev": "nodemon --exec ts-node ./src/main/server.ts"
+    "dev": "npx nodemon --exec ts-node ./src/main/server.ts"
   },
   "author": "",
   "license": "MIT",

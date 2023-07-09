@@ -1,16 +1,34 @@
-# Vue 3 + TypeScript + Vite
+# Guiabolso Clone PWA
+Interface web mobile
 
-This template should help get you started developing with Vue 3 and TypeScript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+## Dependencies
+- MongoDB
+- [Pluggy Account](https://pluggy.ai/)
 
-## Recommended IDE Setup
+## Setup
+Criar um arquivo .env na raiz do projeto para definir as seguintes variáveis de ambiente:
 
-- [VS Code](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar)
+- VITE_MONGO_URI
+- VITE_SERVER_URL
+- VITE_PLUGGY_CLIENT_ID
+- VITE_PLUGGY_CLIENT_SECRET
+- VITE_APP_MODE
 
-## Type Support For `.vue` Imports in TS
+Você pode se basear no arquivo .example.env
 
-Since TypeScript cannot handle type information for `.vue` imports, they are shimmed to be a generic Vue component type by default. In most cases this is fine if you don't really care about component prop types outside of templates. However, if you wish to get actual prop types in `.vue` imports (for example to get props validation when using manual `h(...)` calls), you can enable Volar's Take Over mode by following these steps:
+## Install
+`npm install`
 
-1. Run `Extensions: Show Built-in Extensions` from VS Code's command palette, look for `TypeScript and JavaScript Language Features`, then right click and select `Disable (Workspace)`. By default, Take Over mode will enable itself if the default TypeScript extension is disabled.
-2. Reload the VS Code window by running `Developer: Reload Window` from the command palette.
+## Locally Run
+O seguinte comando vai inicializar uma instancia local de um servidor do Netlify que poderá ser acessado em http://localhost:8888
 
-You can learn more about Take Over mode [here](https://github.com/johnsoncodehk/volar/discussions/471).
+`npm run dev`
+
+Obs: O Netlify é bem lento para inicializar, mas é necessário para rodar localmente as serveless functions que ainda estão sendo utilizadas. 
+Mas a ideia é substituir todas as serveless functions por endpoints na API do servidor.
+
+## Build
+TODO
+
+## Publishing
+TODO
