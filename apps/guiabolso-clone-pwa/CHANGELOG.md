@@ -1,5 +1,11 @@
 # guiabolso-clone-pwa
 
+## 1.6.4
+
+### Patch Changes
+
+- Support for 2026 months in selection filters
+
 ## 1.6.3
 
 ### Patch Changes
